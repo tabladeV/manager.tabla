@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer components {
+  .btn {
+    @apply bg-transparent border hover:border-subblack  transition duration-200 text-subblack font-[500] py-2 px-4 rounded-[10px];
+  }
+
+  .btn-primary{
+    @apply bg-greentheme hover:bg-[#688F3D] transition duration-200 text-white font-[500] py-2 px-4 rounded-[10px];
+  }
+  .btn-secondary{
+    @apply hover:text-white bg-[#E7EEDF] hover:bg-[#688F3D] text-greentheme transition duration-200 font-[500] py-2 px-4 rounded-[10px];
+  }
+}
+
+@layer base{
+    body{
+        font-family: 'poppins', sans-serif;
+    }
+    h1{
+        font-size: 2rem;
+        font-weight: 700;
+    }
+    h2{
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+    h3{
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+    h4{
+        font-size: 1rem;
+        font-weight: 600;
+    }
+    
+    input[type="text"]{
+        all:unset;
+    }
+
+    /* Hide the default checkbox */
+    input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      width: 20px;
+      height: 20px;
+      background-color: #f0f0f0;
+      border: 2px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    /* Style the checkbox when it's checked */
+    input[type="checkbox"]:checked {
+      background-color: #88AB61;
+      border-color: #88AB61;
+    }
+
+    /* Create a checkmark when the checkbox is checked */
+    input[type="checkbox"]:checked::after {
+      content: '';
+      position: absolute;
+      /* top: 4px;
+      left: 6px; */
+      top: 10%;
+      left: 30%;
+      width: 6px;
+      height: 12px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    /* Optional: Add a hover effect */
+    input[type="checkbox"]:hover {
+      border-color: #888;
+    }
+
+    thead{
+        background-color: #f0f0f0;
+        
+    }
+
+}
