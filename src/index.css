@@ -7,6 +7,9 @@
   .btn {
     @apply bg-transparent border hover:border-subblack  transition duration-200 text-subblack font-[500] py-2 px-4 rounded-[10px];
   }
+  .popup{
+    @apply flex flex-col fixed bg-white w-[30vw] z-[220] left-1/2 sm:top-1/2 p-[2em] -translate-x-1/2  sm:-translate-y-1/2  rounded-[20px] ;
+  }
 
   .btn-primary{
     @apply bg-greentheme hover:bg-[#688F3D] transition duration-200 text-white font-[500] py-2 px-4 rounded-[10px];
@@ -14,6 +17,16 @@
   .btn-secondary{
     @apply hover:text-white bg-[#E7EEDF] hover:bg-[#688F3D] text-greentheme transition duration-200 font-[500] py-2 px-4 rounded-[10px];
   }
+}
+
+.overlay{
+  width: 100vw;
+  height: 100vh;
+  background: #00000020;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 200;
 }
 
 @layer base{
@@ -81,9 +94,28 @@
       border-color: #888;
     }
 
-    thead{
-        background-color: #f0f0f0;
-        
+
+    table {
+      width: 100%; /* Full width */
+      border-collapse: collapse; /* Collapse borders */
+      margin: 20px 0; /* Margin around the table */
+      font-size:16px; /* Font size */
+      text-align: left; /* Align text to the left */
+    }
+    
+    th, td {
+      padding: 12px; /* Padding inside cells */
+    }
+    
+    th {
+      background-color: #f2f2f2; /* Header background color */
+      font-weight: bold; /* Make the header bold */
+      border-bottom: 1px  solid #dddddd; /* Add a border */
+      
+    }
+    
+    tr:nth-child(odd) {
+      background-color: #f9f9f9; /* Row color for even rows */
     }
 
 }

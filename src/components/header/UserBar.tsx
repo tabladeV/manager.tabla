@@ -10,7 +10,7 @@ const UserBar = () => {
       </button>
       <button className='flex items-center gap-2 hover:bg-[#88AB6115] transition duration-200 p-[.6em] rounded-[10px]'>
         <img className='h-[40px] w-[40px] rounded-[100%]' src={profilepic} alt="user"/>
-        <h3 className='text-blacktheme'>Alfred Distivano</h3>
+        <h5 className='text-greytheme font-semibold '>Alfred Distivano</h5>
         <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M9 1L5 5L1 1" stroke="#1E1E1E" stroke-opacity="0.75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>

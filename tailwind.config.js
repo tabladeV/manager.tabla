@@ -10,13 +10,14 @@ module.exports = {
         softgreentheme: '#88AB611A',
         blacktheme: '#1A1A1A',
         subblack: '#1E1E1E80',
-        greytheme: '#F3F3F3',
         softredtheme: '#FF4B4B1A',
         redtheme: '#FF4B4B',
         bluetheme: '#3F72AF',
         softbluetheme: '#3F72AF1A',
         yellowtheme: '#FDE030',
         softyellowtheme: '#FDE0301A',
+        greytheme: '#1E1E1E',
+        softgreytheme: '#f3f3f3',
 
       },
       fontFamily: {

@@ -21,7 +21,7 @@ const DraggableItem = (props:DraggableItemProps) => {
   return (
     <div
       ref={drag}
-      className='bg-greytheme cursor-grab p-3 flex justify-between rounded-[10px] mb-3'
+      className='bg-softgreytheme cursor-grab p-3 flex justify-between rounded-[10px] mb-3'
     >
       <div className='flex items-center'>
         <div className='w-[5vw] text-subblack flex  flex-col text-center items-center'>
