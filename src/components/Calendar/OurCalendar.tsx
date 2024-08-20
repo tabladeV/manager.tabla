@@ -1,42 +1,57 @@
 import React, { useState } from 'react';
-import { eachDayOfInterval, endOfMonth, format, getDay, isEqual, isSameMonth, isToday, parse, startOfToday, add } from 'date-fns';
+import {
+  eachDayOfInterval,
+  endOfMonth,
+  format,
+  getDay,
+  isEqual,
+  isSameMonth,
+  isToday,
+  parse,
+  startOfToday,
+  add
+} from 'date-fns';
 
 const colStartClasses = [
   '', 'col-start-2', 'col-start-3', 'col-start-4', 'col-start-5', 'col-start-6', 'col-start-7'
 ];
 
-const OurCalendar = (props) => {
-  let today = startOfToday();
+interface OurCalendarProps {
+  onClick?: (day: Date) => void;
+}
 
-  function classNames(...classes) {
+const OurCalendar: React.FC<OurCalendarProps> = (props) => {
+  const today = startOfToday();
+
+  const classNames = (...classes: (string | undefined)[]) => {
     return classes.filter(Boolean).join(' ');
-  }
+  };
 
-  const [selectedDay, setSelectedDay] = useState(today);
-  let [currentMonth, setCurrentMonth] = useState(format(today, 'MMM-yyyy'));
-  let firstDayCurrentMonth = parse(currentMonth, 'MMM-yyyy', new Date());
+  const [selectedDay, setSelectedDay] = useState<Date>(today);
+  const [currentMonth, setCurrentMonth] = useState<string>(format(today, 'MMM-yyyy'));
+  const firstDayCurrentMonth = parse(currentMonth, 'MMM-yyyy', new Date());
 
-  let days = eachDayOfInterval({
+  const days = eachDayOfInterval({
     start: firstDayCurrentMonth,
     end: endOfMonth(firstDayCurrentMonth),
   });
 
-  function previousMonth() {
-    let firstDayNextMonth = add(firstDayCurrentMonth, { months: -1 });
+  const previousMonth = () => {
+    const firstDayNextMonth = add(firstDayCurrentMonth, { months: -1 });
     setCurrentMonth(format(firstDayNextMonth, 'MMM-yyyy'));
-  }
+  };
 
-  function nextMonth() {
-    let firstDayNextMonth = add(firstDayCurrentMonth, { months: 1 });
+  const nextMonth = () => {
+    const firstDayNextMonth = add(firstDayCurrentMonth, { months: 1 });
     setCurrentMonth(format(firstDayNextMonth, 'MMM-yyyy'));
-  }
+  };
 
-  function selectingDate(day) {
+  const selectingDate = (day: Date) => {
     setSelectedDay(day);
     if (props.onClick) {
       props.onClick(day); // Call the onClick function and pass the day as an argument
     }
-  }
+  };
 
   return (
     <div className='p-[1em] w-full h-full mx-auto'>
