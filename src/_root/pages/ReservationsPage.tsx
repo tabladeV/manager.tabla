@@ -1,6 +1,7 @@
+// @ts-ignore
+import OurCalendar from "../../components/Calendar/OurCalendar.jsx"
 import { useEffect, useState } from "react"
-import SearchBar from "../../components/header/SearchBar"
-import OurCalendar from "../../components/Calendar/OurCalendar"
+
 import { format, set } from 'date-fns';
 const ReservationsPage = () => {
 
@@ -112,7 +113,7 @@ const ReservationsPage = () => {
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(e)
-    
+
   }
 
   useEffect(() => {
