@@ -17,6 +17,10 @@
   .btn-secondary{
     @apply hover:text-white bg-[#E7EEDF] hover:bg-[#688F3D] text-greentheme transition duration-200 font-[500] py-2 px-4 rounded-[10px];
   }
+
+  .input-primary{
+    @apply border border-[#d1d2cf] text-subblack font-[500] py-2 px-4 rounded-[10px];
+  }
 }
 
 .overlay{
@@ -28,6 +32,8 @@
   left: 0;
   z-index: 200;
 }
+
+
 
 @layer base{
     body{

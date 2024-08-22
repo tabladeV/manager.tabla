@@ -40,7 +40,7 @@ const ReservationsPage = () => {
       date: '29/08/2024',
       time: '12:00 PM',
       guests: '2',
-      status: 'Pending'
+      status: 'Confirmed'
     },
     {
       id: 5,
@@ -53,7 +53,7 @@ const ReservationsPage = () => {
     },
     {
       id: 6,
-      email: 'laquazettezak',
+      email: 'laquazettezak@gmail.com',
       fullName: 'Laquazette Zak',
       date: '20/08/2024',
       time: '12:00 PM',

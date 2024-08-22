@@ -30,6 +30,7 @@ import SupportPage from "./_root/pages/SupportPage";
 import SettingsPage from "./_root/pages/SettingsPage";
 import AuthLayout from "./_auth/AuthLayout";
 import LogIn from "./_auth/pages/LogIn";
+import DesignPlaces from "./_root/pages/DesignPlaces";
 
 function App() {
   return (
@@ -62,6 +63,7 @@ function App() {
                   <Route index element={<Home />} />
                   <Route path='/reservations' element={<ReservationsPage />} />
                   <Route path='/places' element={<PlacesPage />} />
+                  <Route path='/places/design' element={<DesignPlaces />} />
                   <Route path='/agenda' element={<AgendaPage />} />
                   <Route path='/payment' element={<PaymentPage />} />
                   <Route path='/clients' element={<ClientsPage />} />
