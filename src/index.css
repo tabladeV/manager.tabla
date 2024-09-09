@@ -11,6 +11,10 @@
     @apply flex flex-col fixed bg-white w-[30vw] z-[220] left-1/2 sm:top-1/2 p-[2em] -translate-x-1/2  sm:-translate-y-1/2  rounded-[20px] ;
   }
 
+  .sidepopup{
+    @apply flex flex-col fixed bg-white w-[40vw] z-[220] m-0 sm:top-1/2 p-[2em] right-0  sm:-translate-y-1/2 ;
+  }
+
   .btn-primary{
     @apply bg-greentheme hover:bg-[#688F3D] transition duration-200 text-white font-[500] py-2 px-4 rounded-[10px];
   }
@@ -26,11 +30,59 @@
 .overlay{
   width: 100vw;
   height: 100vh;
-  background: #00000020;
+  background: #00000010;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 200;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 0px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+.inputs{
+  border: 1px solid #1e1e1e20 !important;
+  border-radius: 10px !important;
+  padding: 10px !important;
+}
+
+.inputs:focus{
+  border: 1px solid #1e1e1e;
+}
+
+#inputPlace{
+  border: 1px solid #1e1e1e20;
+  border-radius: 10px;
+  padding: 10px;
+
+}
+#inputPlace:focus{
+  border: 1px solid #1e1e1e;
+}
+
+/* Hide scrollbar for Webkit browsers (e.g., Chrome, Safari) */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge, and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 

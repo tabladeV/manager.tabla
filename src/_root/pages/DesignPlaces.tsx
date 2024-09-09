@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Canvas from '../../components/places/design/Canvas';
+import DesignCanvas from '../../components/places/design/DesignCanvas';
 import { Link } from 'react-router-dom';
 
 const DesignPlaces: React.FC = () => {
@@ -14,14 +14,46 @@ const DesignPlaces: React.FC = () => {
     };
 
     const deleteRoof = (roof: string) => {
+        if (!confirm('Are you sure you want to delete this roof?')) {
+            return;
+        }
         setRoofs(prevRoofs => prevRoofs.filter(r => r !== roof));
         if (focusedRoof === roof) {
             setFocusedRoof(null);
         }
     };
 
+
+    
+  const handlePlaceAdded = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const inputPlace = document.getElementById('inputPlace') as HTMLInputElement;
+    const place = inputPlace.value.trim();
+
+    if (place && !roofs.includes(place)) {
+      setRoofs((prevRoofs) => [...prevRoofs, place]);
+    }
+
+    setShowAddPlace(false);
+  };
+
     return (
         <div>
+            {showAddPlace && (
+                <div>
+                <div className='overlay' onClick={() => setShowAddPlace(false)}></div>
+                <form className='popup gap-5' onSubmit={handlePlaceAdded}>
+                    <h1 className='text-3xl text-blacktheme font-[700]'>Add Place</h1>
+                    <input
+                    type="text"
+                    id='inputPlace'
+                    placeholder='Place Alias'
+                    className='border-[1px] border-blacktheme text-subblack font-[500] py-2 px-4 rounded-[10px]'
+                    />
+                    <button className='btn-primary w-full'>Add Place</button>
+                </form>
+                </div>
+            )}
             <div className='flex justify-start gap-3 mb-2'>
                 <Link to='/places' className='hover:bg-softgreentheme px-4 items-center flex justify-center text-greentheme font-bold rounded-[10px]' >{'<'}</Link>
                 <h1 className='text-3xl text-blacktheme font-[700]'>Edit On Your Roofs</h1>
@@ -64,9 +96,15 @@ const DesignPlaces: React.FC = () => {
                         </button>
                     </div>
                 ))}
+                <button
+                className='btn hover:text-greentheme hover:border-greentheme'
+                onClick={() => setShowAddPlace(true)}
+              >
+                +
+              </button>
             </div>
 
-            <Canvas />
+            <DesignCanvas />
         </div>
     );
 };

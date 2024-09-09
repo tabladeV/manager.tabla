@@ -31,6 +31,7 @@ import SettingsPage from "./_root/pages/SettingsPage";
 import AuthLayout from "./_auth/AuthLayout";
 import LogIn from "./_auth/pages/LogIn";
 import DesignPlaces from "./_root/pages/DesignPlaces";
+import GridPage from "./_root/pages/GridPage";
 
 function App() {
   return (
@@ -65,6 +66,7 @@ function App() {
                   <Route path='/places' element={<PlacesPage />} />
                   <Route path='/places/design' element={<DesignPlaces />} />
                   <Route path='/agenda' element={<AgendaPage />} />
+                  <Route path='/agenda/grid' element={<GridPage />} />
                   <Route path='/payment' element={<PaymentPage />} />
                   <Route path='/clients' element={<ClientsPage />} />
                   <Route path='/support' element={<SupportPage />} />

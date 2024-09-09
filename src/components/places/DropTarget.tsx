@@ -1,62 +1,93 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDrop } from 'react-dnd';
 
 const ItemType = 'BOX';
-type ShapeType = 'circle' | 'square' | 'rectangle';
-
 
 interface DropTargetProps {
-  tableNumber: number;
-  type: 'circle' | 'square' | 'rectangle';
+  id: string;
+  type: 'rectangle' | 'circle';
   x: number;
   y: number;
+  height: number;
+  width: number;
+  max: number;
+  min: number;
+  reservedBy: reservedType;
+  hourChosen: string;
+}
+
+interface reservedType {
+  name: string;
+  time: string;
+  date: string;
+  guests: number;
+  occasion: string;
+  tableNumber: number;
 }
 
 interface DroppedItem {
   name: string;
+  time: string;
+  date: string;
+  guests: number;
+  occasion: string;
+  tableNumber: number;
 }
 
-const DropTarget: React.FC<DropTargetProps> = ({ tableNumber, type, x, y }) => {
-  const [droppedItem, setDroppedItem] = useState<DroppedItem | null>(null);
+const DropTarget: React.FC<DropTargetProps> = ({ height, width,min, max,id, type, x, y, reservedBy, hourChosen }) => {
+  const [droppedItems, setDroppedItems] = useState<DroppedItem[]>([]); // Store multiple items
 
-  const [{ isOver }, drop] = useDrop(() => ({
+
+  useEffect(() => {
+    if (reservedBy.name && reservedBy.time === hourChosen) {
+      setDroppedItems([{name:reservedBy.name, time:reservedBy.time, date:reservedBy.date, guests:reservedBy.guests, occasion:reservedBy.occasion, tableNumber: reservedBy.tableNumber}]);
+    }
+    if (reservedBy.name && reservedBy.time !== hourChosen) {
+      setDroppedItems([]);
+    }
+  }
+  ,[reservedBy, hourChosen]);
+
+  const [{ isOver }, drop] = useDrop({
     accept: ItemType,
     drop: (item: DroppedItem) => {
-      setDroppedItem(item); // Handle the dropped data here
+      const isTimeAlreadyDropped = droppedItems.some((droppedItem) => droppedItem.time === item.time);
+      if (!isTimeAlreadyDropped && droppedItems.length < 1 && item.guests <= max && item.guests >= min) {
+        setDroppedItems((prevItems) => [...prevItems, item]); // Add new item to array
+      }
     },
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
     }),
-  }));
+  });
+  const [isClients, setIsClients] = useState(false);
 
-  const getShapeStyle = (type: ShapeType) => {
-    switch (type) {
-      case 'circle':
-        return 'w-[100px] h-[100px] rounded-full bg-white shadow-[0px 10px 13px rgba(0,0,0,0.1)]';
-      case 'square':
-        return 'w-[100px] h-[100px] rounded-[10px] bg-white shadow-[0px 10px 13px rgba(0,0,0,0.1)]';
-      case 'rectangle':
-        return 'w-[200px] h-[100px] rounded-[10px] bg-white shadow-[0px 10px 13px rgba(0,0,0,0.1)]';
-      default:
-        return '';
-    }
+  const showItems = () => {
+    console.log(droppedItems); // Show all dropped items
+    setIsClients(true);
   };
 
   return (
-    <div
-      ref={drop}
-      style={{ top: y, left: x, position: 'absolute' }} // Positions the shape on the canvas
-      className={`flex justify-center items-center font-[700] border ${getShapeStyle(type)} ${isOver ? 'bg-softgreentheme ' : 'bg-white'}`}
+    <div  onMouseOver={()=>{setIsClients(true)}} onMouseLeave={()=>{setIsClients(false)}}  ref={drop} key={id}
+      className={`absolute  ${droppedItems.length > 0 ? 'text-[white]':''} rounded-[10px]  flex flex-col justify-center items-center border-[2px] ${droppedItems.length > 0 ? ' bg-redtheme' : 'border-greentheme'}`}
+      style={{
+        width,
+        height,
+        backgroundColor: droppedItems.length > 0 ? '#FF4B4B' : 'white',
+        left: x,
+        top: y,
+        borderRadius: type === 'rectangle' ? '10px' : '50%',
+      }}
     >
-      {droppedItem ? (
-        <p className='flex text-center flex-col'>
-          T-{tableNumber} <span className=' font-[600] text-greentheme'>{droppedItem.name}</span>
-        </p>
-      ) : (
-        <p className=''>
-          T-{tableNumber}
-        </p>
-      )}
+      <h2 className='text-[14px] font-semibold'>{id}</h2>
+      <p className='text-[13px]  p-1 bg-[#1e1e1e10]  rounded-[5px]'>{max} seats</p>
+      {isClients && <div className='absolute bg-white z-[100] text-greytheme right-[-13.4em] w-[13em] p-2 rounded-[10px] font-medium '>{id} has {droppedItems.length} clients
+        {droppedItems.slice(0,3).map((item, index) => (
+          <div className='bg-softgreytheme p-1 rounded-[5px] mt-1 font-semibold' key={index}>{item.name}</div>
+        ))
+        }
+        {droppedItems.length > 3 && <div className='bg-softgreentheme p-1 rounded-[5px] mt-1 font-semibold'>+{droppedItems.length - 3} more</div>}
+        </div>}
     </div>
   );
 };

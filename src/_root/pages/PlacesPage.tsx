@@ -5,116 +5,209 @@ import DraggableItem from '../../components/places/DraggableItem';
 import DropTarget from '../../components/places/DropTarget';
 import SearchBar from '../../components/header/SearchBar';
 import { Link } from 'react-router-dom';
-
-type ShapeType = 'circle' | 'square' | 'rectangle';
-
-
-interface Shape {
-  id: string;
-  type: ShapeType;
-  x: number;
-  y: number;
-  tableNumber: number;
-}
+import { getHours, set } from 'date-fns';
+import { parseArgs } from 'util';
 
 
 const PlacePage: React.FC = () => {
   const [focusedRoof, setFocusedRoof] = useState<string | null>('Main Room');
   const [roofs, setRoofs] = useState<string[]>(['Main Room', 'Outdoor', 'Terrace']);
-  const [showAddPlace, setShowAddPlace] = useState(false);
 
   const data = [
     { id: 1, name: 'Caprim Zack', time: '12:00 PM', date: '12 dec 2025', guests: 4, occasion: 'Birthday' },
-    { id: 2, name: 'Alfed Destivan', time: '14:00 PM', date: '12 dec 2025', guests: 2, occasion: 'Birthday' },
-    { id: 3, name: 'Sam Sulek', time: '17:00 PM', date: '12 dec 2025', guests: 1, occasion: 'none' },
-    { id: 4, name: 'Christopher Bums', time: '13:00 PM', date: '12 dec 2025', guests: 5, occasion: 'none' },
+    { id: 2, name: 'Alfed Destivan', time: '14:00 PM', date: '12 dec 2025', guests: 2, occasion: 'Birthday',tableNumber: Number },
+    { id: 3, name: 'Sam Sulek', time: '17:00 PM', date: '12 dec 2025', guests: 1, occasion: 'none',tableNumber: Number },
+    { id: 4, name: 'Christopher Bums', time: '13:00 PM', date: '12 dec 2025', guests: 5, occasion: 'none',tableNumber: Number },
+    { id: 5, name: 'Alfred Zack', time: '12:00 PM', date: '12 dec 2025', guests: 4, occasion: 'Birthday',tableNumber: Number },
+    { id: 5, name: 'Alfred Zack', time: '12:00 PM', date: '12 dec 2025', guests: 4, occasion: 'Birthday',tableNumber: Number },
   ];
 
-  const tablesEachRoof = {
-    'Main Room': [{ number: 1 }, { number: 2 }, { number: 3 }, { number: 4 }],
-    'Outdoor': [{ number: 5 }, { number: 6 }, { number: 7 }, { number: 8 }],
-    'Terrace': [{ number: 9 }, { number: 10 }, { number: 11 }, { number: 12 }],
-  };
-  
 
-  const [shapes, setShapes] = useState<Shape[]>(
-    [
+  const initialShapes = [
       {
-          "id": "circle-1724365960078",
-          "type": "circle",
-          "x": 86,
-          "y": 33,
-          "tableNumber": 1
-      },
-      {
-          "id": "rectangle-1724365961225",
+          "id": "T-01",
+          "x": 248.99999999999994,
+          "y": 69.99999999999999,
+          "width": 217.00000000000003,
+          "height": 99.99999999999986,
           "type": "rectangle",
-          "x": 746,
-          "y": 9,
-          "tableNumber": 3
+          "max": 6,
+          "reservedBy": {},
+          "min":2,
+          "floor":'Main Room'
       },
       {
-          "id": "circle-1724365961773",
+          "id": "T-02",
+          "x": 107,
+          "y": 122,
+          "width": 100,
+          "height": 100,
           "type": "circle",
-          "x": 470,
-          "y": 194,
-          "tableNumber": 4
+          "max": 2,
+          "min":1,
+          "floor":'Main Room',
+          "reservedBy":
+              {
+                  "name": "Alfred Destivan",
+                  "time": "14:00",
+                  "date": "12 dec 2025",
+                  "guests": 2,
+                  "occasion": "Birthday",
+                  "tableNumber": 2
+              },
       },
       {
-          "id": "square-1724365983447",
-          "type": "square",
-          "x": 361,
-          "y": 10,
-          "tableNumber": 4
+          "id": "T3",
+          "x": 45.99999999999997,
+          "y": 250,
+          "type": "rectangle",
+          "width": 99.99999999999997,
+          "height": 130,
+          "max": 4,
+          "min":2,
+          "floor":'Main Room',
+          "reservedBy": {}
       },
       {
-          "id": "square-1724365989809",
-          "type": "square",
-          "x": 826,
-          "y": 192,
-          "tableNumber": 5
+          "id": "T4",
+          "x": 249.89485159562548,
+          "y": 222.75538049542064,
+          "type": "rectangle",
+          "width": 99.99999999999991,
+          "height": 100.00000000000031,
+          "max": 5,
+          "min":2,
+          "floor":'Main Room',
+          "reservedBy": {
+              "name": "Christopher Bums",
+              "time": "13:00",
+              "date": "12 dec 2025",
+              "guests": 5,
+              "occasion": "none",
+              "tableNumber": 4
+          }
       },
       {
-          "id": "square-1724365990934",
-          "type": "square",
-          "x": 193,
-          "y": 191,
-          "tableNumber": 6
+        "id": "T5",
+        "x": 249.89485159562548,
+        "y": 222.75538049542064,
+        "type": "rectangle",
+        "width": 130,
+        "height": 200,
+        "max": 6,
+        "min":4,
+        "floor":'Outdoor',
+        "reservedBy": {
+            "name": "Christopher Bums",
+            "time": "13:00",
+            "date": "12 dec 2025",
+            "guests": 5,
+            "occasion": "none",
+            "tableNumber": 4
+        }
+      },
+      {
+        "id": "T6",
+        "x": 700,
+        "y": 100,
+        "type": "rectangle",
+        "width": 200,
+        "height": 100.00000000000031,
+        "max": 5,
+        "min":2,
+        "floor":'Outdoor',
+        "reservedBy": {}
+      },
+      {
+        "id": "T7",
+        "x": 500,
+        "y": 300,
+        "type": "rectangle",
+        "width": 100,
+        "height": 100.00000000000031,
+        "max": 5,
+        "min":2,
+        "floor":'Outdoor',
+        "reservedBy":{}
+      },
+      {
+        "id": "T8",
+        "x": 20,
+        "y": 100,
+        "type": "cirlce",
+        "width": 100,
+        "height": 100.00000000000031,
+        "max": 5,
+        "min":2,
+        "floor":'Terrace',
+        "reservedBy":{
+          "name": "Sam Sulek",
+          "time": "17:00",
+          "date": "12 dec 2025",
+          "guests": 1,
+          "occasion": "none",
+          "tableNumber": 3
+        }
+      },
+      {
+        "id": "T9",
+        "x": 20,
+        "y": 300,
+        "type": "rectangle",
+        "width": 400,
+        "height": 100.00000000000031,
+        "max": 7,
+        "min":2,
+        "floor":'Terrace',
+        "reservedBy":{
+          "name": "Sam Sulek",
+          "time": "17:00",
+          "date": "12 dec 2025",
+          "guests": 1,
+          "occasion": "none",
+          "tableNumber": 3
+        }
+      },
+      {
+        "id": "T9",
+        "x": 20,
+        "y": 60,
+        "type": "rectangle",
+        "width": 400,
+        "height": 100.00000000000031,
+        "max": 7,
+        "min":2,
+        "floor":'Outdoor',
+        "reservedBy":{
+          "name": "Sam Sulek",
+          "time": "17:00",
+          "date": "12 dec 2025",
+          "guests": 1,
+          "occasion": "none",
+          "tableNumber": 3
+        }
       }
-  ]
-  );
-
-  const handlePlaceAdded = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const inputPlace = document.getElementById('inputPlace') as HTMLInputElement;
-    const place = inputPlace.value.trim();
-
-    if (place && !roofs.includes(place)) {
-      setRoofs((prevRoofs) => [...prevRoofs, place]);
-    }
-
-    setShowAddPlace(false);
-  };
+  ];
 
   
+  
+  const getCurrentHour = () => {
+    const currentHour = getHours(new Date());
+    console.log(`Current hour: ${currentHour}`);
+    return currentHour
+  };
+  
+  const hours= []
+  
+  
+  for (let i = parseInt(getCurrentHour()); i < 24; i++) {
+    hours.push({id:i, time:`${i}:00`})
+  }
+  const [filteringHour, setFilteringHour] = useState(hours[0].time);
 
   return (
     <div>
-      {showAddPlace && (
-        <div>
-          <div className='overlay' onClick={() => setShowAddPlace(false)}></div>
-          <form className='popup gap-5' onSubmit={handlePlaceAdded}>
-            <h1 className='text-3xl text-blacktheme font-[700]'>Add Place</h1>
-            <input
-              type="text"
-              id='inputPlace'
-              placeholder='Place Alias'
-              className='border border-[black] text-subblack font-[500] py-2 px-4 rounded-[10px]'
-            />
-            <button className='btn-primary w-full'>Add Place</button>
-          </form>
-        </div>
-      )}
+      
       <div className='flex justify-between mb-2'>
         <h1 className='text-3xl text-blacktheme font-[700]'>Place Management</h1>
         <Link to='/places/design' className='btn-primary flex gap-2 items-center'>
@@ -126,41 +219,51 @@ const PlacePage: React.FC = () => {
       </div>
       <DndProvider backend={HTML5Backend}>
         <div className="flex gap-[10px]">
-          <div className='bg-white w-[25vw] rounded-[10px] p-[1em]'>
+          <div className='bg-white  rounded-[10px] p-[1em]'>
             <SearchBar />
-            <div className='flex gap-3 font-[500] my-3 justify-between'>
+            <div className='grid grid-flow-col gap-3 font-[500] my-3 justify-between'>
               <button className='btn-primary'>Confirmed</button>
               <button className='btn-secondary'>Canceled</button>
               <button className='btn-secondary'>Waiting</button>
             </div>
-            {data.map((item) => (
-              <DraggableItem itemData={item} key={item.id} />
-            ))}
-          </div>
-          <div className='w-full'>
-            <div className='flex gap-2 w-full overflow-x-auto '>
-              {roofs.map((roof) => (
-                <button
-                  className={` ${focusedRoof === roof ? 'btn-primary ' : 'btn-secondary'}`}
-                  key={roof}
-                  onClick={() => setFocusedRoof(roof)}
-                >
-                  {roof}
-                </button>
+            <div className='overflow-y-auto h-[55vh] bar-hide'>
+              {data.map((item) => (
+                <DraggableItem itemData={item} key={item.id} />
               ))}
-              <button
-                className='btn hover:text-greentheme hover:border-greentheme'
-                onClick={() => setShowAddPlace(true)}
-              >
-                +
-              </button>
             </div>
-            <div className='relative '>
-              {shapes.map(( {id, type, x, y, tableNumber} ) => (
-                <DropTarget type={type} x={x} y={y} tableNumber={tableNumber} key={id} />
-              ))}
+          </div>
+          <div className='w-full overflow-auto'>
+            <div className='flex justify-between'>
+              <div className='flex gap-2 w-full overflow-x-auto '>
+                {roofs.map((roof) => (
+                  <button
+                    className={` ${focusedRoof === roof ? 'btn-primary ' : 'btn-secondary'}`}
+                    key={roof}
+                    onClick={() => setFocusedRoof(roof)}
+                  >
+                    {roof}
+                  </button>
+                ))}
 
-              
+              </div>
+              <div>
+                <select className='inputs bg-transparent' onChange={(e) => setFilteringHour(e.target.value)}>
+                  {hours.map((hour) => (
+                    <option key={hour.id} value={hour.time}>
+                      {hour.time}
+                    </option>
+                  ))  
+                  }
+                </select>
+              </div>
+            </div>
+
+            <div className='relative'>
+                {initialShapes.filter(shape => 
+                shape.floor === focusedRoof
+                ).map(({ id, x, y, type, height, width, max ,min, reservedBy}) => (
+                  <DropTarget min={min} hourChosen={filteringHour} reservedBy={reservedBy} max={max} type={type as 'rectangle' || 'circle'} x={x} y={y} id={id} height={height} width={width} key={id} />
+                ))}
             </div>
           </div>
         </div>
@@ -169,17 +272,5 @@ const PlacePage: React.FC = () => {
   );
 };
 
-const getShapeStyle = (type: ShapeType) => {
-  switch (type) {
-    case 'circle':
-      return 'w-[100px] h-[100px] rounded-full bg-white shadow-[0px 10px 13px rgba(0,0,0,0.1)]';
-    case 'square':
-      return 'w-[100px] h-[100px] rounded-[10px] bg-white shadow-[0px 10px 13px rgba(0,0,0,0.1)]';
-    case 'rectangle':
-      return 'w-[200px] h-[100px] rounded-[10px] bg-white shadow-[0px 10px 13px rgba(0,0,0,0.1)]';
-    default:
-      return '';
-  }
-};
 
 export default PlacePage;

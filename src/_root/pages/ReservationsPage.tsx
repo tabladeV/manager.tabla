@@ -2,7 +2,7 @@
 import OurCalendar from "../../components/Calendar/OurCalendar.jsx"
 import { useEffect, useState } from "react"
 
-import { format, set } from 'date-fns';
+import { format} from 'date-fns';
 const ReservationsPage = () => {
 
   const reservations = [
@@ -12,6 +12,7 @@ const ReservationsPage = () => {
       fullName: 'John Doe',
       date: '23/08/2024',
       time: '12:00 PM',
+      reservationMade: 'MarketPlace',
       guests: '2',
       status: 'Pending'
     },
@@ -21,6 +22,7 @@ const ReservationsPage = () => {
       fullName: 'Kwame Dwayne',
       date: '23/08/2024',
       time: '12:00 PM',
+      reservationMade: 'MarketPlace',
       guests: '4',
       status: 'Confirmed'
     },
@@ -30,6 +32,7 @@ const ReservationsPage = () => {
       fullName: 'asafo Yaw',
       date: '21/08/2024',
       time: '12:00 PM',
+      reservationMade: 'MarketPlace',
       guests: '4',
       status: 'Canceled'
     },
@@ -39,6 +42,7 @@ const ReservationsPage = () => {
       fullName: 'Dk Qw',
       date: '29/08/2024',
       time: '12:00 PM',
+      reservationMade: 'MarketPlace',
       guests: '2',
       status: 'Confirmed'
     },
@@ -48,6 +52,7 @@ const ReservationsPage = () => {
       fullName: 'Lawu Ate',
       date: '23/08/2024',
       time: '12:00 PM',
+      reservationMade: 'MarketPlace',
       guests: '2',
       status: 'Confirmed'
     },
@@ -57,6 +62,7 @@ const ReservationsPage = () => {
       fullName: 'Laquazette Zak',
       date: '20/08/2024',
       time: '12:00 PM',
+      reservationMade: 'MarketPlace',
       guests: '2',
       status: 'Pending'
     },
@@ -66,9 +72,40 @@ const ReservationsPage = () => {
       fullName: 'Da Limeal',
       date: '23/08/2024',
       time: '12:00 PM',
+      reservationMade: 'MarketPlace',
       guests: '2',
       status: 'Confirmed'
-    }
+    },
+    {
+      id: 8,
+      email: 'alish.coleman@gmail.com',
+      fullName: 'Alish Coleman',
+      date: '23/08/2024',
+      time: '12:00 PM',
+      reservationMade: 'MarketPlace',
+      guests: '2',
+      status: 'Pending'
+    },
+    {
+      id: 9,
+      email: 'ashley.halsey@gmail.com',
+      fullName: 'Ashley Halsey',
+      date: '23/08/2024',
+      time: '12:00 PM',
+      reservationMade: 'MarketPlace',
+      guests: '2',
+      status: 'Confirmed'
+    },
+    {
+      id: 10,
+      email: 'armstrongschwazeneger@gmail.com',
+      fullName: 'Armstrong Schwazeneger',
+      date: '23/08/2024',
+      time: '12:00 PM',
+      reservationMade: 'MarketPlace',
+      guests: '2',
+      status: 'Pending'
+    },
   ]
 
   function statusStyle(status: string) {
@@ -127,11 +164,66 @@ const ReservationsPage = () => {
 
   const [focusedDate, setFocusedDate] = useState(false)
 
+  const [focusedAddReservation, setFocusedAddReservation] = useState(false)
+
+  const handleAddReservation = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const email = (e.currentTarget.querySelector('#email') as HTMLInputElement).value;
+    const fullname = (e.currentTarget.querySelector('#fullname') as HTMLInputElement).value;
+    const date = (e.currentTarget.querySelector('#date') as HTMLInputElement).value;
+    const time = (e.currentTarget.querySelector('#time') as HTMLInputElement).value;
+    const guests = (e.currentTarget.querySelector('#guests') as HTMLInputElement).value;
+    const status = (e.currentTarget.querySelector('#status') as HTMLSelectElement).value;
+
+   
+    console.log(email, fullname, date, time, guests, status)
+
+    setFocusedAddReservation(false)
+  }
+
   console.log(selectingDay)
 
   return (
     <div>
 
+      {
+        focusedAddReservation &&
+        <div>
+          <div className="overlay " onClick={() => { setFocusedAddReservation(false) }}></div>
+          <form className="sidepopup h-full gap-5" onSubmit={handleAddReservation}>
+            <h1 className="text-3xl text-blacktheme font-[700]">Add Reservation</h1>
+            <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-flow-col w-full gap-2">
+                <input placeholder="First Name" type="text" className="inputs" id="firstname" required />
+                <input placeholder="Last Name" type="text" className="inputs " id="lastname" required />
+              </div>
+              <div className="flex flex-col gap-2">
+                <input placeholder="Email" type="email" className="inputs" id="email" required />
+              </div>
+              <div className="flex flex-col gap-2">
+                <input placeholder="Phone Number" type="text" className="inputs" id="phonenumber" required />
+              </div>
+              <div className="flex flex-col gap-2">
+                <select name="places" id="places" className="inputs" >
+                  <option value="Places" disabled>Places</option>
+                  <option value="Pending">Main Room</option>
+                  <option value="Confirmed">Outdoor</option>
+                  <option value="Canceled">Terrace</option>
+                </select>
+              </div>
+              <div className="flex flex-col gap-2">
+                <select name="table" id="table" className="inputs" >
+                  <option value="table" disabled>Places</option>
+                  <option value="Pending">T-01</option>
+                  <option value="Confirmed">Outdoor</option>
+                  <option value="Canceled">Terrace</option>
+                </select>
+              </div>
+            </div>
+            <button type="submit" className="btn-primary">Add Reservation</button>
+          </form>
+        </div>
+      }
       {focusedDate &&
         <div>
           <div className="overlay" onClick={()=>{setFocusedDate(false)}}>
@@ -143,7 +235,9 @@ const ReservationsPage = () => {
       }
       <div className='flex justify-between mb-2'>
         <h1 className='text-3xl text-blacktheme font-[700]'>Reservations</h1>
-        <button className='btn-primary'>Add Reservation</button>
+        <button className='btn-primary' onClick={()=>{setFocusedAddReservation(true)}}>
+          Add Reservation
+        </button>
       </div>
       <div className="flex justify-between">
         <div className="border rounded-[10px]">
@@ -190,6 +284,7 @@ const ReservationsPage = () => {
               <th >Id</th>
               <th >Full Name</th>
               <th >Email</th>
+              <th>Made From</th>
               <th >Date</th>
               <th >Time</th>
               <th >Guests</th>
@@ -210,6 +305,7 @@ const ReservationsPage = () => {
                 <td>{reservation.id}</td>
                 <td>{reservation.fullName}</td>
                 <td>{reservation.email}</td>
+                <td>{reservation.reservationMade}</td>
                 <td>{reservation.date}</td>
                 <td>{reservation.time}</td>
                 <td>{reservation.guests}</td>
