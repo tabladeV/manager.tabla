@@ -16,14 +16,14 @@ interface DropTargetProps {
   hourChosen: string;
 }
 
-interface reservedType {
-  name: string;
-  time: string;
-  date: string;
-  guests: number;
-  occasion: string;
-  tableNumber: number;
-}
+type reservedType = {
+  name?: string;
+  time?: string;
+  date?: string;
+  guests?: number;
+  occasion?: string;
+  tableNumber?: number;
+};
 
 interface DroppedItem {
   name: string;
@@ -39,7 +39,7 @@ const DropTarget: React.FC<DropTargetProps> = ({ height, width,min, max,id, type
 
 
   useEffect(() => {
-    if (reservedBy.name && reservedBy.time === hourChosen) {
+    if (reservedBy.name && reservedBy.time === hourChosen && reservedBy.date && reservedBy.guests && reservedBy.occasion && reservedBy.tableNumber) {
       setDroppedItems([{name:reservedBy.name, time:reservedBy.time, date:reservedBy.date, guests:reservedBy.guests, occasion:reservedBy.occasion, tableNumber: reservedBy.tableNumber}]);
     }
     if (reservedBy.name && reservedBy.time !== hourChosen) {

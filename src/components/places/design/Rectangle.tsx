@@ -1,7 +1,5 @@
-// Rectangle.tsx
 import React, { useRef, useEffect } from 'react';
 import { Rect, Text, Transformer } from 'react-konva';
-import { Html } from 'react-konva-utils';
 
 interface RectangleProps {
   shapeProps: any;
@@ -15,16 +13,15 @@ const Rectangle: React.FC<RectangleProps> = ({ shapeProps, isSelected, onSelect,
   const trRef = useRef(null);
 
   useEffect(() => {
-    if (isSelected) {
+    if (isSelected && trRef.current && shapeRef.current) {
       trRef.current.nodes([shapeRef.current]);
-      trRef.current.getLayer().batchDraw();
+      trRef.current.getLayer()?.batchDraw();
     }
   }, [isSelected]);
 
   return (
     <div className='shadow-lg'>
       <Rect
-        
         onClick={onSelect}
         onTap={onSelect}
         ref={shapeRef}
@@ -41,6 +38,8 @@ const Rectangle: React.FC<RectangleProps> = ({ shapeProps, isSelected, onSelect,
         }}
         onTransformEnd={(e) => {
           const node = shapeRef.current;
+          if (!node) return; // Ensure node is not null
+
           const scaleX = node.scaleX();
           const scaleY = node.scaleY();
 
@@ -51,7 +50,7 @@ const Rectangle: React.FC<RectangleProps> = ({ shapeProps, isSelected, onSelect,
             x: node.x(),
             y: node.y(),
             width: Math.max(5, node.width() * scaleX),
-            height: Math.max(node.height() * scaleY),
+            height: Math.max(5, node.height() * scaleY), // Ensure a minimum size
           });
         }}
       />
@@ -65,18 +64,16 @@ const Rectangle: React.FC<RectangleProps> = ({ shapeProps, isSelected, onSelect,
             }
             return newBox;
           }}
-          />
-      )}
-        <Text
-          x={shapeProps.x}
-          y={shapeProps.y-20}
-          
-          text={shapeProps.id}
-          fontSize={15}
-          align="center"
-          
-          fill="black"
         />
+      )}
+      <Text
+        x={shapeProps.x}
+        y={shapeProps.y - 20}
+        text={shapeProps.id}
+        fontSize={15}
+        align="center"
+        fill="black"
+      />
     </div>
   );
 };

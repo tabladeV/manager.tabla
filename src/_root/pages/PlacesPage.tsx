@@ -7,6 +7,7 @@ import SearchBar from '../../components/header/SearchBar';
 import { Link } from 'react-router-dom';
 import { getHours, set } from 'date-fns';
 import { parseArgs } from 'util';
+import { table } from 'console';
 
 
 const PlacePage: React.FC = () => {
@@ -14,12 +15,11 @@ const PlacePage: React.FC = () => {
   const [roofs, setRoofs] = useState<string[]>(['Main Room', 'Outdoor', 'Terrace']);
 
   const data = [
-    { id: 1, name: 'Caprim Zack', time: '12:00 PM', date: '12 dec 2025', guests: 4, occasion: 'Birthday' },
-    { id: 2, name: 'Alfed Destivan', time: '14:00 PM', date: '12 dec 2025', guests: 2, occasion: 'Birthday',tableNumber: Number },
-    { id: 3, name: 'Sam Sulek', time: '17:00 PM', date: '12 dec 2025', guests: 1, occasion: 'none',tableNumber: Number },
-    { id: 4, name: 'Christopher Bums', time: '13:00 PM', date: '12 dec 2025', guests: 5, occasion: 'none',tableNumber: Number },
-    { id: 5, name: 'Alfred Zack', time: '12:00 PM', date: '12 dec 2025', guests: 4, occasion: 'Birthday',tableNumber: Number },
-    { id: 5, name: 'Alfred Zack', time: '12:00 PM', date: '12 dec 2025', guests: 4, occasion: 'Birthday',tableNumber: Number },
+    { id: 1, name: 'Caprim Zack', time: '12:00 PM', date: '12 dec 2025', guests: 4, occasion: 'Birthday', tableNumber: 1 },
+    { id: 2, name: 'Alfred Destivan', time: '14:00 PM', date: '12 dec 2025', guests: 2, occasion: 'Birthday', tableNumber: 2 },
+    { id: 3, name: 'Sam Sulek', time: '17:00 PM', date: '12 dec 2025', guests: 1, occasion: 'none', tableNumber: 3 },
+    { id: 4, name: 'Christopher Bums', time: '13:00 PM', date: '12 dec 2025', guests: 5, occasion: 'none', tableNumber: 4 },
+    { id: 5, name: 'Alfred Zack', time: '12:00 PM', date: '12 dec 2025', guests: 4, occasion: 'Birthday', tableNumber: 5 },
   ];
 
 
@@ -32,9 +32,16 @@ const PlacePage: React.FC = () => {
           "height": 99.99999999999986,
           "type": "rectangle",
           "max": 6,
-          "reservedBy": {},
           "min":2,
-          "floor":'Main Room'
+          "floor":'Main Room',
+          "reservedBy": {
+              "name": "",
+              "time": "",
+              "date": "",
+              "guests": 0,
+              "occasion": "",
+              "tableNumber": 0
+          }
       },
       {
           "id": "T-02",
@@ -66,7 +73,14 @@ const PlacePage: React.FC = () => {
           "max": 4,
           "min":2,
           "floor":'Main Room',
-          "reservedBy": {}
+          "reservedBy": {
+              "name": "",
+              "time": "",
+              "date": "",
+              "guests": 0,
+              "occasion": "",
+              "tableNumber": 0
+          }
       },
       {
           "id": "T4",
@@ -116,7 +130,14 @@ const PlacePage: React.FC = () => {
         "max": 5,
         "min":2,
         "floor":'Outdoor',
-        "reservedBy": {}
+        "reservedBy": {
+              "name": "",
+              "time": "",
+              "date": "",
+              "guests": 0,
+              "occasion": "",
+              "tableNumber": 0
+          }
       },
       {
         "id": "T7",
@@ -128,7 +149,14 @@ const PlacePage: React.FC = () => {
         "max": 5,
         "min":2,
         "floor":'Outdoor',
-        "reservedBy":{}
+        "reservedBy": {
+              "name": "",
+              "time": "",
+              "date": "",
+              "guests": 0,
+              "occasion": "",
+              "tableNumber": 0
+          }
       },
       {
         "id": "T8",

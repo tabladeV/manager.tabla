@@ -13,15 +13,14 @@ const CircleShape: React.FC<CircleShapeProps> = ({ shapeProps, isSelected, onSel
   const trRef = useRef(null);
 
   useEffect(() => {
-    if (isSelected) {
+    if (isSelected && trRef.current && shapeRef.current) {
       trRef.current.nodes([shapeRef.current]);
-      trRef.current.getLayer().batchDraw();
+      trRef.current.getLayer()?.batchDraw();
     }
   }, [isSelected]);
 
   return (
     <>
-      
       <Circle
         onClick={onSelect}
         onTap={onSelect}
@@ -38,16 +37,18 @@ const CircleShape: React.FC<CircleShapeProps> = ({ shapeProps, isSelected, onSel
         }}
         onTransformEnd={(e) => {
           const node = shapeRef.current;
-          const scaleX = node.scaleX();
-          const scaleY = node.scaleY();
+          if (!node) return;
 
-          node.scaleX(1);
-          node.scaleY(1);
+          const scaleX = node?.scaleX();
+          const scaleY = node?.scaleY();
+
+          node?.scaleX(1);
+          node?.scaleY(1);
           onChange({
             ...shapeProps,
-            x: node.x(),
-            y: node.y(),
-            radius: Math.max(5, node.radius() * Math.max(scaleX, scaleY)),
+            x: node?.x(),
+            y: node?.y(),
+            radius: Math.max(5, node?.radius() * Math.max(scaleX, scaleY)),
           });
         }}
       />
@@ -67,14 +68,12 @@ const CircleShape: React.FC<CircleShapeProps> = ({ shapeProps, isSelected, onSel
       <Text
           x={shapeProps.x}
           y={shapeProps.y-20}
-          
           text={shapeProps.id}
           fontSize={15}
           align="center"
           verticalAlign="middle"
           fill="black"
         />
-      
     </>
   );
 };
