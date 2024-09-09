@@ -222,15 +222,14 @@ const PlacePage: React.FC = () => {
   const getCurrentHour = () => {
     const currentHour = getHours(new Date());
     console.log(`Current hour: ${currentHour}`);
-    return currentHour
+    return currentHour;
   };
   
-  const hours= []
-  
-  
-  for (let i = parseInt(getCurrentHour()); i < 24; i++) {
-    hours.push({id:i, time:`${i}:00`})
+  const hours = [];
+  for (let i = parseInt(getCurrentHour().toString()); i < 24; i++) {
+    hours.push({ id: i.toString(), time: `${i}:00` }); // Convert id to string here
   }
+  
   const [filteringHour, setFilteringHour] = useState(hours[0].time);
 
   return (

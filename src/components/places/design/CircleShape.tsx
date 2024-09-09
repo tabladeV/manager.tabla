@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { Circle, Text, Transformer } from 'react-konva';
+import Konva from 'konva';
 
 interface CircleShapeProps {
   shapeProps: any;
@@ -9,12 +10,13 @@ interface CircleShapeProps {
 }
 
 const CircleShape: React.FC<CircleShapeProps> = ({ shapeProps, isSelected, onSelect, onChange }) => {
-  const shapeRef = useRef(null);
-  const trRef = useRef(null);
+  // Explicitly define the types for shapeRef and trRef
+  const shapeRef = useRef<Konva.Circle>(null);
+  const trRef = useRef<Konva.Transformer>(null);
 
   useEffect(() => {
     if (isSelected && trRef.current && shapeRef.current) {
-      trRef.current.nodes([shapeRef.current]);
+      trRef.current.nodes([shapeRef.current]); // Konva's nodes method expects an array
       trRef.current.getLayer()?.batchDraw();
     }
   }, [isSelected]);
@@ -24,7 +26,7 @@ const CircleShape: React.FC<CircleShapeProps> = ({ shapeProps, isSelected, onSel
       <Circle
         onClick={onSelect}
         onTap={onSelect}
-        ref={shapeRef}
+        ref={shapeRef} // Correctly typed as Konva.Circle
         fill='white'
         {...shapeProps}
         draggable
@@ -39,23 +41,22 @@ const CircleShape: React.FC<CircleShapeProps> = ({ shapeProps, isSelected, onSel
           const node = shapeRef.current;
           if (!node) return;
 
-          const scaleX = node?.scaleX();
-          const scaleY = node?.scaleY();
+          const scaleX = node.scaleX();
+          const scaleY = node.scaleY();
 
-          node?.scaleX(1);
-          node?.scaleY(1);
+          node.scaleX(1);
+          node.scaleY(1);
           onChange({
             ...shapeProps,
-            x: node?.x(),
-            y: node?.y(),
-            radius: Math.max(5, node?.radius() * Math.max(scaleX, scaleY)),
+            x: node.x(),
+            y: node.y(),
+            radius: Math.max(5, node.radius() * Math.max(scaleX, scaleY)),
           });
         }}
       />
-      
       {isSelected && (
         <Transformer
-          ref={trRef}
+          ref={trRef} // Correctly typed as Konva.Transformer
           flipEnabled={false}
           boundBoxFunc={(oldBox, newBox) => {
             if (Math.abs(newBox.width) < 5 || Math.abs(newBox.height) < 5) {
@@ -66,14 +67,13 @@ const CircleShape: React.FC<CircleShapeProps> = ({ shapeProps, isSelected, onSel
         />
       )}
       <Text
-          x={shapeProps.x}
-          y={shapeProps.y-20}
-          text={shapeProps.id}
-          fontSize={15}
-          align="center"
-          verticalAlign="middle"
-          fill="black"
-        />
+        x={shapeProps.x}
+        y={shapeProps.y - 20}
+        text={shapeProps.id}
+        fontSize={15}
+        align="center"
+        fill="black"
+      />
     </>
   );
 };

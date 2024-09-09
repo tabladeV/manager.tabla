@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { Rect, Text, Transformer } from 'react-konva';
+import Konva from 'konva';
 
 interface RectangleProps {
   shapeProps: any;
@@ -9,12 +10,13 @@ interface RectangleProps {
 }
 
 const Rectangle: React.FC<RectangleProps> = ({ shapeProps, isSelected, onSelect, onChange }) => {
-  const shapeRef = useRef(null);
-  const trRef = useRef(null);
+  // Explicitly define the types for shapeRef and trRef
+  const shapeRef = useRef<Konva.Rect>(null);
+  const trRef = useRef<Konva.Transformer>(null);
 
   useEffect(() => {
     if (isSelected && trRef.current && shapeRef.current) {
-      trRef.current.nodes([shapeRef.current]);
+      trRef.current.nodes([shapeRef.current]); // Konva's nodes method expects an array
       trRef.current.getLayer()?.batchDraw();
     }
   }, [isSelected]);
@@ -24,7 +26,7 @@ const Rectangle: React.FC<RectangleProps> = ({ shapeProps, isSelected, onSelect,
       <Rect
         onClick={onSelect}
         onTap={onSelect}
-        ref={shapeRef}
+        ref={shapeRef} // Correctly typed as Konva.Rect
         fill='white'
         rounded={10}
         {...shapeProps}
@@ -38,7 +40,7 @@ const Rectangle: React.FC<RectangleProps> = ({ shapeProps, isSelected, onSelect,
         }}
         onTransformEnd={(e) => {
           const node = shapeRef.current;
-          if (!node) return; // Ensure node is not null
+          if (!node) return;
 
           const scaleX = node.scaleX();
           const scaleY = node.scaleY();
@@ -50,13 +52,13 @@ const Rectangle: React.FC<RectangleProps> = ({ shapeProps, isSelected, onSelect,
             x: node.x(),
             y: node.y(),
             width: Math.max(5, node.width() * scaleX),
-            height: Math.max(5, node.height() * scaleY), // Ensure a minimum size
+            height: Math.max(5, node.height() * scaleY),
           });
         }}
       />
       {isSelected && (
         <Transformer
-          ref={trRef}
+          ref={trRef} // Correctly typed as Konva.Transformer
           flipEnabled={false}
           boundBoxFunc={(oldBox, newBox) => {
             if (Math.abs(newBox.width) < 5 || Math.abs(newBox.height) < 5) {
