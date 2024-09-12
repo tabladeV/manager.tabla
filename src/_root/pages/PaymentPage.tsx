@@ -28,6 +28,19 @@ const PaymentPage = () => {
       return 'bg-yellow-500'
     }
   }
+
+  const [searchResults, setSearchResults] = useState(clients);
+
+  const searchFilter = (e: any) => { 
+    const keyword = e.target.value;
+    const results = clients.filter((client) => {
+      return client.name.toLowerCase().includes(keyword.toLowerCase());
+    });
+    setSearchResults(results);
+    console.log(results);
+  }
+
+
   return (
     <div>
       <div>
@@ -37,15 +50,16 @@ const PaymentPage = () => {
       </div>
       <div className="flex ">
         <div className="bg-white max-h-[calc(100vh-160px)] rounded-[10px] p-2">
-          <SearchBar />
-          <div className="grid grid-flow-col w-full gap-2 my-2">
+        <SearchBar SearchHandler={searchFilter}/>
+        <div className="grid grid-flow-col w-full gap-2 my-2">
             <button className="btn-primary">Confirmed</button>
             <button className="btn-primary">Canceled</button>
             <button className="btn-primary">Pending</button>
           </div>
-          {clients.map((client, index) => (
-            <ClientCard itemData={client} opacity={client.id === selectedClient ? 1:.5} onClick={() => showThis(client.id)} key={index} />
-          )) 
+           
+          { searchResults.map((client, index) => (
+              <ClientCard itemData={client} opacity={client.id === selectedClient ? 1:.5} onClick={() => showThis(client.id)} key={index} />
+            ))
           }
         </div>
         <div className="w-3/4">

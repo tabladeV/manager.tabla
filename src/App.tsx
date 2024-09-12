@@ -32,6 +32,16 @@ import AuthLayout from "./_auth/AuthLayout";
 import LogIn from "./_auth/pages/LogIn";
 import DesignPlaces from "./_root/pages/DesignPlaces";
 import GridPage from "./_root/pages/GridPage";
+import General from "./components/settings/General";
+import Availability from "./components/settings/Availability";
+import Tags from "./components/settings/Tags";
+import Messaging from "./components/settings/Messaging";
+import Features from "./components/settings/Features";
+import Users from "./components/settings/Users";
+import Billing from "./components/settings/Billing";
+import Widget from "./components/settings/Widget";
+import Permissions from "./components/settings/Permissions";
+import Services from "./components/settings/Services";
 
 function App() {
   return (
@@ -70,7 +80,18 @@ function App() {
                   <Route path='/payment' element={<PaymentPage />} />
                   <Route path='/clients' element={<ClientsPage />} />
                   <Route path='/support' element={<SupportPage />} />
-                  <Route path='/settings' element={<SettingsPage />} />
+                  <Route path='/settings' element={<SettingsPage />} >
+                    <Route index element={<General />} />
+                    <Route path="/settings/availability" element={<Availability />} />
+                    <Route path="/settings/tags" element={<Tags />} />
+                    <Route path="/settings/messaging" element={<Messaging />} />
+                    <Route path="/settings/features" element={<Features />} />
+                    <Route path="/settings/users" element={<Users />} />
+                    <Route path="/settings/billing" element={<Billing />} />
+                    <Route path="/settings/widget" element={<Widget />} />
+                    <Route path="/settings/permissions" element={<Permissions />} />
+                    <Route path="/settings/services" element={<Services />} />
+                  </Route>
               </Route>
 
             </Routes>

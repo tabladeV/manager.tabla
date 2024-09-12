@@ -15,9 +15,9 @@ const RootLayout = () => {
 
   return (
     <div className="flex">
-      <div className="h-[100vh]" onMouseOver={()=>{setStateOfSideBar(true)}} onMouseLeave={()=>{setStateOfSideBar(false)}}>
+      <div className="h-[100vh]" >
         <Logo className={stateOfSideBar?'horizontal':''} />
-        <NavigationMenu stateOfSideBar={stateOfSideBar}/>
+        <NavigationMenu stateOfSideBar={stateOfSideBar} handleSideBar={()=>{setStateOfSideBar(!stateOfSideBar)}} />
       </div>
       <div className="w-full">
         <header className='h-[80px] items-center flex justify-end px-6'>

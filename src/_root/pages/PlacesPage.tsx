@@ -232,6 +232,16 @@ const PlacePage: React.FC = () => {
   
   const [filteringHour, setFilteringHour] = useState(hours[0].time);
 
+  const [searchResults, setSearchResults] = useState(data);
+
+  const searchFilter = (e: any) => {
+    const keyword = e.target.value;
+    const results = data.filter((item) => {
+      return item.name.toLowerCase().includes(keyword.toLowerCase());
+    });
+    setSearchResults(results);
+  }
+
   return (
     <div>
       
@@ -247,14 +257,14 @@ const PlacePage: React.FC = () => {
       <DndProvider backend={HTML5Backend}>
         <div className="flex gap-[10px]">
           <div className='bg-white  rounded-[10px] p-[1em]'>
-            <SearchBar />
+            <SearchBar SearchHandler={searchFilter}/>
             <div className='grid grid-flow-col gap-3 font-[500] my-3 justify-between'>
               <button className='btn-primary'>Confirmed</button>
               <button className='btn-secondary'>Canceled</button>
               <button className='btn-secondary'>Waiting</button>
             </div>
             <div className='overflow-y-auto h-[55vh] bar-hide'>
-              {data.map((item) => (
+              { searchResults.map((item) => (
                 <DraggableItem itemData={item} key={item.id} />
               ))}
             </div>

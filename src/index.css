@@ -58,6 +58,7 @@
   border: 1px solid #1e1e1e20 !important;
   border-radius: 10px !important;
   padding: 10px !important;
+  
 }
 
 .inputs:focus{
@@ -110,7 +111,9 @@
     
     input[type="text"]{
         all:unset;
-    }
+        width: 100%;
+      }
+
 
     /* Hide the default checkbox */
     input[type="checkbox"] {
