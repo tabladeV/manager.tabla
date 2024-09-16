@@ -1,6 +1,6 @@
-"use client"
+// @ts-ignore
 
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts"
+import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis, ResponsiveContainer, Tooltip, TooltipProps } from "recharts"
 
 const chartData = [
   { user: "Alice", interactions: 186 },
@@ -11,7 +11,10 @@ const chartData = [
   { user: "Frank", interactions: 214 },
 ]
 
-const CustomTooltip = ({ active, payload, label }) => {
+// Define the interface for the tooltip props
+interface CustomTooltipProps extends TooltipProps<number, string> {}
+
+const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white p-2 shadow-md rounded-md border border-gray-200">
@@ -54,12 +57,6 @@ export default function TopUsers() {
               <XAxis type="number" hide />
               <Tooltip content={<CustomTooltip />} cursor={false} />
               <Bar dataKey="interactions" fill="#88AB61" radius={[0, 4, 4, 0]}>
-                {/* <LabelList
-                  dataKey="user"
-                  position="insideLeft"
-                  fill="#FFFFFF"
-                  fontSize={12}
-                /> */}
                 <LabelList
                   dataKey="interactions"
                   position="right"

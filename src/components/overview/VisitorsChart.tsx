@@ -1,4 +1,5 @@
-"use client"
+// @ts-ignore
+
 
 import React from 'react'
 import { Bar, BarChart, CartesianGrid, XAxis, Tooltip, ResponsiveContainer } from "recharts"
