@@ -19,15 +19,15 @@ const RootLayout = () => {
         <Logo className={stateOfSideBar?'horizontal':''} />
         <NavigationMenu stateOfSideBar={stateOfSideBar} handleSideBar={()=>{setStateOfSideBar(!stateOfSideBar)}} />
       </div>
-      <div className="w-full">
+      <div className="w-full overflow-x-scroll">
         <header className='h-[80px] items-center flex justify-end px-6'>
           {/* <SearchBar /> */}
           <UserBar />
         </header>
-        <section className='flex justify-between h-[calc(100vh-80px)]'>
+        <section className='flex justify-between h-[calc(100vh-97px)]'>
           
           
-          <div className='bg-[#F3F3F3] p-[1em] w-full h-full overflow-y-scroll'>
+          <div className='bg-[#F3F3F3] p-[1em] w-full h-full  overflow-y-scroll'>
             <Outlet />
           </div>
         </section>

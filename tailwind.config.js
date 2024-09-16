@@ -14,7 +14,7 @@ module.exports = {
         redtheme: '#FF4B4B',
         bluetheme: '#3F72AF',
         softbluetheme: '#3F72AF1A',
-        yellowtheme: '#FDE030',
+        yellowtheme: '#F09300',
         softyellowtheme: '#FDE0301A',
         greytheme: '#1E1E1E',
         softgreytheme: '#f3f3f3',

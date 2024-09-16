@@ -23,7 +23,7 @@ const NavigationMenu = (props:NavigationMenuProps) => {
     
 
   return (
-    <div className='bg-white px-[1.4em]  gap-10 flex flex-col justify-between h-[calc(100vh-80px)]'>
+    <div className='bg-white px-[1.4em]  gap-10 flex flex-col justify-between h-[calc(100vh-100px)]'>
       <div>
         <Link to='/' className={`${stateOfSideBar? 'w-[13em]':''} ${pathname === '/' ? navigatedMenuClass : normalMenuClass }`}>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -160,7 +160,7 @@ const NavigationMenu = (props:NavigationMenuProps) => {
         <h2 className={`font-[500] text-[17px] ${stateOfSideBar? 'block':'hidden'}`}>Settings</h2>
       </Link>
       <div>
-        <button  className={`mt-5 mb-2 w-full ${normalMenuClass}`} onClick={props.handleSideBar}>
+        <button  className={` w-full ${normalMenuClass}`} onClick={props.handleSideBar}>
           {!stateOfSideBar? 
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M5 12H19M19 12L13 18M19 12L13 6" stroke="#333333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>

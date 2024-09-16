@@ -69,7 +69,7 @@ const DropTarget: React.FC<DropTargetProps> = ({ height, width,min, max,id, type
 
   return (
     <div  onMouseOver={()=>{setIsClients(true)}} onMouseLeave={()=>{setIsClients(false)}}  ref={drop} key={id}
-      className={`absolute  ${droppedItems.length > 0 ? 'text-[white]':''} rounded-[10px]  flex flex-col justify-center items-center border-[2px] ${droppedItems.length > 0 ? ' bg-redtheme' : 'border-greentheme'}`}
+      className={`absolute  ${droppedItems.length > 0 ? 'text-[white]':''} rounded-[10px]  flex flex-col justify-center items-center border-[2px] ${droppedItems.length > 0 ? ' border-redtheme' : 'border-greentheme'}`}
       style={{
         width,
         height,

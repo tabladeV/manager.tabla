@@ -9,7 +9,7 @@ const General = () => {
             <input type="text" id="email" placeholder="Email" className="inputs" />
         </div>
         <div className="flex gap-3">
-          <textarea id="address" placeholder="Restaurant Description" className="inputs w-full"></textarea>
+          <textarea id="description" placeholder="Restaurant Description" className="inputs w-full"></textarea>
         </div>
         <div className="flex flex-row gap-3">
             <input type="text" id="phone" placeholder="Phone" className="inputs" />

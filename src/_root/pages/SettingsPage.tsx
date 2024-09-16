@@ -8,7 +8,7 @@ const SettingsPage = () => {
         <h1>Settings </h1>
       </div>
       <div className="flex gap-4">
-        <div className="flex text-[#1E1E1E99] font-[500] text-[17px] text-left  flex-col w-1/5 bg-white rounded-[10px] px-6 py-4 gap-4">
+        <div className="h-[calc(100vh-160px)] flex text-[#1E1E1E99] font-[500] text-[17px] text-left  flex-col w-1/5 bg-white rounded-[10px] px-6 py-4 gap-4">
           <Link to='/settings' className={`hover:underline ${pathname === '/settings' ? 'text-greentheme underline':''}`}>General</Link>
           <Link to='/settings/availability' className={`hover:underline ${pathname === '/settings/availability' ? 'text-greentheme underline':''}`}>Availability</Link>
           <Link to='/settings/tags' className={`hover:underline ${pathname === '/settings/tags' ? 'text-greentheme underline':''}`}>Tags</Link>
