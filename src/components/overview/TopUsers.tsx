@@ -1,4 +1,3 @@
-// @ts-ignore
 
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis, ResponsiveContainer, Tooltip, TooltipProps } from "recharts"
 

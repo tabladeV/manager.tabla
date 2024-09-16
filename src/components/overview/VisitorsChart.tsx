@@ -1,8 +1,4 @@
-// @ts-ignore
-
-
-import React from 'react'
-import { Bar, BarChart, CartesianGrid, XAxis, Tooltip, ResponsiveContainer } from "recharts"
+import { Bar, BarChart, CartesianGrid, XAxis, Tooltip, ResponsiveContainer, TooltipProps } from "recharts"
 
 const chartData = [
   { month: "January", visitors: 186 },
@@ -13,7 +9,10 @@ const chartData = [
   { month: "June", visitors: 214 },
 ]
 
-const CustomTooltip = ({ active, payload, label }) => {
+// Define the interface for the tooltip props
+interface CustomTooltipProps extends TooltipProps<number, string> {}
+
+const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white p-2 shadow-md rounded-md border border-gray-200">
