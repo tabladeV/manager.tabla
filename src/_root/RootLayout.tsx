@@ -5,6 +5,7 @@ import UserBar from '../components/header/UserBar'
 import NavigationMenu from '../components/menu/NavigationMenu'
 import SupportMenu from '../components/menu/SupportMenu'
 import { useState } from "react"
+import DateSelection from "../components/header/DateSelection"
 
 
 const RootLayout = () => {
@@ -20,8 +21,9 @@ const RootLayout = () => {
         <NavigationMenu stateOfSideBar={stateOfSideBar} handleSideBar={()=>{setStateOfSideBar(!stateOfSideBar)}} />
       </div>
       <div className="w-full overflow-x-scroll">
-        <header className='h-[80px] items-center flex justify-end px-6'>
+        <header className='h-[80px] items-center flex justify-between px-6'>
           {/* <SearchBar /> */}
+          <DateSelection />
           <UserBar />
         </header>
         <section className='flex justify-between h-[calc(100vh-97px)]'>

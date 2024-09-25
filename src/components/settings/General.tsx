@@ -2,7 +2,7 @@
 const General = () => {
   return (
     <div className="bg-white rounded-[10px] p-3 w-full">
-      <h2>Basic Informations</h2>
+      <h2 className="text-center mb-3">Basic Informations</h2>
       <form className="flex flex-col gap-3">
         <div className="flex flex-row gap-3  ">
             <input type="text" id="name" placeholder="Restaurant Name" className="inputs" />
