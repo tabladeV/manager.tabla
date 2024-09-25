@@ -1,12 +1,25 @@
 import React, { useState } from 'react'
 import { Plus, X, Copy } from 'lucide-react'
 
+interface SlotData {
+  type: string;
+  start: string;
+  end: string;
+  placeLimit: number;
+}
+
+interface DayData {
+  day: string;
+  available: boolean;
+  slots: SlotData[];
+}
+
 const Availability = () => {
   const [selectedArea, setSelectedArea] = useState('Restaurant')
 
   const areas = ['Restaurant', 'Table 01', 'Table 02']
 
-  const initialData = [
+  const initialData: DayData[] = [
     { day: 'SUN', available: false, slots: [] },
     { day: 'MON', available: true, slots: [{ type: 'Lunch', start: '09:00', end: '12:00', placeLimit: 15 }] },
     { day: 'TUE', available: true, slots: [{ type: 'Lunch', start: '09:00', end: '12:00', placeLimit: 15 }] },
@@ -16,28 +29,28 @@ const Availability = () => {
     { day: 'SAT', available: false, slots: [] },
   ]
 
-  const [data, setData] = useState(initialData)
+  const [data, setData] = useState<DayData[]>(initialData)
 
-  const toggleAvailability = (index) => {
+  const toggleAvailability = (index: number) => {
     const newData = [...data]
     newData[index].available = !newData[index].available
     if (!newData[index].available) newData[index].slots = []
     setData(newData)
   }
 
-  const addSlot = (dayIndex) => {
+  const addSlot = (dayIndex: number) => {
     const newData = [...data]
     newData[dayIndex].slots.push({ type: 'Lunch', start: '09:00', end: '12:00', placeLimit: 15 })
     setData(newData)
   }
 
-  const removeSlot = (dayIndex, slotIndex) => {
+  const removeSlot = (dayIndex: number, slotIndex: number) => {
     const newData = [...data]
     newData[dayIndex].slots.splice(slotIndex, 1)
     setData(newData)
   }
 
-  const updateSlot = (dayIndex, slotIndex, field, value) => {
+  const updateSlot = (dayIndex: number, slotIndex: number, field: keyof SlotData, value: string | number) => {
     const newData = [...data]
     newData[dayIndex].slots[slotIndex][field] = value
     setData(newData)
@@ -106,7 +119,7 @@ const Availability = () => {
                     <input
                       type="number"
                       value={slot.placeLimit}
-                      onChange={(e) => updateSlot(dayIndex, slotIndex, 'placeLimit', e.target.value)}
+                      onChange={(e) => updateSlot(dayIndex, slotIndex, 'placeLimit', parseInt(e.target.value))}
                       className="border rounded px-2 py-1 w-16 text-sm"
                     />
                   </div>
