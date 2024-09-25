@@ -50,11 +50,23 @@ const Availability = () => {
     setData(newData)
   }
 
-  const updateSlot = (dayIndex: number, slotIndex: number, field: keyof SlotData, value: string | number) => {
-    const newData = [...data]
-    newData[dayIndex].slots[slotIndex][field] = value
-    setData(newData)
-  }
+  const updateSlot = (
+    dayIndex: number,
+    slotIndex: number,
+    field: keyof SlotData,
+    value: string | number
+  ) => {
+    const newData = [...data];
+  
+    if (field === 'type' || field === 'start' || field === 'end') {
+      newData[dayIndex].slots[slotIndex][field] = value as string;
+    } else if (field === 'placeLimit') {
+      newData[dayIndex].slots[slotIndex][field] = value as number;
+    }
+  
+    setData(newData);
+  };
+  
 
   return (
     <div className="bg-white rounded-lg p-6 w-full ">
