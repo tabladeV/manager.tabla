@@ -37,7 +37,7 @@ const HistoryList  = () => {
 
   console.log(Math.floor(Math.random()*1000)+122202)
   return (
-    <div className={`bg-white rounded-[20px] w-2/5 no-scrollbar overflow-y-auto h-[400px]`}>
+    <div className={`bg-white rounded-[20px] w-2/5 no-scrollbar lt-sm:w-full overflow-y-auto h-[400px]`}>
       <div className='flex justify-between items-center p-4'>
         <h1 className='text-xl font-bold'>History</h1>
         <button className='text-sm btn flex items-center gap-2 font-[600] text-subblack'>

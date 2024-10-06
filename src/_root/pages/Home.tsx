@@ -18,11 +18,11 @@ const Home = () => {
         </p>
       </div>
       <div className='flex flex-col gap-[10px]'>
-        <div className='flex gap-[10px]'>
+        <div className='flex gap-[10px] lt-sm:flex-col'>
           <ReservationsChart />
           <HistoryList /> 
         </div>
-        <div className='flex gap-[10px]'>
+        <div className='flex gap-[10px] lt-sm:flex-col lt-sm:w-full'>
           <VisitorsChart />
           <TopActions />
           <TopUsers />

@@ -201,7 +201,7 @@ const ReservationsPage = () => {
         focusedAddReservation &&
         <div>
           <div className="overlay " onClick={() => { setFocusedAddReservation(false) }}></div>
-          <form className="sidepopup h-full gap-5" onSubmit={handleAddReservation}>
+          <form className="sm:sidepopup lt-sm:popup lt-sm:w-full h-full gap-5" onSubmit={handleAddReservation}>
             <h1 className="text-3xl text-blacktheme font-[700]">Add Reservation</h1>
             <div className="grid grid-cols-1 gap-4">
               <div className="grid grid-flow-col w-full gap-2">
@@ -239,7 +239,7 @@ const ReservationsPage = () => {
         <div>
           <div className="overlay" onClick={()=>{setFocusedDate(false)}}>
           </div>
-          <div className="popup">
+          <div className="popup lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0">
             <OurCalendar onClick={handleDateClick}/>
           </div>
         </div>
@@ -250,13 +250,13 @@ const ReservationsPage = () => {
           Add Reservation
         </button>
       </div>
-      <div className="flex justify-between">
+      <div className="flex lt-sm:flex-col lt-sm:gap-2 justify-between">
         <div className="border rounded-[10px]">
           <div>
             <SearchBar SearchHandler={searchFilter}/>
           </div>
         </div>
-        <div className="flex gap-4">
+        <div className="flex lt-sm:flex-wrap gap-4">
           <button onClick={()=>{setFocusedFilter('Confirmed')}} className={focusedFilter === 'Confirmed' ? 'btn-primary':'btn'}>
             Confirmed
           </button>
@@ -279,11 +279,11 @@ const ReservationsPage = () => {
           </button>
         </div>
       </div>
-      <div className='mt-4'>
+      <div className='mt-4 lt-sm:overflow-x-scroll'>
         <table className=''>
           <thead className="">
             <tr className="" >
-              <th className=''>
+              <th className='hidden'>
                 <input type="checkbox" onChange={checkAll} id="all" />
               </th>
               <th >Id</th>
@@ -304,7 +304,7 @@ const ReservationsPage = () => {
           )
             .map(reservation => (
               <tr key={reservation.id}>
-                <td>
+                <td className="hidden">
                   <input type="checkbox" />
                 </td>
                 <td>{reservation.id}</td>

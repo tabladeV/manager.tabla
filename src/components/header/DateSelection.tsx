@@ -34,17 +34,17 @@ const DateSelection = () => {
             {isCalendar && (
                 <div>
                     <div className="overlay" onClick={() => setIsCalendar(false)}></div>
-                    <div className="popup">
+                    <div className="popup lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0">
                         <OurCalendar onClick={handleDateClick} />
                     </div>
                 </div>
             )}
 
             {/* Date Selection Controls */}
-            <div className="flex ml-[30vw] gap-4 btn">
+            <div className="flex ml-[30vw] gap-4 lt-sm:m-0 btn">
                 {/* Previous Day Button */}
                 <button
-                    className="p-1 w-8 rounded-[10px] hover:bg-softgreytheme"
+                    className="p-1 w-8 rounded-[10px] hover:bg-softgreytheme lt-sm:hidden"
                     onClick={getPreviousDay}
                 >
                     {"<"}
@@ -53,14 +53,14 @@ const DateSelection = () => {
                 {/* Current Day / Calendar Button */}
                 <button
                     onClick={() => setIsCalendar(true)}
-                    className="py-1 rounded-[10px] w-[15em] px-3 hover:bg-softgreytheme"
+                    className="py-1 rounded-[10px] w-[15em] px-3 lt-sm:w-[6em] lt-sm:p-0 hover:bg-softgreytheme"
                 >
                     {displayDay === format(startOfToday(), "dd/MM/yyyy") ? "Today" : displayDay}
                 </button>
 
                 {/* Next Day Button */}
                 <button
-                    className="p-1 w-8 rounded-[10px] hover:bg-softgreytheme"
+                    className="p-1 w-8 rounded-[10px] hover:bg-softgreytheme lt-sm:hidden"
                     onClick={getNextDay}
                 >
                     {">"}

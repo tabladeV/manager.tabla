@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { addHours, format, startOfHour, isBefore, setMinutes, endOfDay, set } from "date-fns"
+import { Link } from "react-router-dom"
 
 const halfHours = ['00', '30']
 
@@ -114,8 +115,9 @@ const GridPage = () => {
         focusedAddReservation &&
         <div>
           <div className="overlay " onClick={() => { setFocusedAddReservation(false) }}></div>
-          <form className="sidepopup h-full gap-5" onSubmit={handleAddReservation}>
+          <form className="sm:sidepopup lt-sm:popup lt-sm:h-[70vh] lt-sm:w-full lt-sm:bottom-0 h-full gap-5" onSubmit={handleAddReservation}>
             <h1 className="text-3xl text-blacktheme font-[700]">Add Reservation</h1>
+            
             <div className="flex flex-col gap-2">
               <div className="flex flex-row w-full gap-2">
                 <input placeholder="First Name" type="text" className="inputs" id="firstname" required />
@@ -140,8 +142,9 @@ const GridPage = () => {
           </form>
         </div>
       }
-      <div className="flex justify-between items-center">
-        <h1 className="mb-4">Grid</h1>
+      <div className="flex mb-4 justify-between items-center">
+        <h1 className="">Grid</h1>
+        <Link to="/agenda" className="btn">Navigate to Agenda  {'>'}</Link>
       </div>
       <div
         className="overflow-x-scroll mx-auto cursor-grab max-w-fit w-full no-scrollbar bg-white"

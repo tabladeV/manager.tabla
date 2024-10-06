@@ -38,10 +38,10 @@ export default function ReservationsChart() {
   }, [timeRange])
 
   return (
-    <div className="w-full mx-auto p-4 bg-white rounded-[20px]">
+    <div className="w-full mx-auto p-4 bg-white rounded-[20px] lt-sm:w-full">
       <div className="flex flex-row items-center justify-between">
         <h1 className='text-xl font-bold'>Reservations</h1>
-      <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 lt-sm:hidden">
           <div className="flex items-center space-x-2">
             <div className="w-3 h-3 rounded-full bg-greentheme"></div>
             <span className="text-sm text-gray-600">Confirmed</span>
@@ -52,19 +52,30 @@ export default function ReservationsChart() {
           </div>
 
         </div>
-          <select
-            value={timeRange}
-            onChange={(e) => setTimeRange(e.target.value)}
-            className="inputs"
-          >
-            <option value="" disabled>
-              Select time range
-            </option>
-            <option value="7">Last 7 Days</option>
-            <option value="30">Last 30 Days</option>
-            <option value="90">Last 90 Days</option>
-          </select>
+        <select
+          value={timeRange}
+          onChange={(e) => setTimeRange(e.target.value)}
+          className="inputs"
+        >
+          <option value="" disabled>
+            Select time range
+          </option>
+          <option value="7">Last 7 Days</option>
+          <option value="30">Last 30 Days</option>
+          <option value="90">Last Year</option>
+        </select>
       </div>
+      <div className="flex items-center space-x-4 justify-center lt-sm:mt-2 sm:hidden">
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 rounded-full bg-greentheme"></div>
+            <span className="text-sm text-gray-600">Confirmed</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 rounded-full bg-redtheme"></div>
+            <span className="text-sm text-gray-600">Canceled</span>
+          </div>
+
+        </div>
       <div>
         <div className="h-[320px] w-full">
           <ResponsiveContainer width="100%" height="100%">

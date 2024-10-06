@@ -84,7 +84,7 @@ const ClientsPage = () => {
         <h1>Clients</h1>
       </div>
       <div className="flex ">
-        <div className="bg-white w-1/4  h-[calc(100vh-160px)]  flex flex-col gap-2 p-2 rounded-[10px]">
+        <div className={`bg-white w-1/4  h-[calc(100vh-160px)]  flex flex-col gap-2 p-2 rounded-[10px] ${selectedClient? 'lt-sm:hidden':''}`}>
           <SearchBar SearchHandler={searchFilter}/>
           {/* <div className="flex gap-2">
             <button className="btn-primary">Confirmed</button>

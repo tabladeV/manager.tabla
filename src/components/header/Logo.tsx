@@ -7,7 +7,7 @@ interface Props {
 
 const Logo = (props:Props) => {
   return (
-    <Link to='/' className={`flex h-[80px] p-5 ${props.className && props.className === 'vertical'? 'flex-col items-center gap-3':'flex-row items-center' }`}>
+    <Link to='/' className={`flex h-[80px] p-5 lt-sm:p-0 ${props.className && props.className === 'vertical'? 'flex-col items-center gap-3':'flex-row items-center' }`}>
       <img src={logo} alt='logo' className='w-[55px]' />
       {props.className ? <div >
         <svg height="50" viewBox="0 0 161 77" fill="none" xmlns="http://www.w3.org/2000/svg">

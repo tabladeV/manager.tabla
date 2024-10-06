@@ -5,6 +5,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      screens: {
+        'lt-sm': {'max': '639px'}, // Screens less than the default `sm` breakpoint
+      },
       colors: {
         greentheme: '#88AB61',
         softgreentheme: '#88AB611A',

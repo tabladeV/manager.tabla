@@ -8,7 +8,6 @@ const chartData = [
   { action: "Confirmed", count: 275, fill: "#3F72AF" },
   { action: "Canceled", count: 200, fill: "#FF4B4B" },
   { action: "Pending", count: 287, fill: "#F09300" },
-
 ]
 
 export default function TopActions() {
@@ -17,7 +16,7 @@ export default function TopActions() {
   }, [])
 
   return (
-    <div className=" bg-white w-[30%] rounded-[20px] overflow-hidden">
+    <div className=" bg-white w-[30%] rounded-[20px] lt-sm:w-full overflow-hidden">
       <div className="px-6 py-4 ">
         <h2 className="text-xl  font-bold mb-2">Top User Actions</h2>
       </div>

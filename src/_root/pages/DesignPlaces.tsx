@@ -7,12 +7,7 @@ const DesignPlaces: React.FC = () => {
     const [focusedRoof, setFocusedRoof] = useState<string | null>('Main Room');
     const [roofs, setRoofs] = useState<string[]>(['Main Room', 'Outdoor', 'Terrace']);
     
-    const tablesEachRoof = {
-        'Main Room': [{ number: 1 }, { number: 2 }, { number: 3 }, { number: 4 }],
-        'Outdoor': [{ number: 5 }, { number: 6 }, { number: 7 }, { number: 8 }],
-        'Terrace': [{ number: 9 }, { number: 10 }, { number: 11 }, { number: 12 }],
-    };
-
+    
     const deleteRoof = (roof: string) => {
         if (!confirm('Are you sure you want to delete this roof?')) {
             return;

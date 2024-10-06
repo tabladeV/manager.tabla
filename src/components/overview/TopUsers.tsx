@@ -27,7 +27,7 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label })
 
 export default function TopUsers() {
   return (
-    <div className=" bg-white  rounded-[20px] w-[40%] overflow-hidden">
+    <div className=" bg-white  rounded-[20px] w-[40%] lt-sm:w-full overflow-hidden">
       <div className="px-6 py-4">
         <h2 className="text-xl font-bold mb-2">Top Users</h2>
       </div>
