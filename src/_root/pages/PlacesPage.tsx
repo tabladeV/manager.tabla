@@ -255,7 +255,7 @@ const PlacePage: React.FC = () => {
           </svg>
         </Link>
       </div>
-      <p className='text-redtheme bg-softredtheme p-2 rounded-md opacity-70 mb-2 font-[400]'>You can only overview the floors.<br/> To edit the tables try using larger device!</p>
+      <p className='text-redtheme bg-softredtheme p-2 rounded-md opacity-70 mb-2 font-[400] sm:hidden'>You can only overview the floors.<br/> To edit the tables try using larger device!</p>
       <DndProvider backend={HTML5Backend}>
         <div className="flex gap-[10px]">
           <div className='bg-white  lt-sm:hidden  rounded-[10px] p-[1em]'>
