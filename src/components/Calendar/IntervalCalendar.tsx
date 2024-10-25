@@ -11,11 +11,9 @@ interface IntervalCalendarProps {
 
 const IntervalCalendar: React.FC<IntervalCalendarProps> = ({ onRangeSelect }) => {
   const today = startOfToday();
-
   const [dateRange, setDateRange] = useState<{ start: Date | null; end: Date | null }>({ start: null, end: null });
   const [currentMonth, setCurrentMonth] = useState(format(today, 'MMM-yyyy'));
   const firstDayCurrentMonth = parse(currentMonth, 'MMM-yyyy', new Date());
-
   const days = eachDayOfInterval({
     start: firstDayCurrentMonth,
     end: endOfMonth(firstDayCurrentMonth),
@@ -41,7 +39,7 @@ const IntervalCalendar: React.FC<IntervalCalendarProps> = ({ onRangeSelect }) =>
       const newStart = isBefore(day, dateRange.start) ? day : dateRange.start;
       const range = { start: newStart, end: newEnd };
       setDateRange(range);
-      
+
       // Ensure both start and end are available before calling onRangeSelect
       if (range.start && range.end) {
         onRangeSelect(range); // Send the range as an object
@@ -54,7 +52,7 @@ const IntervalCalendar: React.FC<IntervalCalendarProps> = ({ onRangeSelect }) =>
   };
 
   return (
-    <div className=''>
+    <div>
       <div className='text-xl items-center mb-4 flex justify-between'>
         <div className='font-bold text-greentheme'>{format(firstDayCurrentMonth, 'MMMM yyyy')}</div>
         <div className='flex space-x-2'>
@@ -101,8 +99,8 @@ const IntervalCalendar: React.FC<IntervalCalendarProps> = ({ onRangeSelect }) =>
       </div>
       {dateRange.start && (
         <div className="mt-4 text-sm text-greentheme">
-          Selected range: {format(dateRange.start, 'MMM d, yyyy')} 
-          {dateRange.end && ` - ${format(dateRange.end, 'MMM d, yyyy')}`}
+          Selected range: {format(dateRange.start, 'MMM d, yyyy')}
+          {dateRange.end ? ` - ${format(dateRange.end, 'MMM d, yyyy')}` : ''}
         </div>
       )}
     </div>

@@ -2,13 +2,24 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 
-type ClientData = {
-  name: string
-  email: string
-  phoneNumber: string
-  alternatePhone: string
-  organization: string
-  notes: string
+interface ClientData {
+  id: string;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  alternatePhone?: string; // Optional property
+  image: string;
+  lifetime: {
+    upcoming: number;
+    materialized: number;
+    denied: number;
+    cancelled: number;
+    noShow: number;
+    spendCover: number;
+    spendMAD: number;
+  };
+  organization: string;
+  notes: string;
 }
 
 const ClientInterface = () => {

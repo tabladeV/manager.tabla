@@ -14,15 +14,15 @@ const General = () => {
   });
 
   // State for countries and cities
-  const [countries, setCountries] = useState([]);
-  const [cities, setCities] = useState([]);
-  const [selectedCountry, setSelectedCountry] = useState('Morocco');
+  const [countries, setCountries] = useState<string[]>([]);
+  const [cities, setCities] = useState<string[]>([]);
+  const [selectedCountry, setSelectedCountry] = useState<string>('Morocco');
 
   // Fetch countries only once on component mount
   useEffect(() => {
     axios.get('https://restcountries.com/v3.1/all')
       .then(response => {
-        const countryNames = response.data.map((country) => country.name.common);
+        const countryNames = response.data.map((country: { name: { common: string } }) => country.name.common);
         setCountries(countryNames);
       })
       .catch(error => {
@@ -44,7 +44,7 @@ const General = () => {
   }, [selectedCountry]);
 
   // Handle form input changes
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
@@ -53,7 +53,7 @@ const General = () => {
   };
 
   // Handle country selection
-  const handleCountryChange = (e) => {
+  const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedCountry(e.target.value);
     setFormData((prevData) => ({
       ...prevData,

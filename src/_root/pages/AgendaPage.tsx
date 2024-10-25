@@ -83,7 +83,7 @@ export default function SchedulerView() {
             <div ref={container} id="scheduler_here" className="dhx_cal_container" style={{ width: '99%', height: '500px' }}>
             
             <div className="dhx_cal_navline">
-                <div className="dhx_cal_tab " name="timeline_tab"></div>
+                <div className="dhx_cal_tab" data-name="timeline_tab"></div>
             </div>
         </div>
         </div>
