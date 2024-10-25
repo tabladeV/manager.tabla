@@ -43,7 +43,7 @@ const General = () => {
     }
   }, [selectedCountry]);
 
-  // Handle form input changes
+  // Handle form input changes (for input and textarea)
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
     setFormData((prevData) => ({
@@ -54,10 +54,20 @@ const General = () => {
 
   // Handle country selection
   const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedCountry(e.target.value);
+    const selectedValue = e.target.value;
+    setSelectedCountry(selectedValue);
     setFormData((prevData) => ({
       ...prevData,
-      country: e.target.value
+      country: selectedValue
+    }));
+  };
+
+  // Handle city selection
+  const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedCity = e.target.value;
+    setFormData((prevData) => ({
+      ...prevData,
+      city: selectedCity
     }));
   };
 
@@ -99,7 +109,7 @@ const General = () => {
             className="inputs w-1/2"
             id="city"
             value={formData.city}
-            onChange={handleInputChange}
+            onChange={handleCityChange} // Use separate handler for city selection
           >
             <option value="">Select City</option>
             {cities.map((city) => (

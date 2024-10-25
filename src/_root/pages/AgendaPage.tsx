@@ -12,20 +12,20 @@ export default function SchedulerView() {
     const { chosenDay } = useDateContext();
 
     useEffect(() => {
+        // Ensure the container ref is defined
+        if (!container.current) return;
+
         const scheduler = Scheduler.getSchedulerInstance();
 
+        // Register plugins and set up configuration
         scheduler.plugins({
             timeline: true,
         });
 
         scheduler.skin = "flat";
-        scheduler.config.header = [
-            "date",
-            // "prev",
-            // "today",
-            // "next"
-        ];
+        scheduler.config.header = ["date"];
 
+        // Create timeline view configuration
         scheduler.createTimelineView({
             name: "timeline",
             x_unit: "hour",
@@ -66,6 +66,7 @@ export default function SchedulerView() {
         ];
         scheduler.parse(events, "json");
 
+        // Clean up the scheduler on component unmount
         return () => {
             scheduler.destructor();
             if (container.current) {
@@ -81,11 +82,10 @@ export default function SchedulerView() {
                 <Link to='/agenda/grid' className='btn sm:hidden block'>Grid View {'>'}</Link>
             </div>
             <div ref={container} id="scheduler_here" className="dhx_cal_container" style={{ width: '99%', height: '500px' }}>
-            
-            <div className="dhx_cal_navline">
-                <div className="dhx_cal_tab" data-name="timeline_tab"></div>
+                <div className="dhx_cal_navline">
+                    <div className="dhx_cal_tab" data-name="timeline_tab"></div>
+                </div>
             </div>
-        </div>
         </div>
     );
 }

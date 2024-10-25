@@ -149,14 +149,13 @@ const ReservationsPage = () => {
   }, [selectedDateRange])
 
   const searchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const keyword = e.target.value.toLowerCase()
-    const results = reservations.filter((item) => 
-      item.fullName.toLowerCase().includes(keyword) ||
-      item.email.toLowerCase().includes(keyword)
-    )
-    setSearchResults(results)
-  }
-
+    const keyword = e.target.value.toLowerCase();
+    const results = reservations.filter((item) =>
+        item.fullName.toLowerCase().includes(keyword) ||
+        item.email.toLowerCase().includes(keyword)
+    );
+    setSearchResults(results);
+};
 
   const [showModal, setShowModal] = useState(false)
   const [selectedClient, setSelectedClient] = useState('')

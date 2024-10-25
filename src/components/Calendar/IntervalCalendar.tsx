@@ -1,5 +1,18 @@
 import React, { useState } from 'react';
-import { eachDayOfInterval, endOfMonth, format, getDay, isEqual, isSameMonth, isToday, parse, startOfToday, add, isWithinInterval, isBefore } from 'date-fns';
+import {
+  eachDayOfInterval,
+  endOfMonth,
+  format,
+  getDay,
+  isEqual,
+  isSameMonth,
+  isToday,
+  parse,
+  startOfToday,
+  add,
+  isWithinInterval,
+  isBefore,
+} from 'date-fns';
 
 const colStartClasses = [
   '', 'col-start-2', 'col-start-3', 'col-start-4', 'col-start-5', 'col-start-6', 'col-start-7'
@@ -76,15 +89,15 @@ const IntervalCalendar: React.FC<IntervalCalendarProps> = ({ onRangeSelect }) =>
         </div>
         <div className='grid grid-cols-7 gap-1'>
           {days.map((day, dayIdx) => (
-            <div key={day.toString()} className={classNames(dayIdx === 0 && colStartClasses[getDay(day)], 'relative')}>
+            <div key={day.toString()} className={classNames(dayIdx === 0 ? colStartClasses[getDay(day)] : '', 'relative')}>
               <button
                 type="button"
                 onClick={() => selectingDate(day)}
                 className={classNames(
-                  isInRange(day) && 'bg-softgreytheme text-blacktheme',
-                  isEqual(day, dateRange.start) && 'text-white bg-blacktheme',
-                  isEqual(day, dateRange.end) && 'text-white bg-blacktheme',
-                  !isEqual(day, dateRange.start) && !isEqual(day, dateRange.end) && isToday(day) && 'text-greentheme',
+                  isInRange(day) ? 'bg-softgreytheme text-blacktheme' : '',
+                  isEqual(day, dateRange.start) ? 'text-white bg-blacktheme' : '',
+                  isEqual(day, dateRange.end) ? 'text-white bg-blacktheme' : '',
+                  !isEqual(day, dateRange.start) && !isEqual(day, dateRange.end) && isToday(day) ? 'text-greentheme' : '',
                   !isToday(day) && isSameMonth(day, firstDayCurrentMonth) ? 'text-gray-900' : 'text-gray-400',
                   'w-full py-1 rounded-full hover:bg-subblack hover:text-white transition duration-200'
                 )}
