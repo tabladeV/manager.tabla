@@ -43,7 +43,6 @@ const General = () => {
     }
   }, [selectedCountry]);
 
-  // Handle form input changes (for input and textarea)
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
     setFormData((prevData) => ({
@@ -51,7 +50,21 @@ const General = () => {
       [id]: value
     }));
   };
-
+  
+  // Separate handler for select elements
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { id, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [id]: value
+    }));
+  
+    // If it's the country select
+    if (id === "country") {
+      setSelectedCountry(value);
+    }
+  };
+  
   // Handle country selection
   const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedValue = e.target.value;
@@ -94,30 +107,32 @@ const General = () => {
           />
         </div>
         <div className="flex flex-row gap-3">
-          <select
-            className="inputs w-1/2"
-            value={selectedCountry}
-            onChange={handleCountryChange}
-          >
-            {countries.map((country) => (
-              <option key={country} value={country}>
-                {country}
-              </option>
-            ))}
-          </select>
-          <select
-            className="inputs w-1/2"
-            id="city"
-            value={formData.city}
-            onChange={handleCityChange} // Use separate handler for city selection
-          >
-            <option value="">Select City</option>
-            {cities.map((city) => (
-              <option key={city} value={city}>
-                {city}
-              </option>
-            ))}
-          </select>
+        <select
+          id="country"
+          className="inputs w-1/2"
+          value={selectedCountry}
+          onChange={handleSelectChange}
+        >
+          {countries.map((country) => (
+            <option key={country} value={country}>
+              {country}
+            </option>
+          ))}
+        </select>
+        <select
+          id="city"
+          className="inputs w-1/2"
+          value={formData.city}
+          onChange={handleSelectChange} // Use the same handler for city
+        >
+          <option value="">Select City</option>
+          {cities.map((city) => (
+            <option key={city} value={city}>
+              {city}
+            </option>
+          ))}
+        </select>
+
         </div>
         <div className="flex gap-3">
           <textarea

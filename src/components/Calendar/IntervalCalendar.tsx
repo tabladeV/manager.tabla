@@ -52,13 +52,14 @@ const IntervalCalendar: React.FC<IntervalCalendarProps> = ({ onRangeSelect }) =>
       const newStart = isBefore(day, dateRange.start) ? day : dateRange.start;
       const range = { start: newStart, end: newEnd };
       setDateRange(range);
-
-      // Ensure both start and end are available before calling onRangeSelect
+  
+      // Ensure both start and end are defined before calling onRangeSelect
       if (range.start && range.end) {
-        onRangeSelect(range); // Send the range as an object
+        onRangeSelect({ start: range.start, end: range.end }); // Both start and end should be Date
       }
     }
   };
+  
 
   const isInRange = (day: Date) => {
     return dateRange.start && dateRange.end && isWithinInterval(day, { start: dateRange.start, end: dateRange.end });

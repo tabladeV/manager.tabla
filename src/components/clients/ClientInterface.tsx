@@ -89,7 +89,7 @@ const ClientInterface = () => {
       const [client, setClient] = useState<ClientData>(clients.filter((client) => client.id === id)[0])
       useEffect(() => {
         setClient(clients.filter((client) => client.id === id)[0])
-      }, [id])
+      }, [id, clients])
   const [editingField, setEditingField] = useState<keyof ClientData | null>(null)
 
   const handleEdit = (field: keyof ClientData) => {
@@ -113,7 +113,7 @@ const ClientInterface = () => {
           field === 'notes' ? (
             <textarea
               name={field}
-              value={client[field]}
+              value={typeof client[field] === 'object' ? JSON.stringify(client[field]) : client[field]}
               onChange={handleChange}
               onBlur={handleBlur}
               className="inputs w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -134,7 +134,7 @@ const ClientInterface = () => {
             onClick={() => handleEdit(field)}
             className="block w-full px-3 py-2 bg-gray-100 rounded cursor-pointer hover:bg-gray-200 transition-colors"
           >
-            {client[field] || 'Click to edit'}
+            {typeof client[field] === 'object' ? JSON.stringify(client[field]) : client[field] || 'Click to edit'}
           </span>
         )}
       </td>
