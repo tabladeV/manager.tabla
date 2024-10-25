@@ -6,12 +6,15 @@ interface SearchBarProps {
 
 const SearchBar: React.FC<SearchBarProps> = ({ SearchHandler }) => {
     return (
-        <input 
+       <div className='flex items-center justify-normal '>
+        
+         <input 
             type="text" 
             onChange={SearchHandler} 
             placeholder="Search..." 
-            className="p-2 border border-gray-300 rounded" 
+            className=" border border-gray-300 rounded" 
         />
+       </div>
     );
 };
 

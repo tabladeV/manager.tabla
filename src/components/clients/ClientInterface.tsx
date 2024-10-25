@@ -123,7 +123,7 @@ const ClientInterface = () => {
             <input
               type="text"
               name={field}
-              value={client[field]}
+              value={typeof client[field] === 'object' ? JSON.stringify(client[field]) : client[field]}
               onChange={handleChange}
               onBlur={handleBlur}
               className="inputs-unique w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
