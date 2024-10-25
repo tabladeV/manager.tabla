@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { TouchBackend } from 'react-dnd-touch-backend';
+
 import DraggableItem from '../../components/places/DraggableItem';
 import DropTarget from '../../components/places/DropTarget';
 import SearchBar from '../../components/header/SearchBar';
@@ -8,6 +10,12 @@ import { Link } from 'react-router-dom';
 import { getHours, set } from 'date-fns';
 import { parseArgs } from 'util';
 import { table } from 'console';
+
+function isTouchDevice() {
+
+  return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+}
 
 
 const PlacePage: React.FC = () => {
@@ -256,7 +264,7 @@ const PlacePage: React.FC = () => {
         </Link>
       </div>
       <p className='text-redtheme bg-softredtheme p-2 rounded-md opacity-70 mb-2 font-[400] sm:hidden'>You can only overview the floors.<br/> To edit the tables try using larger device!</p>
-      <DndProvider backend={HTML5Backend}>
+      <DndProvider backend={isTouchDevice() ? TouchBackend : HTML5Backend}>
         <div className="flex gap-[10px]">
           <div className='bg-white  lt-sm:hidden  rounded-[10px] p-[1em]'>
             <SearchBar SearchHandler={searchFilter}/>

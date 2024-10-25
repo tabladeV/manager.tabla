@@ -1,19 +1,28 @@
 
 const Messaging = () => {
   return (
-    <div className="bg-white rounded-[10px] p-3 w-full">
+    <div className="bg-white flex flex-col items-center rounded-[10px]  p-3 w-full">
       <h2>Messaging</h2>
-      <form className="flex flex-col gap-3">
-        <div className="flex flex-row gap-3  ">
-            <input type="text" id="name" placeholder="Restaurant Name" className="inputs" />
-            <input type="text" id="email" placeholder="Email" className="inputs" />
+      <form className="flex flex-col gap-3 sm:w-[60%] mt-3">
+        <div className="flex flex-col gap-1">
+          <h4>Reservations</h4>
+          <input type="email" id="email" placeholder="Subject" className="inputs" />
+          <textarea
+            id="description"
+            placeholder="Message"
+            className="inputs w-full"
+            rows={5}
+          ></textarea>
         </div>
-        <div className="flex gap-3">
-          <textarea id="description" placeholder="Restaurant Description" className="inputs w-full"></textarea>
-        </div>
-        <div className="flex flex-row gap-3">
-            <input type="text" id="phone" placeholder="Phone" className="inputs" />
-            <input type="text" id="website" placeholder="Website" className="inputs" />
+        <div className="flex flex-col gap-1">
+          <h4>Offers</h4>
+          <input type="email" id="email" placeholder="Subject" className="inputs" />
+          <textarea
+            id="description"
+            placeholder="Message"
+            className="inputs w-full"
+            rows={5}
+          ></textarea>
         </div>
         <div className="flex w-full justify-center gap-4 ">
           <button type='reset' className="btn">Cancel</button>

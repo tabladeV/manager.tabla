@@ -6,7 +6,6 @@ interface ClientCardProps {
     opacity?: number;
 }
 
-
 const ClientCard = (props: ClientCardProps ) => {
   return (
       <div onClick={props.onClick}

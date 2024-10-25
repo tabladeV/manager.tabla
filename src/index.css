@@ -58,6 +58,13 @@
   border: 1px solid #1e1e1e20 !important;
   border-radius: 10px !important;
   padding: 10px !important;
+  width: 100% !important;
+  
+}
+.inputs-unique{
+  border: 1px solid #1e1e1e20 !important;
+  border-radius: 10px !important;
+  padding: 10px !important;
   
 }
 
@@ -111,12 +118,12 @@
     
     input[type="text"]{
         all:unset;
-        width: 100%;
+        
       }
 
 
     /* Hide the default checkbox */
-    input[type="checkbox"] {
+    /* input[type="checkbox"] {
       appearance: none;
       -webkit-appearance: none;
       -moz-appearance: none;
@@ -127,7 +134,7 @@
       border-radius: 4px;
       cursor: pointer;
       position: relative;
-    }
+    } */
 
     /* Style the checkbox when it's checked */
     input[type="checkbox"]:checked {
@@ -155,6 +162,8 @@
       border-color: #888;
     }
 
+    
+
 
     table {
       width: 100%; /* Full width */
@@ -169,14 +178,11 @@
     }
     
     th {
-      background-color: #f2f2f2; /* Header background color */
+      background-color: #f2f2f260; /* Header background color */
       font-weight: bold; /* Make the header bold */
-      border-bottom: 1px  solid #dddddd; /* Add a border */
+
       
     }
     
-    tr:nth-child(odd) {
-      background-color: #f9f9f9; /* Row color for even rows */
-    }
 
 }

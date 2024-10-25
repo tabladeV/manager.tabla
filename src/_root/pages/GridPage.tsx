@@ -144,10 +144,10 @@ const GridPage = () => {
       }
       <div className="flex mb-4 justify-between items-center">
         <h1 className="">Grid</h1>
-        <Link to="/agenda" className="btn">Navigate to Agenda  {'>'}</Link>
+        <Link to="/agenda" className="btn sm:hidden">Navigate to Agenda  {'>'}</Link>
       </div>
       <div
-        className="overflow-x-scroll mx-auto cursor-grab max-w-fit w-full no-scrollbar bg-white"
+        className="overflow-x-scroll mx-auto cursor-grab max-w-fit w-full  no-scrollbar bg-white"
         ref={scrollRef}
         onMouseDown={handleMouseDown}
         onMouseLeave={handleMouseLeave}

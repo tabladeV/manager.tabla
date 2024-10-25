@@ -1,0 +1,58 @@
+:root{
+    --primary-color: #88AB61; /* Primary color for the scheduler */
+    --secondary-color: #f57c00; /* Secondary color for the scheduler */
+    
+}
+/* Custom styling for the scheduler container */
+.dhx_cal_container {
+    background-color: #ffffff; /* Light background color */
+    border-radius: 8px;       /* Rounded corners */
+}
+
+/* Custom header styles */
+.dhx_cal_navline {
+    background-color: #ffffff; /* Header background color */
+    color: black;              /* Header text color */
+    font-weight: 800 !important;         /* Bold text */
+}
+
+/* Custom event styling */
+.dhx_cal_event {
+    background-color: #ff9e80; /* Event background color */
+    border: 1px solid #f57c00; /* Event border color */
+    color: black;               /* Event text color */
+}
+
+/* Hover effect for events */
+.dhx_cal_event:hover {
+    background-color: #f57c00; /* Darker background on hover */
+}
+
+/* Styles for the timeline */
+.dhx_cal_timeline {
+    border: 1px solid #e0e0e0; /* Border for the timeline */
+}
+
+/* Table headers */
+.dhx_cal_header {
+    background-color: #88AB6110; /* Table header background */
+    color: black;                /* Table header text color */
+    font-weight: 800 !important;         /* Bold text */
+}
+
+/* Custom styles for time slots */
+.dhx_cal_hour {
+    background-color: #ffffff; /* Time slot background */
+    border: 1px solid #e0e0e0; /* Divider for time slots */
+}
+
+/* Active table color */
+.dhx_cal_timeline .dhx_cal_event {
+    opacity: 0.8; /* Event transparency */
+}
+
+/* Resource section styles */
+.dhx_cal_timeline .dhx_cal_timeline .dhx_cal_timeline_line {
+    background-color: #cfd8dc; /* Background color for resources */
+    border: none;               /* Remove border for a clean look */
+}

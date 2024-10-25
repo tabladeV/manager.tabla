@@ -1,10 +1,192 @@
+import { useState, useRef } from 'react'
+import { Upload, Check, X } from 'lucide-react'
 
-const Widget = () => {
+export default function WidgetConfig() {
+  const [logo, setLogo] = useState<string | null>(null)
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
+  const [searchTabs, setSearchTabs] = useState({
+    date: true,
+    time: true,
+    guest: true,
+    city: false
+  })
+  const [payment, setPayment] = useState('enable')
+  const [guestThreshold, setGuestThreshold] = useState(4)
+  const [token, setToken] = useState('your-unique-token-here')
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (e) => setLogo(e.target?.result as string)
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleSearchTabChange = (tab: keyof typeof searchTabs) => {
+    setSearchTabs(prev => ({ ...prev, [tab]: !prev[tab] }))
+  }
+
+  const handleSave = () => {
+    console.log({
+      logo,
+      title,
+      description,
+      searchTabs,
+      payment,
+      guestThreshold
+    })
+    alert('Configuration saved!')
+  }
+
+  const handleCopyToken = () => {
+    navigator.clipboard.writeText(token)
+    
+    alert('Token copied to clipboard!')
+  }
+
   return (
-    <div>
+    <div className="w-full mx-auto p-6 bg-white rounded-[10px]">
+      <h1 className="text-2xl font-bold text-center mb-6">Widget</h1>
       
+      <div className="mb-6">
+        {logo ? (
+          <div className="relative w-full h-40 bg-gray-100 rounded-lg overflow-hidden">
+            <img src={logo} alt="Uploaded logo" className="w-full h-full object-contain" />
+            <button 
+              onClick={() => setLogo(null)} 
+              className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        ) : (
+          <button 
+            onClick={() => fileInputRef.current?.click()} 
+            className="w-full py-4 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-colors"
+          >
+            <Upload className="mr-2" size={20} />
+            Upload Logo
+          </button>
+        )}
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleLogoUpload}
+          accept="image/*"
+          className="hidden"
+        />
+      </div>
+      
+      <div className="space-y-4 mb-6">
+        <input
+          type="text"
+          placeholder="Add title here"
+          className="inputs p-3 border border-gray-300 rounded-lg"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        <textarea
+          placeholder="Add description here"
+          className="w-full inputs p-3 border border-gray-300 rounded-lg lt-sm:w-full h-24 resize-none"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+      </div>
+      
+      <div className="mb-6">
+        <h2 className="text-lg font-semibold mb-2">Search Tabs</h2>
+        <div className="flex flex-wrap gap-4">
+          {Object.entries(searchTabs).map(([key, value]) => (
+            <label key={key} className="flex items-center">
+              <input
+                type="checkbox"
+                checked={value}
+                onChange={() => handleSearchTabChange(key as keyof typeof searchTabs)}
+                className="sr-only"
+              />
+              <span className={`flex items-center justify-center w-6 h-6 border rounded-md mr-2 ${value ? 'bg-greentheme border-greentheme' : 'border-gray-300'}`}>
+                {value && <Check size={16} className="text-white" />}
+              </span>
+              <span className="capitalize">{key}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+      
+      <div className="mb-6">
+        <h2 className="text-lg font-semibold mb-2">Payment</h2>
+        <div className="flex items-center flex-wrap gap-3">
+          <label className="flex items-center">
+            <input
+              type="radio"
+              name="payment"
+              value="enable"
+              checked={payment === 'enable'}
+              onChange={() => setPayment('enable')}
+              className="sr-only"
+            />
+            <span className={`flex items-center justify-center w-6 h-6 border rounded-full mr-2 ${payment === 'enable' ? 'bg-greentheme border-greentheme' : 'border-gray-300'}`}>
+              {payment === 'enable' && <div className="w-3 h-3 bg-white rounded-full" />}
+            </span>
+            Enable
+          </label>
+          <label className="flex items-center">
+            <input
+              type="radio"
+              name="payment"
+              value="disable"
+              checked={payment === 'disable'}
+              onChange={() => setPayment('disable')}
+              className="sr-only"
+            />
+            <span className={`flex items-center justify-center w-6 h-6 border rounded-full mr-2 ${payment === 'disable' ? 'bg-greentheme border-greentheme' : 'border-gray-300'}`}>
+              {payment === 'disable' && <div className="w-3 h-3 bg-white rounded-full" />}
+            </span>
+            Disable
+          </label>
+          <div className='flex gap-3 items-center'>
+            <label className="flex items-center">
+              <input
+                type="radio"
+                name="payment"
+                value="enableWhenOver"
+                checked={payment === 'enableWhenOver'}
+                onChange={() => setPayment('enableWhenOver')}
+                className="sr-only"
+              />
+              <span className={`flex items-center justify-center w-6 h-6 border rounded-full mr-2 ${payment === 'enableWhenOver' ? 'bg-greentheme border-greentheme' : 'border-gray-300'}`}>
+                {payment === 'enableWhenOver' && <div className="w-3 h-3 bg-white rounded-full" />}
+              </span>
+              Enable when guest over
+            </label>
+            <input
+              type="number"
+              value={guestThreshold}
+              onChange={(e) => setGuestThreshold(parseInt(e.target.value))}
+              className="w-16 p-1 border border-gray-300 rounded-md text-center"
+              disabled={payment !== 'enableWhenOver'}
+            />
+          </div>
+        </div>
+      </div>
+      
+      <div className="flex space-x-4">
+        <button 
+          onClick={handleSave}
+          className="flex-1 py-2 bg-greentheme text-white rounded-lg hover:opacity-90 transition-opacity"
+        >
+          Save
+        </button>
+        <button 
+          onClick={handleCopyToken}
+          className="flex-1 py-2 bg-greentheme text-white rounded-lg hover:opacity-90 transition-opacity"
+        >
+          Copy your token
+        </button>
+      </div>
     </div>
   )
 }
-
-export default Widget

@@ -1,20 +1,13 @@
 import {
   Refine,
-  GitHubBanner,
-  WelcomePage,
-  Authenticated,
-  AuthPage,
-  ErrorComponent,
 } from "@refinedev/core";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 
 
 import dataProvider from "@refinedev/simple-rest";
-import { BrowserRouter, Route, Routes, Outlet } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import routerBindings, {
-  NavigateToResource,
-  CatchAllNavigate,
   UnsavedChangesNotifier,
   DocumentTitleHandler,
 } from "@refinedev/react-router-v6";
@@ -43,8 +36,11 @@ import Widget from "./components/settings/Widget";
 import Permissions from "./components/settings/Permissions";
 import Services from "./components/settings/Services";
 import { DateProvider } from "./context/DateContext";
+import ClientInterface from "./components/clients/ClientInterface";
 
 function App() {
+
+  
 
 
   return (
@@ -82,7 +78,9 @@ function App() {
                     <Route path='/agenda' element={<AgendaPage />} />
                     <Route path='/agenda/grid' element={<GridPage />} />
                     <Route path='/payment' element={<PaymentPage />} />
-                    <Route path='/clients' element={<ClientsPage />} />
+                    <Route path='/clients' element={<ClientsPage />} >
+                      <Route path='/clients/:id' element={<ClientInterface />} />
+                    </Route>
                     <Route path='/support' element={<SupportPage />} />
                     <Route path='/settings' element={<SettingsPage />} >
                       <Route index element={<General />} />

@@ -20,12 +20,12 @@ const RootLayout = () => {
           <NavigationMenu stateOfSideBar={stateOfSideBar} handleSideBar={()=>{setStateOfSideBar(!stateOfSideBar)}} />
 
       </div>
-      <div className="h-[100vh] lt-sm:hidden" >
+      <div className="h-full lt-sm:hidden" >
         <Logo className={stateOfSideBar?'horizontal':''} />
         <NavigationMenu stateOfSideBar={stateOfSideBar} handleSideBar={()=>{setStateOfSideBar(!stateOfSideBar)}} />
       </div>
       
-      <div className="w-full">
+      <div className="w-full ">
         <header className='h-[80px]  items-center flex justify-between px-6 lt-sm:px-2'>
           {/* <SearchBar /> */}
           <div className="sm:hidden"><Logo/></div>
@@ -33,10 +33,10 @@ const RootLayout = () => {
           <DateSelection />
           <UserBar />
         </header>
-        <section className='flex justify-between h-[calc(100vh-97px)]'>
+        <section className='flex justify-between  h-[calc(100vh-88px)]'>
           
           
-          <div className='bg-[#F3F3F3] p-[1em] w-full h-full   overflow-y-scroll'>
+          <div className='bg-[#F3F3F3] p-[1em] w-full h-full lt-sm:pb-[4em] overflow-x-hidden  overflow-y-scroll'>
             <Outlet />
           </div>
         </section>

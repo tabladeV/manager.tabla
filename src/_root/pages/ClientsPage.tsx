@@ -1,6 +1,7 @@
 import { useState } from "react";
 import AccessToClient from "../../components/clients/AccessToClient"
 import SearchBar from "../../components/header/SearchBar"
+import { Outlet, useLocation, useParams } from "react-router-dom";
 
 const ClientsPage = () => {
 
@@ -75,6 +76,9 @@ const ClientsPage = () => {
 
   const [isProfile, setIsProfile] = useState(true);
 
+  
+  const { pathname} = useLocation(); 
+
 
 
 
@@ -84,7 +88,7 @@ const ClientsPage = () => {
         <h1>Clients</h1>
       </div>
       <div className="flex ">
-        <div className={`bg-white w-1/4  h-[calc(100vh-160px)]  flex flex-col gap-2 p-2 rounded-[10px] ${selectedClient? 'lt-sm:hidden':''}`}>
+        <div className={`bg-white ${pathname === '/clients' ? 'w-full' : 'w-1/4 lt-sm:hidden'}  h-[calc(100vh-160px)]  flex flex-col gap-2 p-2 rounded-[10px] ${selectedClient? 'lt-sm:hidden':''}  `}>
           <SearchBar SearchHandler={searchFilter}/>
           {/* <div className="flex gap-2">
             <button className="btn-primary">Confirmed</button>
@@ -99,102 +103,12 @@ const ClientsPage = () => {
           <div className="flex flex-col gap-2 overflow-y-scroll overflow-x-auto h-full ">
           
           { searchResults.map((client) => (
-            <AccessToClient key={client.id} onClick={() => showThis(client.id)} opacity={client.id === selectedClient ? '1' :''} image={client.image} name={client.name} />
+            <AccessToClient key={client.id}  onClick={() => showThis(client.id)} image={client.image} name={client.name} id={client.id} />
           ))  
           }
           </div>
         </div>
-        <div className="w-3/4">
-          {selectedClient === null && <h1 className="text-center">Select a client to view</h1>}
-          {selectedClient && 
-            clients.filter(client => client.id === selectedClient).map((client, index) => (
-              <div className="flex flex-col items-center" key={index}>
-                <div className="text-center flex mb-2 items-center flex-col">
-                  
-                  <img className="w-[6em] h-[6em] overflow-hidden rounded-full object-cover" src={client.image} alt="client" />
-                  <h1>{client.name}</h1>
-                  <h4 className="text-subblack text-[18px]">{client.email}</h4>
-                  <h4 className="text-subblack text-[18px]">{client.phoneNumber}</h4>
-                </div>
-                <div className="w-full p-3">
-                  <h5 className="ml-2 text-subblack font-[600] text-[16px] mb-2" >Life time information</h5>
-                  <div className="bg-white p-2 rounded-[10px] w-full flex justify-around">
-                    <div className="flex flex-col items-center">
-                      <h1>{client.lifetime.upcoming}</h1>
-                      <h4 className="font-[500] text-subblack">Upcoming</h4>
-                    </div>
-
-                    <div className="flex flex-col items-center">
-                      <h1>{client.lifetime.materialized}</h1>
-                      <h4 className="font-[500] text-subblack">Materialized</h4>
-                    </div>
-
-                    <div className="flex flex-col items-center">
-                      <h1>{client.lifetime.denied}</h1>
-                      <h4 className="font-[500] text-subblack">Denied</h4>
-                    </div>
-
-                    <div className="flex flex-col items-center">
-                      <h1>{client.lifetime.cancelled}</h1>
-                      <h4 className="font-[500] text-subblack">Cancelled</h4>
-                    </div>
-
-                    <div className="flex flex-col items-center">
-                      <h1>{client.lifetime.noShow}</h1>
-                      <h4 className="font-[500] text-subblack">No show</h4>
-                    </div>
-
-                    <div className="flex flex-col items-center">
-                      <h1>{client.lifetime.spendCover}</h1>
-                      <h4 className="font-[500] text-subblack">Spend/cover</h4>
-                    </div>
-                    
-                    <div className="flex flex-col items-center">
-                      <h1>{client.lifetime.spendMAD}</h1>
-                      <h4 className="font-[500] text-subblack">Spend MAD</h4>
-                    </div>
-
-                  </div>
-                  <div>
-                    <div className="flex text-subblack mt-2 font-[600] gap-2">
-                      <button className={`hover:underline ${isProfile? 'text-greentheme':''}`} onClick={()=>{setIsProfile(true)}}>Profile</button>
-                      <button className={`hover:underline ${isProfile? '':'text-greentheme'}`} onClick={()=>{setIsProfile(false)}}>Reservation History</button>
-                    </div>
-                    {isProfile && <div>
-                        <h4 className="m-2 text-subblack">Informations</h4>
-                        <div  className="bg-white p-2 rounded-[10px] w-full mt-2">
-                          <table className="my-0">
-                            <tr className="border-2">
-                              <td className="font-[500] text-subblack">Name</td>
-                              <td><input type="text" placeholder={client.name} /></td>
-                              <td className="font-[500] border-l-2 text-subblack">Email</td>
-                              <td><input type="text" placeholder={client.email} /></td>
-                            </tr>
-                            <tr className="border-2">
-                              <td className="font-[500] text-subblack">Phone number</td>
-                              <td><input type="text" placeholder={client.phoneNumber} /></td>
-                              <td className="font-[500] border-l-2 text-subblack">Phone number</td>
-                              <td><input type="text" placeholder={client.phoneNumber} /></td>
-                            </tr>
-                            <tr className="border-2">
-                              <td className="font-[500] text-subblack">Organization</td>
-                              <td colSpan={3}><input className="w-full" type="text" placeholder={client.phoneNumber} /></td>
-                            </tr>
-                            <tr className="border-2">
-                              <td  className="font-[500] text-subblack">Guest Notes</td>
-                              <td  colSpan={3}><input type="text" placeholder={client.phoneNumber} /></td>
-                            </tr>
-                          </table>
-                        </div>
-                      </div>
-                      }
-                  </div>
-                </div>
-              </div>
-            ))
-
-          }
-        </div>
+        {pathname === '/clients' ? null: <Outlet />}
       </div>
     </div>
   )

@@ -85,11 +85,12 @@ const Availability = () => {
             {area}
           </button>
         ))}
+        
       </div>
       <div className="space-y-4 mx-20">
         {data.map((day, dayIndex) => (
           <div key={day.day} className="flex items-start">
-            <div className="flex items-center gap-2 w-20">
+            <div className="flex mt-3 items-center gap-2 w-20">
               <input
                 type="checkbox"
                 checked={day.slots.length > 0}
@@ -98,7 +99,8 @@ const Availability = () => {
               />
               <span className="font-medium">{day.day}</span>
             </div>
-            <div className="flex-1">
+            
+            <div className="flex-1 ">
               {day.slots.length > 0 ? (
                 day.slots.map((slot, slotIndex) => (
                   <div key={slotIndex} className="flex  items-center gap-2 mb-2">
@@ -106,51 +108,52 @@ const Availability = () => {
                       type="text"
                       value={slot.type}
                       onChange={(e) => updateSlot(dayIndex, slotIndex, 'type', e.target.value)}
-                      className="border rounded px-2 py-1 w-24 text-sm"
+                      className="inputs "
                     />
                     <input
                       type="time"
                       value={slot.start}
                       onChange={(e) => updateSlot(dayIndex, slotIndex, 'start', e.target.value)}
-                      className="border rounded px-2 py-1 text-sm"
+                      className="inputs"
                     />
                     <span>-</span>
                     <input
                       type="time"
                       value={slot.end}
                       onChange={(e) => updateSlot(dayIndex, slotIndex, 'end', e.target.value)}
-                      className="border rounded px-2 py-1 text-sm"
+                      className="inputs"
                     />
-                    <button
-                      onClick={() => removeSlot(dayIndex, slotIndex)}
-                      className="text-gray-400 hover:text-gray-600"
-                    >
-                      <X size={16} />
-                    </button>
                     <span className="text-sm text-gray-500 w-[300px] ml-2">Place limit number</span>
                     <input
                       type="number"
                       value={slot.placeLimit}
                       onChange={(e) => updateSlot(dayIndex, slotIndex, 'placeLimit', parseInt(e.target.value))}
-                      className="border rounded px-2 py-1 w-16 text-sm"
+                      className="inputs w-20"
                     />
+                    <button
+                      onClick={() => removeSlot(dayIndex, slotIndex)}
+                      className="text-redtheme hover:text-gray-600"
+                    >
+                      <X size={16} />
+                    </button>
                   </div>
                 ))
               ) : (
-                <span className="text-gray-500">Unavailable</span>
+                <div className="text-gray-500 mt-3">Unavailable</div>
               )}
             </div>
-            <div className='flex items-center'>
+            <div className='flex mt-[.3em] items-center'>
               <button
                 onClick={() => addSlot(dayIndex)}
                 className="text-[#88AB61] hover:text-[#6A8A43] ml-2"
               >
                 <Plus size={16} />
               </button>
-              <button className="p-2 hover:bg-gray-100 rounded">
+              <button className="p-2 hover:bg-softgreytheme transition duration-400 rounded">
                 <Copy className="w-5 h-5 text-gray-400" />
               </button>
             </div>
+            
           </div>
         ))}
       </div>
