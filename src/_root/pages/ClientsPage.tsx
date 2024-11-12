@@ -1,11 +1,27 @@
-import { useState } from "react";
-import AccessToClient from "../../components/clients/AccessToClient"
-import SearchBar from "../../components/header/SearchBar"
+import { useEffect, useState } from "react";
+import AccessToClient from "../../components/clients/AccessToClient";
+import SearchBar from "../../components/header/SearchBar";
 import { Outlet, useLocation, useParams } from "react-router-dom";
 
-const ClientsPage = () => {
+interface ClientData {
+  id: string;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  image: string;
+  lifetime: {
+    upcoming: number;
+    materialized: number;
+    denied: number;
+    cancelled: number;
+    noShow: number;
+    spendCover: number;
+    spendMAD: number;
+  };
+}
 
-  const clients =[
+const ClientsPage = () => {
+  const clients = [
     {
       id: 'janereq',
       name: 'Jane Smith',
@@ -19,8 +35,8 @@ const ClientsPage = () => {
         cancelled: 4,
         noShow: 2,
         spendCover: 100.856,
-        spendMAD: 521
-      }
+        spendMAD: 521,
+      },
     },
     {
       id: 'akans',
@@ -35,12 +51,12 @@ const ClientsPage = () => {
         cancelled: 29,
         noShow: 1,
         spendCover: 34.856,
-        spendMAD: 300
-      }
+        spendMAD: 300,
+      },
     },
     {
       id: 'sasak',
-      name: 'jake Jackson',
+      name: 'Jake Jackson',
       email: 'jakejack@gmail.com',
       phoneNumber: '123456789',
       image: 'https://images.unsplash.com/photo-1542727313-4f3e99aa2568?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
@@ -51,67 +67,114 @@ const ClientsPage = () => {
         cancelled: 66,
         noShow: 0,
         spendCover: 87.856,
-        spendMAD: 745
-      }
+        spendMAD: 745,
+      },
     },
-  ]
+  ];
 
-  const [selectedClient, setSelectedClient] = useState<string | null>(null);
-
-  const showThis = (id: string) => {
-    setSelectedClient(id);
-  }
-
+  const [selectedClient, setSelectedClient] = useState<ClientData[]>([]);
   const [searchResults, setSearchResults] = useState(clients);
 
-  const searchFilter = (e: any) => { 
+  const searchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
     const keyword = e.target.value;
-    const results = clients.filter((client) => {
-      return client.name.toLowerCase().includes(keyword.toLowerCase());
-    });
+    const results = clients.filter((client) =>
+      client.name.toLowerCase().includes(keyword.toLowerCase())
+    );
     setSearchResults(results);
-    console.log(results);
-  }
+  };
 
+  const { pathname } = useLocation();
 
-  const [isProfile, setIsProfile] = useState(true);
-
+  const selectClient = (id: string) => {
+    setSelectedClient((prevSelectedClients) => {
+      // Check if the client is already selected
+      const isAlreadySelected = prevSelectedClients.some((client) => client.id === id);
   
-  const { pathname} = useLocation(); 
+      // If already selected, filter it out; otherwise, add the client to the selection
+      if (isAlreadySelected) {
+        return prevSelectedClients.filter((client) => client.id !== id);
+      } else {
+        const client = clients.find((client) => client.id === id);
+        return client ? [...prevSelectedClients, client] : prevSelectedClients;
+      }
+    });
+  };
 
+  const selectAll = () => {
+    setSelectedClient(searchResults);
+  };
+  
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
 
-
+  useEffect(() => {
+    console.log(selectedClient);
+  }, [selectedClient]);
 
   return (
-    <div>
+    <div className="h-full">
+      {showNotificationModal && (
+        <div>
+          <div className="overlay" onClick={()=>{setShowNotificationModal(false)}}></div>
+          <div className="sidepopup h-full lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0">
+            <h2 className="mb-5">Send a notification</h2>
+            <form className="flex flex-col gap-2">
+              <input type="text" placeholder="Subject" className="inputs-unique" />
+              <input type="text" placeholder="Offer" className="inputs-unique" />
+              <textarea
+                placeholder="Type your message here"
+                className="inputs-unique h-[10em] sm:h-[20em]"
+              ></textarea>
+              <button className="btn-primary" type="submit">Send</button>
+            </form>
+          </div>
+        </div>
+      )}
       <div>
         <h1>Clients</h1>
       </div>
-      <div className="flex ">
-        <div className={`bg-white ${pathname === '/clients' ? 'w-full' : 'w-1/4 lt-sm:hidden'}  h-[calc(100vh-160px)]  flex flex-col gap-2 p-2 rounded-[10px] ${selectedClient? 'lt-sm:hidden':''}  `}>
-          <SearchBar SearchHandler={searchFilter}/>
-          {/* <div className="flex gap-2">
-            <button className="btn-primary">Confirmed</button>
-            <button className="btn-primary">Pending</button>
-            <button className="btn-primary">Canceled</button>
-          </div> */}
-          <select className="btn">
-            <option >Filter by</option>
+      <div className="flex gap-2">
+        <div
+          className={`bg-white ${
+            pathname === "/clients" || pathname === "/clients/" ? "" : "lt-sm:hidden"
+          } sm:w-1/4 w-full h-[calc(100vh-160px)] flex flex-col gap-2 p-2 rounded-[10px]`}
+        >
+          <SearchBar SearchHandler={searchFilter} />
+          {/* <select className="btn">
+            <option>Filter by</option>
             <option>Pending</option>
             <option>Canceled</option>
-          </select>
-          <div className="flex flex-col gap-2 overflow-y-scroll overflow-x-auto h-full ">
-          
-          { searchResults.map((client) => (
-            <AccessToClient key={client.id}  onClick={() => showThis(client.id)} image={client.image} name={client.name} id={client.id} />
-          ))  
+          </select> */}
+          {!(selectedClient.length === clients.length) ? (
+            <button className={`btn-secondary hover:bg-softgreentheme hover:text-greentheme ${selectedClient === clients ? 'hidden':''}`} onClick={selectAll}>Select All</button>
+          ) : (
+            <button className={`btn ${selectedClient === clients ? 'hidden':''}`} onClick={() => setSelectedClient([])}>Deselect All</button>
+          )  
           }
+
+          <div className="flex flex-col gap-2 overflow-y-scroll overflow-x-auto h-full lt-sm:h-[26em]">
+            {searchResults.map((client) => (
+              <AccessToClient
+                key={client.id}
+                onClick={() => selectClient(client.id)}
+                image={client.image}
+                checked={selectedClient.some((selected) => selected.id === client.id)}
+                name={client.name}
+                id={client.id}
+              />
+            ))}
           </div>
+          <button className={` ${selectedClient.length === 0 ? 'btn hover:border-[0px] border-[0px] cursor-not-allowed bg-softgreytheme ':'btn-primary'}`} disabled={selectedClient.length===0} onClick={()=>{(setShowNotificationModal(true))}}>Send a notification</button>
         </div>
-        {pathname === '/clients' ? null: <Outlet />}
+        {pathname === "/clients" || pathname === "/clients/" ? (
+          <div className={`lt-sm:hidden flex flex-col items-center w-3/4 text-center p-2 rounded-[10px]`}>
+            <h2>Select a client</h2>
+          </div>
+        ) : (
+          <Outlet />
+        )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ClientsPage
+export default ClientsPage;

@@ -159,7 +159,7 @@ const NavigationMenu = (props:NavigationMenuProps) => {
 
         <h2 className={`font-[500] text-[17px] ${stateOfSideBar? 'block':'hidden'}`}>Settings</h2>
       </Link>
-      <div>
+      {/* <div>
         <button  className={` w-full ${normalMenuClass}`} onClick={props.handleSideBar}>
           {!stateOfSideBar? 
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -174,7 +174,7 @@ const NavigationMenu = (props:NavigationMenuProps) => {
           {stateOfSideBar ? <h2 className={`font-[500] text-[17px] `}>Collapse</h2> : ''}
 
         </button>
-      </div>
+      </div> */}
     </div>
     </div>
   )

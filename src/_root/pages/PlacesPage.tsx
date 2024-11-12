@@ -7,27 +7,26 @@ import DraggableItem from '../../components/places/DraggableItem';
 import DropTarget from '../../components/places/DropTarget';
 import SearchBar from '../../components/header/SearchBar';
 import { Link } from 'react-router-dom';
-import { getHours, set } from 'date-fns';
-import { parseArgs } from 'util';
-import { table } from 'console';
+import { getHours, set, format } from 'date-fns';
+
+import { useDateContext } from '../../context/DateContext'; // Import the date context hook
 
 function isTouchDevice() {
-
   return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-
 }
-
 
 const PlacePage: React.FC = () => {
   const [focusedRoof, setFocusedRoof] = useState<string | null>('Main Room');
   const [roofs, setRoofs] = useState<string[]>(['Main Room', 'Outdoor', 'Terrace']);
+  const { chosenDay } = useDateContext(); // Access chosenDay from DateContext
 
   const data = [
-    { id: 1, name: 'Caprim Zack', time: '12:00 PM', date: '12 dec 2025', guests: 4, occasion: 'Birthday', tableNumber: 1 },
-    { id: 2, name: 'Alfred Destivan', time: '14:00 PM', date: '12 dec 2025', guests: 2, occasion: 'Birthday', tableNumber: 2 },
-    { id: 3, name: 'Sam Sulek', time: '17:00 PM', date: '12 dec 2025', guests: 1, occasion: 'none', tableNumber: 3 },
-    { id: 4, name: 'Christopher Bums', time: '13:00 PM', date: '12 dec 2025', guests: 5, occasion: 'none', tableNumber: 4 },
-    { id: 5, name: 'Alfred Zack', time: '12:00 PM', date: '12 dec 2025', guests: 4, occasion: 'Birthday', tableNumber: 5 },
+    { id: 1, name: 'Caprim Zack', time: '12:00 PM', date: '26 oct 2024', guests: 4, occasion: 'Birthday', tableNumber: 1 },
+    { id: 2, name: 'Alfred Destivan', time: '14:00 PM', date: '25 oct 2024', guests: 2, occasion: 'Birthday', tableNumber: 2 },
+    { id: 3, name: 'Sam Sulek', time: '17:00 PM', date: '25 oct 2024', guests: 1, occasion: 'none', tableNumber: 3 },
+    { id: 4, name: 'Christopher Bums', time: '13:00 PM', date: '25 oct 2024', guests: 5, occasion: 'none', tableNumber: 4 },
+    { id: 5, name: 'Alfred Zack', time: '12:00 PM', date: '25 oct 2024', guests: 4, occasion: 'Birthday', tableNumber: 5 },
+    { id: 5, name: 'Alfred Zack', time: '12:00 PM', date: '25 oct 2024', guests: 4, occasion: 'Birthday', tableNumber: 7 },
   ];
 
 
@@ -65,7 +64,7 @@ const PlacePage: React.FC = () => {
               {
                   "name": "Alfred Destivan",
                   "time": "14:00",
-                  "date": "12 dec 2025",
+                  "date": "25 oct 2024",
                   "guests": 2,
                   "occasion": "Birthday",
                   "tableNumber": 2
@@ -103,7 +102,7 @@ const PlacePage: React.FC = () => {
           "reservedBy": {
               "name": "Christopher Bums",
               "time": "13:00",
-              "date": "12 dec 2025",
+              "date": "25 oct 2024",
               "guests": 5,
               "occasion": "none",
               "tableNumber": 4
@@ -122,7 +121,7 @@ const PlacePage: React.FC = () => {
         "reservedBy": {
             "name": "Christopher Bums",
             "time": "13:00",
-            "date": "12 dec 2025",
+            "date": "25 oct 2024",
             "guests": 5,
             "occasion": "none",
             "tableNumber": 4
@@ -179,7 +178,7 @@ const PlacePage: React.FC = () => {
         "reservedBy":{
           "name": "Sam Sulek",
           "time": "17:00",
-          "date": "12 dec 2025",
+          "date": "25 oct 2024",
           "guests": 1,
           "occasion": "none",
           "tableNumber": 3
@@ -197,8 +196,8 @@ const PlacePage: React.FC = () => {
         "floor":'Terrace',
         "reservedBy":{
           "name": "Sam Sulek",
-          "time": "17:00",
-          "date": "12 dec 2025",
+          "time": "19:00",
+          "date": "25 oct 2024",
           "guests": 1,
           "occasion": "none",
           "tableNumber": 3
@@ -216,8 +215,8 @@ const PlacePage: React.FC = () => {
         "floor":'Outdoor',
         "reservedBy":{
           "name": "Sam Sulek",
-          "time": "18:00",
-          "date": "12 dec 2025",
+          "time": "19:00",
+          "date": "25 oct 2024",
           "guests": 1,
           "occasion": "none",
           "tableNumber": 3
@@ -225,21 +224,18 @@ const PlacePage: React.FC = () => {
       }
   ];
 
-  
-  
   const getCurrentHour = () => {
     const currentHour = getHours(new Date());
     console.log(`Current hour: ${currentHour}`);
     return currentHour;
   };
-  
-  const hours = [];
-  for (let i = parseInt(getCurrentHour().toString()); i < 24; i++) {
-    hours.push({ id: i.toString(), time: `${i}:00` }); // Convert id to string here
-  }
-  
-  const [filteringHour, setFilteringHour] = useState(hours[0].time);
 
+  const hours = [];
+  for (let i = 0; i < 24; i++) {
+    hours.push({ id: i.toString(), time: `${i}:00` });
+  }
+
+  const [filteringHour, setFilteringHour] = useState(hours[0].time);
   const [searchResults, setSearchResults] = useState(data);
 
   const searchFilter = (e: any) => {
@@ -248,11 +244,12 @@ const PlacePage: React.FC = () => {
       return item.name.toLowerCase().includes(keyword.toLowerCase());
     });
     setSearchResults(results);
-  }
+  };
+
+  const formattedChosenDay = format(chosenDay, 'dd MMM yyyy'); // Format chosenDay for comparison
 
   return (
     <div>
-      
       <div className='flex justify-between mb-2'>
         <h1 className='text-3xl text-blacktheme font-[700]'>Place Management</h1>
         
@@ -263,25 +260,27 @@ const PlacePage: React.FC = () => {
           </svg>
         </Link>
       </div>
-      <p className='text-redtheme bg-softredtheme p-2 rounded-md opacity-70 mb-2 font-[400] sm:hidden'>You can only overview the floors.<br/> To edit the tables try using larger device!</p>
+      <p className='text-redtheme bg-softredtheme p-2 rounded-md opacity-70 mb-2 font-[400] sm:hidden'>
+        You can only overview the floors.<br /> To edit the tables try using a larger device!
+      </p>
       <DndProvider backend={isTouchDevice() ? TouchBackend : HTML5Backend}>
         <div className="flex gap-[10px]">
-          <div className='bg-white  lt-sm:hidden  rounded-[10px] p-[1em]'>
-            <SearchBar SearchHandler={searchFilter}/>
+          <div className='bg-white lt-sm:hidden rounded-[10px] p-[1em]'>
+            <SearchBar SearchHandler={searchFilter} />
             <div className='grid grid-flow-col gap-3 font-[500] my-3 justify-between'>
               <button className='btn-primary'>Confirmed</button>
               <button className='btn-secondary'>Canceled</button>
               <button className='btn-secondary'>Waiting</button>
             </div>
             <div className='overflow-y-auto h-[55vh] bar-hide'>
-              { searchResults.map((item) => (
+              {searchResults.map((item) => (
                 <DraggableItem itemData={item} key={item.id} />
               ))}
             </div>
           </div>
           <div className='w-full sm:overflow-auto'>
             <div className='flex lt-sm:flex-wrap lt-sm:gap-2 justify-between'>
-              <div className='flex gap-2 w-full overflow-x-auto '>
+              <div className='flex gap-2 w-full overflow-x-auto'>
                 {roofs.map((roof) => (
                   <button
                     className={` ${focusedRoof === roof ? 'btn-primary ' : 'btn-secondary'}`}
@@ -291,25 +290,39 @@ const PlacePage: React.FC = () => {
                     {roof}
                   </button>
                 ))}
-
               </div>
               <div>
                 <select className='inputs bg-transparent' onChange={(e) => setFilteringHour(e.target.value)}>
                   {hours.map((hour) => (
-                    <option key={hour.id} value={hour.time}>
+                    <option key={hour.id} value={hour.time} >
                       {hour.time}
                     </option>
-                  ))  
-                  }
+                  ))}
                 </select>
               </div>
             </div>
 
-            <div className='relative lt-sm:h-[55vh] lt-sm:overflow-x-auto'>
-                {initialShapes.filter(shape => 
-                shape.floor === focusedRoof
-                ).map(({ id, x, y, type, height, width, max ,min, reservedBy}) => (
-                  <DropTarget min={min} hourChosen={filteringHour} reservedBy={reservedBy} max={max} type={type as 'rectangle' || 'circle'} x={x} y={y} id={id} height={height} width={width} key={id} />
+            <div className='relative  lt-sm:h-[55vh] lt-sm:overflow-x-auto'>
+              {initialShapes
+                .filter(
+                  (shape) =>
+                    shape.floor === focusedRoof 
+                  
+                )
+                .map(({ id, x, y, type, height, width, max, min, reservedBy }) => (
+                  <DropTarget
+                    min={min}
+                    hourChosen={filteringHour}
+                    reservedBy={reservedBy}
+                    max={max}
+                    type={type as 'rectangle' || 'circle'}
+                    x={x}
+                    y={y}
+                    id={id}
+                    height={height}
+                    width={width}
+                    key={id}
+                  />
                 ))}
             </div>
           </div>
@@ -318,6 +331,5 @@ const PlacePage: React.FC = () => {
     </div>
   );
 };
-
 
 export default PlacePage;

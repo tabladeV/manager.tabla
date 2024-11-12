@@ -122,6 +122,18 @@
       }
 
 
+      .checkbox {
+        appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      width: 20px;
+      height: 20px;
+      background-color: #f0f0f0;
+      border: 2px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+      position: relative;
+      }
     /* Hide the default checkbox */
     /* input[type="checkbox"] {
       appearance: none;

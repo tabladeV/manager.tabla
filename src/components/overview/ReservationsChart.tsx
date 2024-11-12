@@ -55,14 +55,14 @@ export default function ReservationsChart() {
         <select
           value={timeRange}
           onChange={(e) => setTimeRange(e.target.value)}
-          className="inputs"
+          className="inputs-unique"
         >
           <option value="" disabled>
             Select time range
           </option>
           <option value="7">Last 7 Days</option>
           <option value="30">Last 30 Days</option>
-          <option value="90">Last Year</option>
+          <option value="90" >Last Year</option>
         </select>
       </div>
       <div className="flex items-center space-x-4 justify-center lt-sm:mt-2 sm:hidden">

@@ -54,7 +54,7 @@ export default function SchedulerView() {
         scheduler.init(container.current, chosenDay, "timeline");
 
         const events = [
-            { id: 1, start_date: "2024-10-25 09:00", end_date: "2024-10-25 12:00", text: "Grec", room: 1 },
+            { id: 1, start_date: "2024-10-26 09:00", end_date: "2024-10-26 12:00", text: "Grec", room: 1 },
             { id: 2, start_date: "2024-10-25 10:30", end_date: "2024-10-25 11:30", text: "Alex", room: 2 },
             { id: 3, start_date: "2024-10-25 12:00", end_date: "2024-10-25 13:00", text: "Madisson", room: 3 },
             { id: 4, start_date: "2024-10-25 13:00", end_date: "2024-10-25 15:00", text: "Brandon", room: 1 },

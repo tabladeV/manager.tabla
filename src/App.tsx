@@ -26,6 +26,8 @@ import LogIn from "./_auth/pages/LogIn";
 import DesignPlaces from "./_root/pages/DesignPlaces";
 import GridPage from "./_root/pages/GridPage";
 import General from "./components/settings/General";
+import Photos from "./components/settings/Photos";
+import Menu from "./components/settings/Menu";
 import Availability from "./components/settings/Availability";
 import Tags from "./components/settings/Tags";
 import Messaging from "./components/settings/Messaging";
@@ -37,7 +39,7 @@ import Permissions from "./components/settings/Permissions";
 import Services from "./components/settings/Services";
 import { DateProvider } from "./context/DateContext";
 import ClientInterface from "./components/clients/ClientInterface";
-
+import IndexSettings from "./components/settings/indexSettings";
 function App() {
 
   
@@ -83,7 +85,8 @@ function App() {
                     </Route>
                     <Route path='/support' element={<SupportPage />} />
                     <Route path='/settings' element={<SettingsPage />} >
-                      <Route index element={<General />} />
+                      <Route index element={<IndexSettings />} />
+                      <Route path="/settings/general" element={<General />} />
                       <Route path="/settings/availability" element={<Availability />} />
                       <Route path="/settings/tags" element={<Tags />} />
                       <Route path="/settings/messaging" element={<Messaging />} />
@@ -93,6 +96,8 @@ function App() {
                       <Route path="/settings/widget" element={<Widget />} />
                       <Route path="/settings/permissions" element={<Permissions />} />
                       <Route path="/settings/services" element={<Services />} />
+                      <Route path="/settings/menu" element={<Menu />} />
+                      <Route path="/settings/photos" element={<Photos />} />
                     </Route>
                 </Route>
 

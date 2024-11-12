@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDrop } from 'react-dnd';
+import { useDateContext } from '../../context/DateContext';
 
 const ItemType = 'BOX';
 
@@ -36,6 +37,8 @@ interface DroppedItem {
 
 const DropTarget: React.FC<DropTargetProps> = ({ height, width,min, max,id, type, x, y, reservedBy, hourChosen }) => {
   const [droppedItems, setDroppedItems] = useState<DroppedItem[]>([]); // Store multiple items
+
+
 
 
   useEffect(() => {

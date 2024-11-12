@@ -159,7 +159,7 @@ const DesignCanvas: React.FC = () => {
         </div>
         <div className='flex gap-2 py-3'>
           <button className='btn-primary ' onClick={saveLayout}>Save</button>
-          <button className='btn-secondary' onClick={resetLayout}>Cancel</button>
+          <button className='btn-secondary' onClick={resetLayout}>Reset</button>
         </div>
       </div>
 
