@@ -2,10 +2,11 @@
 
 import { useState } from "react"
 import { Upload, Plus, X, AlertCircle } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 export default function Photos() {
   const [images, setImages] = useState<string[]>([])
-  const maxImages = 5
+  const maxImages = 10
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files
@@ -22,10 +23,12 @@ export default function Photos() {
     setImages(prev => prev.filter((_, i) => i !== index))
   }
 
+  const {t}= useTranslation();
+
   return (
     <div className="bg-white rounded-lg flex gap-3 flex-col items-center p-6 w-full">
       <div >
-        <h2>Pictures</h2>
+        <h2>{t('settingsPage.photos.title')}</h2>
       </div>
       <div className="space-y-6 w-full">
         <div className="flex justify-center">
@@ -46,7 +49,7 @@ export default function Photos() {
               }`}
             >
               <Upload className="h-5 w-5" />
-              <span>Upload ({images.length}/{maxImages})</span>
+              <span>{t('settingsPage.photos.buttons.uploadPhoto')} ({images.length}/{maxImages})</span>
             </label>
           </div>
         </div>
@@ -54,7 +57,7 @@ export default function Photos() {
         {images.length >= maxImages && (
           <div className="flex items-center justify-center text-amber-600">
             <AlertCircle className="h-5 w-5 mr-2" />
-            <span>Maximum number of images reached</span>
+            <span>{t('settingsPage.photos.warning')}</span>
           </div>
         )}
 
@@ -89,13 +92,13 @@ export default function Photos() {
             className="btn-primary"
             onClick={() => console.log('Saving images:', images)}
           >
-            Save
+            {t('settingsPage.photos.buttons.save')}
           </button>
           <button
             className="btn-secondary hover:bg-[#88AB6150] hover:text-greentheme transition-colors"
             onClick={() => setImages([])}
           >
-            Cancel
+            {t('settingsPage.photos.buttons.cancel')}
           </button>
         </div>
       </div>

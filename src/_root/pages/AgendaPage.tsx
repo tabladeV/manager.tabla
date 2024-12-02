@@ -4,6 +4,7 @@ import { Scheduler } from "dhtmlx-scheduler";
 import { useDateContext } from '../../context/DateContext'; // Import the custom hook
 import '../../styling/schedulerStyles.css';
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function SchedulerView() {
     const container = useRef<HTMLDivElement>(null);
@@ -31,9 +32,9 @@ export default function SchedulerView() {
             x_unit: "hour",
             x_date: "%H:%i",
             x_step: 1,
-            x_size: 24,
-            x_start: 0,
-            x_length: 24,
+            x_size: 6,
+            x_start: 14,
+            x_length: 6,
             y_unit: [
                 { key: 1, label: "Table 1" },
                 { key: 2, label: "Table 2" },
@@ -75,13 +76,15 @@ export default function SchedulerView() {
         };
     }, [chosenDay]); // Re-run useEffect if chosenDay changes
 
+    const {t} = useTranslation();
+
     return (
         <div className="w-full h-full ">
             <div className="mb-2 flex justify-between">
-                <h1>Agenda Page</h1>
+                <h1>{t('agenda.title')}</h1>
                 <Link to='/agenda/grid' className='btn sm:hidden block'>Grid View {'>'}</Link>
             </div>
-            <div ref={container} id="scheduler_here" className="dhx_cal_container" style={{ width: '99%', height: '500px' }}>
+            <div ref={container} id="scheduler_here" className="dhx_cal_container ltr" style={{ width: '99%', height: '500px' }}>
                 <div className="dhx_cal_navline">
                     <div className="dhx_cal_tab" data-name="timeline_tab"></div>
                 </div>

@@ -1,34 +1,15 @@
+import { Plus } from "lucide-react"
 
 const Messaging = () => {
   return (
-    <div className="bg-white flex flex-col items-center rounded-[10px]  p-3 w-full">
+    <div className="bg-white flex flex-col h-full items-center rounded-[10px]  p-3 w-full">
       <h2>Messaging</h2>
-      <form className="flex flex-col gap-3 sm:w-[60%] mt-3">
-        <div className="flex flex-col gap-1">
-          <h4>Reservations</h4>
-          <input type="email" id="email" placeholder="Subject" className="inputs" />
-          <textarea
-            id="description"
-            placeholder="Message"
-            className="inputs w-full"
-            rows={5}
-          ></textarea>
-        </div>
-        <div className="flex flex-col gap-1">
-          <h4>Offers</h4>
-          <input type="email" id="email" placeholder="Subject" className="inputs" />
-          <textarea
-            id="description"
-            placeholder="Message"
-            className="inputs w-full"
-            rows={5}
-          ></textarea>
-        </div>
-        <div className="flex w-full justify-center gap-4 ">
-          <button type='reset' className="btn">Cancel</button>
-          <button type="submit" className="btn-primary">Save</button>
-        </div>
-      </form>
+      <p className="text-center mb-5 mt-2 text-subblack font-[500]">Create and manage your messaging templates <span className="font-[400] text-[#1e1e1e50]">{'(You can add up to 5 templates)'}</span></p>
+      <div className=" btn flex flex-col items-center text-center justify-center  cursor-pointer">
+        <Plus className="w-10 h-10" />
+
+        <h4>Add a template</h4>
+      </div>
     </div>
   )
 }

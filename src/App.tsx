@@ -40,78 +40,90 @@ import Services from "./components/settings/Services";
 import { DateProvider } from "./context/DateContext";
 import ClientInterface from "./components/clients/ClientInterface";
 import IndexSettings from "./components/settings/indexSettings";
+import { PowerProvider } from "./context/PowerContext";
+
+
+import 'leaflet/dist/leaflet.css';
+import { DarkProvider } from "./context/DarkContext";
+
+
 function App() {
 
   
 
 
   return (
-    <DateProvider >
-      <BrowserRouter>
-        
-        <RefineKbarProvider>
-          <DevtoolsProvider>
-            <Refine
-              dataProvider={dataProvider("https://api.fake-rest.refine.dev")}
-              routerProvider={routerBindings}
-              options={{
-                syncWithLocation: true,
-                warnWhenUnsavedChanges: true,
-                useNewQueryKeys: true,
-                projectId: "dNe3Q8-sf9Qqi-OD7CQc",
-              }}
-            >
-              <Routes>
+    <PowerProvider>
+      <DarkProvider>
+        <DateProvider >
+          <BrowserRouter>
+            
+            <RefineKbarProvider>
+              <DevtoolsProvider>
+                <Refine
+                  dataProvider={dataProvider("https://api.fake-rest.refine.dev")}
+                  routerProvider={routerBindings}
+                  options={{
+                    syncWithLocation: true,
+                    warnWhenUnsavedChanges: true,
+                    useNewQueryKeys: true,
+                    projectId: "dNe3Q8-sf9Qqi-OD7CQc",
+                  }}
+                >
+                  
+                  <Routes>
 
-                {/*Public Routes */}
+                    {/*Public Routes */}
 
-                <Route element={<AuthLayout />}>
-                  <Route path='/sign-in' element={<LogIn />} />
-                  <Route path='/sign-up' element={<LogIn />} /> {/*will be implemented later*/}
-                </Route>
-
-
-                {/*Private Routes */}
-                <Route element={<RootLayout />}>
-                    <Route index element={<Home />} />
-                    <Route path='/reservations' element={<ReservationsPage />} />
-                    <Route path='/places' element={<PlacesPage />} />
-                    <Route path='/places/design' element={<DesignPlaces />} />
-                    <Route path='/agenda' element={<AgendaPage />} />
-                    <Route path='/agenda/grid' element={<GridPage />} />
-                    <Route path='/payment' element={<PaymentPage />} />
-                    <Route path='/clients' element={<ClientsPage />} >
-                      <Route path='/clients/:id' element={<ClientInterface />} />
+                    <Route element={<AuthLayout />}>
+                      <Route path='/sign-in' element={<LogIn />} />
+                      <Route path='/sign-up' element={<LogIn />} /> {/*will be implemented later*/}
                     </Route>
-                    <Route path='/support' element={<SupportPage />} />
-                    <Route path='/settings' element={<SettingsPage />} >
-                      <Route index element={<IndexSettings />} />
-                      <Route path="/settings/general" element={<General />} />
-                      <Route path="/settings/availability" element={<Availability />} />
-                      <Route path="/settings/tags" element={<Tags />} />
-                      <Route path="/settings/messaging" element={<Messaging />} />
-                      <Route path="/settings/features" element={<Features />} />
-                      <Route path="/settings/users" element={<Users />} />
-                      <Route path="/settings/billing" element={<Billing />} />
-                      <Route path="/settings/widget" element={<Widget />} />
-                      <Route path="/settings/permissions" element={<Permissions />} />
-                      <Route path="/settings/services" element={<Services />} />
-                      <Route path="/settings/menu" element={<Menu />} />
-                      <Route path="/settings/photos" element={<Photos />} />
-                    </Route>
-                </Route>
 
-              </Routes>
-              
-              <RefineKbar />
-              <UnsavedChangesNotifier />
-              <DocumentTitleHandler />
-            </Refine>
-            <DevtoolsPanel />
-          </DevtoolsProvider>
-        </RefineKbarProvider>
-      </BrowserRouter>
-    </DateProvider>
+
+                    {/*Private Routes */}
+                    <Route element={<RootLayout />}>
+                        <Route index element={<Home />} />
+                        <Route path='/reservations' element={<ReservationsPage />} />
+                        <Route path='/places' element={<PlacesPage />} />
+                        <Route path='/places/design' element={<DesignPlaces />} />
+                        <Route path='/agenda' element={<AgendaPage />} />
+                        <Route path='/agenda/grid' element={<GridPage />} />
+                        <Route path='/payment' element={<PaymentPage />} />
+                        <Route path='/clients' element={<ClientsPage />} >
+                          <Route path='/clients/:id' element={<ClientInterface />} />
+                        </Route>
+                        <Route path='/support' element={<SupportPage />} />
+                        <Route path='/settings' element={<SettingsPage />} >
+                          <Route index element={<IndexSettings />} />
+                          <Route path="/settings/general" element={<General />} />
+                          <Route path="/settings/availability" element={<Availability />} />
+                          <Route path="/settings/tags" element={<Tags />} />
+                          <Route path="/settings/messaging" element={<Messaging />} />
+                          <Route path="/settings/features" element={<Features />} />
+                          <Route path="/settings/users" element={<Users />} />
+                          <Route path="/settings/billing" element={<Billing />} />
+                          <Route path="/settings/widget" element={<Widget />} />
+                          <Route path="/settings/permissions" element={<Permissions />} />
+                          <Route path="/settings/services" element={<Services />} />
+                          <Route path="/settings/menu" element={<Menu />} />
+                          <Route path="/settings/photos" element={<Photos />} />
+                        </Route>
+                    </Route>
+
+                  </Routes>
+                  
+                  <RefineKbar />
+                  <UnsavedChangesNotifier />
+                  <DocumentTitleHandler />
+                </Refine>
+                <DevtoolsPanel />
+              </DevtoolsProvider>
+            </RefineKbarProvider>
+          </BrowserRouter>
+        </DateProvider>
+      </DarkProvider>
+    </PowerProvider>
   );
 }
 

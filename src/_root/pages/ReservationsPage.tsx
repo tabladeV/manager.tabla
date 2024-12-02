@@ -5,6 +5,10 @@ import { format } from 'date-fns'
 import SearchBar from "../../components/header/SearchBar"
 import IntervalCalendar from "../../components/Calendar/IntervalCalendar"
 
+import 'i18next'
+
+import { useTranslation } from 'react-i18next';
+import ReservationModal from "../../components/reservation/ReservationModal"
 interface Reservation {
   id: string
   email: string
@@ -17,6 +21,9 @@ interface Reservation {
 }
 
 const ReservationsPage = () => {
+
+  const { t } = useTranslation();
+
   const [reservations,setReservations] = useState([
     {
       id: '1',
@@ -233,17 +240,35 @@ const ReservationsPage = () => {
       </div>
     )
   }
+  const [showStatus, setShowStatus] = useState(false)
+
+  const [idStatusModification, setIdStatusModification] = useState('')
+
+  const showStatusModification = (id:string) => {
+    setIdStatusModification(id)
+    setShowStatus(!showStatus)
+
+  }
+  const statusHandler = (status: string) => {
+    setReservations(reservations.map(r => 
+      r.id === idStatusModification ? {...r, status} : r
+    ))
+    
+  }
+
+  const [showAddReservation, setShowAddReservation] = useState(false)
 
   return (
     <div>
+      {showAddReservation && <ReservationModal onClick={()=>{setShowAddReservation(false)}}/>}
       {showModal && selectedClient && (
         <div>
           <div className="overlay" onClick={() => setShowModal(false)}></div>
           <div className="sidepopup lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:overflow-y-auto h-full">
-            <h1 className="text-2xl font-bold mb-4">Edit {selectedClient.fullName}'s Reservation infos</h1>
+            <h1 className="text-2xl font-[600] mb-4">{t('reservations.edit.title')} by <span className="font-[800]">{selectedClient.fullName}</span></h1>
             <div className="space-y-2">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Full Name</label>
+                <label className="block text-sm font-medium text-gray-700">{t('reservations.edit.informations.name')}</label>
                 <input
                   type="text"
                   name="fullName"
@@ -253,7 +278,7 @@ const ReservationsPage = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Email</label>
+                <label className="block text-sm font-medium text-gray-700">{t('reservations.edit.informations.email')}</label>
                 <input
                   type="email"
                   name="email"
@@ -263,7 +288,7 @@ const ReservationsPage = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Date</label>
+                <label className="block text-sm font-medium text-gray-700">{t('reservations.edit.informations.date')}</label>
                 <input
                   type="text"
                   name="date"
@@ -273,7 +298,7 @@ const ReservationsPage = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Time</label>
+                <label className="block text-sm font-medium text-gray-700">{t('reservations.edit.informations.time')}</label>
                 <input
                   type="text"
                   name="time"
@@ -283,7 +308,7 @@ const ReservationsPage = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Reservation Made</label>
+                <label className="block text-sm font-medium text-gray-700">{t('reservations.edit.informations.madeBy')}</label>
                 <input
                   type="text"
                   name="reservationMade"
@@ -293,7 +318,7 @@ const ReservationsPage = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Guests</label>
+                <label className="block text-sm font-medium text-gray-700">{t('reservations.edit.informations.guests')}</label>
                 <input
                   type="text"
                   name="guests"
@@ -303,31 +328,31 @@ const ReservationsPage = () => {
                 />
               </div>
               <div className="">
-                <label className="block text-sm font-medium text-gray-700">Status</label>
+                <label className="block text-sm font-medium text-gray-700">{t('reservations.edit.informations.status')}</label>
                 <select
                   name="status"
                   value={selectedClient.status}
                   onChange={handleInputChange}
                   className="inputs-unique mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 >
-                  <option value="Pending">Pending</option>
-                  <option value="Confirmed">Confirmed</option>
-                  <option value="Canceled">Canceled</option>
+                  <option value="Pending">{t('reservations.statusLabels.pending')}</option>
+                  <option value="Confirmed">{t('reservations.statusLabels.confirmed')}</option>
+                  <option value="Canceled">{t('reservations.statusLabels.cancelled')}</option>
                 </select>
               </div>
               <div className="h-10 sm:hidden"></div>
               <div className="flex justify-center lt-sm:fixed lt-sm:bottom-0 lt-sm:bg-white lt-sm:p-3 lt-sm:w-full space-x-2">
-                <button onClick={() => setShowModal(false)} className="btn-secondary hover:bg-[#88AB6150] hover:text-greentheme transition-colors">Cancel</button>
-                <button onClick={saveChanges} className="btn-primary">Save Changes</button>
+                <button onClick={() => setShowModal(false)} className="btn-secondary hover:bg-[#88AB6150] hover:text-greentheme transition-colors">{t('reservations.edit.buttons.cancel')}</button>
+                <button onClick={saveChanges} className="btn-primary">{t('reservations.edit.buttons.save')}</button>
               </div>
             </div>
           </div>
         </div>
       )}
       <div className='flex justify-between mb-2'>
-        <h1 className='text-3xl text-blacktheme  font-[700]'>Reservations</h1>
-        <button className='btn-primary'>
-          Add Reservation
+        <h1 className='text-3xl text-blacktheme  font-[700]'>{t('reservations.title')}</h1>
+        <button className='btn-primary' onClick={()=>{setShowAddReservation(true)}}>
+          {t('reservations.buttons.addReservation')}
         </button>
       </div>
       <div className="flex lt-sm:flex-col lt-sm:gap-2 justify-between">
@@ -336,22 +361,22 @@ const ReservationsPage = () => {
         </div>
         <div className="flex lt-sm:flex-wrap gap-4">
           <button onClick={() => setFocusedFilter('Confirmed')} className={focusedFilter === 'Confirmed' ? 'btn-primary' : 'btn'}>
-            Confirmed
+            {t('reservations.filters.confirmed')}
           </button>
           <button onClick={() => setFocusedFilter('Canceled')} className={focusedFilter === 'Canceled' ? 'btn-primary' : 'btn'}>
-            Canceled
+            {t('reservations.filters.cancelled')}
           </button>
           <button onClick={() => setFocusedFilter('Pending')} className={focusedFilter === 'Pending' ? 'btn-primary' : 'btn'}>
-            Pending
+            {t('reservations.filters.pending')}
           </button>
           <button 
             className={`gap-2 flex items-center ${selectingDay === '' ? 'btn' : 'btn-primary'}`} 
             onClick={() => setFocusedDate(true)}
           >
-            Date
+            {t('reservations.filters.date')}
           </button>
           <button onClick={setDefaultFilter} className={(focusedFilter === '') && (selectingDay === '') ? 'btn-primary' : 'btn'}>
-            All
+            {t('reservations.filters.all')}
           </button>
         </div>
       </div>
@@ -359,32 +384,42 @@ const ReservationsPage = () => {
         <table className='min-w-full divide-y divide-gray-200'>
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Id</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Full Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Made From/By</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Guests</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('reservations.tableHeaders.id')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('reservations.tableHeaders.name')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('reservations.tableHeaders.email')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('reservations.tableHeaders.madeBy')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('reservations.tableHeaders.date')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('reservations.tableHeaders.time')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('reservations.tableHeaders.guests')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('reservations.tableHeaders.status')}</th>
             </tr>
           </thead>
           <tbody className='bg-white divide-y divide-gray-200'>
             {filteredReservations.map(reservation => (
-              <tr key={reservation.id} className="cursor-pointer hover:opacity-75" onClick={() => EditClient(reservation.id)}>
-                <td className="px-6 py-4 whitespace-nowrap">{reservation.id}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{reservation.fullName}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{reservation.email}</td>
-                <td className="px-6 py-4 flex items-center justify-center whitespace-nowrap">
+              <tr key={reservation.id} className=" hover:opacity-75">
+                <td className="px-6 py-4 whitespace-nowrap cursor-pointer"  onClick={() => EditClient(reservation.id)}>{reservation.id}</td>
+                <td className="px-6 py-4 whitespace-nowrap cursor-pointer"  onClick={() => EditClient(reservation.id)}>{reservation.fullName}</td>
+                <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => EditClient(reservation.id)}>{reservation.email}</td>
+                <td className="px-6 py-4 flex items-center justify-center whitespace-nowrap cursor-pointer"  onClick={() => EditClient(reservation.id)}>
                   {reservationOrigin(reservation.reservationMade)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">{reservation.date}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{reservation.time}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{reservation.guests}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-6 py-4 whitespace-nowrap cursor-pointer"  onClick={() => EditClient(reservation.id)}>{reservation.date }</td>
+                <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => EditClient(reservation.id)}>{reservation.time}</td>
+                <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => EditClient(reservation.id)}>{reservation.guests}</td>
+                <td className="px-6 py-4 whitespace-nowrap " onClick={()=> showStatusModification(reservation.id)}>
                   <span className={`${statusStyle(reservation.status)} text-center py-[.1em] px-3  rounded-[10px]`}> 
-                    {reservation.status}
+                    {reservation.status === 'Confirmed'? t('reservations.statusLabels.confirmed') : reservation.status === 'Pending' ? t('reservations.statusLabels.pending') : t('reservations.statusLabels.cancelled')}
                   </span>
+                    {showStatus && reservation.id === idStatusModification && (
+                      <div>
+                        <div className="fixed left-0 top-0 w-full h-full  opacity-0 " onClick={()=>{setShowStatus(false)}}></div>
+                        <ul className="absolute opacity-100 z-[300] bg-white p-2 rounded-md shadow-md">
+                          <li className="py-1 px-2 hover:bg-gray-100 cursor-pointer" onClick={()=> statusHandler('Pending')}>{t('reservations.statusLabels.pending')}</li>
+                          <li className="py-1 px-2 hover:bg-gray-100 cursor-pointer" onClick={()=> statusHandler('Confirmed')}>{t('reservations.statusLabels.confirmed')}</li>
+                          <li className="py-1 px-2 hover:bg-gray-100 cursor-pointer" onClick={()=> statusHandler('Cancelled')}>{t('reservations.statusLabels.cancelled')}</li>
+                        </ul>
+                      </div>
+                    )}
                 </td>
               </tr>
             ))}

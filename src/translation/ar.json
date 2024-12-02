@@ -1,0 +1,373 @@
+{
+    "header": {
+        
+        "date": {
+            "today": "اليوم",
+            "yesterday": "الأمس",
+            "tomorrow": "غداً"
+        }
+    },
+    "overview": {
+        "title": "نظرة عامة",
+        "headline": "مرحباً،",
+        "subtitle": "تحكم في الحجوزات، العملاء، والمزيد...",
+        "buttons": {
+            "filter": "تصفية"
+        },
+        "reservations": {
+            "title": "الحجوزات",
+            "status": {
+                "confirmed": "مؤكد",
+                "canceled": "ملغي"
+            },
+            "months": {
+                "january": "يناير",
+                "february": "فبراير",
+                "march": "مارس",
+                "april": "أبريل",
+                "may": "مايو",
+                "june": "يونيو",
+                "july": "يوليو",
+                "august": "أغسطس",
+                "september": "سبتمبر",
+                "october": "أكتوبر",
+                "november": "نوفمبر",
+                "december": "ديسمبر"
+            }
+        },
+        "history": {
+            "title": "السجل",
+            "status": {
+                "confirmed": "مؤكد",
+                "cancelled": "ملغي",
+                "pending": "قيد الانتظار"
+            }
+        },
+        "charts": {
+            "reservationsChart": {
+                "title": "الرسوم البيانية للحجوزات",
+                "legend": {
+                    "cancelled": "ملغي",
+                    "confirmed": "مؤكد"
+                }
+            },
+            "topUsers": {
+                "title": "أكثر المستخدمين"
+            },
+            "topUserActions": {
+                "title": "أعلى إجراءات المستخدمين",
+                "totalActions": 762,
+                "label": "إجراءات",
+                "legend": {
+                    "cancelled": "ملغي",
+                    "confirmed": "مؤكد",
+                    "pending": "قيد الانتظار"
+                }
+            },
+            "visitorsChart": {
+                "title": "رسم بياني للزوار"
+            }
+        }
+    },
+    "reservations": {
+        "title": "الحجوزات",
+        "searchPlaceholder": "بحث...",
+        "filters": {
+            "confirmed": "مؤكد",
+            "cancelled": "ملغي",
+            "pending": "قيد الانتظار",
+            "all": "الكل",
+            "date": "التاريخ"
+        },
+        "buttons": {
+            "addReservation": "إضافة حجز"
+        },
+        "tableHeaders": {
+            "id": "الرمز",
+            "name": "الاسم الكامل",
+            "email": "البريد الإلكتروني",
+            "phone": "الهاتف",
+            "date": "التاريخ",
+            "time": "الوقت",
+            "guests": "الضيوف",
+            "madeBy": "تم من/بواسطة",
+            "status": "الحالة"
+        },
+        "statusLabels": {
+            "pending": "قيد الانتظار",
+            "confirmed": "مؤكد",
+            "cancelled": "ملغي"
+        },
+        "edit": {
+            "title": "تعديل الحجز",
+            "headline": "تعديل الحجز",
+            "subtitle": "قم بتعديل تفاصيل الحجز",
+            "informations": {
+                "title": "المعلومات",
+                "name": "الاسم الكامل",
+                "email": "البريد الإلكتروني",
+                "phone": "الهاتف",
+                "date": "التاريخ",
+                "time": "الوقت",
+                "guests": "الضيوف",
+                "madeBy": "تم من/بواسطة",
+                "status": "الحالة"
+            },
+            "buttons": {
+                "save": "حفظ",
+                "cancel": "إلغاء"
+            }
+        }
+    },
+    "placeManagement": {
+        "title": "إدارة الأماكن",
+        "searchPlaceholder": "بحث...",
+        "filters": {
+            "confirmed": "مؤكد",
+            "canceled": "ملغي",
+            "waiting": "قيد الانتظار"
+        },
+        "tabs": {
+            "mainRoom": "القاعة الرئيسية",
+            "outdoor": "الخارج",
+            "terrace": "التراس"
+        },
+        "warning": {
+            "1": "يمكنك فقط استعراض الطوابق.",
+            "2": "لتعديل الطاولات، جرب استخدام جهاز أكبر!"
+        },
+        "reservations": {
+            "time": "الوقت",
+            "guests": "الضيوف",
+            "event": "الحدث",
+            "none": "لا يوجد"
+        },
+        "tables": {
+            "seatsLabel": "مقاعد"
+        },
+        "buttons": {
+            "designPlace": "صمم مكانك"
+        }
+    },
+    "editPlace": {
+        "title": "تعديل في أسطحك",
+        "buttons": {
+            "addTable": "إضافة طاولة",
+            "rectangleTable": "طاولة مستطيلة",
+            "circleTable": "طاولة دائرية",
+            "delete": "حذف طاولة",
+            "edit": "تعديل طاولة",
+            "save": "حفظ",
+            "reset": "إعادة تعيين"
+        }
+    },
+    "agenda":{
+        "title": "جدول الحجزات",
+        "and": "و"
+        
+    },
+    "grid": {
+        "title": "الشبكة",
+        "buttons": {
+            "addReservation": "إضافة حجز",
+            "navigate": "الانتقال إلى جدول الأعمال"
+        },
+        "meals": {
+            "breakfast": "إفطار",
+            "lunch": "غداء",
+            "dinner": "عشاء"
+        },
+        "people": "أشخاص",
+        "placeHolders": {
+            "firstName": "الاسم الأول",
+            "lastName": "الاسم الأخير",
+            "email": "البريد الإلكتروني",
+            "phone": "رقم الهاتف"
+        }
+    },
+    "clients": {
+        "title": "العملاء",
+        "searchPlaceholder": "بحث...",
+        "selectClient": "اختر عميلًا",
+        "buttons": {
+            "deselectAll": "إلغاء تحديد الكل",
+            "selectAll": "تحديد الكل"
+        },
+        "sendNotificationButton": "إرسال إشعار",
+        "lifetimeInfo": {
+            "title": "معلومات المستخدم",
+            "upcoming": "القادم",
+            "materialized": "محقق",
+            "denied": "مرفوض",
+            "cancelled": "ملغي",
+            "didntShow": "لم يحضر",
+            "spendPerCover": "معدل الإنفاق لكل ضيف",
+            "spendMAD": "الإنفاق بالدرهم"
+        },
+        "tabs": {
+            "profile": "الملف الشخصي",
+            "reservationHistory": "تاريخ الحجوزات"
+        },
+        "profileSection": {
+            "title": "المعلومات",
+            "fields": {
+                "name": "الاسم",
+                "email": "البريد الإلكتروني",
+                "phoneNumber": "رقم الهاتف",
+                "alternatePhone": "هاتف بديل",
+                "organization": "المؤسسة",
+                "guestNotes": "ملاحظات الضيف"
+            },
+            "clickToEdit": "اضغط للتعديل"
+        },
+        "reservationHistorySection": {
+            "title": "تاريخ الحجوزات",
+            "tableHeaders": {
+                "date": "التاريخ",
+                "time": "الوقت",
+                "spend": "الإنفاق",
+                "made": "تم من/بواسطة",
+                "roof": "السطح",
+                "table": "الطاولة",
+                "status": "الحالة"
+            },
+            "statusLabels": {
+                "confirmed": "مؤكد",
+                "cancelled": "ملغي",
+                "pending": "قيد الانتظار"
+            },
+            "buttons": {
+                "edit": "تعديل",
+                "cancel": "إلغاء"
+            }
+        }
+    },
+    "settingsPage": {
+        "title": "الإعدادات",
+        "chooseSettingPrompt": "اختر إعدادًا للتعديل",
+        "menuItems": {
+            "general": "عام",
+            "availability": "التوفر",
+            "tags": "العلامات",
+            "menu": "القائمة",
+            "photos": "الصور",
+            "messaging": "الرسائل",
+            "features": "الميزات",
+            "users": "المستخدمون",
+            "billing": "الفوترة",
+            "widget": "الودجت",
+            "permissions": "الصلاحيات",
+            "services": "الخدمات"
+        },
+        "general": {
+            "basicInformationForm": {
+                "title": "معلومات أساسية",
+                "labels": {
+                    "restaurantName": "اسم المطعم",
+                    "email": "البريد الإلكتروني",
+                    "country": "البلد",
+                    "city": "اختر المدينة",
+                    "description": "وصف المطعم",
+                    "phone": "الهاتف",
+                    "website": "الموقع الإلكتروني"
+                },
+                "buttons": {
+                    "cancel": "إلغاء",
+                    "save": "حفظ"
+                }
+            }
+        },
+        "widget": {
+            "title": "الودجت",
+            "uploadLogo": "رفع الشعار",
+            "addTitlePlaceholder": "أضف عنوانًا هنا",
+            "addDescriptionPlaceholder": "أضف وصفًا هنا",
+            "searchTabs": {
+                "title": "علامات البحث",
+                "options": {
+                    "city": "المدينة",
+                    "guest": "الضيف",
+                    "time": "الوقت",
+                    "date": "التاريخ"
+                }
+            },
+            "payment": {
+                "title": "الدفع",
+                "enableWhenGuestOver": "تمكين عندما يزيد عدد الضيوف عن",
+                "disable": "تعطيل",
+                "enable": "تمكين"
+            },
+            "buttons": {
+                "copyToken": "انسخ الرمز",
+                "save": "حفظ"
+            }
+        },
+        "users": {
+            "title": "المستخدمون",
+            "tableHeaders": {
+                "id": "المعرف",
+                "name": "الاسم",
+                "email": "البريد الإلكتروني",
+                "phone": "رقم الهاتف",
+                "role": "الدور",
+                "status": "الحالة"
+            },
+            "statusLabels": {
+                "working": "في العمل",
+                "rest": "استراحة"
+            },
+            "buttons": {
+                "addUser": "إضافة مستخدم"
+            }
+        },
+        "availability": {
+            "title": "التوفر",
+            "days": {
+                "monday": "الاثنين",
+                "tuesday": "الثلاثاء",
+                "wednesday": "الأربعاء",
+                "thursday": "الخميس",
+                "friday": "الجمعة",
+                "saturday": "السبت",
+                "sunday": "الأحد"
+            },
+            "unavailable": "غير متاح",
+            "placeLimitLabel": "عدد الأماكن المحدود في"
+        },
+        "tags":{
+            "title": "العلامات",
+            "placeHolder":"مثال: مطعم، مقهى، إفطار",
+            "label":"أضف علامة",
+            "buttons": {
+                "save": "حفظ"
+            }
+        },
+        "menu":{
+            "title": "القائمة",
+            "buttons": {
+                "addMenu": "إضافة قائمة",
+                "addItem": "إضافة عنصر",
+                "save": "حفظ",
+                "cancel": "إلغاء"
+            },
+            "placeHolders":{ 
+                "category": "اسم الفئة",
+                "food": "الطعام",
+                "price": "السعر",
+                "dh": "درهم"
+            }
+        },
+        "photos":{
+            "title": "الصور",
+            "buttons": {
+                "uploadPhoto": "رفع صورة",
+                "save": "حفظ",
+                "cancel": "إلغاء"
+            },
+            "warning": "يمكنك تحميل ما يصل إلى 5 صور فقط"
+        }
+
+        
+        
+    }
+}

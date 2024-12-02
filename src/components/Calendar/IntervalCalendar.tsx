@@ -72,7 +72,7 @@ const IntervalCalendar: React.FC<IntervalCalendarProps> = ({ onRangeSelect }) =>
   };
 
   return (
-    <div>
+    <div className='ltr'>
       <div className='text-xl items-center mb-4 flex justify-between'>
         <div className='font-bold text-greentheme'>{format(firstDayCurrentMonth, 'MMMM yyyy')}</div>
         <div className='flex space-x-2'>

@@ -1,0 +1,397 @@
+{
+    "header": {
+        "title": "Dashboard",
+        "buttons": {
+            "notifications": "Notifications",
+            "profile": "Profile",
+            "logout": "Logout"
+        },
+        "date": {
+            "today": "Today",
+            "yesterday": "Yesterday",
+            "tomorrow": "Tomorrow"
+        }
+    },
+    "overview": {
+        "title": "Overview",
+        "headline": "Hello,",
+        "subtitle": "Control your reservation, client, and more...",
+        "buttons": {
+            "filter": "filter"
+        },
+        "reservations": {
+            "title": "Reservations",
+            "status": {
+                "confirmed": "Confirmed",
+                "canceled": "Canceled"
+            },
+            "months":{
+                "january": "January",
+                "february": "February",
+                "march": "March",
+                "april": "April",
+                "may": "May",
+                "june": "June",
+                "july": "July",
+                "august": "August",
+                "september": "September",
+                "october": "October",
+                "november": "November",
+                "december": "December"
+            }
+        },
+        "history": {
+            "title": "History",
+            "status": {
+                "confirmed": "Confirmed",
+                "cancelled": "Cancelled",
+                "pending": "Pending"
+            }
+        },
+        "charts": {
+            "reservationsChart": {
+            "title": "Reservations",
+            "legend": {
+                "cancelled": "Cancelled",
+                "confirmed": "Confirmed"
+            }
+            },
+            "topUsers": {
+            "title": "Top Users"
+            },
+            "topUserActions": {
+                "title": "Top User Actions",
+                "totalActions": 762,
+                "label": "Actions",
+                "legend": {
+                    "cancelled": "Cancelled",
+                    "confirmed": "Confirmed",
+                    "pending": "Pending"
+                }
+            },
+            "visitorsChart": {
+            "title": "Visitors Chart"
+            }
+        }
+    },
+    "reservations": {
+      "title": "Reservations",
+      "searchPlaceholder": "Search...",
+      "filters": {
+        "confirmed": "Confirmed",
+        "cancelled": "Cancelled",
+        "pending": "Pending",
+        "all": "All",
+        "date": "Date"
+      },
+      "buttons": {
+        "addReservation": "Add Reservation"
+      },
+      "tableHeaders": {
+        "id": "ID",
+        "name": "Full Name",
+        "email": "Email",
+        "phone": "Phone",
+        "date": "Date",
+        "time": "Time",
+        "guests": "Guests",
+        "madeBy": "Made From/By",
+        "status": "Status"
+      },
+      "statusLabels": {
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "cancelled": "Cancelled"
+      },
+      "edit": {
+        "title": "Edit Reservation",
+        "headline": "Edit Reservation",
+        "subtitle": "Edit your reservation",
+        "informations": {
+          "title": "Informations",
+          "name": "Full Name",
+          "email": "Email",
+          "phone": "Phone",
+          "date": "Date",
+          "time": "Time",
+          "guests": "Guests",
+          "madeBy": "Made From/By",
+          "status": "Status"
+        },
+        "buttons": {
+          "save": "Save",
+          "cancel": "Cancel"
+        }
+      }
+    },
+    "placeManagement": {
+        "title": "Place Management",
+        "searchPlaceholder": "Search...",
+        "filters": {
+            "confirmed": "Confirmed",
+            "canceled": "Canceled",
+            "waiting": "Waiting"
+        },
+        "tabs": {
+            "mainRoom": "Main Room",
+            "outdoor": "Outdoor",
+            "terrace": "Terrace"
+        },
+        "warning": {
+            "1":"You can only overview the floors.",
+            "2":"To edit the tables try using a larger device!"
+        },
+        "reservations": {
+            "time": "Time",
+            "guests": "Guests",
+            "event": "Event",
+            "none": "none"
+        },
+        "tables": {
+            "seatsLabel": "seats"
+        },
+        "buttons": {
+            "designPlace": "Design Your Place"
+        }
+    },
+    "editPlace": {
+        "title": "Edit On Your Roofs",
+        "buttons": {
+            "addTable": "Add Table",
+            "rectangleTable": "Rectangle Table",
+            "circleTable": "Circle Table",
+            "delete": "Delete Table",
+            "edit": "Edit Table",
+            "save": "Save",
+            "reset": "Reset"
+        }
+    },
+    "agenda":{
+        "title": "Agenda",
+        "and": "and"
+        
+    },
+    "grid":{
+        "title": "Grid",
+        "buttons": {
+            "addReservation": "Add Reservation",
+            "navigate": "Navigate to Agenda",
+            "addThisClient": "Add this client"
+        },
+        "meals": {
+            "breakfast": "Breakfast",
+            "lunch": "Lunch",
+            "dinner": "Dinner"
+        },
+        "people": "People",
+        "placeHolders":{
+            "name": "Name",
+            "email": "Email",
+            "phone": "Phone Number"
+        }
+    },
+
+    "clients": {
+        "title": "Clients",
+        "searchPlaceholder": "Search...",
+        "selectClient": "Select a client",
+        "buttons":{
+            "deselectAll": "Deselect All",
+            "selectAll": "Select All"
+        },
+        "sendNotificationButton": "Send a notification",
+        "lifetimeInfo": {
+            "title": "Life time information",
+            "upcoming": "Upcoming",
+            "materialized": "Materialized",
+            "denied": "Denied",
+            "cancelled": "Cancelled",
+            "didntShow": "Didn't show",
+            "spendPerCover": "Spend/cover",
+            "spendMAD": "Spend MAD"
+        },
+        "tabs": {
+            "profile": "Profile",
+            "reservationHistory": "Reservation History"
+        },
+        "profileSection": {
+            "title": "Informations",
+            "fields": {
+                "name": "Name",
+                "email": "Email",
+                "phoneNumber": "Phone number",
+                "alternatePhone": "Alternate phone",
+                "organization": "Organization",
+                "guestNotes": "Guest Notes"
+            },
+            "clickToEdit": "Click to edit"
+        },
+        "reservationHistorySection": {
+            "title": "Reservation History",
+            "tableHeaders": {
+                "date": "Date",
+                "time": "Time",
+                "spend": "Spend",
+                "made": "Made From/By",
+                "roof": "Roof",
+                "table": "Table",
+                "status": "Status"
+            },
+            "statusLabels": {
+                "confirmed": "Confirmed",
+                "cancelled": "Cancelled",
+                "pending": "Pending"
+            },
+            "buttons": {
+                "edit": "Edit",
+                "cancel": "Cancel"
+            }
+        }
+    },
+     "settingsPage": {
+        "title": "Settings",
+        "chooseSettingPrompt": "Choose a setting to modify",
+        "menuItems": {
+            "general": "General",
+            "availability": "Availability",
+            "tags": "Tags",
+            "menu": "Menu",
+            "photos": "Photos",
+            "messaging": "Messaging",
+            "features": "Features",
+            "users": "Users",
+            "billing": "Billing",
+            "widget": "Widget",
+            "permissions": "Permissions",
+            "services": "Services"
+        },
+        "general": {
+            "basicInformationForm": {
+                "title": "Basic Information",
+                "labels": {
+                    "restaurantName": "Restaurant Name",
+                    "email": "Email",
+                    "country": "Country",
+                    "city": "Select City",
+                    "description": "Restaurant Description",
+                    "phone": "Phone",
+                    "website": "Website",
+                    "location": "Location"
+                },
+                "buttons": {
+                    "cancel": "Cancel",
+                    "save": "Save"
+                }
+            }
+        },
+        "widget": {
+            "title": "Widget",
+            "uploadLogo": "Upload Logo",
+            "addTitlePlaceholder": "Add title here",
+            "addDescriptionPlaceholder": "Add description here",
+            "searchTabs": {
+                "title": "Search Tabs",
+                "options": {
+                    "city": "City",
+                    "guest": "Guest",
+                    "time": "Time",
+                    "date": "Date"
+                }
+            },
+            "payment": {
+                "title": "Payment",
+                "enableWhenGuestOver": "Enable when guest over",
+                "disable": "Disable",
+                "enable": "Enable"
+            },
+            "buttons": {
+                "copyToken": "Copy your token",
+                "save": "Save"
+            }
+        },
+        "users":{
+            "title": "Users",
+            "tableHeaders": {
+                "id": "ID",
+                "name": "Name",
+                "email": "Email",
+                "phone": "Phone Number",
+                "role": "Role",
+                "status": "Status"
+            },
+            "statusLabels": {
+                "working": "At work",
+                "rest": "Rest"
+            },
+            "buttons": {
+                "addUser": "Add User"
+            }
+        },
+        "availability": {
+            "title": "Availability",
+            "manageWeek": "Manage your week",
+            "days": {
+                "monday": "MON",
+                "tuesday": "TUE",
+                "wednesday": "WED",
+                "thursday": "THU",
+                "friday": "FRI",
+                "saturday": "SAT",
+                "sunday": "SUN"
+            },
+            "unavailable": "Unavailable",
+            "type":"Type",
+            "from": "From",
+            "puffer": "Puffer",
+            "addAnotherSlot": "Add another slot",
+            "to": "To",
+            "applyToWeek": "Apply to weekly",
+            "placeLimitLabel": "Place limit number"
+        },
+        "tags":{
+            "title": "Tags",
+            "placeHolder":"Ex : Vegetarian, Vegan, Gluten Free",
+            "label":"Add a tag",
+            "buttons": {
+                "save": "Save"
+            }
+        },
+        "menu":{
+            "title": "Menu",
+            "buttons": {
+                "addMenu": "Add Category",
+                "addItem": "Add item",
+                "save": "Save",
+                "cancel": "Cancel"
+            },
+            "placeHolders":{ 
+                "category": "Category",
+                "food": "Food Name",
+                "price": "Price",
+                "dh": "DH"
+            }
+        },
+        "photos":{
+            "title": "Photos",
+            "buttons": {
+                "uploadPhoto": "Upload Photo",
+                "save": "Save",
+                "cancel": "Cancel"
+            },
+            "warning": "Maximum number of images reached"
+        }
+        
+        
+        
+        
+        
+              
+    },
+    "extra":{
+        "title": "Widget",
+        "activated": "Activated",
+        "disactivated": "Disactivated"
+    }
+
+  }
+  

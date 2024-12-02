@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import Map from '../map/Map';
 
 const General = () => {
   // State for form data
@@ -84,15 +86,17 @@ const General = () => {
     }));
   };
 
+  const {t}= useTranslation();
+
   return (
     <div className="bg-white rounded-[10px] p-3 w-full">
-      <h2 className="text-center mb-3">Basic Information</h2>
+      <h2 className="text-center mb-3">{t('settingsPage.general.basicInformationForm.title')}</h2>
       <form className="flex flex-col gap-3">
         <div className="flex flex-row gap-3">
           <input
             type="text"
             id="name"
-            placeholder="Restaurant Name"
+            placeholder={t('settingsPage.general.basicInformationForm.labels.restaurantName')}
             className="inputs"
             value={formData.name}
             onChange={handleInputChange}
@@ -100,7 +104,7 @@ const General = () => {
           <input
             type="text"
             id="email"
-            placeholder="Email"
+            placeholder={t('settingsPage.general.basicInformationForm.labels.email')}
             className="inputs"
             value={formData.email}
             onChange={handleInputChange}
@@ -125,7 +129,7 @@ const General = () => {
           value={formData.city}
           onChange={handleSelectChange} // Use the same handler for city
         >
-          <option value="">Select City</option>
+          <option value="">{t('settingsPage.general.basicInformationForm.labels.city')}</option>
           {cities.map((city) => (
             <option key={city} value={city}>
               {city}
@@ -137,7 +141,7 @@ const General = () => {
         <div className="flex gap-3">
           <textarea
             id="description"
-            placeholder="Restaurant Description"
+            placeholder={t('settingsPage.general.basicInformationForm.labels.description')}
             className="inputs w-full"
             value={formData.description}
             onChange={handleInputChange}
@@ -147,7 +151,7 @@ const General = () => {
           <input
             type="text"
             id="phone"
-            placeholder="Phone"
+            placeholder={t('settingsPage.general.basicInformationForm.labels.phone')}
             className="inputs"
             value={formData.phone}
             onChange={handleInputChange}
@@ -155,15 +159,19 @@ const General = () => {
           <input
             type="text"
             id="website"
-            placeholder="Website"
+            placeholder={t('settingsPage.general.basicInformationForm.labels.website')}
             className="inputs"
             value={formData.website}
             onChange={handleInputChange}
           />
         </div>
+        <div>
+          <label>{t('settingsPage.general.basicInformationForm.labels.location')}</label>
+          <Map />
+        </div>
         <div className="flex w-full justify-center gap-4">
-          <button type="reset" className="btn">Cancel</button>
-          <button type="submit" className="btn-primary">Save</button>
+          <button type="reset" className="btn">{t('settingsPage.general.basicInformationForm.buttons.cancel')}</button>
+          <button type="submit" className="btn-primary">{t('settingsPage.general.basicInformationForm.buttons.save')}</button>
         </div>
       </form>
     </div>

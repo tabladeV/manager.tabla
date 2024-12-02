@@ -1,10 +1,11 @@
 import React from 'react';
-
+import { useTranslation } from 'react-i18next';
 interface SearchBarProps {
     SearchHandler: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({ SearchHandler }) => {
+    const { t } = useTranslation();
     return (
        <div className='flex items-center p-2 gap-2 justify-normal '>
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -14,7 +15,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ SearchHandler }) => {
          <input 
             type="text" 
             onChange={SearchHandler} 
-            placeholder="Search..." 
+            placeholder={t('reservations.searchPlaceholder')}
             className=" border border-gray-300 rounded" 
         />
        </div>

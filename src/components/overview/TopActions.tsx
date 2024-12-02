@@ -3,6 +3,7 @@
 import * as React from "react"
 import { TrendingUp } from "lucide-react"
 import { Label, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts"
+import { useTranslation } from "react-i18next"
 
 const chartData = [
   { action: "Confirmed", count: 275, fill: "#3F72AF" },
@@ -15,10 +16,11 @@ export default function TopActions() {
     return chartData.reduce((acc, curr) => acc + curr.count, 0)
   }, [])
 
+  const {t}= useTranslation()
   return (
     <div className=" bg-white w-[30%] rounded-[20px] lt-sm:w-full overflow-hidden">
       <div className="px-6 py-4 ">
-        <h2 className="text-xl  font-bold mb-2">Top User Actions</h2>
+        <h2 className="text-xl  font-bold mb-2">{t('overview.charts.topUserActions.title')}</h2>
       </div>
       <div className="px-6 py-4">
         <div className="h-64">
@@ -74,15 +76,15 @@ export default function TopActions() {
       <div className="flex justify-center gap-5 mb-2"> 
         <div className="flex gap-3 items-center">
             <div className="h-3 w-3 rounded-full bg-bluetheme"></div>
-            <span className="text-sm text-gray-600">Confirmed</span>
+            <span className="text-sm text-gray-600">{t('overview.charts.topUserActions.legend.confirmed')}</span>
         </div>
         <div className="flex gap-3 items-center">
             <div className="h-3 w-3 rounded-full bg-[#FF4B4B]"></div>
-            <span className="text-sm text-gray-600">Canceled</span>
+            <span className="text-sm text-gray-600">{t('overview.charts.topUserActions.legend.cancelled')}</span>
         </div>
         <div className="flex gap-3 items-center">
             <div className="h-3 w-3 rounded-full bg-[#F09300]"></div>
-            <span className="text-sm text-gray-600">Pending</span>
+            <span className="text-sm text-gray-600">{t('overview.charts.topUserActions.legend.pending')}</span>
         </div>
       </div>
     </div>

@@ -1,5 +1,7 @@
 import { da } from 'date-fns/locale';
+import i18next from 'i18next';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
 interface ClientData {
@@ -25,6 +27,8 @@ interface ClientData {
 const ClientInterface = () => {
   const { id } = useParams();
   const [isProfile, setIsProfile] = useState(true);
+
+  const { t } = useTranslation();
 
   const clients = [
     {
@@ -221,35 +225,35 @@ const ClientInterface = () => {
               <h4 className="text-subblack text-[18px]">{client.phoneNumber}</h4>
             </div>
             <div className="w-full p-3 gap-3">
-              <h5 className="ml-2 text-subblack font-[600] text-[16px] mb-2">Life time information</h5>
+              <h5 className="ml-2 text-subblack font-[600] text-[16px] mb-2">{t('clients.lifetimeInfo.title')}</h5>
               <div className="bg-white p-2 rounded-[10px] gap-3 w-full flex lt-sm:flex-wrap justify-around">
                 <div className="flex flex-col items-center">
                   <h1>{client.lifetime.upcoming}</h1>
-                  <h4 className="font-[500] text-subblack">Upcoming</h4>
+                  <h4 className="font-[500] text-subblack">{t('clients.lifetimeInfo.upcoming')}</h4>
                 </div>
                 <div className="flex flex-col items-center">
                   <h1>{client.lifetime.materialized}</h1>
-                  <h4 className="font-[500] text-subblack">Materialized</h4>
+                  <h4 className="font-[500] text-subblack">{t('clients.lifetimeInfo.materialized')}</h4>
                 </div>
                 <div className="flex flex-col items-center">
                   <h1>{client.lifetime.denied}</h1>
-                  <h4 className="font-[500] text-subblack">Denied</h4>
+                  <h4 className="font-[500] text-subblack">{t('clients.lifetimeInfo.denied')}</h4>
                 </div>
                 <div className="flex flex-col items-center">
                   <h1>{client.lifetime.cancelled}</h1>
-                  <h4 className="font-[500] text-subblack">Cancelled</h4>
+                  <h4 className="font-[500] text-subblack">{t('clients.lifetimeInfo.cancelled')}</h4>
                 </div>
                 <div className="flex flex-col items-center">
                   <h1>{client.lifetime.noShow}</h1>
-                  <h4 className="font-[500] text-subblack">Didn't show</h4>
+                  <h4 className="font-[500] text-subblack">{t('clients.lifetimeInfo.didntShow')}</h4>
                 </div>
                 <div className="flex flex-col items-center">
                   <h1>{client.lifetime.spendCover}</h1>
-                  <h4 className="font-[500] text-subblack">Spend/cover</h4>
+                  <h4 className="font-[500] text-subblack">{t('clients.lifetimeInfo.spendPerCover')}</h4>
                 </div>
                 <div className="flex flex-col items-center">
                   <h1>{client.lifetime.spendMAD}</h1>
-                  <h4 className="font-[500] text-subblack">Spend MAD</h4>
+                  <h4 className="font-[500] text-subblack">{t('clients.lifetimeInfo.spendMAD')}</h4>
                 </div>
               </div>
               <div>
@@ -258,48 +262,48 @@ const ClientInterface = () => {
                     className={` w-full ${isProfile ? 'btn-primary' : 'btn-secondary'}`}
                     onClick={() => setIsProfile(true)}
                   >
-                    Profile
+                    {t('clients.tabs.profile')}
                   </button>
                   <div className="border-r-2"></div>
                   <button
                     className={` w-full ${isProfile ? ' btn-secondary' : 'btn-primary'}`}
                     onClick={() => setIsProfile(false)}
                   >
-                    Reservation History
+                    {t('clients.tabs.reservationHistory')}
                   </button>
                 </div>
                 {isProfile ? (
                   <div>
-                    <h4 className="m-2 text-greytheme font-[500]">Informations</h4>
+                    <h4 className="m-2 text-greytheme font-[500]">{t('clients.profileSection.title')}</h4>
                     <div className="px-2 py-1 rounded-[10px] mt-2">
                       <table className="w-full  border-collapse">
                         <tbody>
                           <tr className="border border-gray-300">
-                            <td className="font-medium text-gray-700 p-2 w-1/4">Name</td>
+                            <td className="font-medium text-gray-700 p-2 w-1/4">{t('clients.profileSection.fields.name')}</td>
                             {renderCell('name')}
-                            <td className="font-medium text-gray-700 p-2 w-1/4 border-l border-gray-300 lt-sm:hidden">Email</td>
+                            <td className="font-medium text-gray-700 p-2 w-1/4 border-l border-gray-300 lt-sm:hidden">{t('clients.profileSection.fields.email')}</td>
                             <span className='lt-sm:hidden'>{renderCell('email')}</span>
                           </tr>
                           <tr className='sm:hidden border border-gray-300'>
-                            <td className="font-medium text-gray-700 p-2 w-1/4 border-l border-gray-300">Email</td>
+                            <td className="font-medium text-gray-700 p-2 w-1/4 border-l border-gray-300">{t('clients.profileSection.fields.email')}</td>
                             {renderCell('email')}
                           </tr>
                           <tr className="border border-gray-300">
-                            <td className="font-medium text-gray-700 p-2">Phone number</td>
+                            <td className="font-medium text-gray-700 p-2">{t('clients.profileSection.fields.phoneNumber')}</td>
                             {renderCell('phoneNumber')}
-                            <td className="font-medium text-gray-700 p-2 border-l border-gray-300 lt-sm:hidden">Alternate phone</td>
+                            <td className="font-medium text-gray-700 p-2 border-l border-gray-300 lt-sm:hidden">{t('clients.profileSection.fields.alternatePhone')}</td>
                             <span className='lt-sm:hidden'>{renderCell('alternatePhone')}</span>
                           </tr>
                           <tr className='sm:hidden border border-gray-300'>
-                            <td className="font-medium text-gray-700 p-2 border-l border-gray-300">Alternate phone</td>
+                            <td className="font-medium text-gray-700 p-2 border-l border-gray-300">{t('clients.profileSection.fields.alternatePhone')}</td>
                             {renderCell('alternatePhone')}
                           </tr>
                           <tr className="border border-gray-300">
-                            <td className="font-medium text-gray-700 p-2">Organization</td>
+                            <td className="font-medium text-gray-700 p-2">{t('clients.profileSection.fields.organization')}</td>
                             {renderCell('organization', 3)}
                           </tr>
                           <tr className="border border-gray-300">
-                            <td className="font-medium text-gray-700 p-2">Guest Notes</td>
+                            <td className="font-medium text-gray-700 p-2">{t('clients.profileSection.fields.guestNotes')}</td>
                             {renderCell('notes', 3)}
                           </tr>
                         </tbody>
@@ -311,15 +315,15 @@ const ClientInterface = () => {
                   <div>
                     <h4 className="m-2 text-greytheme font-[500]">Reservation History</h4>
                     <div className="w-full  mx-auto  overflow-x-auto">
-                      <table className="w-full bg-white border-collapse shadow-sm ">
+                      <table className={`w-full bg-white border-collapse shadow-sm ${i18next.language === 'ar' && 'text-right'}`}>
                         <thead>
                           <tr className="bg-gray-50 ">
-                            <th className="font-semibold text-gray-700 p-3 text-left border-b border-gray-200">Date</th>
-                            <th className="font-semibold text-gray-700 p-3 text-left border-b border-gray-200">Time</th>
-                            <th className="font-semibold text-gray-700 p-3 text-left border-b border-gray-200 flex justify-center">Made From/By</th>
-                            <th className="font-semibold text-gray-700 p-3 text-left border-b border-gray-200">Roof</th>
-                            <th className="font-semibold text-gray-700 p-3 text-left border-b border-gray-200">Table</th>
-                            <th className="font-semibold text-gray-700 p-3 text-left border-b border-gray-200">Status</th>
+                            <th className="font-semibold text-gray-700 p-3 text-left border-b border-gray-200">{t('clients.reservationHistorySection.tableHeaders.date')}</th>
+                            <th className="font-semibold text-gray-700 p-3 text-left border-b border-gray-200">{t('clients.reservationHistorySection.tableHeaders.time')}</th>
+                            <th className="font-semibold text-gray-700 p-3 text-left border-b border-gray-200 flex justify-center">{t('clients.reservationHistorySection.tableHeaders.made')}</th>
+                            <th className="font-semibold text-gray-700 p-3 text-left border-b border-gray-200">{t('clients.reservationHistorySection.tableHeaders.roof')}</th>
+                            <th className="font-semibold text-gray-700 p-3 text-left border-b border-gray-200">{t('clients.reservationHistorySection.tableHeaders.table')}</th>
+                            <th className="font-semibold text-gray-700 p-3 text-left border-b border-gray-200">{t('clients.reservationHistorySection.tableHeaders.status')}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -341,7 +345,7 @@ const ClientInterface = () => {
                                   reservation.status === 'Cancelled' ? 'bg-softredtheme text-redtheme' :
                                   'bg-softyellowtheme text-yellowtheme'
                                 }`}>
-                                  {reservation.status}
+                                  {reservation.status === 'Confirmed' ? t('clients.reservationHistorySection.statusLabels.confirmed') : reservation.status === 'Cancelled' ? t('clients.reservationHistorySection.statusLabels.cancelled') : t('clients.reservationHistorySection.statusLabels.pending')}
                                 </span>
                               </td>
                             </tr>

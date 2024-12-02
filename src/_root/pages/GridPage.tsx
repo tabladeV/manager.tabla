@@ -3,6 +3,9 @@
 import { useState, useEffect, useRef } from "react"
 import { addHours, format, startOfHour, isBefore, setMinutes, endOfDay, set } from "date-fns"
 import { Link } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import i18next from "i18next"
+import ReservationModal from "../../components/reservation/ReservationModal"
 
 const halfHours = ['00', '30']
 
@@ -15,6 +18,8 @@ const reservations: { [key: string]: { name: string; people: number }[] } = {
 }
 
 const GridPage = () => {
+  const { t } = useTranslation()
+
   const [visibleHours, setVisibleHours] = useState<Date[]>([])
   const scrollRef = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
@@ -110,44 +115,17 @@ const GridPage = () => {
 
 
   return (
-    <div className="flex flex-col ">
+    <div className="flex flex-col">
       {
         focusedAddReservation &&
-        <div>
-          <div className="overlay " onClick={() => { setFocusedAddReservation(false) }}></div>
-          <form className="sm:sidepopup lt-sm:popup lt-sm:h-[70vh] lt-sm:w-full lt-sm:bottom-0 h-full gap-5" onSubmit={handleAddReservation}>
-            <h1 className="text-3xl text-blacktheme font-[700]">Add Reservation</h1>
-            
-            <div className="flex flex-col gap-2">
-              <div className="flex flex-row w-full gap-2">
-                <input placeholder="First Name" type="text" className="inputs" id="firstname" required />
-                <input placeholder="Last Name" type="text" className="inputs " id="lastname" required />
-              </div>
-              <input placeholder="Email" type="email" className="inputs" id="email" required />
-              <input placeholder="Phone Number" type="text" className="inputs" id="phonenumber" required />
-              <select name="places" id="places" className="inputs" >
-                <option value="Places" disabled>Places</option>
-                <option value="Pending">Main Room</option>
-                <option value="Confirmed">Outdoor</option>
-                <option value="Canceled">Terrace</option>
-              </select>
-              <select name="table" id="table" className="inputs" >
-                <option value="table" disabled>Places</option>
-                <option value="Pending">T-01</option>
-                <option value="Confirmed">Outdoor</option>
-                <option value="Canceled">Terrace</option>
-              </select>
-            </div>
-            <button type="submit" className="btn-primary">Add Reservation</button>
-          </form>
-        </div>
+        <ReservationModal onClick={()=>{setFocusedAddReservation(false)}}/>
       }
       <div className="flex mb-4 justify-between items-center">
-        <h1 className="">Grid</h1>
-        <Link to="/agenda" className="btn sm:hidden">Navigate to Agenda  {'>'}</Link>
+        <h1 className="">{t('grid.title')}</h1>
+        <Link to="/agenda" className="btn sm:hidden">{t('grid.buttons.navigate')}  {'>'}</Link>
       </div>
       <div
-        className="overflow-x-scroll mx-auto cursor-grab max-w-fit w-full  no-scrollbar bg-white"
+        className="overflow-x-scroll  ltr mx-auto cursor-grab max-w-fit w-full  no-scrollbar bg-white"
         ref={scrollRef}
         onMouseDown={handleMouseDown}
         onMouseLeave={handleMouseLeave}
@@ -166,8 +144,8 @@ const GridPage = () => {
 
         {/* Reservation grid */}
         {halfHours.map((minutes) => (
-          <div key={minutes} className="flex  ">
-            <div className="w-20 shrink-0 py-4  border-b text-right pr-2 font-medium  bg-white z-10 min-h-[14em] ">--:{minutes}</div>
+          <div key={minutes} className="flex  items-center ">
+            <div className="w-20 shrink-0 py-4  border-b text-right pr-2 font-medium  bg-white z-10 min-h-[14em] ">:{minutes}</div>
             {visibleHours.map((hour) => {
               const slotTime = setMinutes(hour, parseInt(minutes))
               const timeKey = format(slotTime, 'HH:mm')
@@ -179,7 +157,7 @@ const GridPage = () => {
                   {minutes === '00' && (
                     
                     <div className={`w-full top-0 left-0 right-0 h-4 flex justify-between px-2 text-subblack bg-softgreytheme`} >
-                      <div className="text-xs text-center font-semibold">{isBreakfast(hour) ? 'Breakfast' : isLunch(hour) ? 'Lunch' : 'Dinner'}</div>
+                      <div className="text-xs text-center font-semibold">{isBreakfast(hour) ? t('grid.meals.breakfast') : isLunch(hour) ? t('grid.meals.lunch') : t('grid.meals.dinner')}</div>
                       <div className="text-xs text-center flex items-center gap-1 font-semibold">
                         <svg width="9" height="7" viewBox="0 0 9 7" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M5.83333 5.41668V6.25002H0V5.41668C0 5.41668 0 3.75002 2.91667 3.75002C5.83333 3.75002 5.83333 5.41668 5.83333 5.41668ZM4.375 1.45835C4.375 1.16992 4.28947 0.887964 4.12923 0.648142C3.96898 0.40832 3.74122 0.221402 3.47475 0.111024C3.20827 0.000646623 2.91505 -0.0282332 2.63216 0.0280369C2.34927 0.084307 2.08942 0.2232 1.88547 0.427151C1.68152 0.631103 1.54262 0.890953 1.48635 1.17384C1.43008 1.45673 1.45896 1.74995 1.56934 2.01643C1.67972 2.2829 1.86664 2.51066 2.10646 2.67091C2.34628 2.83115 2.62824 2.91668 2.91667 2.91668C3.30344 2.91668 3.67437 2.76304 3.94786 2.48955C4.22135 2.21606 4.375 1.84512 4.375 1.45835ZM5.80833 3.75002C6.06448 3.94824 6.27407 4.2002 6.42236 4.48814C6.57066 4.77609 6.65405 5.09304 6.66667 5.41668V6.25002H8.33333V5.41668C8.33333 5.41668 8.33333 3.90418 5.80833 3.75002ZM5.41667 1.53319e-05C5.12991 -0.00131848 4.8495 0.0844033 4.6125 0.245849C4.8656 0.599489 5.00169 1.02347 5.00169 1.45835C5.00169 1.89323 4.8656 2.31721 4.6125 2.67085C4.8495 2.83229 5.12991 2.91802 5.41667 2.91668C5.80344 2.91668 6.17437 2.76304 6.44786 2.48955C6.72135 2.21606 6.875 1.84512 6.875 1.45835C6.875 1.07157 6.72135 0.700642 6.44786 0.427151C6.17437 0.153661 5.80344 1.53319e-05 5.41667 1.53319e-05Z" fill="#1E1E1E" fill-opacity="0.5"/>
@@ -195,15 +173,15 @@ const GridPage = () => {
                   <div className="flex h-[10em] flex-col p-1 gap-1 justify-start items-center">
                     {reservation ? (
                       reservation.map((r) => (
-                        <div key={r.name} className="border-[1px] w-full text-center border-solid border-subblack p-2 rounded-lg">
+                        <div key={r.name} className={`border-[1px] w-full text-center border-solid border-subblack p-2 rounded-lg  ${i18next.language === 'ar' && 'rtl'}`}>
                           <div className="font-semibold">{r.name}</div>
-                          <div className="text-sm">{r.people} people</div>
+                          <div className="text-sm">{r.people} {t('grid.people')}</div>
                         </div>
                       ))
                     ) : null}
                     
                   </div>
-                    <button className="btn-primary text-[.8rem] text-center bottom-0" onClick={() => addReservation(format(hour, 'HH') + ':' + minutes)}>Add Reservation</button>
+                    <button className="btn-primary text-[.8rem] text-center bottom-0" onClick={() => addReservation(format(hour, 'HH') + ':' + minutes)}>{t('grid.buttons.addReservation')}</button>
                 </div>
               )
             })}

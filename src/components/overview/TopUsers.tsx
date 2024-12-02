@@ -1,4 +1,5 @@
 
+import { useTranslation } from "react-i18next";
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis, ResponsiveContainer, Tooltip, TooltipProps } from "recharts"
 
 const chartData = [
@@ -26,10 +27,11 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label })
 };
 
 export default function TopUsers() {
+  const {t}= useTranslation()
   return (
     <div className=" bg-white  rounded-[20px] w-[40%] lt-sm:w-full overflow-hidden">
       <div className="px-6 py-4">
-        <h2 className="text-xl font-bold mb-2">Top Users</h2>
+        <h2 className="text-xl font-bold mb-2">{t('overview.charts.topUsers.title')}</h2>
       </div>
       <div className="px-6 py-4">
         <div className="h-64">

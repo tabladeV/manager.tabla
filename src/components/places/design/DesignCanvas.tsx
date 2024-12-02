@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Stage, Layer, Text } from 'react-konva';
 import Rectangle from './Rectangle';
 import CircleShape from './CircleShape';
+import { useTranslation } from 'react-i18next';
 
 const initialShapes = [
     {
@@ -54,7 +55,7 @@ const DesignCanvas: React.FC = () => {
     }
   };
 
-  
+  const {t} = useTranslation(); 
 
   const addShape = (type: 'rectangle' | 'circle') => {
     const newShape = {
@@ -118,13 +119,13 @@ const DesignCanvas: React.FC = () => {
         <div className="p-2 flex bg-white rounded-[10px] gap-2">
           <button onClick={() => setShowTools(!showTools)} className="text-lg items-center py-2 text-greentheme font-[600] px-2 rounded-[10px] border border-transparent hover:border-softgreentheme duration-200 gap-3 flex">
             <div className='text-greentheme bg-softgreentheme w-[2em] h-[2em] rounded-[10px] items-center flex justify-center'>+</div>
-            <p>Add Table {showTools?  '   <':'   >'}</p>
+            <p>{t('editPlace.buttons.addTable')} {showTools?  '   <':'   >'}</p>
           </button>
 
           {showTools && (
             <div className='flex gap-2'>
-              <button className='btn' onClick={() => addShape('rectangle')}>Rectangle Table</button>
-              <button className='btn' onClick={() => addShape('circle')}>Circle Table</button>
+              <button className='btn' onClick={() => addShape('rectangle')}>{t('editPlace.buttons.rectangleTable')}</button>
+              <button className='btn' onClick={() => addShape('circle')}>{t('editPlace.buttons.circleTable')}</button>
             </div>
           )}
           <div className="flex items-center">
@@ -140,7 +141,7 @@ const DesignCanvas: React.FC = () => {
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M2.59989 3.31042C2.60553 3.25944 2.62978 3.21234 2.66799 3.17812C2.7062 3.14391 2.75569 3.125 2.80698 3.125H7.19281C7.2441 3.125 7.29359 3.14391 7.33179 3.17812C7.37 3.21234 7.39425 3.25944 7.39989 3.31042L7.48323 4.06083C7.63369 5.41375 7.63369 6.77917 7.48323 8.13208L7.47489 8.20583C7.44846 8.44539 7.34289 8.66929 7.17491 8.8421C7.00692 9.01492 6.7861 9.12679 6.54739 9.16C5.52073 9.30366 4.47906 9.30366 3.45239 9.16C3.21361 9.12687 2.9927 9.01504 2.82463 8.84222C2.65656 8.66939 2.55093 8.44545 2.52448 8.20583L2.51614 8.13208C2.36571 6.77931 2.36571 5.41403 2.51614 4.06125L2.59989 3.31042ZM4.47906 4.75C4.47906 4.66712 4.44614 4.58763 4.38753 4.52903C4.32893 4.47042 4.24944 4.4375 4.16656 4.4375C4.08368 4.4375 4.00419 4.47042 3.94559 4.52903C3.88698 4.58763 3.85406 4.66712 3.85406 4.75V7.66667C3.85406 7.74955 3.88698 7.82903 3.94559 7.88764C4.00419 7.94624 4.08368 7.97917 4.16656 7.97917C4.24944 7.97917 4.32893 7.94624 4.38753 7.88764C4.44614 7.82903 4.47906 7.74955 4.47906 7.66667V4.75ZM6.14573 4.75C6.14573 4.66712 6.1128 4.58763 6.0542 4.52903C5.99559 4.47042 5.91611 4.4375 5.83323 4.4375C5.75035 4.4375 5.67086 4.47042 5.61226 4.52903C5.55365 4.58763 5.52073 4.66712 5.52073 4.75V7.66667C5.52073 7.74955 5.55365 7.82903 5.61226 7.88764C5.67086 7.94624 5.75035 7.97917 5.83323 7.97917C5.91611 7.97917 5.99559 7.94624 6.0542 7.88764C6.1128 7.82903 6.14573 7.74955 6.14573 7.66667V4.75Z" fill="#FF4B4B"/>
                 </svg>
 
-                Delete Table
+                {t('editPlace.buttons.delete')}
                 </button>
                 <button onClick={editShape} className="text-lg items-center py-2 text-greentheme ml-3  font-[600] px-2 rounded-[10px] border border-transparent hover:border-softredtheme duration-200 gap-3 flex">
                   <svg width="35" height="35" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -150,7 +151,7 @@ const DesignCanvas: React.FC = () => {
                     <path d="M11.0417 6.9953L12.4167 8.3703M10.125 13.412H13.7917" stroke="#88AB61" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
 
-                  Edit Table
+                  {t('editPlace.buttons.edit')}
                 </button>
 
               </div>
@@ -158,8 +159,8 @@ const DesignCanvas: React.FC = () => {
           </div>
         </div>
         <div className='flex gap-2 py-3'>
-          <button className='btn-primary ' onClick={saveLayout}>Save</button>
-          <button className='btn-secondary' onClick={resetLayout}>Reset</button>
+          <button className='btn-primary ' onClick={saveLayout}>{t('editPlace.buttons.save')}</button>
+          <button className='btn-secondary' onClick={resetLayout}>{t('editPlace.buttons.reset')}</button>
         </div>
       </div>
 

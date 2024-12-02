@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import AccessToClient from "../../components/clients/AccessToClient";
 import SearchBar from "../../components/header/SearchBar";
 import { Outlet, useLocation, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 interface ClientData {
   id: string;
@@ -21,6 +22,9 @@ interface ClientData {
 }
 
 const ClientsPage = () => {
+
+  const {t} = useTranslation();
+
   const clients = [
     {
       id: 'janereq',
@@ -130,7 +134,7 @@ const ClientsPage = () => {
         </div>
       )}
       <div>
-        <h1>Clients</h1>
+        <h1>{t('clients.title')}</h1>
       </div>
       <div className="flex gap-2">
         <div
@@ -145,9 +149,9 @@ const ClientsPage = () => {
             <option>Canceled</option>
           </select> */}
           {!(selectedClient.length === clients.length) ? (
-            <button className={`btn-secondary hover:bg-softgreentheme hover:text-greentheme ${selectedClient === clients ? 'hidden':''}`} onClick={selectAll}>Select All</button>
+            <button className={`btn-secondary hover:bg-softgreentheme hover:text-greentheme ${selectedClient === clients ? 'hidden':''}`} onClick={selectAll}>{t('clients.buttons.selectAll')}</button>
           ) : (
-            <button className={`btn ${selectedClient === clients ? 'hidden':''}`} onClick={() => setSelectedClient([])}>Deselect All</button>
+            <button className={`btn ${selectedClient === clients ? 'hidden':''}`} onClick={() => setSelectedClient([])}>{t('clients.buttons.deselectAll')}</button>
           )  
           }
 
@@ -163,11 +167,11 @@ const ClientsPage = () => {
               />
             ))}
           </div>
-          <button className={` ${selectedClient.length === 0 ? 'btn hover:border-[0px] border-[0px] cursor-not-allowed bg-softgreytheme ':'btn-primary'}`} disabled={selectedClient.length===0} onClick={()=>{(setShowNotificationModal(true))}}>Send a notification</button>
+          <button className={` ${selectedClient.length === 0 ? 'btn hover:border-[0px] border-[0px] cursor-not-allowed bg-softgreytheme ':'btn-primary'}`} disabled={selectedClient.length===0} onClick={()=>{(setShowNotificationModal(true))}}>{t('clients.sendNotificationButton')}</button>
         </div>
         {pathname === "/clients" || pathname === "/clients/" ? (
           <div className={`lt-sm:hidden flex flex-col items-center w-3/4 text-center p-2 rounded-[10px]`}>
-            <h2>Select a client</h2>
+            <h2>{t('clients.selectClient')}</h2>
           </div>
         ) : (
           <Outlet />

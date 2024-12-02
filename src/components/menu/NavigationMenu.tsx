@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom'
+import { usePowerContext } from '../../context/PowerContext';
 
 interface NavigationMenuProps {
     stateOfSideBar: boolean;
@@ -7,6 +9,9 @@ interface NavigationMenuProps {
 }
 
 const NavigationMenu = (props:NavigationMenuProps) => {
+
+  const { power, setPower } = usePowerContext(); // Get the global date from context
+
 
     const normalMenuClass = 'flex items-center my-1 hover:bg-[#88AB6115] text-[#1E1E1E75] transition duration-150  rounded-[10px] px-[1em]  h-[3em]  gap-[1em]';
     const navigatedMenuClass = 'flex items-center my-1 bg-greentheme text-white hover:bg-[#88AB61] transition duration-150  rounded-[10px] px-[1em] h-[3em]  gap-[1em]';
@@ -19,11 +24,11 @@ const NavigationMenu = (props:NavigationMenuProps) => {
 
    
 
-
+const {t}=  useTranslation();
     
 
   return (
-    <div className='bg-white px-[1.4em] gap-10 flex flex-col justify-between sm:h-[calc(100vh-100px)] lt-sm:fixed lt-sm:z-10  lt-sm:bottom-0 lt-sm:w-full lt-sm:h-100px '>
+    <div className={`bg-white px-[1.4em] gap-10 flex flex-col justify-between sm:h-[calc(100vh-100px)] lt-sm:fixed lt-sm:z-10  lt-sm:bottom-0 ${stateOfSideBar && 'w-[18em]'} lt-sm:w-full lt-sm:h-100px `}>
       <div className='lt-sm:flex lt-sm:justify-around lt-sm:p-1 '>
         <Link to='/' className={`${stateOfSideBar? 'w-[13em]':''} ${pathname === '/' ? navigatedMenuClass : normalMenuClass }`}>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -31,7 +36,7 @@ const NavigationMenu = (props:NavigationMenuProps) => {
           </svg>
 
 
-          <h2 className={`font-[500] text-[17px] ${stateOfSideBar? 'block':'hidden'}`}>Overview</h2>
+          <h2 className={`font-[500] text-[17px] ${stateOfSideBar? 'block':'hidden'}`}>{t('overview.title')}</h2>
         </Link>
 
 
@@ -41,7 +46,7 @@ const NavigationMenu = (props:NavigationMenuProps) => {
           </svg>
 
 
-          <h2 className={`font-[500] text-[17px] ${stateOfSideBar? 'block':'hidden'}`}>Reservations</h2>
+          <h2 className={`font-[500] text-[17px] ${stateOfSideBar? 'block':'hidden'}`}>{t('reservations.title')}</h2>
         </Link>
 
 
@@ -50,23 +55,23 @@ const NavigationMenu = (props:NavigationMenuProps) => {
               <path d="M9.99998 1.66667C6.49998 1.66667 3.33331 4.35001 3.33331 8.50001C3.33331 11.15 5.37498 14.2667 9.44998 17.8583C9.76665 18.1333 10.2416 18.1333 10.5583 17.8583C14.625 14.2667 16.6666 11.15 16.6666 8.50001C16.6666 4.35001 13.5 1.66667 9.99998 1.66667ZM9.99998 10C9.08331 10 8.33331 9.25001 8.33331 8.33334C8.33331 7.41667 9.08331 6.66667 9.99998 6.66667C10.9166 6.66667 11.6666 7.41667 11.6666 8.33334C11.6666 9.25001 10.9166 10 9.99998 10Z" fill={(pathname === '/places') || (pathname === '/places/design') ? 'white':'#1e1e1e'} fill-opacity={(pathname === '/places') || (pathname === '/places/design')? '1':'0.75'}/>
           </svg>
 
-          <h2 className={`font-[500] text-[17px] ${stateOfSideBar? 'block':'hidden'}`}>Places</h2>
+          <h2 className={`font-[500] text-[17px] ${stateOfSideBar? 'block':'hidden'}`}>{t('placeManagement.title')}</h2>
         </Link>
         {(pathname === '/places' || pathname=== '/places/design') && 
-        <div className='flex lt-sm:hidden flex-col gap-1'>
-          <Link to='/places' className={`hover:bg-[#88AB6115] flex text-[#1E1E1E75] transition duration-150 h-[3em] rounded-[10px] px-[1em] py-[.6em]  gap-[1em] ${pathname==='/places' ? 'text-greentheme':''}`}>
+        <div className='flex lt-sm:hidden items-center flex-col gap-1'>
+          <Link to='/places' className={`hover:bg-[#88AB6115] items-center flex text-[#1E1E1E75] transition duration-150 h-[3em] rounded-[10px] px-[1em] py-[.6em]  gap-[1em] ${pathname==='/places' ? 'text-greentheme':''}`}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M3 19C2.45 19 1.97933 18.8043 1.588 18.413C1.19667 18.0217 1.00067 17.5507 1 17V7C1 6.45 1.196 5.97933 1.588 5.588C1.98 5.19667 2.45067 5.00067 3 5H13C13.55 5 14.021 5.196 14.413 5.588C14.805 5.98 15.0007 6.45067 15 7V17C15 17.55 14.8043 18.021 14.413 18.413C14.0217 18.805 13.5507 19.0007 13 19H3ZM3 17H13V7H3V17ZM17 19V5H19V19H17ZM21 19V5H23V19H21Z" fill={(pathname === '/places') ? '#88AB61':'#1e1e1e'} fill-opacity={(pathname === '/places') ? '1':'0.3'}/>
             </svg>
 
-            <h2 className={`font-[500] text-[17px] ${stateOfSideBar? 'block':'hidden'}`}>Overview</h2>
+            <h2 className={`font-[500] text-[17px] ${stateOfSideBar? 'block':'hidden'}`}>{t('overview.title')}</h2>
           </Link>
-          <Link to='/places/design' className={`hover:bg-[#88AB6115] flex  text-[#1E1E1E75] transition duration-150  rounded-[10px] px-[1em] py-[.6em] h-[3em] gap-[1em] ${pathname==='/places/design' ? 'text-greentheme ':''}`}>
+          <Link to='/places/design' className={`hover:bg-[#88AB6115] items-center flex  text-[#1E1E1E75] transition duration-150  rounded-[10px] px-[1em] py-[.6em] h-[3em] gap-[1em] ${pathname==='/places/design' ? 'text-greentheme ':''}`}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M3.00014 17.25V21H6.75014L17.8101 9.93001L14.0601 6.18001L3.00014 17.25ZM22.6101 18.36L18.3601 22.61L13.1601 17.41L14.9301 15.64L15.9301 16.64L18.4001 14.16L19.8201 15.58L18.3601 17L19.4201 18L20.8401 16.6L22.6101 18.36ZM6.61014 10.83L1.39014 5.64001L5.64014 1.39001L7.40014 3.16001L4.93014 5.64001L6.00014 6.70001L8.46014 4.22001L9.88014 5.64001L8.46014 7.05001L9.46014 8.05001L6.61014 10.83ZM20.7101 7.00001C21.1001 6.61001 21.1001 6.00001 20.7101 5.59001L18.3701 3.29001C18.0001 2.90001 17.3501 2.90001 16.9601 3.29001L15.1201 5.12001L18.8701 8.87001L20.7101 7.00001Z" fill={ (pathname === '/places/design') ? '#88AB61':'#1e1e1e'} fill-opacity={(pathname === '/places/design')? '1':'0.3'}/>
             </svg>
 
-            <h2 className={`font-[500] text-[17px] ${stateOfSideBar? 'block':'hidden'}`}>Design</h2>
+            <h2 className={`font-[500] text-[17px] ${stateOfSideBar? 'block':'hidden'}`}>{t('editPlace.title')}</h2>
           </Link>
         </div>
         }
@@ -80,7 +85,7 @@ const NavigationMenu = (props:NavigationMenuProps) => {
           </svg>
 
 
-          <h2 className={`font-[500] text-[17px] ${stateOfSideBar? 'block':'hidden'}`}>Agenda & Grid</h2>
+          <h2 className={`font-[500] text-[17px] ${stateOfSideBar? 'block':'hidden'}`}>{t('agenda.title')} {t('agenda.and')} {t('grid.title')}</h2>
         </Link>
 
         {(pathname === '/agenda' || pathname === '/agenda/grid') && 
@@ -91,14 +96,14 @@ const NavigationMenu = (props:NavigationMenuProps) => {
               </svg>
 
 
-              <h2 className={`font-[500] text-[17px] ${stateOfSideBar? 'block':'hidden'}`}>Agenda</h2>
+              <h2 className={`font-[500] text-[17px] ${stateOfSideBar? 'block':'hidden'}`}>{t('agenda.title')}</h2>
             </Link>
             <Link to='/agenda/grid' className={`hover:bg-[#88AB6115] h-[3em] flex text-[#1E1E1E75] transition duration-150  rounded-[10px] px-[1em] py-[.6em]  gap-[1em] ${pathname==='/agenda/grid' ? 'text-greentheme ':''}`}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M10 4V8H14V4H10ZM16 4V8H20V4H16ZM16 10V14H20V10H16ZM16 16V20H20V16H16ZM14 20V16H10V20H14ZM8 20V16H4V20H8ZM8 14V10H4V14H8ZM8 8V4H4V8H8ZM10 14H14V10H10V14ZM4 2H20C20.5304 2 21.0391 2.21071 21.4142 2.58579C21.7893 2.96086 22 3.46957 22 4V20C22 20.5304 21.7893 21.0391 21.4142 21.4142C21.0391 21.7893 20.5304 22 20 22H4C2.92 22 2 21.1 2 20V4C2 3.46957 2.21071 2.96086 2.58579 2.58579C2.96086 2.21071 3.46957 2 4 2Z" fill={(pathname === '/agenda/grid')  ? '#88AB61':'#1e1e1e'} fill-opacity={(pathname === '/agenda/grid')? '1':'0.3'}/>
               </svg>
 
-              <h2 className={`font-[500] text-[17px] ${stateOfSideBar? 'block':'hidden'}`}>Grid</h2>
+              <h2 className={`font-[500] text-[17px] ${stateOfSideBar? 'block':'hidden'}`}>{t('grid.title')}</h2>
             </Link>
           </div>
         }
@@ -135,7 +140,7 @@ const NavigationMenu = (props:NavigationMenuProps) => {
 
 
 
-          <h2 className={`font-[500] text-[17px] ${stateOfSideBar? 'block':'hidden'}`}>Clients</h2>
+          <h2 className={`font-[500] text-[17px] ${stateOfSideBar? 'block':'hidden'}`}>{t('clients.title')}</h2>
         </Link>
       </div>
       <div className='lt-sm:hidden'>
@@ -157,24 +162,32 @@ const NavigationMenu = (props:NavigationMenuProps) => {
 
 
 
-        <h2 className={`font-[500] text-[17px] ${stateOfSideBar? 'block':'hidden'}`}>Settings</h2>
+
+        <h2 className={`font-[500] text-[17px] ${stateOfSideBar? 'block':'hidden'}`}>{t('settingsPage.title')}</h2>
       </Link>
       {/* <div>
         <button  className={` w-full ${normalMenuClass}`} onClick={props.handleSideBar}>
-          {!stateOfSideBar? 
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M5 12H19M19 12L13 18M19 12L13 6" stroke="#333333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          :
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19 12L5 12M5 12L11 6M5 12L11 18" stroke="#333333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-
-          }
-          {stateOfSideBar ? <h2 className={`font-[500] text-[17px] `}>Collapse</h2> : ''}
-
+        {!stateOfSideBar? 
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5 12H19M19 12L13 18M19 12L13 6" stroke="#333333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        :
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M19 12L5 12M5 12L11 6M5 12L11 18" stroke="#333333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        
+        }
+        {stateOfSideBar ? <h2 className={`font-[500] text-[17px] `}>Collapse</h2> : ''}
+        
         </button>
-      </div> */}
+        </div> */}
+        <div className={`mt-10 cursor-pointer ${!power && 'hover:bg-softredtheme'} ${normalMenuClass }`} onClick={()=>{setPower(!power)}}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M13.5 3C13.5 2.60218 13.342 2.22064 13.0607 1.93934C12.7794 1.65804 12.3978 1.5 12 1.5C11.6022 1.5 11.2206 1.65804 10.9393 1.93934C10.658 2.22064 10.5 2.60218 10.5 3V13C10.5 13.3978 10.658 13.7794 10.9393 14.0607C11.2206 14.342 11.6022 14.5 12 14.5C12.3978 14.5 12.7794 14.342 13.0607 14.0607C13.342 13.7794 13.5 13.3978 13.5 13V3ZM7.854 5.75C8.01815 5.64094 8.15922 5.50061 8.26914 5.33703C8.37906 5.17345 8.45568 4.98982 8.49464 4.79663C8.53359 4.60344 8.53411 4.40447 8.49617 4.21107C8.45823 4.01768 8.38257 3.83365 8.2735 3.6695C8.16444 3.50535 8.02411 3.36428 7.86053 3.25436C7.69695 3.14444 7.51333 3.06782 7.32013 3.02886C7.12694 2.98991 6.92797 2.98939 6.73457 3.02733C6.54118 3.06527 6.35715 3.14094 6.193 3.25C4.74899 4.20748 3.56462 5.50773 2.74569 7.03459C1.92677 8.56145 1.4988 10.2674 1.5 12C1.5 17.799 6.201 22.5 12 22.5C17.799 22.5 22.5 17.799 22.5 12C22.5 8.346 20.633 5.13 17.807 3.25C17.4755 3.02987 17.0701 2.95045 16.68 3.02922C16.2899 3.10798 15.9471 3.33848 15.727 3.67C15.5069 4.00152 15.4275 4.40691 15.5062 4.79698C15.585 5.18706 15.8155 5.52987 16.147 5.75C17.4896 6.64064 18.5097 7.93996 19.0563 9.45556C19.6028 10.9712 19.6468 12.6225 19.1817 14.165C18.7165 15.7076 17.767 17.0594 16.4738 18.0202C15.1805 18.981 13.6122 19.4999 12.001 19.4999C10.3899 19.4999 8.82153 18.981 7.52825 18.0202C6.23496 17.0594 5.28546 15.7076 4.82034 14.165C4.35521 12.6225 4.39919 10.9712 4.94575 9.45556C5.49231 7.93996 6.51141 6.64064 7.854 5.75Z" fill={power?'#88AB61':'#FF4B4B'}/>
+          </svg>
+          <h2 className={`font-[500] ${power? 'text-greentheme':'text-redtheme'} text-[17px] ${stateOfSideBar? 'block':'hidden'}`}>{t('extra.title')} {power? (t('extra.activated')) :(t('extra.disactivated'))}</h2>
+  
+        </div>
     </div>
     </div>
   )

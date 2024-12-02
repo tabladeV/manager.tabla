@@ -87,6 +87,13 @@
   display: none;
 }
 
+.rtl{
+  direction: rtl;
+}
+.ltr{
+  direction: ltr;
+}
+
 /* Hide scrollbar for IE, Edge, and Firefox */
 .no-scrollbar {
   -ms-overflow-style: none; /* IE and Edge */
@@ -97,7 +104,7 @@
 
 @layer base{
     body{
-        font-family: 'poppins', sans-serif;
+        font-family: 'poppins', "cairo",sans-serif;
     }
     h1{
         font-size: 2rem;

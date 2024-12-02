@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react"
+import { useTranslation } from "react-i18next"
 
 interface User {
   id: number
@@ -81,6 +82,8 @@ export default function Users() {
     openModal(newUser)
   }, [openModal])
 
+  const {t}= useTranslation();
+
   return (
     <div className="bg-white w-full rounded-[10px] flex flex-col items-center p-10">
       {isModalOpen && (
@@ -105,17 +108,17 @@ export default function Users() {
           </div>
         </div>
       )}
-      <h1 className="text-2xl font-bold mb-3">Users</h1>
+      <h1 className="text-2xl font-bold mb-3">{t('settingsPage.users.title')}</h1>
       <div className="overflow-x-auto w-full">
         <table className="w-full border-collapse bg-white text-left text-sm text-gray-500">
           <thead className="bg-gray-50">
             <tr>
-              <th scope="col" className="px-6 py-4 font-medium text-gray-900">ID</th>
-              <th scope="col" className="px-6 py-4 font-medium text-gray-900">Name</th>
-              <th scope="col" className="px-6 py-4 font-medium text-gray-900">Phone Number</th>
-              <th scope="col" className="px-6 py-4 font-medium text-gray-900">Email</th>
-              <th scope="col" className="px-6 py-4 font-medium text-gray-900">Role</th>
-              <th scope="col" className="px-6 py-4 font-medium text-gray-900">Status</th>
+              <th scope="col" className="px-6 py-4 font-medium text-gray-900">{t('settingsPage.users.tableHeaders.id')}</th>
+              <th scope="col" className="px-6 py-4 font-medium text-gray-900">{t('settingsPage.users.tableHeaders.name')}</th>
+              <th scope="col" className="px-6 py-4 font-medium text-gray-900">{t('settingsPage.users.tableHeaders.phone')}</th>
+              <th scope="col" className="px-6 py-4 font-medium text-gray-900">{t('settingsPage.users.tableHeaders.email')}</th>
+              <th scope="col" className="px-6 py-4 font-medium text-gray-900">{t('settingsPage.users.tableHeaders.role')}</th>
+              <th scope="col" className="px-6 py-4 font-medium text-gray-900">{t('settingsPage.users.tableHeaders.status')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 border-t border-gray-100">
@@ -134,7 +137,7 @@ export default function Users() {
                         : "bg-softredtheme text-redtheme"
                     }`}
                   >
-                    {user.status}
+                    {user.status === "At Work" ? t('settingsPage.users.statusLabels.working') : t('settingsPage.users.statusLabels.rest')}
                   </span>
                 </td>
               </tr>
@@ -143,7 +146,7 @@ export default function Users() {
         </table>
       </div>
       <div>
-        <button className="btn-primary mt-4" onClick={addUser}>Add User</button>
+        <button className="btn-primary mt-4" onClick={addUser}>{t('settingsPage.users.buttons.addUser')}</button>
       </div>
     </div>
   )

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const Tags = () => {
   const [tags, setTags] = useState([
@@ -25,15 +26,17 @@ const Tags = () => {
     }
   };
 
+  const {t}=useTranslation();
+
   return (
     <div className="bg-white rounded-lg flex flex-col items-center p-6 w-full">
       <div>
-        <h2>Tags</h2>
+        <h2>{t('settingsPage.tags.title')}</h2>
       </div>
       <div className="flex gap-4">
         <div className="w-[40vw] lt-sm:w-full">
-          <p className="text-gray-500 mb-2 ml-2">Add a tag</p>
-          <input type="text" placeholder="Ex: Restaurant, Terrace" id="tag" className="inputs" />
+          <p className="text-gray-500 mb-2 ml-2">{t('settingsPage.tags.label')}</p>
+          <input type="text" placeholder={t('settingsPage.tags.placeHolder')} id="tag" className="inputs" />
           <div className="flex flex-wrap gap-2 mt-2">
             {tags.map((tag, index) => (
               <div key={index} className="flex items-center gap-2">
@@ -55,7 +58,7 @@ const Tags = () => {
             ))}
           </div>
           <button className="btn-primary mx-auto submit mt-4 lt-sm:w-full" onClick={saveTag}>
-            Save
+            {t('settingsPage.tags.buttons.save')}
           </button>
         </div>
       </div>

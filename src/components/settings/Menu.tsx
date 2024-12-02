@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Pencil, Trash2, ChevronDown, Plus, Check } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 interface MenuItem {
   id: string
@@ -116,9 +117,11 @@ export default function Component() {
     }
   }
 
+  const {t} = useTranslation()
+
   return (
     <div className="p-6 bg-white rounded-lg shadow-sm">
-      <h1 className="text-2xl font-medium text-center mb-8">Menu</h1>
+      <h1 className="text-2xl font-medium text-center mb-8">{t('settingsPage.menu.title')}</h1>
 
       <div className="space-y-8">
         {menuSections.map((section) => (
@@ -143,7 +146,7 @@ export default function Component() {
               ) : (
                 <>
                   <h2 className="text-[#2B5219] font-medium">{section.name}</h2>
-                  <div className="flex gap-1">
+                  <div className="flex  gap-1">
                     <button
                       onClick={() => startEditingSection(section.id, section.name)}
                       className="p-2 rounded bg-softgreentheme text-greentheme hover:bg-[#88AB6130] transition-colors"
@@ -167,16 +170,16 @@ export default function Component() {
               <div key={item.id} className="flex gap-4 w-full flex-wrap justify-center items-center">
                 <input
                   type="text"
-                  placeholder="Food name"
-                  className="inputs-unique  flex-1 px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-greentheme"
+                  placeholder={t('settingsPage.menu.placeHolders.food')}
+                  className="inputs-unique flex-1 px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-greentheme"
                   value={item.foodName}
                   onChange={(e) => updateMenuItem(section.id, item.id, 'foodName', e.target.value)}
                 />
                 <div className="relative">
                   <input
                     type="text"
-                    placeholder="Price"
-                    className="inputs-unique w-32 px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-greentheme"
+                    placeholder={t('settingsPage.menu.placeHolders.price')}
+                    className="inputs-unique ltr w-32 px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-greentheme"
                     value={item.price}
                     onChange={(e) => updateMenuItem(section.id, item.id, 'price', e.target.value)}
                   />
@@ -184,11 +187,11 @@ export default function Component() {
                 </div>
                 <div className="relative w-48">
                   <select
-                    className="inputs-unique w-full appearance-none px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-greentheme bg-white"
+                    className="inputs-unique ltr w-full appearance-none px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-greentheme bg-white"
                     value={item.category}
                     onChange={(e) => updateMenuItem(section.id, item.id, 'category', e.target.value)}
                   >
-                    <option value="">Category</option>
+                    <option value="">{t('settingsPage.menu.placeHolders.category')}</option>
                     <option value="appetizer">Appetizer</option>
                     <option value="main">Main Course</option>
                     <option value="dessert">Dessert</option>
@@ -209,7 +212,7 @@ export default function Component() {
               className="flex items-center gap-2 text-[#2B5219] hover:text-[#1a310f] transition-colors"
             >
               <Plus className="w-5 h-5" />
-              Add Item
+              {t('settingsPage.menu.buttons.addItem')}
             </button>
           </div>
         ))}
@@ -219,7 +222,7 @@ export default function Component() {
           className="flex items-center gap-2 text-[#2B5219] hover:text-[#1a310f] transition-colors"
         >
           <Plus className="w-5 h-5" />
-          Add Menu
+          {t('settingsPage.menu.buttons.addMenu')}
         </button>
 
         <div className="flex justify-center gap-4 pt-4">
@@ -227,7 +230,7 @@ export default function Component() {
             className="btn-primary"
             onClick={() => console.log('Saving menu:', menuSections)}
           >
-            Save
+            {t('settingsPage.menu.buttons.save')}
           </button>
           <button
             className="btn-secondary hover:bg-[#88AB6150] hover:text-greentheme transition-colors"
@@ -242,7 +245,7 @@ export default function Component() {
               }]
             }])}
           >
-            Cancel
+            {t('settingsPage.menu.buttons.cancel')}
           </button>
         </div>
       </div>

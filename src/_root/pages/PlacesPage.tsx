@@ -3,6 +3,8 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 
+import { useTranslation } from 'react-i18next';
+
 import DraggableItem from '../../components/places/DraggableItem';
 import DropTarget from '../../components/places/DropTarget';
 import SearchBar from '../../components/header/SearchBar';
@@ -15,7 +17,11 @@ function isTouchDevice() {
   return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 }
 
+
 const PlacePage: React.FC = () => {
+
+  const {t}= useTranslation()
+
   const [focusedRoof, setFocusedRoof] = useState<string | null>('Main Room');
   const [roofs, setRoofs] = useState<string[]>(['Main Room', 'Outdoor', 'Terrace']);
   const { chosenDay } = useDateContext(); // Access chosenDay from DateContext
@@ -251,28 +257,28 @@ const PlacePage: React.FC = () => {
   return (
     <div>
       <div className='flex justify-between mb-2'>
-        <h1 className='text-3xl text-blacktheme font-[700]'>Place Management</h1>
+        <h1 className='text-3xl text-blacktheme font-[700]'>{t('placeManagement.title')}</h1>
         
         <Link to='/places/design' className='btn-primary flex gap-2 items-center lt-sm:hidden'>
-          Design Your Place
+          {t('placeManagement.buttons.designPlace')}
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M20.71 7.04006C21.1 6.65006 21.1 6.00006 20.71 5.63006L18.37 3.29006C18 2.90006 17.35 2.90006 16.96 3.29006L15.12 5.12006L18.87 8.87006M3 17.2501V21.0001H6.75L17.81 9.93006L14.06 6.18006L3 17.2501Z" fill="white" />
           </svg>
         </Link>
       </div>
       <p className='text-redtheme bg-softredtheme p-2 rounded-md opacity-70 mb-2 font-[400] sm:hidden'>
-        You can only overview the floors.<br /> To edit the tables try using a larger device!
+        {t('placeManagement.warning.1')}<br />{t('placeManagement.warning.2')}
       </p>
       <DndProvider backend={isTouchDevice() ? TouchBackend : HTML5Backend}>
         <div className="flex gap-[10px]">
           <div className='bg-white lt-sm:hidden rounded-[10px] p-[1em]'>
             <SearchBar SearchHandler={searchFilter} />
-            <div className='grid grid-flow-col gap-3 font-[500] my-3 justify-between'>
-              <button className='btn-primary'>Confirmed</button>
-              <button className='btn-secondary'>Canceled</button>
-              <button className='btn-secondary'>Waiting</button>
+            <div className='grid grid-flow-col gap-3 font-[500]  my-3 justify-between'>
+              <button className='btn-primary'>{t('placeManagement.filters.confirmed')}</button>
+              <button className='btn-secondary'>{t('placeManagement.filters.canceled')}</button>
+              <button className='btn-secondary'>{t('placeManagement.filters.waiting')}</button>
             </div>
-            <div className='overflow-y-auto h-[55vh] bar-hide'>
+            <div className='overflow-y-auto h-[55vh]  bar-hide'>
               {searchResults.map((item) => (
                 <DraggableItem itemData={item} key={item.id} />
               ))}

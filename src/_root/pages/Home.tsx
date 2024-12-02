@@ -4,17 +4,28 @@ import TopActions from '../../components/overview/TopActions'
 import TopUsers from '../../components/overview/TopUsers'
 import VisitorsChart from '../../components/overview/VisitorsChart'
 
+import { useTranslation } from 'react-i18next';
+import 'i18next'
+import i18next from 'i18next'
+
+
 const Home = () => {
+
+
+
+  const { t } = useTranslation();
 
   console.log('Home')
   return (
-    <div>
+    <div className={i18next.language === 'ar' ?'rtl':''}>
       <div className='mb-4 ml-4'>
         <h1>
-          Hello, Alfred
+          {t('overview.headline') + ' Alfred'} 
+          {/* Hello, Alfred */}
         </h1>
         <p className='text-subblack'>
-          Control your reservation, client, and more...
+          {t('overview.subtitle')}
+          {/* Here’s what’s happening with your business today. */}
         </p>
       </div>
       <div className='flex flex-col gap-[10px]'>

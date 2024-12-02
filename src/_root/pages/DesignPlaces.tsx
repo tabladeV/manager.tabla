@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import DesignCanvas from '../../components/places/design/DesignCanvas';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const DesignPlaces: React.FC = () => {
     const [showAddPlace, setShowAddPlace] = useState(false);
@@ -32,6 +33,8 @@ const DesignPlaces: React.FC = () => {
     setShowAddPlace(false);
   };
 
+  const { t } = useTranslation();
+
     return (
         <div>
             {showAddPlace && (
@@ -51,7 +54,7 @@ const DesignPlaces: React.FC = () => {
             )}
             <div className='flex justify-start gap-3 mb-2'>
                 <Link to='/places' className='hover:bg-softgreentheme px-4 items-center flex justify-center text-greentheme font-bold rounded-[10px]' >{'<'}</Link>
-                <h1 className='text-3xl text-blacktheme font-[700]'>Edit On Your Roofs</h1>
+                <h1 className='text-3xl text-blacktheme font-[700]'>{t('editPlace.title')}</h1>
             </div>
             <div className='flex gap-5'>
                 {roofs.map((roof) => (

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Bar, BarChart, CartesianGrid, XAxis, Tooltip, ResponsiveContainer, TooltipProps } from "recharts"
 
 const chartData = [
@@ -25,10 +26,11 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label })
 };
 
 export default function VisitorsChart() {
+  const {t}= useTranslation()
   return (
     <div className="bg-white rounded-[20px] w-[30%] lt-sm:w-full overflow-hidden ">
       <div className="px-6 py-4">
-        <h2 className="text-xl font-bold mb-2">Visitors Chart</h2>
+        <h2 className="text-xl font-bold mb-2">{t('overview.charts.visitorsChart.title')}</h2>
       </div>
       <div className="px-6 py-4">
         <div className="h-64">
