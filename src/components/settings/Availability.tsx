@@ -102,53 +102,53 @@ const Availability = () => {
   const [pufferValue, setPufferValue] = useState<number | ''>('');
 
   return (
-    <div className="bg-white rounded-lg p-6 w-full">
+    <div className={` rounded-lg p-6 w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}>
       {manageWeekly && (
         <div>
           <div className="overlay" onClick={() => setManageWeekly(false)}></div>
-          <div className="popup w-fit lt-sm:w-full ">
+          <div className={`popup w-fit lt-sm:w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}>
             <div className="flex justify-between">
               <h2 className="mb-3">{t('settingsPage.availability.manageWeek')}</h2>
             </div>
             {weeklySlots.map((slot, index) => (
               <div key={index} className="flex items-center gap-2 mb-2 lt-sm:flex-wrap">
                 <div className='flex flex-col'>
-                  <label className="text-sm text-gray-500">{t('settingsPage.availability.type')}</label>
+                  <label className="text-sm ">{t('settingsPage.availability.type')}</label>
                   <input
                     type="text"
                     value={slot.type}
                     onChange={(e) => updateWeeklySlot(index, 'type', e.target.value)}
-                    className="inputs-unique lt-sm:w-full w-[10em]"
+                    className={`inputs-unique lt-sm:w-full w-[10em] ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-gray-500">{t('settingsPage.availability.from')}</label>
+                  <label className="text-sm ">{t('settingsPage.availability.from')}</label>
                   <input
                     type="time"
                     value={slot.start}
                     onChange={(e) => updateWeeklySlot(index, 'start', e.target.value)}
-                    className="inputs"
+                    className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
                   />
                 </div>
                 <span>-</span>
                 <div>
-                  <label className="text-sm text-gray-500">{t('settingsPage.availability.to')}</label>
+                  <label className="text-sm ">{t('settingsPage.availability.to')}</label>
                   <input
                     type="time"
                     value={slot.end}
                     onChange={(e) => updateWeeklySlot(index, 'end', e.target.value)}
-                    className="inputs"
+                    className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
                   />
                 </div>
                 <div>
-                  <span className="text-sm text-gray-500 w-[300px] ml-2">
+                  <span className="text-sm  w-[300px] ml-2">
                     {t('settingsPage.availability.placeLimitLabel')}
                   </span>
                   <input
                     type="number"
                     value={slot.placeLimit}
                     onChange={(e) => updateWeeklySlot(index, 'placeLimit', parseInt(e.target.value))}
-                    className="inputs-unique"
+                    className={`inputs-unique ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
                   />
                 </div>
                 <X size={24} className="text-redtheme cursor-pointer mt-3" onClick={() => setWeeklySlots((prev) => prev.filter((_, i) => i !== index))} />
@@ -169,10 +169,10 @@ const Availability = () => {
       <div className='flex justify-between mb-4 items-center'>
         <h2 className="text-2xl font-bold text-center ">{t('settingsPage.availability.title')}</h2>
         <div className="flex justify-center items-center gap-3">
-          <label className="text-sm text-gray-500">{t('settingsPage.availability.puffer')}</label>
+          <label className="text-sm ">{t('settingsPage.availability.puffer')}</label>
           <input
             type="number"
-            className="inputs-unique"
+            className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
             value={pufferValue}
             onChange={(e) => setPufferValue(parseInt(e.target.value) || '')}
           />
@@ -202,28 +202,28 @@ const Availability = () => {
                       type="text"
                       value={slot.type}
                       onChange={(e) => updateSlot(dayIndex, slotIndex, 'type', e.target.value)}
-                      className="inputs-unique w-[10em] "
-                    />
+                      className={`inputs-unique w-[10em] ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                      />
                     <input
                       type="time"
                       value={slot.start}
                       onChange={(e) => updateSlot(dayIndex, slotIndex, 'start', e.target.value)}
-                      className="inputs"
-                    />
+                      className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                      />
                     <span>-</span>
                     <input
                       type="time"
                       value={slot.end}
                       onChange={(e) => updateSlot(dayIndex, slotIndex, 'end', e.target.value)}
-                      className="inputs"
-                    />
-                    <span className={`text-sm text-gray-500 w-[300px] ml-2 `}>{t('settingsPage.availability.placeLimitLabel')}</span>
+                      className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                      />
+                    <span className={`text-sm  w-[300px] ml-2 `}>{t('settingsPage.availability.placeLimitLabel')}</span>
                     <input
                       type="number"
                       value={slot.placeLimit}
                       onChange={(e) => updateSlot(dayIndex, slotIndex, 'placeLimit', parseInt(e.target.value))}
-                      className="inputs-unique w-[4em]"
-                    />
+                      className={`inputs-unique w-[4em] ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                      />
                     <button
                       onClick={() => removeSlot(dayIndex, slotIndex)}
                       className="text-redtheme hover:text-gray-600"
@@ -233,13 +233,13 @@ const Availability = () => {
                   </div>
                 ))
               ) : (
-                <div className={`text-gray-500 mt-5 ${i18next.language === 'ar' && 'mt-2'}`}>{t('settingsPage.availability.unavailable')}</div>
+                <div className={` mt-5 ${i18next.language === 'ar' && 'mt-2'}`}>{t('settingsPage.availability.unavailable')}</div>
               )}
             </div>
-            <div className={`flex mt-3 items-center ${i18next.language=== 'ar' && 'mt-[.4em]'}`}>
+            <div className={`flex mt-4 items-center ${i18next.language=== 'ar' && 'mt-[.4em]'}`}>
               <button
                 onClick={() => addSlot(dayIndex)}
-                className="text-[#88AB61] hover:text-[#6A8A43] ml-2"
+                className="text-[#88AB61] hover:text-[#6A8A43] ml-2 "
               >
                 <Plus size={16} />
               </button>

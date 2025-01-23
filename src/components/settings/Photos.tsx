@@ -26,7 +26,7 @@ export default function Photos() {
   const {t}= useTranslation();
 
   return (
-    <div className="bg-white rounded-lg flex gap-3 flex-col items-center p-6 w-full">
+    <div className={` rounded-lg flex gap-3 flex-col items-center p-6 w-full ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'}`}>
       <div >
         <h2>{t('settingsPage.photos.title')}</h2>
       </div>
@@ -44,7 +44,7 @@ export default function Photos() {
             />
             <label
               htmlFor="image-upload"
-              className={`flex items-center gap-2 px-4 py-2 rounded-md border border-dashed border-gray-300 cursor-pointer hover:bg-gray-50 transition-colors ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-md border border-dashed border-gray-300 cursor-pointer  transition-colors ${
                 images.length >= maxImages ? 'opacity-50 cursor-not-allowed' : ''
               }`}
             >
@@ -65,7 +65,7 @@ export default function Photos() {
           {[...Array(maxImages)].map((_, index) => (
             <div
               key={index}
-              className="aspect-square relative bg-gray-50 rounded-lg border border-gray-200"
+              className={`aspect-square relative rounded-lg border  ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2 border-darkthemeitems':'bg-gray-100 border-gray-200'}`}
             >
               {images[index] ? (
                 <>

@@ -45,6 +45,8 @@ import { PowerProvider } from "./context/PowerContext";
 
 import 'leaflet/dist/leaflet.css';
 import { DarkProvider } from "./context/DarkContext";
+import Roles from "./components/settings/Roles";
+import Reviews from "./_root/pages/Reviews";
 
 
 function App() {
@@ -90,6 +92,7 @@ function App() {
                         <Route path='/agenda' element={<AgendaPage />} />
                         <Route path='/agenda/grid' element={<GridPage />} />
                         <Route path='/payment' element={<PaymentPage />} />
+                        <Route path='/reviews' element={<Reviews />} />
                         <Route path='/clients' element={<ClientsPage />} >
                           <Route path='/clients/:id' element={<ClientInterface />} />
                         </Route>
@@ -106,6 +109,7 @@ function App() {
                           <Route path="/settings/widget" element={<Widget />} />
                           <Route path="/settings/permissions" element={<Permissions />} />
                           <Route path="/settings/services" element={<Services />} />
+                          <Route path="/settings/roles" element={<Roles />} />
                           <Route path="/settings/menu" element={<Menu />} />
                           <Route path="/settings/photos" element={<Photos />} />
                         </Route>

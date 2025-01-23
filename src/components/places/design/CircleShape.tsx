@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
-import { Circle, Text, Transformer } from 'react-konva';
+import { Circle, Text, TextPath, Transformer } from 'react-konva';
 import Konva from 'konva';
+import { Tag } from 'lucide-react';
 
 interface CircleShapeProps {
   shapeProps: any;
@@ -27,7 +28,7 @@ const CircleShape: React.FC<CircleShapeProps> = ({ shapeProps, isSelected, onSel
         onClick={onSelect}
         onTap={onSelect}
         ref={shapeRef} // Correctly typed as Konva.Circle
-        fill='white'
+        fill={localStorage.getItem('darkMode') === 'true' ? '#88AB61':'#88AB61'  }
         {...shapeProps}
         draggable
         onDragEnd={(e) => {
@@ -66,14 +67,18 @@ const CircleShape: React.FC<CircleShapeProps> = ({ shapeProps, isSelected, onSel
           }}
         />
       )}
+      {/* <Tag size={20} x={shapeProps.x - 10} y={shapeProps.y - 10} fill={localStorage.getItem('darkMode') === 'true' ? 'white':'black'  } /> */}
+      {isSelected && (
       <Text
-        x={shapeProps.x}
-        y={shapeProps.y - 20}
-        text={shapeProps.id}
+        x={shapeProps.x -24}
+        y={shapeProps.y-70}
+        text={shapeProps.name}
         fontSize={15}
         align="center"
-        fill="black"
+
+        fill={localStorage.getItem('darkMode') === 'true' ? 'white':'black'  }
       />
+      )}
     </>
   );
 };

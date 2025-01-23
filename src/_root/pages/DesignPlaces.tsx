@@ -40,13 +40,13 @@ const DesignPlaces: React.FC = () => {
             {showAddPlace && (
                 <div>
                 <div className='overlay' onClick={() => setShowAddPlace(false)}></div>
-                <form className='popup gap-5' onSubmit={handlePlaceAdded}>
-                    <h1 className='text-3xl text-blacktheme font-[700]'>Add Place</h1>
+                <form className={`popup gap-5 ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'}`} onSubmit={handlePlaceAdded}>
+                    <h1 className='text-3xl font-[700]'>Add Place</h1>
                     <input
                     type="text"
                     id='inputPlace'
                     placeholder='Place Alias'
-                    className='border-[1px] border-blacktheme text-subblack font-[500] py-2 px-4 rounded-[10px]'
+                    className={`inputs-unique ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-textdarktheme':'bg-white text-black'} `}
                     />
                     <button className='btn-primary w-full'>Add Place</button>
                 </form>
@@ -54,7 +54,7 @@ const DesignPlaces: React.FC = () => {
             )}
             <div className='flex justify-start gap-3 mb-2'>
                 <Link to='/places' className='hover:bg-softgreentheme px-4 items-center flex justify-center text-greentheme font-bold rounded-[10px]' >{'<'}</Link>
-                <h1 className='text-3xl text-blacktheme font-[700]'>{t('editPlace.title')}</h1>
+                <h1 className='text-3xl font-[700]'>{t('editPlace.title')}</h1>
             </div>
             <div className='flex gap-5'>
                 {roofs.map((roof) => (
@@ -78,7 +78,7 @@ const DesignPlaces: React.FC = () => {
                                 <g clipPath="url(#clip0_412_5)">
                                     <path
                                         d="M6.5 13C10.0899 13 13 10.0899 13 6.5C13 2.91015 10.0899 0 6.5 0C2.91015 0 0 2.91015 0 6.5C0 10.0899 2.91015 13 6.5 13Z"
-                                        fill="#DEE5D6"
+                                        fill={localStorage.getItem('darkMode')==='true'?'#1e1e1e50':'#e1e1e1'}
                                     />
                                     <path
                                         d="M7.06595 6.5036L8.99109 9H7.85027L6.45098 7.18705L5.14082 9H4.00891L5.93405 6.5036L4 4H5.14082L6.54902 5.82734L7.86809 4H9L7.06595 6.5036Z"
@@ -95,7 +95,7 @@ const DesignPlaces: React.FC = () => {
                     </div>
                 ))}
                 <button
-                className='btn hover:text-greentheme hover:border-greentheme'
+                className={`btn hover:text-greentheme hover:border-greentheme ${localStorage.getItem('darkMode')==='true'?'text-white':''}`}
                 onClick={() => setShowAddPlace(true)}
               >
                 +

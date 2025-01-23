@@ -11,7 +11,7 @@ module.exports = {
       },
       colors: {
         whitetheme: "#ffffff",
-        softwhitetheme: "#ffffff50",
+        softwhitetheme: "#ffffff77",
         greentheme: '#88AB61',
         softgreentheme: '#88AB611A',
         blacktheme: '#1A1A1A',
@@ -24,28 +24,14 @@ module.exports = {
         softyellowtheme: '#FDE0301A',
         greytheme: '#1E1E1E',
         softgreytheme: '#f3f3f3',
+        bgdarktheme: '#031911',
+        bgdarktheme2: '#042117',
+        darkthemeitems: '#05291c',
+        textdarktheme: '#f5f4f2',
       },
       fontFamily: {
         sans: ['Poppins', 'sans-serif'],
       },
-    },
-    darkMode: {
-      colors: {
-        whitetheme: "#1A1A1A", // Dark mode equivalent for white
-        softwhitetheme: "#1A1A1A50",
-        greentheme: '#6B8B3C',
-        softgreentheme: '#6B8B3C1A',
-        blacktheme: '#ffffff', // Dark mode background as white
-        subblack: '#D3D3D380',
-        softredtheme: '#FF4B4B33',
-        redtheme: '#D72638',
-        bluetheme: '#2C5379',
-        softbluetheme: '#2C53791A',
-        yellowtheme: '#D07800',
-        softyellowtheme: '#F1C40F1A',
-        greytheme: '#2E2E2E',
-        softgreytheme: '#3C3C3C',
-      }
     }
   },
   plugins: [],

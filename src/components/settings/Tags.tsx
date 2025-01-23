@@ -29,22 +29,22 @@ const Tags = () => {
   const {t}=useTranslation();
 
   return (
-    <div className="bg-white rounded-lg flex flex-col items-center p-6 w-full">
+    <div className={`rounded-lg flex flex-col items-center p-6 w-full ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'}`}>
       <div>
         <h2>{t('settingsPage.tags.title')}</h2>
       </div>
       <div className="flex gap-4">
         <div className="w-[40vw] lt-sm:w-full">
-          <p className="text-gray-500 mb-2 ml-2">{t('settingsPage.tags.label')}</p>
-          <input type="text" placeholder={t('settingsPage.tags.placeHolder')} id="tag" className="inputs" />
+          <p className=" mb-2 ml-2">{t('settingsPage.tags.label')}</p>
+          <input type="text" placeholder={t('settingsPage.tags.placeHolder')} id="tag" className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`} />
           <div className="flex flex-wrap gap-2 mt-2">
             {tags.map((tag, index) => (
               <div key={index} className="flex items-center gap-2">
-                <div className="bg-softgreytheme flex items-center text-greytheme rounded-lg px-2 py-1">
+                <div className={` flex items-center  rounded-lg px-2 py-1 ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2 text-white' : 'bg-softgreytheme text-greytheme'}`}>
                   {tag}
                   <div
                     onClick={() => dropTag(index)}
-                    className="text-subblack ml-3 cursor-pointer bg-white rounded-full p-1 hover:bg-softgreytheme"
+                    className="text-subblack ml-3 cursor-pointer bg-[#ffffff40] rounded-full p-1 hover:bg-[#ffffff80] hover:text-subblack"
                   >
                     <svg width="10" viewBox="0 0 67 67" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path

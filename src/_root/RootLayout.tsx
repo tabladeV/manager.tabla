@@ -7,8 +7,36 @@ import SupportMenu from '../components/menu/SupportMenu'
 import { useEffect, useState } from "react"
 import DateSelection from "../components/header/DateSelection"
 import i18n, { loadLanguages, use } from 'i18next';
+import { useDarkContext } from "../context/DarkContext"
+import { Fullscreen } from "lucide-react"
 
 const RootLayout = () => {
+
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.key === 'f') {
+        toggleFullscreen();
+      }
+    };
+
+    const toggleFullscreen = () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+        });
+      } else {
+        document.exitFullscreen().catch(err => {
+          console.error(`Error attempting to exit full-screen mode: ${err.message} (${err.name})`);
+        });
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyPress);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+  }, []);
 
   window.onload = function() {
     const savedLanguage = localStorage.getItem('preferredLanguage');
@@ -31,7 +59,11 @@ const RootLayout = () => {
 };
 
 
-const [darkMode, setDarkMode] = useState(false);
+
+
+const { darkMode } = useDarkContext();
+
+
 
 
 
@@ -43,9 +75,11 @@ const [darkMode, setDarkMode] = useState(false);
   
   const [stateOfSideBar, setStateOfSideBar] = useState(false)
 
+  
+
 
   return (
-    <div className={`flex ${(shownlang === 'ar') ? "rtl ":''} ${localStorage.getItem('darkMode')=== 'true'? 'bg-subblack':''}`}>
+    <div className={`flex ${(shownlang === 'ar') ? "rtl ":''} ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme text-textdarktheme':''}`}>
       <div className="sm:hidden">
           <NavigationMenu stateOfSideBar={stateOfSideBar} handleSideBar={()=>{setStateOfSideBar(!stateOfSideBar)}} />
 
@@ -59,16 +93,16 @@ const [darkMode, setDarkMode] = useState(false);
         <header className='h-[80px]  items-center flex justify-between px-6 lt-sm:px-2'>
           {/* <SearchBar /> */}
           <div className="sm:hidden"><Logo/></div>
-          <button className={` lt-sm:hidden z-10 p-2 rounded-md hover:bg-softgreytheme`} onClick={()=>{setStateOfSideBar(!stateOfSideBar)}}>
+          <button className={` lt-sm:hidden z-10 p-2 rounded-md  ${localStorage.getItem('darkMode')=== 'true' ?'hover:bg-subblack':'hover:bg-softgreytheme'}`} onClick={()=>{setStateOfSideBar(!stateOfSideBar)}}>
             {stateOfSideBar ?
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 12L19 19M12 12L5 5M12 12L5 19M12 12L19 5" stroke="#1e1e1e70" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 12L19 19M12 12L5 5M12 12L5 19M12 12L19 5" stroke={localStorage.getItem('darkMode')=== 'true' ?'#ffffff70':'#1e1e1e70'} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
             
             :
             
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M3 6H21M3 12H21M3 18H21" stroke="#1e1e1e70" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 6H21M3 12H21M3 18H21" stroke={localStorage.getItem('darkMode')=== 'true' ?'#ffffff70':'#1e1e1e70'} stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
             
             }
@@ -88,11 +122,12 @@ const [darkMode, setDarkMode] = useState(false);
           <DateSelection />
 
           <UserBar />
+
         </header>
         <section className='flex justify-between  h-[calc(100vh-80px)]'>
           
           
-          <div className='bg-[#F6F6F6] p-[1em] w-full h-full  lt-sm:pb-[10em] overflow-x-hidden  overflow-y-scroll'>
+          <div className={` p-[1em] w-full h-full  lt-sm:pb-[10em] overflow-x-hidden  overflow-y-scroll ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme2 text-textdarktheme':'bg-[#F6F6F6]'} `}>
             <Outlet />
             <div className="lt-sm:h-[3em]"></div>
           </div>

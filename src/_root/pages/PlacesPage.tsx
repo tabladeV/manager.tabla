@@ -257,7 +257,7 @@ const PlacePage: React.FC = () => {
   return (
     <div>
       <div className='flex justify-between mb-2'>
-        <h1 className='text-3xl text-blacktheme font-[700]'>{t('placeManagement.title')}</h1>
+        <h1 className='text-3xl font-[700]'>{t('placeManagement.title')}</h1>
         
         <Link to='/places/design' className='btn-primary flex gap-2 items-center lt-sm:hidden'>
           {t('placeManagement.buttons.designPlace')}
@@ -271,11 +271,11 @@ const PlacePage: React.FC = () => {
       </p>
       <DndProvider backend={isTouchDevice() ? TouchBackend : HTML5Backend}>
         <div className="flex gap-[10px]">
-          <div className='bg-white lt-sm:hidden rounded-[10px] p-[1em]'>
+          <div className={`lt-sm:hidden rounded-[10px] p-[1em] ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white '}`}>
             <SearchBar SearchHandler={searchFilter} />
             <div className='grid grid-flow-col gap-3 font-[500]  my-3 justify-between'>
               <button className='btn-primary'>{t('placeManagement.filters.confirmed')}</button>
-              <button className='btn-secondary'>{t('placeManagement.filters.canceled')}</button>
+              <button className='btn-secondary '>{t('placeManagement.filters.canceled')}</button>
               <button className='btn-secondary'>{t('placeManagement.filters.waiting')}</button>
             </div>
             <div className='overflow-y-auto h-[55vh]  bar-hide'>
@@ -298,7 +298,7 @@ const PlacePage: React.FC = () => {
                 ))}
               </div>
               <div>
-                <select className='inputs bg-transparent' onChange={(e) => setFilteringHour(e.target.value)}>
+                <select className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-black':'bg-white'}`}  onChange={(e) => setFilteringHour(e.target.value)}>
                   {hours.map((hour) => (
                     <option key={hour.id} value={hour.time} >
                       {hour.time}

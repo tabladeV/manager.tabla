@@ -119,14 +119,14 @@ const ClientsPage = () => {
       {showNotificationModal && (
         <div>
           <div className="overlay" onClick={()=>{setShowNotificationModal(false)}}></div>
-          <div className="sidepopup h-full lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0">
+          <div className={`sidepopup h-full lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'}`}>
             <h2 className="mb-5">Send a notification</h2>
             <form className="flex flex-col gap-2">
-              <input type="text" placeholder="Subject" className="inputs-unique" />
-              <input type="text" placeholder="Offer" className="inputs-unique" />
+              <input type="text" placeholder="Subject" className={`inputs-unique ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2':'bg-white'}`} />
+              <input type="text" placeholder="Offer" className={`inputs-unique ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2':'bg-white'}`} />
               <textarea
                 placeholder="Type your message here"
-                className="inputs-unique h-[10em] sm:h-[20em]"
+                className={`inputs-unique h-[10em] sm:h-[20em] ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2 focus:border-none':'bg-white'}`} 
               ></textarea>
               <button className="btn-primary" type="submit">Send</button>
             </form>
@@ -138,7 +138,7 @@ const ClientsPage = () => {
       </div>
       <div className="flex gap-2">
         <div
-          className={`bg-white ${
+          className={`${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'} ${
             pathname === "/clients" || pathname === "/clients/" ? "" : "lt-sm:hidden"
           } sm:w-1/4 w-full h-[calc(100vh-160px)] flex flex-col gap-2 p-2 rounded-[10px]`}
         >
@@ -151,7 +151,7 @@ const ClientsPage = () => {
           {!(selectedClient.length === clients.length) ? (
             <button className={`btn-secondary hover:bg-softgreentheme hover:text-greentheme ${selectedClient === clients ? 'hidden':''}`} onClick={selectAll}>{t('clients.buttons.selectAll')}</button>
           ) : (
-            <button className={`btn ${selectedClient === clients ? 'hidden':''}`} onClick={() => setSelectedClient([])}>{t('clients.buttons.deselectAll')}</button>
+            <button className={`btn ${localStorage.getItem('darkMode')==='true'?'text-white':''} ${selectedClient === clients ? 'hidden':''}`} onClick={() => setSelectedClient([])}>{t('clients.buttons.deselectAll')}</button>
           )  
           }
 
@@ -167,7 +167,7 @@ const ClientsPage = () => {
               />
             ))}
           </div>
-          <button className={` ${selectedClient.length === 0 ? 'btn hover:border-[0px] border-[0px] cursor-not-allowed bg-softgreytheme ':'btn-primary'}`} disabled={selectedClient.length===0} onClick={()=>{(setShowNotificationModal(true))}}>{t('clients.sendNotificationButton')}</button>
+          <button className={` ${selectedClient.length === 0 ?  localStorage.getItem('darkMode')==='true'?'btn hover:border-[0px] border-[0px] cursor-not-allowed bg-subblack text-softwhitetheme ':'btn hover:border-[0px] border-[0px] cursor-not-allowed bg-softgreytheme ':'btn-primary'}`} disabled={selectedClient.length===0} onClick={()=>{(setShowNotificationModal(true))}}>{t('clients.sendNotificationButton')}</button>
         </div>
         {pathname === "/clients" || pathname === "/clients/" ? (
           <div className={`lt-sm:hidden flex flex-col items-center w-3/4 text-center p-2 rounded-[10px]`}>

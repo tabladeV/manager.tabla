@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import ReservationProcess from './ReservationProcess';
+import { format, parseISO } from 'date-fns';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 interface ReservationModalProps {
     onClick: () => void;
@@ -65,56 +68,103 @@ const ReservationModal = (props: ReservationModalProps) => {
         setFormData((prev) => ({ ...prev, [id]: value })); // Update form field
     };
 
+    const [showProcess, setShowProcess] = useState(false);
+    interface dataTypes {  
+        reserveDate: string,
+        time: string,
+        guests: number
+    }
+
+    const [data, setData] = useState<dataTypes>({
+        reserveDate: '',
+        time: '',
+        guests: 0
+    });
+
+    useEffect(() => {
+        console.log(data);
+    }, [data]);
+
+    const [findClient, setFindClient] = useState(true);
+
     return (
         <div>
+
             <div className="overlay" onClick={props.onClick}></div>
-            <form
-                className="sm:sidepopup lt-sm:popup lt-sm:h-[70vh] lt-sm:w-full lt-sm:bottom-0 h-full gap-5"
-                onSubmit={handleAddReservation}
+            {showProcess && <div className=''><ReservationProcess onClick={()=>{setShowProcess(false)}} getDateTime={(data:dataTypes)=>{setData(data)}}/></div>}
+            {findClient ? 
+            <form 
+                className={`sm:sidepopup lt-sm:popup lt-sm:h-[70vh] lt-sm:w-full lt-sm:bottom-0 h-full gap-5 ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}
             >
-                <h1 className="text-3xl text-blacktheme font-[700]">
+                <h1 className="text-3xl font-[700]">
                     {t('grid.buttons.addReservation')}
                 </h1>
+                <input
+                    placeholder={t('grid.placeHolders.searchClient')}
+                    onChange={searchFilter}
+                    onFocus={() => setFocusedClient(true)}
+                    value={inputName} // Bind input value to state
+                    type="text"
+                    className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                    id="name"
+                    required
+                />
+                {focusedClient && (
+                    <div className={`absolute mt-[7em] flex flex-col gap-3  w-[36vw] p-2 shadow-md rounded-md lt-sm:w-[87vw] ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'}`}>
+                        <div
+                            className="btn-secondary cursor-pointer"
+                            onClick={() => {
+                                handleAddNewClient();
+                                setFindClient(false); // Set findClient to false to move to the next form
+                            }}
+                        >
+                            {t('grid.buttons.addNewClient')}
+                        </div>
+                        <div className="flex flex-col h-[10em] overflow-y-auto gap-3">
+                            {searchResults.map((client, index) => (
+                                <div
+                                    key={index}
+                                    className={`flex btn cursor-pointer flex-row gap-2 ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : 'bg-white'}`}
+                                    onClick={() => {
+                                        handleSelectClient(client); // Handle client selection
+                                        setFindClient(false); // Set findClient to false
+                                    }}
+                                >
+                                    <p>{client.name}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </form>
+            : 
+            
+            <form
+                className={`sm:sidepopup lt-sm:popup lt-sm:h-[70vh] lt-sm:w-full lt-sm:bottom-0 h-full gap-5 ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}
+                onSubmit={handleAddReservation}
+            >
+                <ArrowLeft className="cursor-pointer" onClick={() => setFindClient(true)} />
+                <h1 className="text-3xl font-[700]">
+                    {t('grid.buttons.addReservation')}
+                </h1>
+                
 
                 <div className="flex flex-col gap-2">
                     <div className="flex flex-row w-full gap-2">
                         <input
                             placeholder={t('grid.placeHolders.name')}
-                            // onBlur={() => setFocusedClient(false)}
-                            onChange={searchFilter}
-                            onFocus={() => setFocusedClient(true)}
                             value={inputName} // Bind input value to state
                             type="text"
-                            className="inputs"
+                            className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
                             id="name"
                             required
                         />
-                        {focusedClient && (
-                            <div className="absolute mt-[3em] flex flex-col gap-3 bg-white w-[36vw] p-2 shadow-md rounded-md">
-                                <div
-                                    className="btn-secondary cursor-pointer"
-                                    onClick={handleAddNewClient}
-                                >
-                                    {t('grid.buttons.addThisClient')}
-                                </div>
-                                <div className="flex flex-col h-[10em] overflow-y-auto gap-3">
-                                    {searchResults.map((client, index) => (
-                                        <div
-                                            key={index}
-                                            className="flex btn cursor-pointer flex-row gap-2"
-                                            onClick={() => handleSelectClient(client)} // Handle client selection
-                                        >
-                                            <p>{client.name}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
+                        
                     </div>
                     <input
                         placeholder={t('grid.placeHolders.email')}
                         type="email"
-                        className="inputs-unique"
+                        className={`inputs-unique ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'}`}
                         id="email"
                         value={formData.email} // Autofill email
                         onChange={handleFormChange} // Handle email change
@@ -123,13 +173,15 @@ const ReservationModal = (props: ReservationModalProps) => {
                     <input
                         placeholder={t('grid.placeHolders.phone')}
                         type="text"
-                        className="inputs-unique"
+                        className={`inputs-unique ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'}`}
                         id="phone"
                         value={formData.phone} // Autofill phone
                         onChange={handleFormChange} // Handle phone change
                         required
                     />
-                    <select name="places" id="places" className="inputs-unique">
+                    <select name="places" id="places" 
+                        className={`inputs-unique ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'}`}
+                    >
                         <option value="Places" disabled>
                             Places
                         </option>
@@ -137,7 +189,9 @@ const ReservationModal = (props: ReservationModalProps) => {
                         <option value="Confirmed">Outdoor</option>
                         <option value="Canceled">Terrace</option>
                     </select>
-                    <select name="table" id="table" className="inputs-unique">
+                    <select name="table" id="table" 
+                        className={`inputs-unique ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'}`}
+                    >
                         <option value="table" disabled>
                             Table
                         </option>
@@ -146,10 +200,20 @@ const ReservationModal = (props: ReservationModalProps) => {
                         <option value="Canceled">Terrace</option>
                     </select>
                 </div>
+                <div onClick={()=>{setShowProcess(true)}} className="btn flex justify-around cursor-pointer text-white">
+                    {(data.reserveDate === '') ?<div>date </div>:<span>{data.reserveDate}</span>}
+                    {(data.time === '') ? <div>Time </div>:<span>{data.time}</span>} 
+                    {(data.guests===0) ? <div>Guests </div>:<span>{data.guests}</span>}
+                    
+                    
+
+                </div>
                 <button type="submit" className="btn-primary">
                     {t('grid.buttons.addReservation')}
                 </button>
             </form>
+               
+            }
         </div>
     );
 };

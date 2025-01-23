@@ -12,7 +12,7 @@ const SettingsPage = () => {
         <h1>{t('settingsPage.title')} </h1>
       </div>
       <div className="flex gap-4">
-        <div className={`h-[calc(100vh-160px)] flex text-[#1E1E1E99] font-[500] text-[17px] text-left  flex-col w-1/5 bg-white rounded-[10px] px-6 py-4 gap-4 lt-sm:w-full lt-sm:h-fit ${localStorage.getItem('preferredLanguage')=== 'ar'? 'text-right':''} ${pathname === '/settings'? '':'lt-sm:hidden'}`}>
+        <div className={`h-[calc(100vh-160px)] overflow-y-auto flex  font-[500] text-[17px] text-left  flex-col w-1/5  rounded-[10px] px-6 py-4 gap-4 lt-sm:w-full lt-sm:h-fit ${localStorage.getItem('preferredLanguage')=== 'ar'? 'text-right':''} ${pathname === '/settings'? '':'lt-sm:hidden'} ${localStorage.getItem('darkMode')==='true'?'text-white bg-bgdarktheme':'text-[#1E1E1E99] bg-white'} `}>
           <Link to='/settings/general' className={`hover:underline ${pathname === '/settings/general' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.general')}</Link>
           <Link to='/settings/availability' className={`hover:underline ${pathname === '/settings/availability' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.availability')}</Link>
           <Link to='/settings/tags' className={`hover:underline ${pathname === '/settings/tags' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.tags')}</Link>
@@ -24,6 +24,7 @@ const SettingsPage = () => {
           <Link to='/settings/billing' className={`hover:underline ${pathname === '/settings/billing' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.billing')}</Link>
           <Link to='/settings/widget' className={`hover:underline ${pathname === '/settings/widget' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.widget')}</Link>
           <Link to='/settings/permissions' className={`hover:underline ${pathname === '/settings/permissions' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.permissions')}</Link>
+          <Link to='/settings/roles' className={`hover:underline ${pathname === '/settings/roles' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.roles')}</Link>
           <Link to='/settings/services' className={`hover:underline ${pathname === '/settings/services' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.services')}</Link>
         </div>
         <div className={`w-full overflow-y-scroll ${pathname === '/settings' ? 'lt-sm:hidden': ''}`}>

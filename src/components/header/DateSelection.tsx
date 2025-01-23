@@ -38,17 +38,17 @@ const DateSelection = () => {
             {isCalendar && (
                 <div>
                     <div className="overlay" onClick={() => setIsCalendar(false)}></div>
-                    <div className="popup lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0">
+                    <div className={`popup  lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'}`}>
                         <OurCalendar onClick={handleDateClick} />
                     </div>
                 </div>
             )}
 
             {/* Date Selection Controls */}
-            <div className={`  flex ml-[0vw] gap-4 lt-sm:m-0 btn`}>
+            <div className={`  flex ml-[0vw] gap-4 lt-sm:m-0 btn border-[#00000030] ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme2 text-textdarktheme':''}`}>
                 {/* Previous Day Button */}
                 <button
-                    className="p-1 w-8 rounded-[10px] hover:bg-softgreytheme lt-sm:hidden"
+                    className={`p-1 w-8 rounded-[10px]  lt-sm:hidden ${localStorage.getItem('darkMode')=== 'true'? 'hover:bg-bgdarktheme':'hover:bg-softgreytheme'}`}
                     onClick={getPreviousDay}
                 >
                     {"<"}
@@ -57,14 +57,14 @@ const DateSelection = () => {
                 {/* Current Day / Calendar Button */}
                 <button
                     onClick={() => setIsCalendar(true)}
-                    className="py-1 rounded-[10px] w-[15em] px-3 lt-sm:w-[6em] lt-sm:p-0 hover:bg-softgreytheme"
+                    className={`py-1 rounded-[10px] w-[15em] px-3 lt-sm:w-[6em] lt-sm:p-0  ${localStorage.getItem('darkMode')=== 'true'? 'hover:bg-bgdarktheme':'hover:bg-softgreytheme'}`}
                 >
                     {displayDay === format(startOfToday(), "dd/MM/yyyy") ? t('header.date.today') : (displayDay === format(addDays(startOfToday(), 1), "dd/MM/yyyy") ? t('header.date.tomorrow') : (displayDay === format(addDays(startOfToday(), -1), "dd/MM/yyyy") ? t('header.date.yesterday') : displayDay))}
                 </button>
 
                 {/* Next Day Button */}
                 <button
-                    className="p-1 w-8 rounded-[10px] hover:bg-softgreytheme lt-sm:hidden"
+                    className={`p-1 w-8 rounded-[10px]  lt-sm:hidden ${localStorage.getItem('darkMode')=== 'true'? 'hover:bg-bgdarktheme':'hover:bg-softgreytheme'}`}
                     onClick={getNextDay}
                 >
                     {">"}

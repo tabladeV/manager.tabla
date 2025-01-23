@@ -101,11 +101,12 @@ const IntervalCalendar: React.FC<IntervalCalendarProps> = ({ onRangeSelect }) =>
                 type="button"
                 onClick={() => selectingDate(day)}
                 className={classNames(
-                  isInRange(day) ? 'bg-softgreytheme text-blacktheme' : '',
-                  isEqual(day, dateRange.start ?? new Date(0)) ? 'text-white bg-blacktheme' : '',
-                  isEqual(day, dateRange.end ?? new Date(0)) ? 'text-white bg-blacktheme' : '',
+                  isInRange(day) && localStorage.getItem('darkMode') === 'true' ? 'text-white bg-darkthemeitems' : 'text-gray-900 ',
+                  isInRange(day) && localStorage.getItem('darkMode') === 'false' ? 'text-greentheme bg-softgreentheme' : 'text-gray-900 ',
+                  isEqual(day, dateRange.start ?? new Date(0)) ? 'text-black bg-blacktheme' : '',
+                  isEqual(day, dateRange.end ?? new Date(0)) ? 'text-black bg-blacktheme' : '',
                   !isEqual(day, dateRange.start ?? new Date(0)) && !isEqual(day, dateRange.end ?? new Date(0)) && isToday(day) ? 'text-greentheme' : '',
-                  !isToday(day) && isSameMonth(day, firstDayCurrentMonth) ? 'text-gray-900' : 'text-gray-400',
+                  !isToday(day) && isSameMonth(day, firstDayCurrentMonth) && localStorage.getItem('darkMode') === 'true' ? 'text-white' : 'text-gray-900', 
                   'w-full py-1 rounded-full hover:bg-subblack hover:text-white transition duration-200'
                 )}
               >

@@ -1,99 +1,135 @@
-import { Link } from 'react-router-dom'
-import profilepic from '../../assets/ProfilePic.png'
-import i18n, { loadLanguages } from 'i18next';
-import { useState } from 'react';
-import english from "../../assets/english.png";
-import arabic from "../../assets/arabic.jpg";
-import french from "../../assets/french.png";
-
+import { Link } from 'react-router-dom';
+import profilepic from '../../assets/ProfilePic.png';
+import i18n from 'i18next';
+import { useState, useEffect } from 'react';
+import english from '../../assets/english.png';
+import arabic from '../../assets/arabic.jpg';
+import french from '../../assets/french.png';
+import { useDarkContext } from '../../context/DarkContext';
+import { AppWindowIcon, Fullscreen, FullscreenIcon, Minimize } from 'lucide-react';
 
 const UserBar = () => {
-  // const changeLanguage = (lng:string) => {
-  // };
+  const { setDarkMode } = useDarkContext();
+  const [showLang, setShowLang] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(
+    localStorage.getItem('darkMode') === 'true'
+  );
 
-  function setLanguage(language: string) {
+  useEffect(() => {
+    setDarkMode(isDarkMode);
+  }, [isDarkMode, setDarkMode]);
+
+  const setLanguage = (language: string) => {
     i18n.changeLanguage(language);
     localStorage.setItem('preferredLanguage', language);
     window.location.reload();
-    
-  }
-  
-
-
-  const [showLang, setShowLang] = useState(false)
-  const [isDarkMode, setIsDarkMode] = useState(false)
-
-
-  // function setDarkMode() {
-  //   setIsDarkMode(!isDarkMode)
-  //   localStorage.setItem('darkMode', isDarkMode ? 'true' : 'false')
-
-  // }
-  const [darkMode, setDarkMode] = useState(false);
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    localStorage.setItem('darkMode', darkMode ? 'true' : 'false');
   };
+
+  const toggleDarkMode = () => {
+    setIsDarkMode((prev) => {
+      const newMode = !prev;
+      localStorage.setItem('darkMode', newMode.toString());
+      return newMode;
+    });
+    window.location.reload();
+  };
+
+  const [fullScreen, setFullScreen] = useState(false);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      setFullScreen(true);
+      document.documentElement.requestFullscreen().catch(err => {
+        console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+      });
+    } else {
+      
+      setFullScreen(false);
+      document.exitFullscreen().catch(err => {
+        console.error(`Error attempting to exit full-screen mode: ${err.message} (${err.name})`);
+      });
+    }
+  }
+
   return (
     <div>
-      {showLang &&
+      {showLang && (
         <div>
-          <div className=' absolute left-0 top-0 w-[100vw] h-[100vh] ' onClick={()=>{setShowLang(false)}}></div>
-          <div className='absolute top-[50px]  bg-white p-2  flex flex-col rounded-md shadow-md z-10'>
-            <button className='hover:bg-softgreytheme itmes-center p-1 flex gap-2 justify-start' onClick={()=>{setLanguage('en');setShowLang(false)}}>
-              <img src={english}  className='w-6 '/>
+          <div
+            className='absolute left-0 top-0 w-[100vw] h-[100vh]'
+            onClick={() => setShowLang(false)}
+          ></div>
+          <div className={`absolute top-[50px]  p-2 flex flex-col rounded-md shadow-md z-10 mt-3 ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme ':'bg-white'}`}>
+            <button
+              className=' items-center p-1 flex gap-2 justify-start'
+              onClick={() => {
+                setLanguage('en');
+                setShowLang(false);
+              }}
+            >
+              <img src={english} className='w-6' />
               English
-
             </button>
-            <button className='hover:bg-softgreytheme itmes-center p-1 flex gap-2 justify-start' onClick={()=>{setLanguage('fr');setShowLang(false)}}>
-              <img src={french} className='w-6 '/>
+            <button
+              className=' items-center p-1 flex gap-2 justify-start'
+              onClick={() => {
+                setLanguage('fr');
+                setShowLang(false);
+              }}
+            >
+              <img src={french} className='w-6' />
               Français
             </button>
-            <button className='hover:bg-softgreytheme itmes-center p-1 flex gap-2 justify-start' onClick={()=>{setLanguage('ar');setShowLang(false)}}>
-              <img src={arabic}  className='w-6 '/>
-              
+            <button
+              className=' items-center p-1 flex gap-2 justify-start'
+              onClick={() => {
+                setLanguage('ar');
+                setShowLang(false);
+              }}
+            >
+              <img src={arabic} className='w-6' />
               العربية
-
             </button>
           </div>
         </div>
-        }
-     
+      )}
+
       <div className='flex gap-3 items-center'>
-        {/* <div className='absolute bottom-[-1em] flex gap-3 items-center'>
-          <Link to='/dashboard' className='flex gap-3 items-center hover:bg-[#88AB6115] transition duration-200 p-[.6em] rounded-[10px]'>
-            <svg className='h-[22px]' viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M2 2H20V20H2V2ZM2 0C1.46957 0 0.960859 0.210714 0.585786 0.585786C0.210714 0.960859 0 1.46957 0 2V20C0 20.5304 0.210714 21.0391 0.585786 21.4142C0.960859 21.7893 1.46957 22 2 22H20C20.5304 22 21.0391 21.7893 21.4142 21.4142C21.7893 21.0391 22 20.5304 22 20V2C22 1.46957 21.7893 0.960859 21.4142 0.585786C21.0391 0.210714 20.5304 0 20 0H2Z" fill="#88AB61"/>
-                <path d="M7 2H15V4H7V2ZM7 6H15V8H7V6ZM7 10H15V12H7V10ZM7 14H15V16H7V14Z" fill="#88AB61"/>
+        <button className={`bg-[#88AB6115]  w-[40px] h-[40px] flex justify-center items-center rounded-[100%] lt-sm:hidden ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme2':''}`} onClick={toggleFullscreen}>
+          {!fullScreen?<Fullscreen size={40} className={`lt-sm:hidden z-10 p-2 rounded-md  ${localStorage.getItem('darkMode')=== 'true' ?'hover:bg-subblack':'hover:bg-softgreytheme'}`}  />
+          :<Minimize size={40} className={`lt-sm:hidden z-10 p-2 rounded-md  ${localStorage.getItem('darkMode')=== 'true' ?'hover:bg-subblack':'hover:bg-softgreytheme'}`}  />}
+        </button>
+
+        <button
+          onClick={() => setShowLang(true)}
+          className={`bg-[#88AB6115] w-[40px] h-[40px] flex justify-center items-center rounded-[100%] lt-sm:flex ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme2':''}`}
+        >
+          {localStorage.getItem('preferredLanguage') === 'en' && (
+            <img src={english} className='w-6' />
+          )}
+          {localStorage.getItem('preferredLanguage') === 'fr' && (
+            <img src={french} className='w-6' />
+          )}
+          {localStorage.getItem('preferredLanguage') === 'ar' && (
+            <img src={arabic} className='w-6' />
+          )}
+        </button>
+
+        <button
+          onClick={toggleDarkMode}
+          className={`bg-[#88AB6115] w-[40px] h-[40px] flex justify-center items-center rounded-[100%] lt-sm:hidden ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme2':''}`}
+        >
+          {!isDarkMode ? (
+            
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 7C9.24 7 7 9.24 7 12C7 14.76 9.24 17 12 17C14.76 17 17 14.76 17 12C17 9.24 14.76 7 12 7ZM11 1V5H13V1H11ZM11 19V23H13V19H11ZM23 11H19V13H23V11ZM5 11H1V13H5V11ZM16.24 17.66L18.71 20.13L20.12 18.72L17.65 16.25L16.24 17.66ZM3.87 5.28L6.34 7.75L7.75 6.34L5.28 3.87L3.87 5.28ZM6.34 16.24L3.87 18.71L5.28 20.12L7.75 17.65L6.34 16.24ZM18.72 3.87L16.25 6.34L17.66 7.75L20.13 5.28L18.72 3.87Z" fill="black"/>
             </svg>
-            <h3 className=''>
-              DashBoard
-            </h3>
-          </Link>
-        </div> */}
-        <button onClick={()=>{setShowLang(true)}} className='bg-[#88AB6115] w-[40px] h-[40px] flex justify-center items-center rounded-[100%]  lt-sm:flex'>
-          {(localStorage.getItem('preferredLanguage') === 'en') && <img src={english} className='w-6 '/>}
-          {(localStorage.getItem('preferredLanguage') === 'fr') && <img src={french} className='w-6 '/>}
-          {(localStorage.getItem('preferredLanguage') === 'ar') && <img src={arabic} className='w-6 '/>}
-        </button>
-        <button onClick={toggleDarkMode} className='bg-[#88AB6115] w-[40px] h-[40px] flex justify-center items-center rounded-[100%] lt-sm:hidden'>
-          {! darkMode? 
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 21C9.5 21 7.375 20.125 5.625 18.375C3.875 16.625 3 14.5 3 12C3 9.5 3.875 7.375 5.625 5.625C7.375 3.875 9.5 3 12 3C12.2333 3 12.4627 3.00833 12.688 3.025C12.9133 3.04167 13.134 3.06667 13.35 3.1C12.6667 3.58333 12.1207 4.21267 11.712 4.988C11.3033 5.76333 11.0993 6.60067 11.1 7.5C11.1 9 11.625 10.275 12.675 11.325C13.725 12.375 15 12.9 16.5 12.9C17.4167 12.9 18.2583 12.6957 19.025 12.287C19.7917 11.8783 20.4167 11.3327 20.9 10.65C20.9333 10.8667 20.9583 11.0873 20.975 11.312C20.9917 11.5367 21 11.766 21 12C21 14.5 20.125 16.625 18.375 18.375C16.625 20.125 14.5 21 12 21ZM12 19C13.4667 19 14.7833 18.5957 15.95 17.787C17.1167 16.9783 17.9667 15.9243 18.5 14.625C18.1667 14.7083 17.8333 14.775 17.5 14.825C17.1667 14.875 16.8333 14.9 16.5 14.9C14.45 14.9 12.704 14.179 11.262 12.737C9.82 11.295 9.09933 9.54933 9.1 7.5C9.1 7.16667 9.125 6.83333 9.175 6.5C9.225 6.16667 9.29167 5.83333 9.375 5.5C8.075 6.03333 7.02067 6.88333 6.212 8.05C5.40333 9.21667 4.99933 10.5333 5 12C5 13.9333 5.68333 15.5833 7.05 16.95C8.41667 18.3167 10.0667 19 12 19Z" fill="black"/>
-          </svg>
-          :
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12.0581 20C9.83544 20 7.94644 19.2223 6.39111 17.667C4.83577 16.1117 4.05811 14.2227 4.05811 12C4.05811 9.97401 4.71811 8.21734 6.03811 6.73001C7.35811 5.24267 8.99277 4.36467 10.9421 4.09601C10.9961 4.09601 11.0491 4.09801 11.1011 4.10201C11.1531 4.10601 11.2041 4.11167 11.2541 4.11901C10.9168 4.58967 10.6498 5.11301 10.4531 5.68901C10.2564 6.26501 10.1581 6.86867 10.1581 7.50001C10.1581 9.27801 10.7801 10.789 12.0241 12.033C13.2681 13.277 14.7794 13.8993 16.5581 13.9C17.1921 13.9 17.7964 13.8017 18.3711 13.605C18.9458 13.4083 19.4618 13.1413 19.9191 12.804C19.9271 12.854 19.9328 12.905 19.9361 12.957C19.9394 13.009 19.9414 13.062 19.9421 13.116C19.6861 15.0647 18.8144 16.699 17.3271 18.019C15.8398 19.339 14.0841 19.9993 12.0581 20Z" fill="black"/>
-          </svg>
-  
-        }
+          ) : (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12.0581 20C9.83544 20 7.94644 19.2223 6.39111 17.667C4.83577 16.1117 4.05811 14.2227 4.05811 12C4.05811 9.97401 4.71811 8.21734 6.03811 6.73001C7.35811 5.24267 8.99277 4.36467 10.9421 4.09601C10.9961 4.09601 11.0491 4.09801 11.1011 4.10201C11.1531 4.10601 11.2041 4.11167 11.2541 4.11901C10.9168 4.58967 10.6498 5.11301 10.4531 5.68901C10.2564 6.26501 10.1581 6.86867 10.1581 7.50001C10.1581 9.27801 10.7801 10.789 12.0241 12.033C13.2681 13.277 14.7794 13.8993 16.5581 13.9C17.1921 13.9 17.7964 13.8017 18.3711 13.605C18.9458 13.4083 19.4618 13.1413 19.9191 12.804C19.9271 12.854 19.9328 12.905 19.9361 12.957C19.9394 13.009 19.9414 13.062 19.9421 13.116C19.6861 15.0647 18.8144 16.699 17.3271 18.019C15.8398 19.339 14.0841 19.9993 12.0581 20Z" fill="white"/>
+            </svg>
 
-        </button>
-        <button className='bg-[#88AB6115] w-[40px] h-[40px] flex justify-center items-center rounded-[100%] lt-sm:hidden'> 
-          <svg className='h-[22px]' viewBox="0 0 18 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M5.645 19.5C5.86103 20.2219 6.30417 20.8549 6.90858 21.3049C7.513 21.755 8.24645 21.998 9 21.998C9.75355 21.998 10.487 21.755 11.0914 21.3049C11.6958 20.8549 12.139 20.2219 12.355 19.5H5.645ZM0 18.5H18V15.5L16 12.5V7.5C16 6.58075 15.8189 5.6705 15.4672 4.82122C15.1154 3.97194 14.5998 3.20026 13.9497 2.55025C13.2997 1.90024 12.5281 1.38463 11.6788 1.03284C10.8295 0.68106 9.91925 0.5 9 0.5C8.08075 0.5 7.17049 0.68106 6.32122 1.03284C5.47194 1.38463 4.70026 1.90024 4.05025 2.55025C3.40024 3.20026 2.88463 3.97194 2.53284 4.82122C2.18106 5.6705 2 6.58075 2 7.5V12.5L0 15.5V18.5Z" fill="#88AB61"/>
-          </svg>
-
+          )}
         </button>
         <Link to='settings' className='flex items-center gap-2 sm:hidden p-[.6em] rounded-[10px]'>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -103,15 +139,14 @@ const UserBar = () => {
         </Link> 
         <button className='flex items-center gap-2 hover:bg-[#88AB6115] transition duration-200 p-[.6em] rounded-[10px]'>
           <img className='h-[40px] w-[40px] rounded-[100%]' src={profilepic} alt="user"/>
-          <h5 className='text-greytheme font-semibold lt-sm:hidden'>Alfred Distivano</h5>
+          <h5 className=' font-semibold lt-sm:hidden'>Alfred Distivano</h5>
           <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M9 1L5 5L1 1" stroke="#1E1E1E" stroke-opacity="0.75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9 1L5 5L1 1" stroke={localStorage.getItem('darkMode')==='true'?'#e1e1e1':'#1e1e1e'} stroke-opacity="0.75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
-        
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default UserBar
+export default UserBar;

@@ -7,23 +7,24 @@ import VisitorsChart from '../../components/overview/VisitorsChart'
 import { useTranslation } from 'react-i18next';
 import 'i18next'
 import i18next from 'i18next'
+import { useEffect } from 'react'
 
 
 const Home = () => {
 
-
-
+  
   const { t } = useTranslation();
 
   console.log('Home')
   return (
     <div className={i18next.language === 'ar' ?'rtl':''}>
+
       <div className='mb-4 ml-4'>
         <h1>
           {t('overview.headline') + ' Alfred'} 
           {/* Hello, Alfred */}
         </h1>
-        <p className='text-subblack'>
+        <p className={` ${localStorage.getItem('darkMode')=== 'true'? ' text-softwhitetheme':'text-subblack'}`}>
           {t('overview.subtitle')}
           {/* Here’s what’s happening with your business today. */}
         </p>
@@ -34,9 +35,9 @@ const Home = () => {
           <HistoryList /> 
         </div>
         <div className='flex gap-[10px] lt-sm:flex-col lt-sm:w-full'>
-          <VisitorsChart />
           <TopActions />
           <TopUsers />
+          <VisitorsChart />
         </div>
       </div>
     </div>

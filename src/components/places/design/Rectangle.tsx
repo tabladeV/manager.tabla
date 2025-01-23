@@ -27,7 +27,7 @@ const Rectangle: React.FC<RectangleProps> = ({ shapeProps, isSelected, onSelect,
         onClick={onSelect}
         onTap={onSelect}
         ref={shapeRef} // Correctly typed as Konva.Rect
-        fill='white'
+        fill={localStorage.getItem('darkMode') === 'true' ? '#88AB61':'#88AB61'  }
         rounded={10}
         {...shapeProps}
         draggable
@@ -68,14 +68,16 @@ const Rectangle: React.FC<RectangleProps> = ({ shapeProps, isSelected, onSelect,
           }}
         />
       )}
-      <Text
-        x={shapeProps.x}
-        y={shapeProps.y - 20}
-        text={shapeProps.id}
-        fontSize={15}
-        align="center"
-        fill="black"
-      />
+      {isSelected && (
+        <Text
+          x={shapeProps.x + 10}
+          y={shapeProps.y - 20}
+          text={shapeProps.name}
+          fontSize={15}
+          align="center"
+          fill={localStorage.getItem('darkMode') === 'true' ? 'white':'black'  }
+        />
+      )}
     </div>
   );
 };

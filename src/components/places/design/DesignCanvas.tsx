@@ -11,6 +11,7 @@ const initialShapes = [
         "width": 217.00000000000003,
         "height": 99.99999999999986,
         "id": "T-01",
+        "name": "Table 1",
         "type": "rectangle"
     },
     {
@@ -18,10 +19,12 @@ const initialShapes = [
         "y": 122,
         "radius": 50,
         "id": "T-02",
+        "name": "Table 2",
         "type": "circle"
     },
     {
         "id": "T3",
+        "name": "Table 3",
         "x": 45.99999999999997,
         "y": 219.99999999999997,
         "type": "rectangle",
@@ -30,6 +33,7 @@ const initialShapes = [
     },
     {
         "id": "T4",
+        "name": "Table 4",
         "x": 249.89485159562548,
         "y": 222.75538049542064,
         "type": "rectangle",
@@ -59,8 +63,9 @@ const DesignCanvas: React.FC = () => {
 
   const addShape = (type: 'rectangle' | 'circle') => {
     const newShape = {
-      id: `T${shapes.length + 1}`,
+      id: `T${Math.random()*10 + Math.random()*10}`,
       x: 50,
+      name: `Table ${Math.floor(Math.random()*10)}`,
       y: 50,
       type,
       ...(type === 'rectangle' ? { width: 100, height: 100 } : { radius: 50 }),
@@ -80,24 +85,31 @@ const DesignCanvas: React.FC = () => {
     }
   };
 
-  const changingName = () => {
+  const changingName = (id:string) => {
     return (
-    <div>
-      <div className='overlay'></div>
-      <form className='popup'>
-        <h1>Change Table Name</h1>
-        <input type="text" placeholder='Table Name' />
-        <button>Save</button>
+    <div className=''>
+      <form className={`popup bg-bgdarktheme ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-textdarktheme':'bg-white text-black'}`} onSubmit={(e) => {
+      e.preventDefault();
+      const newName = (e.target as any).elements[0].value;
+      setShapes(shapes.map(shape => shape.id === id ? { ...shape, name: newName } : shape));
+      setShowEdit(false);
+      }}>
+      <h1>Change Table Name</h1>
+      <input type="text"  defaultValue={shapes.find(shape => shape.id === id)?.name || ''} className={`inputs-unique mt-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-textdarktheme':'bg-white text-black'} `} />
+      <button type="submit" className='btn-primary mt-2'>Save</button>
       </form>
     </div>
     );
   }
+
+  const [showEdit, setShowEdit] = useState(false);
   const editShape = () => {
 
     if(selectedId) {
       if( shapes.filter(shape => shape.id !== selectedId).length > 0){
-        changingName();
-
+        changingName(selectedId);
+        console.log(selectedId);
+        setShowEdit(true);
         
       }
       }
@@ -115,8 +127,12 @@ const DesignCanvas: React.FC = () => {
 
   return (
     <>
+      {showEdit?<div>
+        <div className='overlay bg-white opacity-15 z-[200]' onClick={() => setShowEdit(false)}></div>
+        {changingName(selectedId)}
+      </div>:''}
       <div className='flex justify-between gap-5 my-4'>
-        <div className="p-2 flex bg-white rounded-[10px] gap-2">
+        <div className={`p-2 flex  rounded-[10px] gap-2 ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme text-white':'bg-white text-subblack'}`}>
           <button onClick={() => setShowTools(!showTools)} className="text-lg items-center py-2 text-greentheme font-[600] px-2 rounded-[10px] border border-transparent hover:border-softgreentheme duration-200 gap-3 flex">
             <div className='text-greentheme bg-softgreentheme w-[2em] h-[2em] rounded-[10px] items-center flex justify-center'>+</div>
             <p>{t('editPlace.buttons.addTable')} {showTools?  '   <':'   >'}</p>
@@ -124,8 +140,8 @@ const DesignCanvas: React.FC = () => {
 
           {showTools && (
             <div className='flex gap-2'>
-              <button className='btn' onClick={() => addShape('rectangle')}>{t('editPlace.buttons.rectangleTable')}</button>
-              <button className='btn' onClick={() => addShape('circle')}>{t('editPlace.buttons.circleTable')}</button>
+              <button className={`btn ${localStorage.getItem('darkMode')==='true'?'text-white':''} `} onClick={() => addShape('rectangle')}>{t('editPlace.buttons.rectangleTable')}</button>
+              <button className={`btn ${localStorage.getItem('darkMode')==='true'?'text-white':''} `} onClick={() => addShape('circle')}>{t('editPlace.buttons.circleTable')}</button>
             </div>
           )}
           <div className="flex items-center">
@@ -143,7 +159,7 @@ const DesignCanvas: React.FC = () => {
 
                 {t('editPlace.buttons.delete')}
                 </button>
-                <button onClick={editShape} className="text-lg items-center py-2 text-greentheme ml-3  font-[600] px-2 rounded-[10px] border border-transparent hover:border-softredtheme duration-200 gap-3 flex">
+                <button onClick={editShape} className="text-lg items-center py-2 text-greentheme ml-3  font-[600] px-2 rounded-[10px] border border-transparent hover:border-softgreentheme duration-200 gap-3 flex">
                   <svg width="35" height="35" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect width="19" height="19" rx="3" fill="#88AB61" fill-opacity="0.1"/>
                     <path d="M6.45833 11.5786L6 13.412L7.83333 12.9536L13.1436 7.64339C13.3154 7.47149 13.412 7.23837 13.412 6.9953C13.412 6.75224 13.3154 6.51912 13.1436 6.34722L13.0647 6.26839C12.8928 6.09654 12.6597 6 12.4167 6C12.1736 6 11.9405 6.09654 11.7686 6.26839L6.45833 11.5786Z" stroke="#88AB61" stroke-linecap="round" stroke-linejoin="round"/>

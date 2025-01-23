@@ -120,7 +120,7 @@ export default function Component() {
   const {t} = useTranslation()
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-sm">
+    <div className={`p-6 rounded-lg shadow-sm ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}>
       <h1 className="text-2xl font-medium text-center mb-8">{t('settingsPage.menu.title')}</h1>
 
       <div className="space-y-8">
@@ -133,7 +133,7 @@ export default function Component() {
                     type="text"
                     value={editingSectionName}
                     onChange={(e) => setEditingSectionName(e.target.value)}
-                    className="inputs-unique text-[#2B5219] font-medium px-2 py-1 border rounded"
+                    className={`inputs-unique  font-medium px-2 py-1 border rounded ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'text-[#2B5219]'}`}
                   />
                   <button
                     onClick={saveEditingSection}
@@ -145,7 +145,7 @@ export default function Component() {
                 </>
               ) : (
                 <>
-                  <h2 className="text-[#2B5219] font-medium">{section.name}</h2>
+                  <h2 className={`font-medium ${localStorage.getItem('darkMode')==='true'?'':'text-[#2B5219] '} `}>{section.name}</h2>
                   <div className="flex  gap-1">
                     <button
                       onClick={() => startEditingSection(section.id, section.name)}
@@ -171,7 +171,7 @@ export default function Component() {
                 <input
                   type="text"
                   placeholder={t('settingsPage.menu.placeHolders.food')}
-                  className="inputs-unique flex-1 px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-greentheme"
+                  className={`inputs-unique flex-1 px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-greentheme ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
                   value={item.foodName}
                   onChange={(e) => updateMenuItem(section.id, item.id, 'foodName', e.target.value)}
                 />
@@ -179,15 +179,15 @@ export default function Component() {
                   <input
                     type="text"
                     placeholder={t('settingsPage.menu.placeHolders.price')}
-                    className="inputs-unique ltr w-32 px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-greentheme"
+                    className={`inputs-unique ltr w-32 px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-greentheme ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
                     value={item.price}
                     onChange={(e) => updateMenuItem(section.id, item.id, 'price', e.target.value)}
                   />
-                  <span className="absolute right-3 top-3 text-[#2B5219]">DH</span>
+                  <span className={`absolute right-3 top-3  ${localStorage.getItem('darkMode')==='true'?'text-white':'text-[#2B5219]'} `}>DH</span>
                 </div>
                 <div className="relative w-48">
                   <select
-                    className="inputs-unique ltr w-full appearance-none px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-greentheme bg-white"
+                    className={`inputs-unique ltr w-full appearance-none px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-greentheme  ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
                     value={item.category}
                     onChange={(e) => updateMenuItem(section.id, item.id, 'category', e.target.value)}
                   >

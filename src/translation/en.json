@@ -57,10 +57,11 @@
             }
             },
             "topUsers": {
-            "title": "Top Users"
+            "title": "Top Countries"
             },
             "topUserActions": {
                 "title": "Top User Actions",
+                "subtitle": "Action in :",
                 "totalActions": 762,
                 "label": "Actions",
                 "legend": {
@@ -69,8 +70,18 @@
                     "pending": "Pending"
                 }
             },
-            "visitorsChart": {
-            "title": "Visitors Chart"
+            "reservationsSource": {
+                "title": "Reservations Source",
+                "subtitle": "Action in :",
+                "totalActions": 762,
+                "label": "Actions",
+                "legend": {
+                    "MarketPlace": "Market Place",
+                    "BackOffice": "Back Office",
+                    "ThirdParty": "Third Party",
+                    "Widget": "Widget"
+                }
+
             }
         }
     },
@@ -176,7 +187,8 @@
         "buttons": {
             "addReservation": "Add Reservation",
             "navigate": "Navigate to Agenda",
-            "addThisClient": "Add this client"
+            "addNewClient": "Add new client",
+            "addClient": "Add Client"
         },
         "meals": {
             "breakfast": "Breakfast",
@@ -186,6 +198,7 @@
         "people": "People",
         "placeHolders":{
             "name": "Name",
+            "searchClient"  : "Search Client",
             "email": "Email",
             "phone": "Phone Number"
         }
@@ -248,6 +261,36 @@
             }
         }
     },
+    "reviews":{
+        "title": "Reviews",
+        "tableHeaders": {
+            "id": "ID",
+            "date": "Date",
+            "name": "Name",
+            "email": "Email",
+            "total": "Total",
+            "comment": "Comment",
+            "food":"Food",
+            "service":"Service",
+            "environment":"Environment"
+        },
+        "filters":{
+            "all": "All",
+            "date": "Date"
+        },
+        "view":{
+            "title": "View Review",
+            "name"  : "Name",
+            "email" : "Email",
+            "date"  : "Date",
+            "comment": "Comment",
+            "food":"Food Rating",
+            "service":"Service Rating",
+            "total":"Total Rating",
+            "environment":"Environment Rating"
+
+        }
+    },
      "settingsPage": {
         "title": "Settings",
         "chooseSettingPrompt": "Choose a setting to modify",
@@ -262,6 +305,7 @@
             "users": "Users",
             "billing": "Billing",
             "widget": "Widget",
+            "roles": "Roles",
             "permissions": "Permissions",
             "services": "Services"
         },
@@ -276,11 +320,16 @@
                     "description": "Restaurant Description",
                     "phone": "Phone",
                     "website": "Website",
-                    "location": "Location"
+                    "categories": "Categories",
+                    "location": "Location",
+                    "avgPrice": "Average Price",
+                    "currency": "DH"
+
                 },
                 "buttons": {
                     "cancel": "Cancel",
-                    "save": "Save"
+                    "save": "Save",
+                    "addcategory": "Add Category"
                 }
             }
         },
@@ -325,6 +374,32 @@
             },
             "buttons": {
                 "addUser": "Add User"
+            }
+        },
+        "roles":{
+            "title": "Roles",
+            "labels":{
+                "roleName": "Role Name",
+                "savedRoles": "Saved Roles",
+                "noRolesSaved": "No roles saved",
+                "permissionsavailable": "Permissions Available",
+                "permissionsaffected": "Permissions Affected"
+            },
+            "tableHeaders": {
+                "id": "ID",
+                "name": "Name",
+                "description": "Description",
+                "status": "Status"
+            },
+            "statusLabels": {
+                "active": "Active",
+                "inactive": "Inactive"
+            },
+            "buttons": {
+                "addRole": "Add Role",
+                "saveRole": "Save Role",
+                "affectARole": "Affect a role"
+
             }
         },
         "availability": {

@@ -6,7 +6,6 @@ const IndexSettings = () => {
     <div>
       <div className='flex flex-col items-center'>
         <h2>{t('settingsPage.chooseSettingPrompt')}</h2>
-        <img src={settingsPic} className='w-[30em]' alt="Settign SVG" />
       </div>
     </div>
   )

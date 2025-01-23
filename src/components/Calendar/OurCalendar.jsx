@@ -68,7 +68,7 @@ const OurCalendar = (props) => {
                 className={classNames(
                   isEqual(day, selectedDay) && 'text-white',
                   !isEqual(day, selectedDay) && isToday(day) && 'text-[#70ae29] font-bold',
-                  !isEqual(day, selectedDay) && !isToday(day) && isSameMonth(day, firstDayCurrentMonth) && 'text-gray-900',
+                  !isEqual(day, selectedDay) && !isToday(day) && isSameMonth(day, firstDayCurrentMonth) && localStorage.getItem('darkMode') === 'true' ? 'text-white' : 'text-gray-900',
                   !isEqual(day, selectedDay) && !isToday(day) && !isSameMonth(day, firstDayCurrentMonth) && 'text-gray-400',
                   isEqual(day, selectedDay) && isToday(day) && 'bg-greentheme font-bold',
                   isEqual(day, selectedDay) && !isToday(day) && 'bg-gray-900',

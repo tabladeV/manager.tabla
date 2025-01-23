@@ -218,25 +218,25 @@ const ReservationsPage = () => {
   const reservationOrigin = (origin: string) => {
     if (origin === 'MarketPlace') {
       return (
-        <div className='flex p-1 rounded-md bg-softgreytheme flex-col items-center'>
+        <div className={`flex p-1 rounded-md flex-col items-center ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}>
           <svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M3 7.5H5.5M5.5 7.5V6M5.5 7.5H8M8 7.5V6M8 7.5H10.5M10.5 7.5V6M10.5 7.5H13M6.5 9.5H7.5M8.5 9.5H9.5M8.5 11H9.5M6.5 11H7.5M3.5 13.5V7.5H2.5V5.5L4 2.5H12L13.5 5.5V7.5H12.5V13.5H3.5Z" stroke="#1e1e1e90" strokeWidth='1.4' strokeLinejoin="round"/>
+            <path d="M3 7.5H5.5M5.5 7.5V6M5.5 7.5H8M8 7.5V6M8 7.5H10.5M10.5 7.5V6M10.5 7.5H13M6.5 9.5H7.5M8.5 9.5H9.5M8.5 11H9.5M6.5 11H7.5M3.5 13.5V7.5H2.5V5.5L4 2.5H12L13.5 5.5V7.5H12.5V13.5H3.5Z" stroke={localStorage.getItem('darkMode')==='true'?'#fff':'#1e1e1e90'} strokeWidth='1.4' strokeLinejoin="round"/>
           </svg>
         </div>
       )
     }
     if (origin === 'Website') {
       return (
-        <div className='flex p-1 rounded-md bg-softgreytheme items-center'>
+        <div className={`flex p-1 rounded-md  items-center ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}>
           <svg className="" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M16.36 14C16.44 13.34 16.5 12.68 16.5 12C16.5 11.32 16.44 10.66 16.36 10H19.74C19.9 10.64 20 11.31 20 12C20 12.69 19.9 13.36 19.74 14M14.59 19.56C15.19 18.45 15.65 17.25 15.97 16H18.92C17.9512 17.6683 16.4141 18.932 14.59 19.56ZM14.34 14H9.66C9.56 13.34 9.5 12.68 9.5 12C9.5 11.32 9.56 10.65 9.66 10H14.34C14.43 10.65 14.5 11.32 14.5 12C14.5 12.68 14.43 13.34 14.34 14ZM12 19.96C11.17 18.76 10.5 17.43 10.09 16H13.91C13.5 17.43 12.83 18.76 12 19.96ZM8 8H5.08C6.03864 6.32703 7.57466 5.06124 9.4 4.44C8.8 5.55 8.35 6.75 8 8ZM5.08 16H8C8.35 17.25 8.8 18.45 9.4 19.56C7.57827 18.9323 6.04429 17.6682 5.08 16ZM4.26 14C4.1 13.36 4 12.69 4 12C4 11.31 4.1 10.64 4.26 10H7.64C7.56 10.66 7.5 11.32 7.5 12C7.5 12.68 7.56 13.34 7.64 14M12 4.03C12.83 5.23 13.5 6.57 13.91 8H10.09C10.5 6.57 11.17 5.23 12 4.03ZM18.92 8H15.97C15.6565 6.76161 15.1931 5.56611 14.59 4.44C16.43 5.07 17.96 6.34 18.92 8ZM12 2C6.47 2 2 6.5 2 12C2 14.6522 3.05357 17.1957 4.92893 19.0711C5.85752 19.9997 6.95991 20.7362 8.17317 21.2388C9.38642 21.7413 10.6868 22 12 22C14.6522 22 17.1957 20.9464 19.0711 19.0711C20.9464 17.1957 22 14.6522 22 12C22 10.6868 21.7413 9.38642 21.2388 8.17317C20.7362 6.95991 19.9997 5.85752 19.0711 4.92893C18.1425 4.00035 17.0401 3.26375 15.8268 2.7612C14.6136 2.25866 13.3132 2 12 2Z" fill="#1e1e1e90"/>
+            <path d="M16.36 14C16.44 13.34 16.5 12.68 16.5 12C16.5 11.32 16.44 10.66 16.36 10H19.74C19.9 10.64 20 11.31 20 12C20 12.69 19.9 13.36 19.74 14M14.59 19.56C15.19 18.45 15.65 17.25 15.97 16H18.92C17.9512 17.6683 16.4141 18.932 14.59 19.56ZM14.34 14H9.66C9.56 13.34 9.5 12.68 9.5 12C9.5 11.32 9.56 10.65 9.66 10H14.34C14.43 10.65 14.5 11.32 14.5 12C14.5 12.68 14.43 13.34 14.34 14ZM12 19.96C11.17 18.76 10.5 17.43 10.09 16H13.91C13.5 17.43 12.83 18.76 12 19.96ZM8 8H5.08C6.03864 6.32703 7.57466 5.06124 9.4 4.44C8.8 5.55 8.35 6.75 8 8ZM5.08 16H8C8.35 17.25 8.8 18.45 9.4 19.56C7.57827 18.9323 6.04429 17.6682 5.08 16ZM4.26 14C4.1 13.36 4 12.69 4 12C4 11.31 4.1 10.64 4.26 10H7.64C7.56 10.66 7.5 11.32 7.5 12C7.5 12.68 7.56 13.34 7.64 14M12 4.03C12.83 5.23 13.5 6.57 13.91 8H10.09C10.5 6.57 11.17 5.23 12 4.03ZM18.92 8H15.97C15.6565 6.76161 15.1931 5.56611 14.59 4.44C16.43 5.07 17.96 6.34 18.92 8ZM12 2C6.47 2 2 6.5 2 12C2 14.6522 3.05357 17.1957 4.92893 19.0711C5.85752 19.9997 6.95991 20.7362 8.17317 21.2388C9.38642 21.7413 10.6868 22 12 22C14.6522 22 17.1957 20.9464 19.0711 19.0711C20.9464 17.1957 22 14.6522 22 12C22 10.6868 21.7413 9.38642 21.2388 8.17317C20.7362 6.95991 19.9997 5.85752 19.0711 4.92893C18.1425 4.00035 17.0401 3.26375 15.8268 2.7612C14.6136 2.25866 13.3132 2 12 2Z" fill={localStorage.getItem('darkMode')==='true'?'#fff':'#1e1e1e90'}/>
           </svg>
         </div>
       )
     }
     return (
       <div>
-        <h4 className="text-subblack text-[14px] font-[500] p-1 rounded-md bg-softgreytheme">{origin}</h4>
+        <h4 className={` text-[14px] font-[500] p-1 rounded-md ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}>{origin}</h4>
       </div>
     )
   }
@@ -247,8 +247,8 @@ const ReservationsPage = () => {
   const showStatusModification = (id:string) => {
     setIdStatusModification(id)
     setShowStatus(!showStatus)
-
   }
+  
   const statusHandler = (status: string) => {
     setReservations(reservations.map(r => 
       r.id === idStatusModification ? {...r, status} : r
@@ -264,84 +264,84 @@ const ReservationsPage = () => {
       {showModal && selectedClient && (
         <div>
           <div className="overlay" onClick={() => setShowModal(false)}></div>
-          <div className="sidepopup lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:overflow-y-auto h-full">
+          <div className={`sidepopup lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:overflow-y-auto h-full ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'} `}>
             <h1 className="text-2xl font-[600] mb-4">{t('reservations.edit.title')} by <span className="font-[800]">{selectedClient.fullName}</span></h1>
             <div className="space-y-2">
               <div>
-                <label className="block text-sm font-medium text-gray-700">{t('reservations.edit.informations.name')}</label>
+                <label className="block text-sm font-medium ">{t('reservations.edit.informations.name')}</label>
                 <input
                   type="text"
                   name="fullName"
                   value={selectedClient.fullName}
                   onChange={handleInputChange}
-                  className="inputs-unique mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                />
+                  className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
+/>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">{t('reservations.edit.informations.email')}</label>
+                <label className="block text-sm font-medium ">{t('reservations.edit.informations.email')}</label>
                 <input
                   type="email"
                   name="email"
                   value={selectedClient.email}
                   onChange={handleInputChange}
-                  className="inputs-unique mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                />
+                  className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
+/>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">{t('reservations.edit.informations.date')}</label>
+                <label className="block text-sm font-medium ">{t('reservations.edit.informations.date')}</label>
                 <input
                   type="text"
                   name="date"
                   value={selectedClient.date}
                   onChange={handleInputChange}
-                  className="inputs-unique mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                />
+                  className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
+/>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">{t('reservations.edit.informations.time')}</label>
+                <label className="block text-sm font-medium ">{t('reservations.edit.informations.time')}</label>
                 <input
                   type="text"
                   name="time"
                   value={selectedClient.time}
                   onChange={handleInputChange}
-                  className="inputs-unique mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                />
+                  className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
+/>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">{t('reservations.edit.informations.madeBy')}</label>
+                <label className="block text-sm font-medium ">{t('reservations.edit.informations.madeBy')}</label>
                 <input
                   type="text"
                   name="reservationMade"
                   value={selectedClient.reservationMade}
                   onChange={handleInputChange}
-                  className="inputs-unique mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                />
+                  className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
+/>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">{t('reservations.edit.informations.guests')}</label>
+                <label className="block text-sm font-medium ">{t('reservations.edit.informations.guests')}</label>
                 <input
                   type="text"
                   name="guests"
                   value={selectedClient.guests}
                   onChange={handleInputChange}
-                  className="inputs-unique mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                />
+                  className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
+/>
               </div>
               <div className="">
-                <label className="block text-sm font-medium text-gray-700">{t('reservations.edit.informations.status')}</label>
+                <label className="block text-sm font-medium ">{t('reservations.edit.informations.status')}</label>
                 <select
                   name="status"
                   value={selectedClient.status}
                   onChange={handleInputChange}
-                  className="inputs-unique mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                >
+                  className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
+>
                   <option value="Pending">{t('reservations.statusLabels.pending')}</option>
                   <option value="Confirmed">{t('reservations.statusLabels.confirmed')}</option>
                   <option value="Canceled">{t('reservations.statusLabels.cancelled')}</option>
                 </select>
               </div>
               <div className="h-10 sm:hidden"></div>
-              <div className="flex justify-center lt-sm:fixed lt-sm:bottom-0 lt-sm:bg-white lt-sm:p-3 lt-sm:w-full space-x-2">
+              <div className="flex justify-center lt-sm:fixed lt-sm:bottom-0 lt-sm: lt-sm:p-3 lt-sm:w-full space-x-2">
                 <button onClick={() => setShowModal(false)} className="btn-secondary hover:bg-[#88AB6150] hover:text-greentheme transition-colors">{t('reservations.edit.buttons.cancel')}</button>
                 <button onClick={saveChanges} className="btn-primary">{t('reservations.edit.buttons.save')}</button>
               </div>
@@ -350,51 +350,51 @@ const ReservationsPage = () => {
         </div>
       )}
       <div className='flex justify-between mb-2'>
-        <h1 className='text-3xl text-blacktheme  font-[700]'>{t('reservations.title')}</h1>
+        <h1 className={`text-3xl text-blacktheme  font-[700] ${localStorage.getItem('darkMode')==='true'?' text-whitetheme':' text-blacktheme'}`}>{t('reservations.title')}</h1>
         <button className='btn-primary' onClick={()=>{setShowAddReservation(true)}}>
           {t('reservations.buttons.addReservation')}
         </button>
       </div>
       <div className="flex lt-sm:flex-col lt-sm:gap-2 justify-between">
-        <div className="border-[2px] rounded-[10px]">
+        <div className="">
           <SearchBar SearchHandler={searchFilter}/>
         </div>
         <div className="flex lt-sm:flex-wrap gap-4">
-          <button onClick={() => setFocusedFilter('Confirmed')} className={focusedFilter === 'Confirmed' ? 'btn-primary' : 'btn'}>
+          <button onClick={() => setFocusedFilter('Confirmed')} className={`${localStorage.getItem('darkMode')==='true'?'text-white':''} ${focusedFilter === 'Confirmed' ? 'btn-primary' : 'btn'} `}>
             {t('reservations.filters.confirmed')}
           </button>
-          <button onClick={() => setFocusedFilter('Canceled')} className={focusedFilter === 'Canceled' ? 'btn-primary' : 'btn'}>
+          <button onClick={() => setFocusedFilter('Canceled')} className={`${localStorage.getItem('darkMode')==='true'?'text-white':''} ${focusedFilter === 'Canceled' ? 'btn-primary' : 'btn'}`}>
             {t('reservations.filters.cancelled')}
           </button>
-          <button onClick={() => setFocusedFilter('Pending')} className={focusedFilter === 'Pending' ? 'btn-primary' : 'btn'}>
+          <button onClick={() => setFocusedFilter('Pending')} className={`${localStorage.getItem('darkMode')==='true'?'text-white':''} ${focusedFilter === 'Pending' ? 'btn-primary' : 'btn'}`}>
             {t('reservations.filters.pending')}
           </button>
           <button 
-            className={`gap-2 flex items-center ${selectingDay === '' ? 'btn' : 'btn-primary'}`} 
+            className={`gap-2 flex items-center ${localStorage.getItem('darkMode')==='true'?' text-whitetheme':''} ${selectingDay === '' ? 'btn' : 'btn-primary'}`} 
             onClick={() => setFocusedDate(true)}
           >
             {t('reservations.filters.date')}
           </button>
-          <button onClick={setDefaultFilter} className={(focusedFilter === '') && (selectingDay === '') ? 'btn-primary' : 'btn'}>
+          <button onClick={setDefaultFilter} className={`${localStorage.getItem('darkMode')==='true'?' text-whitetheme':''} ${(focusedFilter === '') && (selectingDay === '') ? 'btn-primary' : 'btn'}`}>
             {t('reservations.filters.all')}
           </button>
         </div>
       </div>
       <div className='mt-4 lt-sm:overflow-x-scroll'>
-        <table className='min-w-full divide-y divide-gray-200'>
-          <thead className="bg-gray-50">
+        <table className={`min-w-full divide-y ${localStorage.getItem('darkMode')==='true'?'divide-gray-800':'divide-gray-200'}`}>
+          <thead className={localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2 text-white':'bg-gray-50 text-gray-500'}>
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('reservations.tableHeaders.id')}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('reservations.tableHeaders.name')}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('reservations.tableHeaders.email')}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('reservations.tableHeaders.madeBy')}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('reservations.tableHeaders.date')}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('reservations.tableHeaders.time')}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('reservations.tableHeaders.guests')}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('reservations.tableHeaders.status')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.id')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.name')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.email')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.madeBy')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.date')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.time')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.guests')}</th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.status')}</th>
             </tr>
           </thead>
-          <tbody className='bg-white divide-y divide-gray-200'>
+          <tbody className={ `  ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme divide-y divide-gray-800':'bg-white divide-y divide-gray-200'}`} >
             {filteredReservations.map(reservation => (
               <tr key={reservation.id} className=" hover:opacity-75">
                 <td className="px-6 py-4 whitespace-nowrap cursor-pointer"  onClick={() => EditClient(reservation.id)}>{reservation.id}</td>
@@ -412,8 +412,8 @@ const ReservationsPage = () => {
                   </span>
                     {showStatus && reservation.id === idStatusModification && (
                       <div>
-                        <div className="fixed left-0 top-0 w-full h-full  opacity-0 " onClick={()=>{setShowStatus(false)}}></div>
-                        <ul className="absolute opacity-100 z-[300] bg-white p-2 rounded-md shadow-md">
+                        <div className="overlay left-0 top-0 w-full h-full  opacity-0 " onClick={()=>{setShowStatus(false)}}></div>
+                        <ul className="fixed opacity-100 z-[300] bg-white p-2 rounded-md shadow-md">
                           <li className="py-1 px-2 hover:bg-gray-100 cursor-pointer" onClick={()=> statusHandler('Pending')}>{t('reservations.statusLabels.pending')}</li>
                           <li className="py-1 px-2 hover:bg-gray-100 cursor-pointer" onClick={()=> statusHandler('Confirmed')}>{t('reservations.statusLabels.confirmed')}</li>
                           <li className="py-1 px-2 hover:bg-gray-100 cursor-pointer" onClick={()=> statusHandler('Cancelled')}>{t('reservations.statusLabels.cancelled')}</li>
@@ -429,7 +429,7 @@ const ReservationsPage = () => {
       {focusedDate && (
         <div>
           <div className="overlay" onClick={() => setFocusedDate(false)}></div>
-          <div className="popup lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0">
+          <div className={`popup lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'}`}>
             <IntervalCalendar onRangeSelect={handleDateClick} />
           </div>
         </div>

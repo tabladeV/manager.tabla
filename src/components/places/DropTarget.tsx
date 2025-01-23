@@ -76,7 +76,7 @@ const DropTarget: React.FC<DropTargetProps> = ({ height, width,min, max,id, type
       style={{
         width,
         height,
-        backgroundColor: droppedItems.length > 0 ? '#FF4B4B' : 'white',
+        backgroundColor: droppedItems.length > 0 ? '#FF4B4B' : localStorage.getItem('darkMode')==='true'?'#031911':'#F6F6F6',
         left: x,
         top: y,
         borderRadius: type === 'rectangle' ? '10px' : '50%',
@@ -84,12 +84,12 @@ const DropTarget: React.FC<DropTargetProps> = ({ height, width,min, max,id, type
     >
       <h2 className='text-[14px] font-semibold'>{id}</h2>
       <p className='text-[13px]  p-1 bg-[#1e1e1e10]  rounded-[5px]'>{max} seats</p>
-      {isClients && <div className='absolute bg-white z-[100] text-greytheme right-[-13.4em] w-[13em] p-2 rounded-[10px] font-medium '>{id} has {droppedItems.length} clients
+      {isClients && <div className={`absolute  z-[100] text-greytheme right-[-13.4em] w-[13em] p-2 rounded-[10px] font-medium ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme text-white':'bg-white text-greytheme'}`}>{id} has {droppedItems.length} clients
         {droppedItems.slice(0,3).map((item, index) => (
-          <div className='bg-softgreytheme p-1 rounded-[5px] mt-1 font-semibold' key={index}>{item.name}</div>
+          <div className={` p-1 rounded-[5px] mt-1 font-semibold ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-softgreytheme'}`} key={index}>{item.name}</div>
         ))
         }
-        {droppedItems.length > 3 && <div className='bg-softgreentheme p-1 rounded-[5px] mt-1 font-semibold'>+{droppedItems.length - 3} more</div>}
+        {droppedItems.length > 3 && <div className={` p-1 rounded-[5px] mt-1 font-semibold ${localStorage.getItem('darkMode')==='true'?'bg-softgreentheme text-blacktheme':'bg-softgreentheme'}`}>+{droppedItems.length - 3} more</div>}
         </div>}
     </div>
   );
