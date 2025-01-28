@@ -51,7 +51,7 @@ export default function TopUsers() {
 
   const {t}= useTranslation()
   return (
-    <div className={` rounded-[20px] w-[40%] lt-sm:w-full overflow-hidden ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme text-textdarktheme':'bg-white text-blacktheme'}`}>
+    <div className={` rounded-[20px]  lt-sm:w-full overflow-hidden ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme text-textdarktheme':'bg-white text-blacktheme'}`}>
       <div className="px-6 py-4 flex justify-between">
         <h2 className="text-xl font-bold mb-2">{t('overview.charts.topUsers.title')}</h2>
         <Filter onClick={(range: range) => setTimeRange(range)} />

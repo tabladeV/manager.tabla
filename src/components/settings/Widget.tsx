@@ -7,10 +7,10 @@ export default function WidgetConfig() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [searchTabs, setSearchTabs] = useState({
-    date: true,
-    time: true,
-    guest: true,
-    city: false
+    menu: true,
+    reviews: true,
+    features: true,
+    location: true
   })
   const [payment, setPayment] = useState('enable')
   const [guestThreshold, setGuestThreshold] = useState(4)
@@ -185,7 +185,7 @@ export default function WidgetConfig() {
         </button>
         <button 
           onClick={handleCopyToken}
-          className="flex-1 py-2 bg-greentheme text-white rounded-lg hover:opacity-90 transition-opacity"
+          className="flex-1 py-2 btn-secondary rounded-lg hover:opacity-90 transition-opacity"
         >
           {t('settingsPage.widget.buttons.copyToken')}
         </button>

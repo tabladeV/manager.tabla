@@ -1,19 +1,45 @@
 import { Link } from 'react-router-dom';
 import profilepic from '../../assets/ProfilePic.png';
 import i18n from 'i18next';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import english from '../../assets/english.png';
 import arabic from '../../assets/arabic.jpg';
 import french from '../../assets/french.png';
 import { useDarkContext } from '../../context/DarkContext';
-import { AppWindowIcon, Fullscreen, FullscreenIcon, Minimize } from 'lucide-react';
+import Cookies from "js-cookie";
+
+import { Fullscreen,  LogOut, Minimize, User } from 'lucide-react';
 
 const UserBar = () => {
   const { setDarkMode } = useDarkContext();
   const [showLang, setShowLang] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
+  const [isLogged, setIsLogged] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(
     localStorage.getItem('darkMode') === 'true'
   );
+
+
+  const divRef = useRef<HTMLDivElement>(null); // Reference for the target div
+  const triggerRef = useRef<HTMLButtonElement>(null); // Reference for the trigger button
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      divRef.current &&
+      !divRef.current.contains(event.target as Node) && // Check if click is outside the target div
+      triggerRef.current &&
+      !triggerRef.current.contains(event.target as Node) // Check if click is outside the trigger
+    ) {
+      setShowProfile(false); // Hide the target div
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside); // Cleanup on unmount
+    };
+  }, []);
 
   useEffect(() => {
     setDarkMode(isDarkMode);
@@ -32,6 +58,12 @@ const UserBar = () => {
       return newMode;
     });
     window.location.reload();
+  };
+
+  const handleLogout = () => {
+    Cookies.remove('token');
+    document.location.href = '/sign-in';
+    setIsLogged(false);
   };
 
   const [fullScreen, setFullScreen] = useState(false);
@@ -95,9 +127,9 @@ const UserBar = () => {
       )}
 
       <div className='flex gap-3 items-center'>
-        <button className={`bg-[#88AB6115]  w-[40px] h-[40px] flex justify-center items-center rounded-[100%] lt-sm:hidden ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme2':''}`} onClick={toggleFullscreen}>
-          {!fullScreen?<Fullscreen size={40} className={`lt-sm:hidden z-10 p-2 rounded-md  ${localStorage.getItem('darkMode')=== 'true' ?'hover:bg-subblack':'hover:bg-softgreytheme'}`}  />
-          :<Minimize size={40} className={`lt-sm:hidden z-10 p-2 rounded-md  ${localStorage.getItem('darkMode')=== 'true' ?'hover:bg-subblack':'hover:bg-softgreytheme'}`}  />}
+        <button className={`bg-[#88AB6115]  w-[40px] h-[40px] flex justify-center items-center rounded-[100%]  lt-sm:hidden ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme2':''}`} onClick={toggleFullscreen}>
+          {!fullScreen?<Fullscreen size={40} className={`lt-sm:hidden z-10 p-2 rounded-md  `}  />
+          :<Minimize size={40} className={`lt-sm:hidden z-10 p-2 rounded-md  `}  />}
         </button>
 
         <button
@@ -137,12 +169,29 @@ const UserBar = () => {
           </svg>
 
         </Link> 
-        <button className='flex items-center gap-2 hover:bg-[#88AB6115] transition duration-200 p-[.6em] rounded-[10px]'>
+        <button 
+          ref={triggerRef}
+          onClick={() => setShowProfile((prev) => !prev)}
+          className='flex items-center gap-2 hover:bg-[#88AB6115] transition duration-200 p-[.6em] rounded-[10px]'
+        >
           <img className='h-[40px] w-[40px] rounded-[100%]' src={profilepic} alt="user"/>
-          <h5 className=' font-semibold lt-sm:hidden'>Alfred Distivano</h5>
+          {/* <h5 className=' font-semibold lt-sm:hidden'>Alfred Distivano</h5> */}
           <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M9 1L5 5L1 1" stroke={localStorage.getItem('darkMode')==='true'?'#e1e1e1':'#1e1e1e'} stroke-opacity="0.75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
+        {showProfile && 
+          <div ref={divRef} className={`absolute mt-[11em] ml-[-4em] flex flex-col shadow-xl shadow-[#00000005] gap-2 items-start p-2 rounded-md z-[50] ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme ':'bg-white'}`}>
+            <Link to='/profile' className='flex w-full items-center gap-2 hover:bg-[#88AB6115] transition duration-200 p-[.6em] rounded-[10px]'>
+              <User size={20} />
+              <h5 className=' font-semibold'>Profile</h5>
+            </Link>
+            
+            <button onClick={handleLogout} className='flex w-full items-center gap-2 hover:bg-[#88AB6115] transition duration-200 p-[.6em] rounded-[10px]'>
+              <LogOut size={20} />
+              <h5 className=' font-semibold'>Log Out</h5>
+            </button>
+          </div>
+        }
         </button>
       </div>
     </div>

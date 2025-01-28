@@ -24,36 +24,39 @@ const ReservationsPage = () => {
 
   const { t } = useTranslation();
 
-  const [reservations,setReservations] = useState([
+  const [reservations, setReservations] = useState([
     {
       id: '1',
-      email: ' john.doe@gmail.com ',
+      email: 'john.doe@gmail.com',
       fullName: 'John Doe',
       date: '23/08/2024',
       time: '12:00 PM',
       reservationMade: 'MarketPlace',
       guests: '2',
-      status: 'Pending'
+      status: 'Pending',
+      review: false
     },
     {
       id: '2',
-      email: 'kwame1@gmail.com ',
+      email: 'kwame1@gmail.com',
       fullName: 'Kwame Dwayne',
       date: '23/08/2024',
       time: '12:00 PM',
       reservationMade: 'MarketPlace',
       guests: '4',
-      status: 'Confirmed'
+      status: 'Confirmed',
+      review: true
     },
     {
       id: '3',
-      email: `asafo.w@gmail.com`,
-      fullName: 'asafo Yaw',
+      email: 'asafo.w@gmail.com',
+      fullName: 'Asafo Yaw',
       date: '21/08/2024',
       time: '12:00 PM',
       reservationMade: 'MarketPlace',
       guests: '4',
-      status: 'Canceled'
+      status: 'Canceled',
+      review: false
     },
     {
       id: '4',
@@ -63,7 +66,8 @@ const ReservationsPage = () => {
       time: '12:00 PM',
       reservationMade: 'MarketPlace',
       guests: '2',
-      status: 'Confirmed'
+      status: 'Confirmed',
+      review: true
     },
     {
       id: '5',
@@ -73,7 +77,8 @@ const ReservationsPage = () => {
       time: '12:00 PM',
       reservationMade: 'MarketPlace',
       guests: '2',
-      status: 'Confirmed'
+      status: 'Confirmed',
+      review: true
     },
     {
       id: '6',
@@ -83,7 +88,8 @@ const ReservationsPage = () => {
       time: '12:00 PM',
       reservationMade: 'MarketPlace',
       guests: '2',
-      status: 'Pending'
+      status: 'Pending',
+      review: false
     },
     {
       id: '7',
@@ -93,7 +99,8 @@ const ReservationsPage = () => {
       time: '12:00 PM',
       reservationMade: 'MarketPlace',
       guests: '2',
-      status: 'Confirmed'
+      status: 'Confirmed',
+      review: true
     },
     {
       id: '8',
@@ -103,7 +110,8 @@ const ReservationsPage = () => {
       time: '12:00 PM',
       reservationMade: 'Jack Ma',
       guests: '2',
-      status: 'Pending'
+      status: 'Pending',
+      review: false
     },
     {
       id: '9',
@@ -113,7 +121,8 @@ const ReservationsPage = () => {
       time: '12:00 PM',
       reservationMade: 'MarketPlace',
       guests: '2',
-      status: 'Confirmed'
+      status: 'Confirmed',
+      review: true
     },
     {
       id: '10',
@@ -123,7 +132,8 @@ const ReservationsPage = () => {
       time: '12:00 PM',
       reservationMade: 'Website',
       guests: '2',
-      status: 'Pending'
+      status: 'Pending',
+      review: false
     },
   ])
 
@@ -384,29 +394,30 @@ const ReservationsPage = () => {
         <table className={`min-w-full divide-y ${localStorage.getItem('darkMode')==='true'?'divide-gray-800':'divide-gray-200'}`}>
           <thead className={localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2 text-white':'bg-gray-50 text-gray-500'}>
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.id')}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.name')}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.email')}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.madeBy')}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.date')}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.time')}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.guests')}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.status')}</th>
+              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.id')}</th>
+              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.name')}</th>
+              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.email')}</th>
+              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.madeBy')}</th>
+              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.date')}</th>
+              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.time')}</th>
+              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.guests')}</th>
+              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.status')}</th>
+              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.review')}</th>
             </tr>
           </thead>
           <tbody className={ `  ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme divide-y divide-gray-800':'bg-white divide-y divide-gray-200'}`} >
             {filteredReservations.map(reservation => (
               <tr key={reservation.id} className=" hover:opacity-75">
-                <td className="px-6 py-4 whitespace-nowrap cursor-pointer"  onClick={() => EditClient(reservation.id)}>{reservation.id}</td>
-                <td className="px-6 py-4 whitespace-nowrap cursor-pointer"  onClick={() => EditClient(reservation.id)}>{reservation.fullName}</td>
-                <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => EditClient(reservation.id)}>{reservation.email}</td>
-                <td className="px-6 py-4 flex items-center justify-center whitespace-nowrap cursor-pointer"  onClick={() => EditClient(reservation.id)}>
+                <td className="px-3 py-4 whitespace-nowrap cursor-pointer"  onClick={() => EditClient(reservation.id)}>{reservation.id}</td>
+                <td className="px-3 py-4 whitespace-nowrap cursor-pointer"  onClick={() => EditClient(reservation.id)}>{reservation.fullName}</td>
+                <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => EditClient(reservation.id)}>{reservation.email}</td>
+                <td className="px-3 py-4 flex items-center justify-center whitespace-nowrap cursor-pointer"  onClick={() => EditClient(reservation.id)}>
                   {reservationOrigin(reservation.reservationMade)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap cursor-pointer"  onClick={() => EditClient(reservation.id)}>{reservation.date }</td>
-                <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => EditClient(reservation.id)}>{reservation.time}</td>
-                <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => EditClient(reservation.id)}>{reservation.guests}</td>
-                <td className="px-6 py-4 whitespace-nowrap " onClick={()=> showStatusModification(reservation.id)}>
+                <td className="px-3 py-4 whitespace-nowrap cursor-pointer"  onClick={() => EditClient(reservation.id)}>{reservation.date }</td>
+                <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => EditClient(reservation.id)}>{reservation.time}</td>
+                <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => EditClient(reservation.id)}>{reservation.guests}</td>
+                <td className="px-3 py-4 whitespace-nowrap " onClick={()=> showStatusModification(reservation.id)}>
                   <span className={`${statusStyle(reservation.status)} text-center py-[.1em] px-3  rounded-[10px]`}> 
                     {reservation.status === 'Confirmed'? t('reservations.statusLabels.confirmed') : reservation.status === 'Pending' ? t('reservations.statusLabels.pending') : t('reservations.statusLabels.cancelled')}
                   </span>
@@ -420,6 +431,9 @@ const ReservationsPage = () => {
                         </ul>
                       </div>
                     )}
+                </td>
+                <td className=" whitespace-nowrap " >
+                  {reservation.review ? <span className=" cursor-default opacity-50" >{t('reservations.tableHeaders.reviewed')}</span> : <span className=" cursor-pointer text-greentheme ">{t('reservations.tableHeaders.sendReview')}</span>}
                 </td>
               </tr>
             ))}

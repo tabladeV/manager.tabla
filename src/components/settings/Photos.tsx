@@ -1,11 +1,12 @@
 'use client'
 
 import { useState } from "react"
-import { Upload, Plus, X, AlertCircle } from "lucide-react"
+import { Upload, Plus, X, AlertCircle, Star } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 export default function Photos() {
   const [images, setImages] = useState<string[]>([])
+  const [mainImage, setMainImage] = useState<string | undefined>(undefined)
   const maxImages = 10
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,6 +22,9 @@ export default function Photos() {
 
   const removeImage = (index: number) => {
     setImages(prev => prev.filter((_, i) => i !== index))
+  }
+  const handleMainImage = (index: number)=>{
+    setMainImage(images[index])
   }
 
   const {t}= useTranslation();
@@ -72,14 +76,21 @@ export default function Photos() {
                   <img
                     src={images[index]}
                     alt={`Uploaded image ${index + 1}`}
-                    className="w-full h-full object-cover rounded-lg"
+                    className={`w-full h-full object-cover rounded-lg ${images[index] === mainImage? '':''}`}
                   />
                   <button
                     onClick={() => removeImage(index)}
-                    className="absolute top-1 right-1 p-1 bg-red-100 rounded-full hover:bg-red-200 transition-colors"
+                    className="absolute top-1 right-1 p-1 bg-softredtheme rounded-full hover:bg-red-200 transition-colors"
                     aria-label="Remove image"
                   >
-                    <X className="h-4 w-4 text-red-600" />
+                    <X className="h-4 w-4 text-redtheme" />
+                  </button>
+                  <button
+                    onClick={()=> handleMainImage(index)}
+                    className={`absolute top-1 left-1 p-1  rounded-full transition-colors ${images[index] === mainImage? 'bg-greentheme':'bg-softgreentheme'}`}
+                    aria-label="Main image"
+                  >
+                    <Star className={`h-4 w-4 ${images[index] === mainImage? 'text-white':'text-greentheme '} `}/>
                   </button>
                 </>
               ) :  null}

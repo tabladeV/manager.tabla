@@ -21,11 +21,11 @@ const SettingsPage = () => {
           <Link to='/settings/messaging' className={`hover:underline ${pathname === '/settings/messaging' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.messaging')}</Link>
           <Link to='/settings/features' className={`hover:underline ${pathname === '/settings/features' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.features')}</Link>
           <Link to='/settings/users' className={`hover:underline ${pathname === '/settings/users' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.users')}</Link>
-          <Link to='/settings/billing' className={`hover:underline ${pathname === '/settings/billing' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.billing')}</Link>
+          {/* <Link to='/settings/billing' className={`hover:underline ${pathname === '/settings/billing' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.billing')}</Link> */}
           <Link to='/settings/widget' className={`hover:underline ${pathname === '/settings/widget' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.widget')}</Link>
           <Link to='/settings/permissions' className={`hover:underline ${pathname === '/settings/permissions' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.permissions')}</Link>
           <Link to='/settings/roles' className={`hover:underline ${pathname === '/settings/roles' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.roles')}</Link>
-          <Link to='/settings/services' className={`hover:underline ${pathname === '/settings/services' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.services')}</Link>
+          {/* <Link to='/settings/services' className={`hover:underline ${pathname === '/settings/services' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.services')}</Link> */}
         </div>
         <div className={`w-full overflow-y-scroll ${pathname === '/settings' ? 'lt-sm:hidden': ''}`}>
           <Outlet />

@@ -4,8 +4,15 @@ import ReservationProcess from './ReservationProcess';
 import { format, parseISO } from 'date-fns';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 
+interface reservationInfo {
+    reserveDate: string;
+    time: string;
+    guests: number;
+}
 interface ReservationModalProps {
     onClick: () => void;
+    // onSubmit: () => void;
+    onSubmit: (data:{name:string; email:string; number: string;comment:string ;reservationInfo: reservationInfo}) => void;
 }
 
 const ReservationModal = (props: ReservationModalProps) => {
@@ -22,11 +29,20 @@ const ReservationModal = (props: ReservationModalProps) => {
         name: '',
         email: '',
         phone: '',
+        comment:'',
     }); // Holds the form data
     const { t } = useTranslation();
 
-    const handleAddReservation = (event: React.FormEvent) => {
+    const handleAddReservation = (event: React.FormEvent): void => {
         event.preventDefault();
+        const reservationData = {
+            name: formData.name,
+            email: formData.email,
+            number: formData.phone,
+            comment: formData.comment,
+            reservationInfo: data
+        };
+        props.onSubmit(reservationData);
         // Add your reservation handling logic here
     };
 
@@ -179,7 +195,16 @@ const ReservationModal = (props: ReservationModalProps) => {
                         onChange={handleFormChange} // Handle phone change
                         required
                     />
-                    <select name="places" id="places" 
+                    <input
+                        placeholder={t('grid.placeHolders.intern')}
+                        type="text"
+                        className={`inputs-unique ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'}`}
+                        id="phone"
+                        value={formData.comment} // Autofill phone
+                        onChange={handleFormChange} // Handle phone change
+                        required
+                    />
+                    {/* <select name="places" id="places" 
                         className={`inputs-unique ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'}`}
                     >
                         <option value="Places" disabled>
@@ -198,8 +223,9 @@ const ReservationModal = (props: ReservationModalProps) => {
                         <option value="Pending">T-01</option>
                         <option value="Confirmed">Outdoor</option>
                         <option value="Canceled">Terrace</option>
-                    </select>
+                    </select> */}
                 </div>
+                
                 <div onClick={()=>{setShowProcess(true)}} className="btn flex justify-around cursor-pointer text-white">
                     {(data.reserveDate === '') ?<div>date </div>:<span>{data.reserveDate}</span>}
                     {(data.time === '') ? <div>Time </div>:<span>{data.time}</span>} 

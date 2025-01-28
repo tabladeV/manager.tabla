@@ -29,7 +29,7 @@ const {t}=  useTranslation();
     
 
   return (
-    <div className={` px-[1.4em] gap-2 flex flex-col justify-between sm:h-[calc(100vh-100px)] lt-sm:fixed lt-sm:z-10  lt-sm:bottom-0 ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme text-textdarktheme':'bg-white '} ${stateOfSideBar && 'w-[18em]'} lt-sm:w-full lt-sm:h-100px `}>
+    <div className={` px-[1.4em] gap-2 flex flex-col justify-between sm:h-[calc(100vh-100px)] overflow-y-auto no-scrollbar lt-sm:fixed lt-sm:z-10  lt-sm:bottom-0 ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme text-textdarktheme':'bg-white '} ${stateOfSideBar && 'w-[18em]'} lt-sm:w-full lt-sm:h-100px `}>
       <div className='lt-sm:flex lt-sm:justify-around lt-sm:p-1 '>
         <Link to='/' className={`${stateOfSideBar? 'w-[13em]':''} ${pathname === '/' ? navigatedMenuClass : normalMenuClass }`}>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -110,7 +110,7 @@ const {t}=  useTranslation();
         }
 
 
-        <Link to='/payment' className={`${pathname === '/payment' ? navigatedMenuClass : normalMenuClass }`}>
+        {/* <Link to='/payment' className={`${pathname === '/payment' ? navigatedMenuClass : normalMenuClass }`}>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M4.0625 3.125C3.31658 3.125 2.60121 3.42132 2.07376 3.94876C1.54632 4.47621 1.25 5.19158 1.25 5.9375V6.875H18.75V5.9375C18.75 5.19158 18.4537 4.47621 17.9262 3.94876C17.3988 3.42132 16.6834 3.125 15.9375 3.125H4.0625ZM1.25 14.0625V8.125H18.75V14.0625C18.75 14.8084 18.4537 15.5238 17.9262 16.0512C17.3988 16.5787 16.6834 16.875 15.9375 16.875H4.0625C3.31658 16.875 2.60121 16.5787 2.07376 16.0512C1.54632 15.5238 1.25 14.8084 1.25 14.0625ZM13.125 11.875C12.9592 11.875 12.8003 11.9408 12.6831 12.0581C12.5658 12.1753 12.5 12.3342 12.5 12.5C12.5 12.6658 12.5658 12.8247 12.6831 12.9419C12.8003 13.0592 12.9592 13.125 13.125 13.125H15C15.1658 13.125 15.3247 13.0592 15.4419 12.9419C15.5592 12.8247 15.625 12.6658 15.625 12.5C15.625 12.3342 15.5592 12.1753 15.4419 12.0581C15.3247 11.9408 15.1658 11.875 15 11.875H13.125Z" fill={pathname === '/payment' || localStorage.getItem('darkMode')=== 'true' ? 'white':'#1e1e1e'} fill-opacity={pathname === '/payment'? '1':'0.75'}/>
           </svg>
@@ -118,7 +118,7 @@ const {t}=  useTranslation();
 
 
           <h2 className={`font-[500] text-[17px] ${localStorage.getItem('darkMode')==='true'?'text-textdarktheme':'' } ${stateOfSideBar? 'block':'hidden'}`}>Payment</h2>
-        </Link>
+        </Link> */}
 
 
         <Link to='/clients' className={`${pathname.includes('clients') ? navigatedMenuClass : normalMenuClass }`}>

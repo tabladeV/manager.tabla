@@ -37,7 +37,7 @@ export default function TopActions() {
   const { t } = useTranslation()
 
   return (
-    <div className={` ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-textdarktheme' : 'bg-white text-blacktheme'} w-[30%] rounded-[20px] lt-sm:w-full overflow-hidden`}>
+    <div className={` ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-textdarktheme' : 'bg-white text-blacktheme'}  rounded-[20px] lt-sm:w-full overflow-hidden`}>
       <div className="px-6 py-4 flex justify-between">
         <h2 className="text-xl font-bold mb-2">{t('overview.charts.topUserActions.title')}</h2>
         <Filter onClick={(range: Range) => setTimeRange(range)} />

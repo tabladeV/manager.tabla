@@ -122,7 +122,7 @@
 
 @layer base{
     body{
-        font-family: 'poppins', "cairo",sans-serif;
+        font-family: 'poppins', "cairo", sans-serif;
     }
     h1{
         font-size: 2rem;

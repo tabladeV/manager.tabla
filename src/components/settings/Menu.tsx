@@ -185,7 +185,7 @@ export default function Component() {
                   />
                   <span className={`absolute right-3 top-3  ${localStorage.getItem('darkMode')==='true'?'text-white':'text-[#2B5219]'} `}>DH</span>
                 </div>
-                <div className="relative w-48">
+                {/* <div className="relative w-48">
                   <select
                     className={`inputs-unique ltr w-full appearance-none px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-greentheme  ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
                     value={item.category}
@@ -197,7 +197,7 @@ export default function Component() {
                     <option value="dessert">Dessert</option>
                   </select>
                   <ChevronDown className="absolute right-3 top-2.5 w-5 h-5 text-gray-400 pointer-events-none" />
-                </div>
+                </div> */}
                 <button
                   onClick={() => deleteMenuItem(section.id, item.id)}
                   className="p-2 rounded bg-red-100 text-red-600 hover:bg-red-200 transition-colors"

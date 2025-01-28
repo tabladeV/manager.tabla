@@ -10,6 +10,9 @@ import i18n, { loadLanguages, use } from 'i18next';
 import { useDarkContext } from "../context/DarkContext"
 import { Fullscreen } from "lucide-react"
 
+import { Helmet } from "react-helmet-async";
+
+
 const RootLayout = () => {
 
   useEffect(() => {
@@ -79,7 +82,10 @@ const { darkMode } = useDarkContext();
 
 
   return (
-    <div className={`flex ${(shownlang === 'ar') ? "rtl ":''} ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme text-textdarktheme':''}`}>
+    <div className={`flex  w-full ${(shownlang === 'ar') ? "rtl ":''} ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme text-textdarktheme':''}`}>
+      {/* <Helmet>
+        <title>Your Custom Title</title> 
+      </Helmet> */}
       <div className="sm:hidden">
           <NavigationMenu stateOfSideBar={stateOfSideBar} handleSideBar={()=>{setStateOfSideBar(!stateOfSideBar)}} />
 
@@ -90,7 +96,7 @@ const { darkMode } = useDarkContext();
       </div>
       
       <div className="w-full ">
-        <header className='h-[80px]  items-center flex justify-between px-6 lt-sm:px-2'>
+        <header className='h-[80px]   items-center flex justify-between px-6 lt-sm:px-2'>
           {/* <SearchBar /> */}
           <div className="sm:hidden"><Logo/></div>
           <button className={` lt-sm:hidden z-10 p-2 rounded-md  ${localStorage.getItem('darkMode')=== 'true' ?'hover:bg-subblack':'hover:bg-softgreytheme'}`} onClick={()=>{setStateOfSideBar(!stateOfSideBar)}}>
@@ -111,11 +117,11 @@ const { darkMode } = useDarkContext();
           <div className="flex gap-4 lt-sm:hidden">
             <div className="flex items-center gap-2 btn border-softgreentheme cursor-default hover:border-greentheme  text-greentheme">
               <span className="text-[2rem] font-[600]">{20}</span>
-              Confirmed 
+              <span className="lg:block hidden">Confirmed</span> 
             </div>
-            <div className="flex items-center gap-2 btn border-softredtheme cursor-default hover:border-redtheme  text-redtheme">
+          <div className="flex items-center  gap-2 btn border-softredtheme cursor-default hover:border-redtheme  text-redtheme">
               <span className="text-[2rem] font-[600]">{2}</span>
-              Cancelled 
+              <span className="lg:block hidden">Cancelled </span>
             </div>
           </div>
           

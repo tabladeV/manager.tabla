@@ -1,6 +1,4 @@
-import {
-  Refine,
-} from "@refinedev/core";
+import {  Refine } from "@refinedev/core";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 
@@ -47,13 +45,14 @@ import 'leaflet/dist/leaflet.css';
 import { DarkProvider } from "./context/DarkContext";
 import Roles from "./components/settings/Roles";
 import Reviews from "./_root/pages/Reviews";
+import Profile from "./_root/pages/Profile";
+
+
 
 
 function App() {
 
   
-
-
   return (
     <PowerProvider>
       <DarkProvider>
@@ -72,6 +71,7 @@ function App() {
                     projectId: "dNe3Q8-sf9Qqi-OD7CQc",
                   }}
                 >
+                  
                   
                   <Routes>
 
@@ -93,6 +93,7 @@ function App() {
                         <Route path='/agenda/grid' element={<GridPage />} />
                         <Route path='/payment' element={<PaymentPage />} />
                         <Route path='/reviews' element={<Reviews />} />
+                        <Route path="/profile" element={<Profile />} />
                         <Route path='/clients' element={<ClientsPage />} >
                           <Route path='/clients/:id' element={<ClientInterface />} />
                         </Route>

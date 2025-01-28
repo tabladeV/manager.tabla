@@ -33,7 +33,7 @@ const DateSelection = () => {
     const displayDay = chosenDay ? format(chosenDay, "dd/MM/yyyy") : "Today";
 
     return (
-        <div >
+        <div className="mx-3">
             {/* Calendar Popup */}
             {isCalendar && (
                 <div>
@@ -48,7 +48,7 @@ const DateSelection = () => {
             <div className={`  flex ml-[0vw] gap-4 lt-sm:m-0 btn border-[#00000030] ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme2 text-textdarktheme':''}`}>
                 {/* Previous Day Button */}
                 <button
-                    className={`p-1 w-8 rounded-[10px]  lt-sm:hidden ${localStorage.getItem('darkMode')=== 'true'? 'hover:bg-bgdarktheme':'hover:bg-softgreytheme'}`}
+                    className={`p-1 w-8 rounded-[10px]  hidden md:block ${localStorage.getItem('darkMode')=== 'true'? 'hover:bg-bgdarktheme':'hover:bg-softgreytheme'}`}
                     onClick={getPreviousDay}
                 >
                     {"<"}
@@ -57,14 +57,14 @@ const DateSelection = () => {
                 {/* Current Day / Calendar Button */}
                 <button
                     onClick={() => setIsCalendar(true)}
-                    className={`py-1 rounded-[10px] w-[15em] px-3 lt-sm:w-[6em] lt-sm:p-0  ${localStorage.getItem('darkMode')=== 'true'? 'hover:bg-bgdarktheme':'hover:bg-softgreytheme'}`}
+                    className={`py-1 rounded-[10px] md:w-[15em] px-3 w-[7em] lt-sm:p-0  ${localStorage.getItem('darkMode')=== 'true'? 'hover:bg-bgdarktheme':'hover:bg-softgreytheme'}`}
                 >
                     {displayDay === format(startOfToday(), "dd/MM/yyyy") ? t('header.date.today') : (displayDay === format(addDays(startOfToday(), 1), "dd/MM/yyyy") ? t('header.date.tomorrow') : (displayDay === format(addDays(startOfToday(), -1), "dd/MM/yyyy") ? t('header.date.yesterday') : displayDay))}
                 </button>
 
                 {/* Next Day Button */}
                 <button
-                    className={`p-1 w-8 rounded-[10px]  lt-sm:hidden ${localStorage.getItem('darkMode')=== 'true'? 'hover:bg-bgdarktheme':'hover:bg-softgreytheme'}`}
+                    className={`p-1 w-8 rounded-[10px]  hidden md:block ${localStorage.getItem('darkMode')=== 'true'? 'hover:bg-bgdarktheme':'hover:bg-softgreytheme'}`}
                     onClick={getNextDay}
                 >
                     {">"}

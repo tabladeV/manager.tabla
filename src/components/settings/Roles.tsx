@@ -80,11 +80,11 @@ const Roles = () => {
                     {/* Available Permissions */}
                     <div className="flex w-full flex-col">
                         <label className="text-[17px]">{t('settingsPage.roles.labels.permissionsavailable')}</label>
-                        <div className={`rounded-md p-3 flex flex-col gap-2 h-[10em] overflow-y-auto ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2' : 'bg-white'}`}>
+                        <div className={`rounded-md p-3 flex flex-col gap-2 h-[10em] overflow-y-auto ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2' : 'bg-softgreytheme'}`}>
                             {availablePermissions.map((permission, index) => (
                                 <div
                                     key={index}
-                                    className={`flex justify-between items-center cursor-pointer hover:opacity-80 ${selectedAvailable === permission ? 'bg-blue-200' : ''}`}
+                                    className={`flex justify-between items-center cursor-pointer hover:opacity-80 ${selectedAvailable === permission ? 'bg-softgreentheme' : ''}`}
                                     onClick={() => setSelectedAvailable(permission)}
                                 >
                                     <div>{permission.name}</div>
@@ -112,11 +112,11 @@ const Roles = () => {
                     {/* Affected Permissions */}
                     <div className="flex w-full flex-col">
                         <label className="text-[17px]">{t('settingsPage.roles.labels.permissionsaffected')}</label>
-                        <div className={`rounded-md p-3 flex flex-col gap-2 h-[10em] overflow-y-auto ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2' : 'bg-white'}`}>
+                        <div className={`rounded-md p-3 flex flex-col gap-2 h-[10em] overflow-y-auto ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2' : 'bg-softgreytheme'}`}>
                             {affectedPermissions.map((permission, index) => (
                                 <div
                                     key={index}
-                                    className={`flex justify-between items-center cursor-pointer hover:opacity-80 ${selectedAffected === permission ? 'bg-blue-200' : ''}`}
+                                    className={`flex justify-between items-center cursor-pointer hover:opacity-80 ${selectedAffected === permission ? 'bg-softgreentheme' : ''}`}
                                     onClick={() => setSelectedAffected(permission)}
                                 >
                                     <div>{permission.name}</div>

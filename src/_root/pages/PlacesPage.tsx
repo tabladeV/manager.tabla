@@ -25,14 +25,13 @@ const PlacePage: React.FC = () => {
   const [focusedRoof, setFocusedRoof] = useState<string | null>('Main Room');
   const [roofs, setRoofs] = useState<string[]>(['Main Room', 'Outdoor', 'Terrace']);
   const { chosenDay } = useDateContext(); // Access chosenDay from DateContext
-
   const data = [
-    { id: 1, name: 'Caprim Zack', time: '12:00 PM', date: '26 oct 2024', guests: 4, occasion: 'Birthday', tableNumber: 1 },
-    { id: 2, name: 'Alfred Destivan', time: '14:00 PM', date: '25 oct 2024', guests: 2, occasion: 'Birthday', tableNumber: 2 },
-    { id: 3, name: 'Sam Sulek', time: '17:00 PM', date: '25 oct 2024', guests: 1, occasion: 'none', tableNumber: 3 },
-    { id: 4, name: 'Christopher Bums', time: '13:00 PM', date: '25 oct 2024', guests: 5, occasion: 'none', tableNumber: 4 },
-    { id: 5, name: 'Alfred Zack', time: '12:00 PM', date: '25 oct 2024', guests: 4, occasion: 'Birthday', tableNumber: 5 },
-    { id: 5, name: 'Alfred Zack', time: '12:00 PM', date: '25 oct 2024', guests: 4, occasion: 'Birthday', tableNumber: 7 },
+    { id: 1, name: 'Caprim Zack', time: '12:00 PM', date: '26 jan 2025', guests: 4, occasion: 'Birthday', tableNumber: 1 },
+    { id: 2, name: 'Alfred Destivan', time: '14:00 PM', date: '26 jan 2025', guests: 2, occasion: 'Birthday', tableNumber: 2 },
+    { id: 3, name: 'Sam Sulek', time: '17:00 PM', date: '26 jan 2025', guests: 1, occasion: 'none', tableNumber: 3 },
+    { id: 4, name: 'Christopher Bums', time: '13:00 PM', date: '26 jan 2025', guests: 5, occasion: 'none', tableNumber: 4 },
+    { id: 5, name: 'Alfred Zack', time: '12:00 PM', date: '26 jan 2025', guests: 4, occasion: 'Birthday', tableNumber: 5 },
+    { id: 6, name: 'Alfred Zack', time: '12:00 PM', date: '26 jan 2025', guests: 4, occasion: 'Birthday', tableNumber: 7 },
   ];
 
 
@@ -70,7 +69,7 @@ const PlacePage: React.FC = () => {
               {
                   "name": "Alfred Destivan",
                   "time": "14:00",
-                  "date": "25 oct 2024",
+                  "date": "26 jan 2025",
                   "guests": 2,
                   "occasion": "Birthday",
                   "tableNumber": 2
@@ -108,7 +107,7 @@ const PlacePage: React.FC = () => {
           "reservedBy": {
               "name": "Christopher Bums",
               "time": "13:00",
-              "date": "25 oct 2024",
+              "date": "27 jan 2025",
               "guests": 5,
               "occasion": "none",
               "tableNumber": 4
@@ -127,7 +126,7 @@ const PlacePage: React.FC = () => {
         "reservedBy": {
             "name": "Christopher Bums",
             "time": "13:00",
-            "date": "25 oct 2024",
+            "date": "27 jan 2025",
             "guests": 5,
             "occasion": "none",
             "tableNumber": 4
@@ -184,7 +183,7 @@ const PlacePage: React.FC = () => {
         "reservedBy":{
           "name": "Sam Sulek",
           "time": "17:00",
-          "date": "25 oct 2024",
+          "date": "28 jan 2025",
           "guests": 1,
           "occasion": "none",
           "tableNumber": 3
@@ -203,7 +202,7 @@ const PlacePage: React.FC = () => {
         "reservedBy":{
           "name": "Sam Sulek",
           "time": "19:00",
-          "date": "25 oct 2024",
+          "date": "28 jan 2025",
           "guests": 1,
           "occasion": "none",
           "tableNumber": 3
@@ -222,7 +221,7 @@ const PlacePage: React.FC = () => {
         "reservedBy":{
           "name": "Sam Sulek",
           "time": "19:00",
-          "date": "25 oct 2024",
+          "date": "31 jan 2025",
           "guests": 1,
           "occasion": "none",
           "tableNumber": 3
@@ -251,6 +250,11 @@ const PlacePage: React.FC = () => {
     });
     setSearchResults(results);
   };
+
+  useEffect(() => {
+    const currentHour = getCurrentHour();
+    setFilteringHour(`${currentHour}:00`);
+  }, []);
 
   const formattedChosenDay = format(chosenDay, 'dd MMM yyyy'); // Format chosenDay for comparison
 
@@ -300,7 +304,7 @@ const PlacePage: React.FC = () => {
               <div>
                 <select className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-black':'bg-white'}`}  onChange={(e) => setFilteringHour(e.target.value)}>
                   {hours.map((hour) => (
-                    <option key={hour.id} value={hour.time} >
+                    <option key={hour.id} selected={hour.time === filteringHour} value={hour.time}>
                       {hour.time}
                     </option>
                   ))}

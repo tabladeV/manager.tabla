@@ -29,14 +29,20 @@ const Home = () => {
           {/* Here’s what’s happening with your business today. */}
         </p>
       </div>
-      <div className='flex flex-col gap-[10px]'>
-        <div className='flex gap-[10px] lt-sm:flex-col'>
+      <div className='grid grid-cols-1 md:grid-cols-3 gap-[10px]'>
+        <div className='md:col-span-2'>
           <ReservationsChart />
-          <HistoryList /> 
         </div>
-        <div className='flex gap-[10px] lt-sm:flex-col lt-sm:w-full'>
+        <div className='md:col-span-1'>
+          <HistoryList />
+        </div>
+        <div className='md:col-span-1'>
           <TopActions />
+        </div>
+        <div className='md:col-span-1'>
           <TopUsers />
+        </div>
+        <div className='md:col-span-1'>
           <VisitorsChart />
         </div>
       </div>

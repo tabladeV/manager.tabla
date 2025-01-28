@@ -40,8 +40,8 @@
                 "december": "December"
             }
         },
-        "history": {
-            "title": "History",
+        "reviews": {
+            "title": "Reviews",
             "status": {
                 "confirmed": "Confirmed",
                 "cancelled": "Cancelled",
@@ -107,7 +107,11 @@
         "time": "Time",
         "guests": "Guests",
         "madeBy": "Made From/By",
-        "status": "Status"
+        "status": "Status",
+        "review": "reviews",
+        "sendReview": "Send Review",
+        "reviewed": "Review sent"
+
       },
       "statusLabels": {
         "pending": "Pending",
@@ -198,6 +202,8 @@
         "people": "People",
         "placeHolders":{
             "name": "Name",
+            "intern":"Internal Comment",
+            "extern":"External Comment",
             "searchClient"  : "Search Client",
             "email": "Email",
             "phone": "Phone Number"
@@ -339,7 +345,7 @@
             "addTitlePlaceholder": "Add title here",
             "addDescriptionPlaceholder": "Add description here",
             "searchTabs": {
-                "title": "Search Tabs",
+                "title": "Extra settings",
                 "options": {
                     "city": "City",
                     "guest": "Guest",
@@ -356,6 +362,27 @@
             "buttons": {
                 "copyToken": "Copy your token",
                 "save": "Save"
+            }
+        },
+        "permissions":{
+            "title": "Permissions",
+            "tableHeaders": {
+                "id": "ID",
+                "name": "Name",
+                "description": "Description",
+                "status": "Status"
+            },
+            "labels": {
+                "noAssignedRoles": "No assigned roles",
+                "assignedRoles": "Assigned Roles",
+                "selectRole": "Select a role",
+                "role":"Role",
+                "user":"User"
+            },
+            "buttons": {
+                "addPermission": "Add Permission",
+                "savePermission": "Save Permission",
+                "affectAPermission": "Affect a permission"
             }
         },
         "users":{
@@ -427,6 +454,14 @@
             "title": "Tags",
             "placeHolder":"Ex : Vegetarian, Vegan, Gluten Free",
             "label":"Add a tag",
+            "buttons": {
+                "save": "Save"
+            }
+        },
+        "features":{
+            "title": "Features",
+            "placeHolder":"Ex : Wifi, Parking, Terrace",
+            "label":"Add a feature",
             "buttons": {
                 "save": "Save"
             }

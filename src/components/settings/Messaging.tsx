@@ -3,6 +3,11 @@ import { Plus, Trash, X } from "lucide-react"
 import { useState } from "react"
 
 const Messaging = () => {
+  interface template {
+    id:number,
+    title:string,
+    content:string
+  }
 
 
   const [templates, setTemplates] = useState([
@@ -34,13 +39,15 @@ const Messaging = () => {
     })
   }
 
+  const [showTemplate, setShowTemplate] =useState(false)
+  const [selectedTemplate , setSelectedTemplate]= useState<template>()
   const [newTemplateData, setNewTemplateData] = useState([{title:'',content:''}])
 
   const [newTemplate, setNewTemplate] = useState(false)
   const addTemplate = (title:string,content:string) => {
     setTemplates((prevTemplates) => {
       const newTemplate = {
-        id: prevTemplates.length + 1,
+        id: Math.random(),
         title: title,
         content: content,
       }
@@ -48,10 +55,57 @@ const Messaging = () => {
     })
     setNewTemplate(false)
   }
-  
+
+  const handleShowTemplate =(id :number) =>{
+    setShowTemplate(true)
+    const selected = templates.find((template) => template.id === id);
+    if (selected) {
+      setSelectedTemplate(selected);
+    }
+
+  }
+
+  const handleChangesOnTemplate = (id: number) => {
+    setTemplates((prevTemplates) =>
+      prevTemplates.map((temp) =>
+        temp.id === id ? { ...temp, title: selectedTemplate?.title || '', content: selectedTemplate?.content || '' } : temp
+      )
+    );
+    setShowTemplate(false)
+  }
 
   return (
     <div className={` flex flex-col h-full items-center rounded-[10px]  p-3 w-full ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'}`}>
+      {(showTemplate && selectedTemplate) &&
+        <div>
+          <div className="overlay" onClick={()=>{setShowTemplate(false)}}/>
+          <div className={`sidepopup h-full flex flex-col gap-4 ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'}`}>
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg">New Template</h3>
+              <X onClick={()=>{setShowTemplate(false)}} className={`w-5 h-5 ${localStorage.getItem('darkMode')==='true'?'text-white':'text-black'}`} />
+            </div>
+            <input 
+              type="text" 
+              placeholder="Template Title" 
+              value={selectedTemplate.title}
+              onChange={(e)=>{setSelectedTemplate({...selectedTemplate, title: e.target.value})}} 
+              className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} 
+            />
+            <textarea 
+              placeholder="Template Content" 
+              value={selectedTemplate.content}
+              onChange={(e)=>{setSelectedTemplate({...selectedTemplate, content: e.target.value})}} 
+              className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} 
+            />
+            <button 
+              onClick={()=>{handleChangesOnTemplate(selectedTemplate.id)}} 
+              className={`btn-primary`}
+            >
+              Save template
+            </button>
+          </div>
+        </div>
+      }
       {newTemplate && 
       <div >
         <div className="overlay"/>
@@ -93,12 +147,14 @@ const Messaging = () => {
         </h4>
 
       </div>}
-      <div className="flex gap-3 w-full">
+      <div className="flex gap-3 z-[50] w-full">
         {
           templates.map((template) => (
-            <div key={template.id} onMouseLeave={()=>{setTrash(false)}} onMouseOver={()=>{setTrash(true)}} className={`flex gap-5 mt-5 w-full h-[5em] items-center justify-between text-center ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-[#f8f8f8]'} p-3 rounded-[10px]`}>
-              <h3 className={``}>{template.title}</h3>
-              {trash && <Trash onClick={()=>{deleteTemplate(template.id)}} className={`w-5 h-5 ${localStorage.getItem('darkMode')==='true'?'text-white':'text-black'}`} />}
+            <div key={template.id} className={`flex gap-5 mt-5 w-full p-2 h-[5em] items-center justify-between text-center ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-[#f8f8f8]'} p-3 rounded-[10px]`}>
+              <div className="cursor-pointer w-full"  onClick={()=>{handleShowTemplate(template.id)}} >
+                <h3 className={``}>{template.title}</h3>
+              </div>
+              { <Trash onClick={()=>{deleteTemplate(template.id)}} className={`cursor-pointer hover:bg-redtheme w-[3em] p-2 rounded-md  h-[3em] ${localStorage.getItem('darkMode')==='true'?'text-white':'text-black'}`} />}
             </div>
           ))
         }

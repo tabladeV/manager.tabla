@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import "dhtmlx-scheduler/codebase/dhtmlxscheduler.css";
 import { Scheduler } from "dhtmlx-scheduler";
 import { useDateContext } from '../../context/DateContext'; // Import the custom hook
@@ -12,6 +12,7 @@ export default function SchedulerView() {
     // Access chosenDay from the DateContext
     const { chosenDay } = useDateContext();
 
+    const [startHour, setStartHour] = useState<number>(14);
     useEffect(() => {
         // Ensure the container ref is defined
         if (!container.current) return;
@@ -33,7 +34,7 @@ export default function SchedulerView() {
             x_date: "%H:%i",
             x_step: 1,
             x_size: 6,
-            x_start: 14,
+            x_start: startHour,
             x_length: 6,
             y_unit: [
                 { key: 1, label: "Table 1" },
@@ -55,15 +56,15 @@ export default function SchedulerView() {
         scheduler.init(container.current, chosenDay, "timeline");
 
         const events = [
-            { id: 1, start_date: "2024-10-26 09:00", end_date: "2024-10-26 12:00", text: "Grec", room: 1 },
-            { id: 2, start_date: "2024-10-25 10:30", end_date: "2024-10-25 11:30", text: "Alex", room: 2 },
-            { id: 3, start_date: "2024-10-25 12:00", end_date: "2024-10-25 13:00", text: "Madisson", room: 3 },
-            { id: 4, start_date: "2024-10-25 13:00", end_date: "2024-10-25 15:00", text: "Brandon", room: 1 },
-            { id: 5, start_date: "2024-10-25 15:00", end_date: "2024-10-25 17:00", text: "Alfred", room: 2 },
-            { id: 6, start_date: "2024-10-25 17:00", end_date: "2024-10-25 19:00", text: "Grec", room: 3 },
-            { id: 7, start_date: "2024-10-25 19:00", end_date: "2024-10-25 21:00", text: "Alex", room: 6 },
-            { id: 8, start_date: "2024-10-25 21:00", end_date: "2024-10-25 23:00", text: "Madisson", room: 10 },
-            { id: 9, start_date: "2024-10-25 23:00", end_date: "2024-10-25 23:59", text: "Brandon", room: 8 },
+            { id: 1, start_date: "2025-01-26 09:00", end_date: "2025-01-26 12:00", text: "Grec", room: 1 },
+            { id: 2, start_date: "2025-01-27 10:30", end_date: "2025-01-27 11:30", text: "Alex", room: 2 },
+            { id: 3, start_date: "2025-01-28 12:00", end_date: "2025-01-28 13:00", text: "Madisson", room: 3 },
+            { id: 4, start_date: "2025-01-29 13:00", end_date: "2025-01-29 15:00", text: "Brandon", room: 1 },
+            { id: 5, start_date: "2025-01-26 15:00", end_date: "2025-01-26 17:00", text: "Alfred", room: 2 },
+            { id: 6, start_date: "2025-01-27 17:00", end_date: "2025-01-27 19:00", text: "Grec", room: 3 },
+            { id: 7, start_date: "2025-01-28 19:00", end_date: "2025-01-28 21:00", text: "Alex", room: 6 },
+            { id: 8, start_date: "2025-01-29 21:00", end_date: "2025-01-29 23:00", text: "Madisson", room: 10 },
+            { id: 9, start_date: "2025-01-26 23:00", end_date: "2025-01-26 23:59", text: "Brandon", room: 8 },
         ];
         scheduler.parse(events, "json");
 
@@ -74,17 +75,23 @@ export default function SchedulerView() {
                 container.current.innerHTML = "";
             }
         };
-    }, [chosenDay]); // Re-run useEffect if chosenDay changes
+    }, [chosenDay,startHour]); // Re-run useEffect if chosenDay changes
 
     const {t} = useTranslation();
 
     return (
         <div className="w-full h-full ">
-            <div className="mb-2 flex justify-between">
-                <h1>{t('agenda.title')}</h1>
-                <Link to='/agenda/grid' className='btn sm:hidden block'>Grid View {'>'}</Link>
+            <div>
+                <div className="mb-2 flex justify-between">
+                    <h1>{t('agenda.title')}</h1>
+                    <Link to='/agenda/grid' className='btn sm:hidden block'>Grid View {'>'}</Link>
+                </div>
+                <div className="flex justify-center p-4 gap-4">
+                    <div className={`btn cursor-pointer ${localStorage.getItem('darkMode')==='true'?'text-white':''}`} onClick={()=>{setStartHour(startHour-1)}}>{'<'} Previous hour</div>
+                    <div className={`btn cursor-pointer ${localStorage.getItem('darkMode')==='true'?'text-white':''}`} onClick={()=>{setStartHour(startHour+1)}}>Next hour {'>'}</div>
+                </div>
             </div>
-            <div ref={container} id="scheduler_here" className="dhx_cal_container ltr" style={{ width: '99%', height: '500px' }}>
+            <div ref={container} id="scheduler_here" className="dhx_cal_container ltr" style={{ width: '99%', height: '500px', backgroundColor: localStorage.getItem('darkMode') === 'true' ? '#031911' : 'white' }}>
                 <div className="dhx_cal_navline">
                     <div className="dhx_cal_tab" data-name="timeline_tab"></div>
                 </div>
