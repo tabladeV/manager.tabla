@@ -135,7 +135,7 @@ const { darkMode } = useDarkContext();
           
           <div className={` p-[1em] w-full h-full  lt-sm:pb-[10em] overflow-x-hidden  overflow-y-scroll ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme2 text-textdarktheme':'bg-[#F6F6F6]'} `}>
             <Outlet />
-            <div className="lt-sm:h-[3em]"></div>
+            <div className="lt-sm:h-[4em]"></div>
           </div>
         </section>
       </div>

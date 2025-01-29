@@ -6,6 +6,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 
 import { useTranslation } from 'react-i18next'
 import Filter from './Filter'
+import { useCustom, useList } from '@refinedev/core'
 
 // Mock data generator
 const generateMockData = (months: number) => {
@@ -94,16 +95,35 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null
 }
 
+
+
 export default function ReservationsChart() {
+  
   const [timeRange, setTimeRange] = useState<range>({start: '2023-01-01', end: '2023-12-31'})
   const [chartData, setChartData] = useState(generateData(timeRange.start, timeRange.end))
-
+  
   useEffect(() => {
     const data = generateData(timeRange.start, timeRange.end)
     setChartData(data)
   }, [timeRange])
-
+  
   const { t } = useTranslation()
+  
+  const { data, isLoading, error } = useCustom({
+    url: "http://128.199.50.127/api/v1/bo/tables/",
+    method: "get",
+    meta: {
+      headers: {
+        "X-Restaurant-ID": 1,
+      },
+    },
+  });
+
+  console.log(isLoading,data,error)
+
+
+
+  
 
   return (
     <div className={`w-full h-full mx-auto p-4  rounded-[20px] lt-sm:w-full ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme text-textdarktheme':'bg-white text-blacktheme'}`}>

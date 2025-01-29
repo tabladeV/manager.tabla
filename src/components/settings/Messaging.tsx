@@ -79,7 +79,7 @@ const Messaging = () => {
       {(showTemplate && selectedTemplate) &&
         <div>
           <div className="overlay" onClick={()=>{setShowTemplate(false)}}/>
-          <div className={`sidepopup h-full flex flex-col gap-4 ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'}`}>
+          <div className={`sidepopup lt-sm:w-[100vw] lt-sm: h-full flex flex-col gap-4 ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'}`}>
             <div className="flex justify-between items-center">
               <h3 className="text-lg">New Template</h3>
               <X onClick={()=>{setShowTemplate(false)}} className={`w-5 h-5 ${localStorage.getItem('darkMode')==='true'?'text-white':'text-black'}`} />
@@ -109,7 +109,7 @@ const Messaging = () => {
       {newTemplate && 
       <div >
         <div className="overlay"/>
-        <div className={`sidepopup h-full flex flex-col gap-4 ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'}`}>
+        <div className={`sidepopup lt-sm:w-[100vw] h-full flex flex-col gap-4 ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'}`}>
           <div className="flex justify-between items-center">
             <h3 className="text-lg">New Template</h3>
             <X onClick={()=>{setNewTemplate(false)}} className={`w-5 h-5 ${localStorage.getItem('darkMode')==='true'?'text-white':'text-black'}`} />
@@ -147,10 +147,10 @@ const Messaging = () => {
         </h4>
 
       </div>}
-      <div className="flex gap-3 z-[50] w-full">
+      <div className="flex gap-3 lt-sm:flex-col z-[50] w-full">
         {
           templates.map((template) => (
-            <div key={template.id} className={`flex gap-5 mt-5 w-full p-2 h-[5em] items-center justify-between text-center ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-[#f8f8f8]'} p-3 rounded-[10px]`}>
+            <div key={template.id} className={`flex  gap-5 mt-5 w-full p-2 h-[5em] items-center justify-between text-center ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-[#f8f8f8]'} p-3 rounded-[10px]`}>
               <div className="cursor-pointer w-full"  onClick={()=>{handleShowTemplate(template.id)}} >
                 <h3 className={``}>{template.title}</h3>
               </div>

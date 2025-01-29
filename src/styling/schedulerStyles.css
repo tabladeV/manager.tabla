@@ -57,3 +57,22 @@
     border: none;               /* Remove border for a clean look */
 }
 /* Custom styles for DHTMLX Scheduler timeline */
+.dhx_matrix_cell div.load-marker{
+    position: absolute;
+    width: 40%;
+    height: 25px;
+    transform: translate(70%, 20%);
+    line-height: 25px;
+    text-align: center;
+    border-radius: 7px;
+    color: white;
+}
+.load-marker-no{
+    background: #e0e0e0;
+}
+.load-marker-light{
+    background: #aed581;
+}
+.load-marker-high{
+    background: #ff8a65;
+}

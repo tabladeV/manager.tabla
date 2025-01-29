@@ -12,7 +12,6 @@ export default function SchedulerView() {
     // Access chosenDay from the DateContext
     const { chosenDay } = useDateContext();
 
-    const [startHour, setStartHour] = useState<number>(14);
     useEffect(() => {
         // Ensure the container ref is defined
         if (!container.current) return;
@@ -24,17 +23,18 @@ export default function SchedulerView() {
             timeline: true,
         });
 
-        scheduler.skin = "flat";
+        scheduler.skin = "material";
         scheduler.config.header = ["date"];
 
         // Create timeline view configuration
         scheduler.createTimelineView({
             name: "timeline",
-            x_unit: "hour",
+            x_unit: "minute",
             x_date: "%H:%i",
-            x_step: 1,
-            x_size: 6,
-            x_start: startHour,
+            x_step: 30,
+            x_size: 48,
+            x_start: 0,
+            dx: 70,
             x_length: 6,
             y_unit: [
                 { key: 1, label: "Table 1" },
@@ -50,10 +50,19 @@ export default function SchedulerView() {
             ],
             y_property: "room",
             render: "bar",
+            scrollable: true,  
+            autoscroll: {           
+                range_x: 200,       
+                range_y: 100,       
+                speed_x: 20,        
+                speed_y: 10         
+            },
+            column_width: 120, 
         });
 
         // Initialize the scheduler using chosenDay from the context
         scheduler.init(container.current, chosenDay, "timeline");
+
 
         const events = [
             { id: 1, start_date: "2025-01-26 09:00", end_date: "2025-01-26 12:00", text: "Grec", room: 1 },
@@ -75,24 +84,26 @@ export default function SchedulerView() {
                 container.current.innerHTML = "";
             }
         };
-    }, [chosenDay,startHour]); // Re-run useEffect if chosenDay changes
+    }, [chosenDay]); // Re-run useEffect if chosenDay changes
 
     const {t} = useTranslation();
 
+
+    
+
     return (
         <div className="w-full h-full ">
+            
             <div>
-                <div className="mb-2 flex justify-between">
+                <div className="mb-2 flex  items-center justify-between">
                     <h1>{t('agenda.title')}</h1>
-                    <Link to='/agenda/grid' className='btn sm:hidden block'>Grid View {'>'}</Link>
+                    <Link to='/agenda/grid' className={`btn sm:hidden ${localStorage.getItem('darkMode')==='true'? 'text-white':''} `}>Grid View {'>'}</Link>
                 </div>
-                <div className="flex justify-center p-4 gap-4">
-                    <div className={`btn cursor-pointer ${localStorage.getItem('darkMode')==='true'?'text-white':''}`} onClick={()=>{setStartHour(startHour-1)}}>{'<'} Previous hour</div>
-                    <div className={`btn cursor-pointer ${localStorage.getItem('darkMode')==='true'?'text-white':''}`} onClick={()=>{setStartHour(startHour+1)}}>Next hour {'>'}</div>
-                </div>
+              
             </div>
-            <div ref={container} id="scheduler_here" className="dhx_cal_container ltr" style={{ width: '99%', height: '500px', backgroundColor: localStorage.getItem('darkMode') === 'true' ? '#031911' : 'white' }}>
+            <div ref={container} id="scheduler_here" className="dhx_cal_container ltr" style={{ width: '100%', height: '500px' }}>
                 <div className="dhx_cal_navline">
+                    
                     <div className="dhx_cal_tab" data-name="timeline_tab"></div>
                 </div>
             </div>

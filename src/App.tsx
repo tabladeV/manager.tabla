@@ -62,7 +62,7 @@ function App() {
             <RefineKbarProvider>
               <DevtoolsProvider>
                 <Refine
-                  dataProvider={dataProvider("https://api.fake-rest.refine.dev")}
+                  dataProvider={dataProvider("http://128.199.50.127")}
                   routerProvider={routerBindings}
                   options={{
                     syncWithLocation: true,
