@@ -6,7 +6,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 
 import { useTranslation } from 'react-i18next'
 import Filter from './Filter'
-import { useCustom, useList } from '@refinedev/core'
+import { useList } from '@refinedev/core'
 
 // Mock data generator
 const generateMockData = (months: number) => {
@@ -109,14 +109,14 @@ export default function ReservationsChart() {
   
   const { t } = useTranslation()
   
-  const { data, isLoading, error } = useCustom({
-    url: "http://128.199.50.127/api/v1/bo/tables/",
-    method: "get",
+  const { data, isLoading, error } = useList({
+    resource: "api/v1/bo/tables",
     meta: {
       headers: {
         "X-Restaurant-ID": 1,
       },
     },
+    
   });
 
   console.log(isLoading,data,error)
