@@ -59,15 +59,6 @@ importers:
       date-fns:
         specifier: ^3.6.0
         version: 3.6.0
-      dhtmlx-scheduler:
-        specifier: link:C:/Users/alhas/Downloads/scheduler_trial
-        version: link:../../../../Downloads/scheduler_trial
-      dhtmlx-scheduler-pro:
-        specifier: link:..\path\to\dhtmlx-scheduler-pro
-        version: link:../path/to/dhtmlx-scheduler-pro
-      dhx-gridpack-package:
-        specifier: link:C:/Users/alhas/Downloads/gridpack_trial
-        version: link:../../../../Downloads/gridpack_trial
       i18next:
         specifier: ^23.16.5
         version: 23.16.5

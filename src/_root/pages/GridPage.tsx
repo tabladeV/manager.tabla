@@ -122,7 +122,7 @@ const GridPage = () => {
       }
       <div className="flex mb-4 justify-between items-center">
         <h1 className="">{t('grid.title')}</h1>
-        <Link to="/agenda" className={`btn sm:hidden ${localStorage.getItem('darkMode')==='true'? 'text-white':''} `}>{t('grid.buttons.navigate')}  {'>'}</Link>
+        {/* <Link to="/agenda" className={`btn sm:hidden ${localStorage.getItem('darkMode')==='true'? 'text-white':''} `}>{t('grid.buttons.navigate')}  {'>'}</Link> */}
       </div>
       <div
         className={`overflow-x-scroll  ${localStorage.getItem('darkMode')==='true'?'border-darkthemeitems':'border-softgreytheme'} ltr mx-auto cursor-grab max-w-fit w-full  no-scrollbar ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-textdarktheme' : 'bg-white text-blacktheme'}`}
@@ -145,8 +145,7 @@ const GridPage = () => {
         {/* Reservation grid */}
         {halfHours.map((minutes) => (
           <div key={minutes} className="flex  items-center ">
-            <div className={`w-20 mt-5 py-4  text-right pr-2 font-medium absolute left-[13em] z-10 min-h-[14em] ${localStorage.getItem('darkMode')==='true'?'border-darkthemeitems':'border-softgreytheme'}`}>:{minutes}</div>
-            <div className={`w-20 shrink-0 py-4  border-b  text-right pr-2 font-medium  z-10 min-h-[14em] ${localStorage.getItem('darkMode')==='true'?'border-darkthemeitems':'border-softgreytheme'}`}></div>
+            <div className={`w-20 mt-5 py-4  text-right pr-2 font-medium  z-10 min-h-[14em] ${localStorage.getItem('darkMode')==='true'?'border-darkthemeitems':'border-softgreytheme'}`}>:{minutes}</div>
             {visibleHours.map((hour) => {
               const slotTime = setMinutes(hour, parseInt(minutes))
               const timeKey = format(slotTime, 'HH:mm')
