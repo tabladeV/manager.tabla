@@ -11,6 +11,7 @@ import routerBindings, {
 } from "@refinedev/react-router-v6";
 import "./index.css";
 import RootLayout from "./_root/RootLayout";
+import Plugins from "./_plugin/Plugins";
 import { Home } from "./_root/pages";
 import ReservationsPage from "./_root/pages/ReservationsPage";
 import AgendaPage from "./_root/pages/AgendaPage";
@@ -46,6 +47,8 @@ import { DarkProvider } from "./context/DarkContext";
 import Roles from "./components/settings/Roles";
 import Reviews from "./_root/pages/Reviews";
 import Profile from "./_root/pages/Profile";
+import ReviewPage from "./_plugin/pages/ReviewPage";
+import WidgetPage from "./_plugin/pages/WidgetPage";
 
 
 
@@ -76,6 +79,12 @@ function App() {
                   <Routes>
 
                     {/*Public Routes */}
+
+                    <Route element={<Plugins />}>
+                      <Route path='/widget/r/:restaurant' element={<WidgetPage />} />
+                      <Route path='/review/r/:restaurant' element={<ReviewPage />} />
+                    </Route>
+
 
                     <Route element={<AuthLayout />}>
                       <Route path='/sign-in' element={<LogIn />} />

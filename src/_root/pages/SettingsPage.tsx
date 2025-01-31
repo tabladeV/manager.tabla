@@ -15,11 +15,14 @@ const SettingsPage = () => {
         <div className={`h-[calc(100vh-160px)] overflow-y-auto flex  font-[500] text-[17px] text-left  flex-col w-1/5  rounded-[10px] px-6 py-4 gap-4 lt-sm:w-full lt-sm:h-fit ${localStorage.getItem('preferredLanguage')=== 'ar'? 'text-right':''} ${pathname === '/settings'? '':'lt-sm:hidden'} ${localStorage.getItem('darkMode')==='true'?'text-white bg-bgdarktheme':'text-[#1E1E1E99] bg-white'} `}>
           <Link to='/settings/general' className={`hover:underline ${pathname === '/settings/general' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.general')}</Link>
           <Link to='/settings/availability' className={`hover:underline ${pathname === '/settings/availability' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.availability')}</Link>
-          <Link to='/settings/tags' className={`hover:underline ${pathname === '/settings/tags' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.tags')}</Link>
+          
+          {/* to be restored after */}
+          {/* <Link to='/settings/tags' className={`hover:underline ${pathname === '/settings/tags' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.tags')}</Link>
           <Link to='/settings/menu' className={`hover:underline ${pathname === '/settings/menu' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.menu')}</Link>
           <Link to='/settings/photos' className={`hover:underline ${pathname === '/settings/photos' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.photos')}</Link>
           <Link to='/settings/messaging' className={`hover:underline ${pathname === '/settings/messaging' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.messaging')}</Link>
-          <Link to='/settings/features' className={`hover:underline ${pathname === '/settings/features' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.features')}</Link>
+          <Link to='/settings/features' className={`hover:underline ${pathname === '/settings/features' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.features')}</Link> */}
+          
           <Link to='/settings/users' className={`hover:underline ${pathname === '/settings/users' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.users')}</Link>
           {/* <Link to='/settings/billing' className={`hover:underline ${pathname === '/settings/billing' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.billing')}</Link> */}
           <Link to='/settings/widget' className={`hover:underline ${pathname === '/settings/widget' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.widget')}</Link>

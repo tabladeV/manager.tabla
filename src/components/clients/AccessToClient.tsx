@@ -1,10 +1,11 @@
+import { BaseKey } from "@refinedev/core";
 import { MouseEventHandler } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 interface AccessToClientProps {
     image: string,
     name: string,
-    id: string,
+    id: BaseKey,
     onClick: MouseEventHandler<HTMLDivElement>;
     checked?: boolean;
 }

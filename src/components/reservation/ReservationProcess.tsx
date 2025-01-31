@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { format } from 'date-fns';
 import OurCalendar from '../Calendar/OurCalendar';
 
+
 type ReservationProcessProps = {
   onClick: () => void;
   getDateTime: (data: SelectedData) => void;
@@ -12,6 +13,8 @@ type SelectedData = {
   time: string | null;
   guests: number | null;
 };
+
+
 
 const ReservationProcess: React.FC<ReservationProcessProps> = (props) => {
   const [activeTab, setActiveTab] = useState<'date' | 'time' | 'guest' | 'confirm' | null>('date');
@@ -48,9 +51,9 @@ const ReservationProcess: React.FC<ReservationProcessProps> = (props) => {
   }
 
   return (
-    <div className="sm:flex hidden">
+    <div className="">
       <div className="overlay z-[309] glassmorphism" onClick={props.onClick}></div>
-      <div className={`popup z-[320] sm:w-[30em] rounded-[10px] ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}>
+      <div className={`popup z-[360] lt-sm:h-[70vh] sm:w-[30em] lt-sm:bottom-0 lt-sm:w-full  rounded-[10px] ${localStorage.getItem('darkMode')  === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}>
         <div className="flex justify-center gap-5 mt-[1em]">
           { (
             <span
@@ -63,7 +66,7 @@ const ReservationProcess: React.FC<ReservationProcessProps> = (props) => {
           )}
           { (
             <span
-              className={`${localStorage.getItem('darkMode')==='true'?'text-white':'text-subblack'} ${activeTab === 'time' ? 'activetabb' : 'p-[10px]'}`}
+              className={` ${activeTab === 'time' ? 'activetabb' : 'p-[10px]'}`}
               onClick={() => setActiveTab('time')}
               id="time"
             >

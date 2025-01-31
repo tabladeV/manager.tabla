@@ -9,6 +9,7 @@ import 'i18next'
 
 import { useTranslation } from 'react-i18next';
 import ReservationModal from "../../components/reservation/ReservationModal"
+import { BaseKey, BaseRecord, useList } from "@refinedev/core"
 interface Reservation {
   id: string
   email: string
@@ -24,118 +25,137 @@ const ReservationsPage = () => {
 
   const { t } = useTranslation();
 
-  const [reservations, setReservations] = useState([
-    {
-      id: '1',
-      email: 'john.doe@gmail.com',
-      fullName: 'John Doe',
-      date: '23/08/2024',
-      time: '12:00 PM',
-      reservationMade: 'MarketPlace',
-      guests: '2',
-      status: 'Pending',
-      review: false
-    },
-    {
-      id: '2',
-      email: 'kwame1@gmail.com',
-      fullName: 'Kwame Dwayne',
-      date: '23/08/2024',
-      time: '12:00 PM',
-      reservationMade: 'MarketPlace',
-      guests: '4',
-      status: 'Confirmed',
-      review: true
-    },
-    {
-      id: '3',
-      email: 'asafo.w@gmail.com',
-      fullName: 'Asafo Yaw',
-      date: '21/08/2024',
-      time: '12:00 PM',
-      reservationMade: 'MarketPlace',
-      guests: '4',
-      status: 'Canceled',
-      review: false
-    },
-    {
-      id: '4',
-      email: 'dkqw@gmail.com',
-      fullName: 'Dk Qw',
-      date: '29/08/2024',
-      time: '12:00 PM',
-      reservationMade: 'MarketPlace',
-      guests: '2',
-      status: 'Confirmed',
-      review: true
-    },
-    {
-      id: '5',
-      email: 'lawuate@gmail.com',
-      fullName: 'Lawu Ate',
-      date: '23/08/2024',
-      time: '12:00 PM',
-      reservationMade: 'MarketPlace',
-      guests: '2',
-      status: 'Confirmed',
-      review: true
-    },
-    {
-      id: '6',
-      email: 'laquazettezak@gmail.com',
-      fullName: 'Laquazette Zak',
-      date: '20/08/2024',
-      time: '12:00 PM',
-      reservationMade: 'MarketPlace',
-      guests: '2',
-      status: 'Pending',
-      review: false
-    },
-    {
-      id: '7',
-      email: 'dalimeal@gmail.com',
-      fullName: 'Da Limeal',
-      date: '23/08/2024',
-      time: '12:00 PM',
-      reservationMade: 'MarketPlace',
-      guests: '2',
-      status: 'Confirmed',
-      review: true
-    },
-    {
-      id: '8',
-      email: 'alish.coleman@gmail.com',
-      fullName: 'Alish Coleman',
-      date: '23/08/2024',
-      time: '12:00 PM',
-      reservationMade: 'Jack Ma',
-      guests: '2',
-      status: 'Pending',
-      review: false
-    },
-    {
-      id: '9',
-      email: 'ashley.halsey@gmail.com',
-      fullName: 'Ashley Halsey',
-      date: '23/08/2024',
-      time: '12:00 PM',
-      reservationMade: 'MarketPlace',
-      guests: '2',
-      status: 'Confirmed',
-      review: true
-    },
-    {
-      id: '10',
-      email: 'armstrongschwazeneger@gmail.com',
-      fullName: 'Armstrong Schwazeneger',
-      date: '23/08/2024',
-      time: '12:00 PM',
-      reservationMade: 'Website',
-      guests: '2',
-      status: 'Pending',
-      review: false
-    },
-  ])
+  const [reservations, setReservations] = useState<BaseRecord[]>([])
+
+  const { data, isLoading, error } = useList({
+      resource: "api/v1/bo/reservations",
+      meta: {
+        headers: {
+          "X-Restaurant-ID": 1,
+        },
+      },
+      
+    });
+
+    useEffect(() => {
+      if (data?.data) {
+        setReservations(data.data)
+      }
+    }, [data])
+
+    console.log(reservations)
+  // const [reservations, setReservations] = useState([
+  //   {
+  //     id: '1',
+  //     email: 'john.doe@gmail.com',
+  //     fullName: 'John Doe',
+  //     date: '23/08/2024',
+  //     time: '12:00 PM',
+  //     reservationMade: 'MarketPlace',
+  //     guests: '2',
+  //     status: 'Pending',
+  //     review: false
+  //   },
+  //   {
+  //     id: '2',
+  //     email: 'kwame1@gmail.com',
+  //     fullName: 'Kwame Dwayne',
+  //     date: '23/08/2024',
+  //     time: '12:00 PM',
+  //     reservationMade: 'MarketPlace',
+  //     guests: '4',
+  //     status: 'Confirmed',
+  //     review: true
+  //   },
+  //   {
+  //     id: '3',
+  //     email: 'asafo.w@gmail.com',
+  //     fullName: 'Asafo Yaw',
+  //     date: '21/08/2024',
+  //     time: '12:00 PM',
+  //     reservationMade: 'MarketPlace',
+  //     guests: '4',
+  //     status: 'Canceled',
+  //     review: false
+  //   },
+  //   {
+  //     id: '4',
+  //     email: 'dkqw@gmail.com',
+  //     fullName: 'Dk Qw',
+  //     date: '29/08/2024',
+  //     time: '12:00 PM',
+  //     reservationMade: 'MarketPlace',
+  //     guests: '2',
+  //     status: 'Confirmed',
+  //     review: true
+  //   },
+  //   {
+  //     id: '5',
+  //     email: 'lawuate@gmail.com',
+  //     fullName: 'Lawu Ate',
+  //     date: '23/08/2024',
+  //     time: '12:00 PM',
+  //     reservationMade: 'MarketPlace',
+  //     guests: '2',
+  //     status: 'Confirmed',
+  //     review: true
+  //   },
+  //   {
+  //     id: '6',
+  //     email: 'laquazettezak@gmail.com',
+  //     fullName: 'Laquazette Zak',
+  //     date: '20/08/2024',
+  //     time: '12:00 PM',
+  //     reservationMade: 'MarketPlace',
+  //     guests: '2',
+  //     status: 'Pending',
+  //     review: false
+  //   },
+  //   {
+  //     id: '7',
+  //     email: 'dalimeal@gmail.com',
+  //     fullName: 'Da Limeal',
+  //     date: '23/08/2024',
+  //     time: '12:00 PM',
+  //     reservationMade: 'MarketPlace',
+  //     guests: '2',
+  //     status: 'Confirmed',
+  //     review: true
+  //   },
+  //   {
+  //     id: '8',
+  //     email: 'alish.coleman@gmail.com',
+  //     fullName: 'Alish Coleman',
+  //     date: '23/08/2024',
+  //     time: '12:00 PM',
+  //     reservationMade: 'Jack Ma',
+  //     guests: '2',
+  //     status: 'Pending',
+  //     review: false
+  //   },
+  //   {
+  //     id: '9',
+  //     email: 'ashley.halsey@gmail.com',
+  //     fullName: 'Ashley Halsey',
+  //     date: '23/08/2024',
+  //     time: '12:00 PM',
+  //     reservationMade: 'MarketPlace',
+  //     guests: '2',
+  //     status: 'Confirmed',
+  //     review: true
+  //   },
+  //   {
+  //     id: '10',
+  //     email: 'armstrongschwazeneger@gmail.com',
+  //     fullName: 'Armstrong Schwazeneger',
+  //     date: '23/08/2024',
+  //     time: '12:00 PM',
+  //     reservationMade: 'Website',
+  //     guests: '2',
+  //     status: 'Pending',
+  //     review: false
+  //   },
+  // ])
 
   function statusStyle(status: string) {
     if (status === 'Pending') {
@@ -178,7 +198,7 @@ const ReservationsPage = () => {
   const searchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
     const keyword = e.target.value.toLowerCase();
     const results = reservations.filter((item) =>
-        item.fullName.toLowerCase().includes(keyword) ||
+        item.full_name.toLowerCase().includes(keyword) ||
         item.email.toLowerCase().includes(keyword)
     );
     setSearchResults(results);
@@ -187,10 +207,10 @@ const ReservationsPage = () => {
   const [showModal, setShowModal] = useState(false)
   const [selectedClient, setSelectedClient] = useState<Reservation | null>(null)
 
-  const EditClient = (id: string) => {
+  const EditClient = (id: BaseKey) => {
     const client = reservations.find(r => r.id === id)
     if (client) {
-      setSelectedClient({...client})
+      setSelectedClient(client as Reservation)
       setShowModal(true)
     }
   }
@@ -409,7 +429,7 @@ const ReservationsPage = () => {
             {filteredReservations.map(reservation => (
               <tr key={reservation.id} className=" hover:opacity-75">
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer"  onClick={() => EditClient(reservation.id)}>{reservation.id}</td>
-                <td className="px-3 py-4 whitespace-nowrap cursor-pointer"  onClick={() => EditClient(reservation.id)}>{reservation.fullName}</td>
+                <td className="px-3 py-4 whitespace-nowrap cursor-pointer"  onClick={() => EditClient(reservation.id)}>{reservation.full_name}</td>
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => EditClient(reservation.id)}>{reservation.email}</td>
                 <td className="px-3 py-4 flex items-center justify-center whitespace-nowrap cursor-pointer"  onClick={() => EditClient(reservation.id)}>
                   {reservationOrigin(reservation.reservationMade)}

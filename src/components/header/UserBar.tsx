@@ -175,11 +175,11 @@ const UserBar = () => {
               <path d="M9 1L5 5L1 1" stroke={localStorage.getItem('darkMode')==='true'?'#e1e1e1':'#1e1e1e'} stroke-opacity="0.75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         {showProfile && 
-          <div ref={divRef} className={`absolute mt-[11em] ml-[-4em] flex  flex-col shadow-xl shadow-[#00000005] gap-2 items-start p-2 rounded-md z-[50] ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme ':'bg-white'}`}>
-            <Link to='/profile' className='flex w-full items-center justify-start gap-2 hover:bg-[#88AB6115] transition duration-200 p-[.6em] rounded-[10px]'>
+          <div ref={divRef} className={`absolute mt-[9em] ml-[-4em] flex  flex-col shadow-xl shadow-[#00000005] gap-2 items-start p-2 rounded-md z-[50] ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme ':'bg-white'}`}>
+            {/* <Link to='/profile' className='flex w-full items-center justify-start gap-2 hover:bg-[#88AB6115] transition duration-200 p-[.6em] rounded-[10px]'>
               <User size={20} />
               <h5 className=' font-semibold'>Profile</h5>
-            </Link>
+            </Link> */}
             <Link to='/settings' className='flex sm:hidden w-full items-center justify-start gap-2 hover:bg-[#88AB6115] transition duration-200 p-[.6em] rounded-[10px]'>
               <Settings size={20} />
               <h5 className=' font-semibold'>Settings</h5>

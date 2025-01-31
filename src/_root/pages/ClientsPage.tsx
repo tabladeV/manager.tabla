@@ -3,6 +3,10 @@ import AccessToClient from "../../components/clients/AccessToClient";
 import SearchBar from "../../components/header/SearchBar";
 import { Outlet, useLocation, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { BaseKey, BaseRecord, useList } from "@refinedev/core";
+import { use } from "i18next";
+
+import image from '../../assets/profile.png';
 
 interface ClientData {
   id: string;
@@ -23,73 +27,102 @@ interface ClientData {
 
 const ClientsPage = () => {
 
+  const {data , isLoading, error} = useList({
+    resource: 'api/v1/bo/customers',
+    meta: {
+      headers: {
+        'X-Restaurant-ID': 1,
+      },
+    },
+  });
+
+
+  const [clients, setClients] = useState<BaseRecord[]>([]);
+  
+  useEffect(() => {
+    if (data?.data) {
+      setClients(data.data);
+    }
+    
+  }, [data]);
+  
+  console.log(clients);
   const {t} = useTranslation();
 
-  const clients = [
-    {
-      id: 'janereq',
-      name: 'Jane Smith',
-      email: 'janeSmith@gmail.com',
-      phoneNumber: '123456789',
-      image: 'https://images.unsplash.com/photo-1526835746352-0b9da4054862?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      lifetime: {
-        upcoming: 3,
-        materialized: 1,
-        denied: 20,
-        cancelled: 4,
-        noShow: 2,
-        spendCover: 100.856,
-        spendMAD: 521,
-      },
-    },
-    {
-      id: 'akans',
-      name: 'Emily Nord',
-      email: 'emilynord@gmail.com',
-      phoneNumber: '123456789',
-      image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      lifetime: {
-        upcoming: 7,
-        materialized: 6,
-        denied: 10,
-        cancelled: 29,
-        noShow: 1,
-        spendCover: 34.856,
-        spendMAD: 300,
-      },
-    },
-    {
-      id: 'sasak',
-      name: 'Jake Jackson',
-      email: 'jakejack@gmail.com',
-      phoneNumber: '123456789',
-      image: 'https://images.unsplash.com/photo-1542727313-4f3e99aa2568?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      lifetime: {
-        upcoming: 2,
-        materialized: 5,
-        denied: 5,
-        cancelled: 66,
-        noShow: 0,
-        spendCover: 87.856,
-        spendMAD: 745,
-      },
-    },
-  ];
+  // const clients = [
+  //   {
+  //     id: 'janereq',
+  //     name: 'Jane Smith',
+  //     email: 'janeSmith@gmail.com',
+  //     phoneNumber: '123456789',
+  //     image: 'https://images.unsplash.com/photo-1526835746352-0b9da4054862?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  //     lifetime: {
+  //       upcoming: 3,
+  //       materialized: 1,
+  //       denied: 20,
+  //       cancelled: 4,
+  //       noShow: 2,
+  //       spendCover: 100.856,
+  //       spendMAD: 521,
+  //     },
+  //   },
+  //   {
+  //     id: 'akans',
+  //     name: 'Emily Nord',
+  //     email: 'emilynord@gmail.com',
+  //     phoneNumber: '123456789',
+  //     image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  //     lifetime: {
+  //       upcoming: 7,
+  //       materialized: 6,
+  //       denied: 10,
+  //       cancelled: 29,
+  //       noShow: 1,
+  //       spendCover: 34.856,
+  //       spendMAD: 300,
+  //     },
+  //   },
+  //   {
+  //     id: 'sasak',
+  //     name: 'Jake Jackson',
+  //     email: 'jakejack@gmail.com',
+  //     phoneNumber: '123456789',
+  //     image: 'https://images.unsplash.com/photo-1542727313-4f3e99aa2568?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  //     lifetime: {
+  //       upcoming: 2,
+  //       materialized: 5,
+  //       denied: 5,
+  //       cancelled: 66,
+  //       noShow: 0,
+  //       spendCover: 87.856,
+  //       spendMAD: 745,
+  //     },
+  //   },
+  // ];
 
-  const [selectedClient, setSelectedClient] = useState<ClientData[]>([]);
+  const [selectedClient, setSelectedClient] = useState<BaseRecord[]>([]);
   const [searchResults, setSearchResults] = useState(clients);
+
+  useEffect(() => {
+    setSearchResults(clients);
+  }, [clients]);
 
   const searchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
     const keyword = e.target.value;
-    const results = clients.filter((client) =>
-      client.name.toLowerCase().includes(keyword.toLowerCase())
-    );
-    setSearchResults(results);
+    if (keyword === '') {
+      setSearchResults(clients);
+    }
+    else{
+      const results = clients.filter((client) =>
+        client.full_name.toLowerCase().includes(keyword.toLowerCase())
+      );
+      setSearchResults(results);
+    }
   };
 
   const { pathname } = useLocation();
 
-  const selectClient = (id: string) => {
+  const selectClient = (id: BaseKey |undefined) => {
     setSelectedClient((prevSelectedClients) => {
       // Check if the client is already selected
       const isAlreadySelected = prevSelectedClients.some((client) => client.id === id);
@@ -160,9 +193,9 @@ const ClientsPage = () => {
               <AccessToClient
                 key={client.id}
                 onClick={() => selectClient(client.id)}
-                image={client.image}
+                image={image}
                 checked={selectedClient.some((selected) => selected.id === client.id)}
-                name={client.name}
+                name={client.full_name}
                 id={client.id}
               />
             ))}

@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useDrop } from 'react-dnd';
 import { useDateContext } from '../../context/DateContext';
+import { BaseKey } from '@refinedev/core';
 
 const ItemType = 'BOX';
 
 interface DropTargetProps {
   id: string;
-  type: 'rectangle' | 'circle';
+  type: 'RECTANGLE' | 'CIRCLE';
   x: number;
   y: number;
   height: number;
@@ -18,22 +19,23 @@ interface DropTargetProps {
 }
 
 type reservedType = {
-  name?: string;
+  full_name?: string;
   time?: string;
   date?: string;
-  guests?: number;
+  number_of_guests?: number;
   occasion?: string;
   tableNumber?: number;
 };
 
 interface DroppedItem {
-  name: string;
+  full_name: string;
   time: string;
   date: string;
-  guests: number;
+  number_of_guests: number;
   occasion: string;
   tableNumber: number;
 }
+ 
 
 const DropTarget: React.FC<DropTargetProps> = ({ height, width,min, max,id, type, x, y, reservedBy, hourChosen }) => {
   const [droppedItems, setDroppedItems] = useState<DroppedItem[]>([]); // Store multiple items
@@ -42,10 +44,10 @@ const DropTarget: React.FC<DropTargetProps> = ({ height, width,min, max,id, type
 
 
   useEffect(() => {
-    if (reservedBy.name && reservedBy.time === hourChosen && reservedBy.date && reservedBy.guests && reservedBy.occasion && reservedBy.tableNumber) {
-      setDroppedItems([{name:reservedBy.name, time:reservedBy.time, date:reservedBy.date, guests:reservedBy.guests, occasion:reservedBy.occasion, tableNumber: reservedBy.tableNumber}]);
+    if (reservedBy.full_name && reservedBy.time === hourChosen && reservedBy.date && reservedBy.number_of_guests && reservedBy.occasion && reservedBy.tableNumber) {
+      setDroppedItems([{full_name:reservedBy.full_name, time:reservedBy.time, date:reservedBy.date, number_of_guests:reservedBy.number_of_guests, occasion:reservedBy.occasion, tableNumber: reservedBy.tableNumber}]);
     }
-    if (reservedBy.name && reservedBy.time !== hourChosen) {
+    if (reservedBy.full_name && reservedBy.time !== hourChosen) {
       setDroppedItems([]);
     }
   }
@@ -55,7 +57,7 @@ const DropTarget: React.FC<DropTargetProps> = ({ height, width,min, max,id, type
     accept: ItemType,
     drop: (item: DroppedItem) => {
       const isTimeAlreadyDropped = droppedItems.some((droppedItem) => droppedItem.time === item.time);
-      if (!isTimeAlreadyDropped && droppedItems.length < 1 && item.guests <= max && item.guests >= min) {
+      if (!isTimeAlreadyDropped && droppedItems.length < 1 && item.number_of_guests <= max && item.number_of_guests >= min) {
         setDroppedItems((prevItems) => [...prevItems, item]); // Add new item to array
       }
     },
@@ -79,14 +81,14 @@ const DropTarget: React.FC<DropTargetProps> = ({ height, width,min, max,id, type
         backgroundColor: droppedItems.length > 0 ? '#FF4B4B' : localStorage.getItem('darkMode')==='true'?'#031911':'#F6F6F6',
         left: x,
         top: y,
-        borderRadius: type === 'rectangle' ? '10px' : '50%',
+        borderRadius: type === 'RECTANGLE' ? '10px' : '50%',
       }}
     >
       <h2 className='text-[14px] font-semibold'>{id}</h2>
       <p className='text-[13px]  p-1 bg-[#1e1e1e10]  rounded-[5px]'>{max} seats</p>
       {isClients && <div className={`absolute  z-[100] text-greytheme right-[-13.4em] w-[13em] p-2 rounded-[10px] font-medium ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme text-white':'bg-white text-greytheme'}`}>{id} has {droppedItems.length} clients
         {droppedItems.slice(0,3).map((item, index) => (
-          <div className={` p-1 rounded-[5px] mt-1 font-semibold ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-softgreytheme'}`} key={index}>{item.name}</div>
+          <div className={` p-1 rounded-[5px] mt-1 font-semibold ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-softgreytheme'}`} key={index}>{item.full_name}</div>
         ))
         }
         {droppedItems.length > 3 && <div className={` p-1 rounded-[5px] mt-1 font-semibold ${localStorage.getItem('darkMode')==='true'?'bg-softgreentheme text-blacktheme':'bg-softgreentheme'}`}>+{droppedItems.length - 3} more</div>}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   eachDayOfInterval,
   endOfMonth,
@@ -32,6 +32,7 @@ const IntervalCalendar: React.FC<IntervalCalendarProps> = ({ onRangeSelect }) =>
     start: firstDayCurrentMonth,
     end: endOfMonth(firstDayCurrentMonth),
   });
+
 
   const classNames = (...classes: string[]) => classes.filter(Boolean).join(' ');
 

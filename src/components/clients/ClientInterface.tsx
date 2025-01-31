@@ -1,14 +1,17 @@
+import { BaseRecord, useList } from '@refinedev/core';
 import { da } from 'date-fns/locale';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
+import image from '../../assets/profile.png';
+
 interface ClientData {
   id: string;
-  name: string;
+  full_name: string;
   email: string;
-  phoneNumber: string;
+  phone: string;
   alternatePhone?: string; // Optional property
   image: string;
   lifetime: {
@@ -26,66 +29,103 @@ interface ClientData {
 
 const ClientInterface = () => {
   const { id } = useParams();
+
+
+  const {data , isLoading, error} = useList({
+    resource: 'api/v1/bo/customers/'+id,
+    meta: {
+      headers: {
+        'X-Restaurant-ID': 1,
+      },
+    },
+  });
+
+  const {data: reservations, isLoading: isLoadingReservations, error: errorReservations} = useList({
+    resource: 'api/v1/bo/reservations/'+id,
+    meta: {
+      headers: {
+        'X-Restaurant-ID': 1,
+      },
+    },
+  });
+
+  const [reservation, setReservation] = useState<BaseRecord[]>([]);
+
+  const [client, setClient] = useState<BaseRecord | null>(null);
+
+  useEffect(() => {
+    if (data?.data) {
+      setClient(data.data);
+    }
+    if (reservations?.data) {
+      setReservation(reservations.data);
+    }
+  }, [data, reservations]);
+
+  console.log(client);
+
+
+
   const [isProfile, setIsProfile] = useState(true);
 
   const { t } = useTranslation();
 
-  const clients = [
-    {
-      id: 'janereq',
-      name: 'Jane Smith',
-      email: 'janeSmith@gmail.com',
-      phoneNumber: '123456789',
-      image: 'https://images.unsplash.com/photo-1526835746352-0b9da4054862?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      lifetime: {
-        upcoming: 3,
-        materialized: 1,
-        denied: 20,
-        cancelled: 4,
-        noShow: 2,
-        spendCover: 100.856,
-        spendMAD: 521,
-      },
-      organization: 'Organization',
-      notes: 'Lorem ipsum dolor sit amet...',
-    },
-    {
-      id: 'akans',
-      name: 'Emily Nord',
-      email: 'emilynord@gmail.com',
-      phoneNumber: '123456789',
-      image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      lifetime: {
-        upcoming: 7,
-        materialized: 6,
-        denied: 10,
-        cancelled: 29,
-        noShow: 1,
-        spendCover: 34.856,
-        spendMAD: 300,
-      },
-      organization: 'Organization',
-      notes: 'Lorem ipsum dolor sit amet...',
-    },
-    {
-      id: 'sasak',
-      name: 'Jake Jackson',
-      email: 'jakejack@gmail.com',
-      phoneNumber: '123456789',
-      image: 'https://images.unsplash.com/photo-1542727313-4f3e99aa2568?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      lifetime: {
-        upcoming: 2,
-        materialized: 5,
-        denied: 5,
-        cancelled: 66,
-        noShow: 0,
-        spendCover: 87.856,
-        spendMAD: 745,
-      },
-      organization: 'Organization',
-      notes: 'Lorem ipsum dolor sit amet...',
-    },
-  ];
+  // const clients = [
+  //   {
+  //     id: 'janereq',
+  //     name: 'Jane Smith',
+  //     email: 'janeSmith@gmail.com',
+  //     phoneNumber: '123456789',
+  //     image: 'https://images.unsplash.com/photo-1526835746352-0b9da4054862?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  //     lifetime: {
+  //       upcoming: 3,
+  //       materialized: 1,
+  //       denied: 20,
+  //       cancelled: 4,
+  //       noShow: 2,
+  //       spendCover: 100.856,
+  //       spendMAD: 521,
+  //     },
+  //     organization: 'Organization',
+  //     notes: 'Lorem ipsum dolor sit amet...',
+  //   },
+  //   {
+  //     id: 'akans',
+  //     name: 'Emily Nord',
+  //     email: 'emilynord@gmail.com',
+  //     phoneNumber: '123456789',
+  //     image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  //     lifetime: {
+  //       upcoming: 7,
+  //       materialized: 6,
+  //       denied: 10,
+  //       cancelled: 29,
+  //       noShow: 1,
+  //       spendCover: 34.856,
+  //       spendMAD: 300,
+  //     },
+  //     organization: 'Organization',
+  //     notes: 'Lorem ipsum dolor sit amet...',
+  //   },
+  //   {
+  //     id: 'sasak',
+  //     name: 'Jake Jackson',
+  //     email: 'jakejack@gmail.com',
+  //     phoneNumber: '123456789',
+  //     image: 'https://images.unsplash.com/photo-1542727313-4f3e99aa2568?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  //     lifetime: {
+  //       upcoming: 2,
+  //       materialized: 5,
+  //       denied: 5,
+  //       cancelled: 66,
+  //       noShow: 0,
+  //       spendCover: 87.856,
+  //       spendMAD: 745,
+  //     },
+  //     organization: 'Organization',
+  //     notes: 'Lorem ipsum dolor sit amet...',
+  //   },
+  // ];
 
   const reservationHistory = [
     {
@@ -149,13 +189,12 @@ const ClientInterface = () => {
     )
   }
 
-  const [client, setClient] = useState<ClientData | null>(null);
   const [editingField, setEditingField] = useState<keyof ClientData | null>(null);
 
-  useEffect(() => {
-    const selectedClient = clients.find((client) => client.id === id) || null;
-    setClient(selectedClient);
-  }, [id]);
+  // useEffect(() => {
+  //   const selectedClient = clients.find((client) => client.id === id) || null;
+  //   setClient(selectedClient);
+  // }, [id]);
 
   const handleEdit = (field: keyof ClientData) => {
     setEditingField(field);
@@ -216,15 +255,15 @@ const ClientInterface = () => {
             <div className="text-center flex mb-2 items-center flex-col">
               <img
                 className="w-[6em] h-[6em] overflow-hidden rounded-full object-cover"
-                src={client.image}
+                src={image}
                 alt="client"
               />
-              <h1>{client.name}</h1>
+              <h1>{client.full_name}</h1>
               <h4 className={` text-[18px] font-[500] ${localStorage.getItem('darkMode')==='true'?'text-softwhitetheme':'text-subblack'}`}>{client.email}</h4>
-              <h4 className={` text-[18px] font-[500] ${localStorage.getItem('darkMode')==='true'?'text-softwhitetheme':'text-subblack'}`}>{client.phoneNumber}</h4>
+              <h4 className={` text-[18px] font-[500] ${localStorage.getItem('darkMode')==='true'?'text-softwhitetheme':'text-subblack'}`}>{client.phone}</h4>
             </div>
             <div className={`w-full p-3 gap-3 ${localStorage.getItem('darkMode')==='true'?'text-[#e1e1e160 ]':' text-subblack '} rounded-[10px]`}>
-              <h5 className="ml-2  font-[600] text-[16px] mb-2">{t('clients.lifetimeInfo.title')}</h5>
+              {/* <h5 className="ml-2  font-[600] text-[16px] mb-2">{t('clients.lifetimeInfo.title')}</h5>
               <div className={`p-2 rounded-[10px] gap-3 w-full flex lt-sm:flex-wrap justify-around ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white text-bgdarktheme2'}`}>
                 <div className="flex flex-col items-center">
                   <h1>{client.lifetime.upcoming}</h1>
@@ -254,7 +293,7 @@ const ClientInterface = () => {
                   <h1>{client.lifetime.spendMAD}</h1>
                   <h4 className="font-[500] ">{t('clients.lifetimeInfo.spendMAD')}</h4>
                 </div>
-              </div>
+              </div> */}
               <div>
                 <div className="flex text-subblack mt-2 font-[600] justify-evenly gap-2">
                   <button
@@ -279,7 +318,7 @@ const ClientInterface = () => {
                         <tbody>
                           <tr className="border border-gray-300">
                             <td className="font-medium p-2 w-1/4">{t('clients.profileSection.fields.name')}</td>
-                            {renderCell('name')}
+                            {renderCell('full_name')}
                             <td className="font-medium p-2 w-1/4 border-l border-gray-300 lt-sm:hidden">{t('clients.profileSection.fields.email')}</td>
                             <span className='lt-sm:hidden'>{renderCell('email')}</span>
                           </tr>
@@ -289,7 +328,7 @@ const ClientInterface = () => {
                           </tr>
                           <tr className="border border-gray-300">
                             <td className="font-medium p-2">{t('clients.profileSection.fields.phoneNumber')}</td>
-                            {renderCell('phoneNumber')}
+                            {renderCell('phone')}
                             <td className="font-medium p-2 border-l border-gray-300 lt-sm:hidden">{t('clients.profileSection.fields.alternatePhone')}</td>
                             <span className='lt-sm:hidden'>{renderCell('alternatePhone')}</span>
                           </tr>
@@ -326,10 +365,10 @@ const ClientInterface = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {reservationHistory.map((reservation, index) => (
+                          {reservations?.map((reservation:any) => (
                             <tr 
-                              key={`${reservation.date}-${index}`} 
-                              className={`${ localStorage.getItem('darkMode')==='true'? (index % 2 === 0 ? 'bg-bgdarktheme2 border-b border-gray-800 hover:bg-black' : 'bg-bgdarktheme border-b hover:bg-black border-gray-800') :(index % 2 === 0 ? 'bg-white hover:bg-gray-100' : 'bg-gray-50 hover:bg-gray-100')}  transition-colors duration-150 ease-in-out`}
+                              key={reservation.id} 
+                              className={`${ localStorage.getItem('darkMode')==='true'? (reservation.id % 2 === 0 ? 'bg-bgdarktheme2 border-b border-gray-800 hover:bg-black' : 'bg-bgdarktheme border-b hover:bg-black border-gray-800') :(index % 2 === 0 ? 'bg-white hover:bg-gray-100' : 'bg-gray-50 hover:bg-gray-100')}  transition-colors duration-150 ease-in-out`}
                             >
                               <td className="p-3 ">{reservation.date}</td>
                               <td className="p-3 ">{reservation.time}</td>
@@ -337,7 +376,7 @@ const ClientInterface = () => {
                                 {reservationOrigin(reservation.madeBy)}
                               </td>
                               <td className="p-3 ">{reservation.roof}</td>
-                              <td className="p-3 ">{reservation.table}</td>
+                              <td className="p-3 ">{reservation.tables}</td>
                               <td className="p-3 ">
                                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                                   reservation.status === 'Confirmed' ? 'bg-softgreentheme text-greentheme' :

@@ -1,6 +1,7 @@
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import SearchBar from "../header/SearchBar";
 
 const Roles = () => {
     const [isRoles, setIsRoles] = useState(true);
@@ -61,6 +62,12 @@ const Roles = () => {
         }
     };
 
+    const handleSearch = (e) => {
+        const keyword = e.target.value.toLowerCase();
+        const filteredPermissions = availablePermissions.filter(permission => permission.name.toLowerCase().includes(keyword));
+        setAvailablePermissions(filteredPermissions);
+    }
+
     return (
         <div className={`rounded-[10px] p-3 w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}>
             <h2 className="text-center mb-3">{t('settingsPage.roles.title')}</h2>
@@ -80,6 +87,7 @@ const Roles = () => {
                     {/* Available Permissions */}
                     <div className="flex w-full flex-col">
                         <label className="text-[17px]">{t('settingsPage.roles.labels.permissionsavailable')}</label>
+                        <SearchBar SearchHandler={handleSearch}/>
                         <div className={`rounded-md p-3 flex flex-col gap-2 h-[10em] overflow-y-auto ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2' : 'bg-softgreytheme'}`}>
                             {availablePermissions.map((permission, index) => (
                                 <div
@@ -112,6 +120,7 @@ const Roles = () => {
                     {/* Affected Permissions */}
                     <div className="flex w-full flex-col">
                         <label className="text-[17px]">{t('settingsPage.roles.labels.permissionsaffected')}</label>
+                        <SearchBar SearchHandler={handleSearch}/>
                         <div className={`rounded-md p-3 flex flex-col gap-2 h-[10em] overflow-y-auto ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2' : 'bg-softgreytheme'}`}>
                             {affectedPermissions.map((permission, index) => (
                                 <div

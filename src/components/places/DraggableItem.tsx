@@ -1,11 +1,17 @@
 // DraggableItem.js
+import { BaseKey } from '@refinedev/core';
 import { useDrag } from 'react-dnd';
 import { useTranslation } from 'react-i18next';
 
 
-interface DraggableItemProps {
-  itemData: { id: number; name: string; time: string; date: string; guests: number; occasion: string };
+interface tablesType {
+  id: BaseKey;
+  name: string;
 }
+interface DraggableItemProps {
+  itemData: { id: BaseKey; full_name: string; time: string; date: string; status: "PENDING" | "CONFIRMED" | "CANCELED";number_of_guests: number; occasion?: string ; created_at: string; tables: tablesType[] }; 
+}
+
 const ItemType = 'BOX';
 
 const DraggableItem = (props:DraggableItemProps) => {
@@ -33,7 +39,7 @@ const DraggableItem = (props:DraggableItemProps) => {
         <div className='border border-[#00000010] mx-2 border-solid h-full'></div>
         <div>
           <h3 className={` font-[600] ${localStorage.getItem('darkMode')==='true'?'text-whitetheme':'text-blacktheme'}`}>
-            {itemData.name}
+            {itemData.full_name}
           </h3>
           <div className='flex gap-3'>
 
@@ -41,7 +47,7 @@ const DraggableItem = (props:DraggableItemProps) => {
               <svg width="16" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M6.66658 7.08334V7.91667H0.833252V7.08334C0.833252 7.08334 0.833252 5.41667 3.74992 5.41667C6.66658 5.41667 6.66658 7.08334 6.66658 7.08334ZM5.20825 3.12501C5.20825 2.83657 5.12272 2.55462 4.96248 2.3148C4.80223 2.07498 4.57447 1.88806 4.308 1.77768C4.04152 1.6673 3.7483 1.63842 3.46541 1.69469C3.18252 1.75096 2.92267 1.88986 2.71872 2.09381C2.51477 2.29776 2.37588 2.55761 2.31961 2.8405C2.26334 3.12339 2.29222 3.41661 2.40259 3.68308C2.51297 3.94956 2.69989 4.17732 2.93971 4.33756C3.17953 4.49781 3.46149 4.58334 3.74992 4.58334C4.13669 4.58334 4.50763 4.42969 4.78112 4.1562C5.05461 3.88271 5.20825 3.51178 5.20825 3.12501ZM6.64158 5.41667C6.89773 5.6149 7.10732 5.86685 7.25562 6.1548C7.40391 6.44275 7.4873 6.75969 7.49992 7.08334V7.91667H9.16658V7.08334C9.16658 7.08334 9.16658 5.57084 6.64158 5.41667ZM6.24992 1.66667C5.96316 1.66534 5.68275 1.75106 5.44575 1.91251C5.69885 2.26615 5.83494 2.69012 5.83494 3.12501C5.83494 3.55989 5.69885 3.98386 5.44575 4.33751C5.68275 4.49895 5.96316 4.58467 6.24992 4.58334C6.63669 4.58334 7.00763 4.42969 7.28112 4.1562C7.55461 3.88271 7.70825 3.51178 7.70825 3.12501C7.70825 2.73823 7.55461 2.3673 7.28112 2.09381C7.00763 1.82032 6.63669 1.66667 6.24992 1.66667Z" fill={localStorage.getItem('darkMode')==='true'?'#e1e1e1':'#1e1e1e'} fill-opacity="0.5"/>
               </svg>
-              <p className='font-[600] text-[13px] flex flex-row  w-[5em]'>{itemData.guests} {t('placeManagement.reservations.guests')}</p>
+              <p className='font-[600] text-[13px] flex flex-row  w-[5em]'>{itemData.number_of_guests} {t('placeManagement.reservations.guests')}</p>
             </div>
             
             <div className='flex gap-1 items-center'>

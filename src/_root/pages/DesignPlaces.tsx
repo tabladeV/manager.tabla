@@ -1,20 +1,38 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import DesignCanvas from '../../components/places/design/DesignCanvas';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { BaseKey, BaseRecord, useList } from '@refinedev/core';
 
 const DesignPlaces: React.FC = () => {
+
+  const { data, isLoading, error } = useList({
+    resource: "api/v1/bo/floors",
+    meta: {
+      headers: {
+        "X-Restaurant-ID": 1,
+      },
+    },
+  });
+
     const [showAddPlace, setShowAddPlace] = useState(false);
-    const [focusedRoof, setFocusedRoof] = useState<string | null>('Main Room');
-    const [roofs, setRoofs] = useState<string[]>(['Main Room', 'Outdoor', 'Terrace']);
+    const [focusedRoof, setFocusedRoof] = useState<BaseKey | null>(1);
+    const [roofs, setRoofs] = useState<BaseRecord[]>([]);
+
+    useEffect(() => {
+        if (data?.data) {
+            setRoofs(data.data.map((roof: BaseRecord) => ({ id: roof.id, name: roof.name })));
+        }
+        
+    }, [data]);
     
     
-    const deleteRoof = (roof: string) => {
+    const deleteRoof = (roofId: BaseKey) => {
         if (!confirm('Are you sure you want to delete this roof?')) {
             return;
         }
-        setRoofs(prevRoofs => prevRoofs.filter(r => r !== roof));
-        if (focusedRoof === roof) {
+        setRoofs(prevRoofs => prevRoofs.filter(r => r.id !== roofId));
+        if (focusedRoof === roofId) {
             setFocusedRoof(null);
         }
     };
@@ -26,8 +44,8 @@ const DesignPlaces: React.FC = () => {
     const inputPlace = document.getElementById('inputPlace') as HTMLInputElement;
     const place = inputPlace.value.trim();
 
-    if (place && !roofs.includes(place)) {
-      setRoofs((prevRoofs) => [...prevRoofs, place]);
+    if (place && !roofs.some(roof => roof.name === place)) {
+      setRoofs((prevRoofs) => [...prevRoofs, { name: place }]);
     }
 
     setShowAddPlace(false);
@@ -59,15 +77,15 @@ const DesignPlaces: React.FC = () => {
             <div className='flex gap-5'>
                 {roofs.map((roof) => (
                     <div
-                        key={roof}
+                        key={roof.id}
                         className={`${
-                            focusedRoof === roof ? 'btn-primary' : 'btn-secondary'
+                            focusedRoof === roof.id ? 'btn-primary' : 'btn-secondary'
                         } gap-3 flex`}
                     >
-                        <button onClick={() => setFocusedRoof(roof)}>
-                            {roof}
+                        <button onClick={() => setFocusedRoof(roof.id)}>
+                            {roof.name}
                         </button>
-                        <button className='' onClick={() => deleteRoof(roof)}>
+                        <button className='' onClick={() => deleteRoof(roof.id)}>
                             <svg
                                 width="13"
                                 height="13"
@@ -102,7 +120,7 @@ const DesignPlaces: React.FC = () => {
               </button>
             </div>
 
-            <DesignCanvas />
+            <DesignCanvas focusedRoofId={focusedRoof}/>
         </div>
     );
 };

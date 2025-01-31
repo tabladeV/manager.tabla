@@ -226,7 +226,7 @@ const ReservationModal = (props: ReservationModalProps) => {
                     </select> */}
                 </div>
                 
-                <div onClick={()=>{setShowProcess(true)}} className="btn flex justify-around cursor-pointer text-white">
+                <div onClick={()=>{setShowProcess(true)}} className={`btn flex justify-around cursor-pointer ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'}`}>
                     {(data.reserveDate === '') ?<div>date </div>:<span>{data.reserveDate}</span>}
                     {(data.time === '') ? <div>Time </div>:<span>{data.time}</span>} 
                     {(data.guests===0) ? <div>Guests </div>:<span>{data.guests}</span>}

@@ -140,12 +140,12 @@
       }
     },
     "placeManagement": {
-        "title": "Place Management",
+        "title": "Table Management",
         "searchPlaceholder": "Search...",
         "filters": {
             "confirmed": "Confirmed",
             "canceled": "Canceled",
-            "waiting": "Waiting"
+            "pending": "Pending"
         },
         "tabs": {
             "mainRoom": "Main Room",

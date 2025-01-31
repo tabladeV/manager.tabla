@@ -7,6 +7,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { useTranslation } from 'react-i18next'
 import Filter from './Filter'
 import { useList } from '@refinedev/core'
+import axios from 'axios'
 
 // Mock data generator
 const generateMockData = (months: number) => {
@@ -110,7 +111,7 @@ export default function ReservationsChart() {
   const { t } = useTranslation()
   
   const { data, isLoading, error } = useList({
-    resource: "api/v1/bo/tables",
+    resource: "api/v1/bo/floors",
     meta: {
       headers: {
         "X-Restaurant-ID": 1,
@@ -119,7 +120,27 @@ export default function ReservationsChart() {
     
   });
 
-  console.log(isLoading,data,error)
+  console.log(data)
+
+
+  
+  // useEffect(() => {
+  //   axios
+  //     .get("http://128.199.50.127/api/v1/bo/tables", {
+        
+  //       headers: {
+  //         "X-Restaurant-ID": 1
+  //       },
+  //     })
+  //     .then((res) => {
+  //       console.log(res.data);
+        
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     })
+      
+  // }, []);
 
 
 
