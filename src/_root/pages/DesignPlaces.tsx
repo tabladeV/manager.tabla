@@ -85,7 +85,7 @@ const DesignPlaces: React.FC = () => {
                         <button onClick={() => setFocusedRoof(roof.id)}>
                             {roof.name}
                         </button>
-                        <button className='' onClick={() => deleteRoof(roof.id)}>
+                        <button className='' onClick={() => roof.id && deleteRoof(roof.id)}>
                             <svg
                                 width="13"
                                 height="13"
