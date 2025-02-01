@@ -1,6 +1,5 @@
 import Logo from "../../components/header/Logo"
 import Cookies from "js-cookie";
-import logo from '../../assets/logo.png'
 
 
 
@@ -47,7 +46,7 @@ const LogIn = () => {
         <button  className="btn-primary w-[30vw]">Log In</button>
       </form>
       <div>
-        <img src={logo} alt="logo" className="w-[60em] absolute h-[60em] blur-xl top-[-30em] z-[-10] left-[-20em] opacity-10" />
+        {/* <img src={logo} alt="logo" className="w-[60em] absolute h-[60em] blur-xl top-[-30em] z-[-10] left-[-20em] opacity-10" /> */}
       </div>
     </div>
   )
