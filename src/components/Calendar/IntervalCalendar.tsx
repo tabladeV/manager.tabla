@@ -23,7 +23,9 @@ interface IntervalCalendarProps {
   onRangeSelect: (range: { start: Date; end: Date }) => void;
 }
 
+
 const IntervalCalendar: React.FC<IntervalCalendarProps> = ({ onRangeSelect }) => {
+  const [filteringHour, setFilteringHour] = useState('');
   const today = startOfToday();
   const [dateRange, setDateRange] = useState<{ start: Date | null; end: Date | null }>({ start: null, end: null });
   const [currentMonth, setCurrentMonth] = useState(format(today, 'MMM-yyyy'));

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import OurCalendar from "../Calendar/OurCalendar";
 import { addDays, format, startOfToday } from "date-fns";
 import { useDateContext } from "../../context/DateContext";
-import { i18n } from "../../../../../../../Downloads/gridpack_trial/codebase/gridpack";
 import { useTranslation } from "react-i18next";
 
 const DateSelection = () => {

@@ -11,7 +11,6 @@ import Cookies from "js-cookie";
 import { Fullscreen,  LogOut, Minimize, Settings, User } from 'lucide-react';
 
 const UserBar = () => {
-  const { setDarkMode } = useDarkContext();
   const [showLang, setShowLang] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [isLogged, setIsLogged] = useState(true);
@@ -41,9 +40,6 @@ const UserBar = () => {
     };
   }, []);
 
-  useEffect(() => {
-    setDarkMode(isDarkMode);
-  }, [isDarkMode, setDarkMode]);
 
   const setLanguage = (language: string) => {
     i18n.changeLanguage(language);

@@ -68,7 +68,6 @@ const RootLayout = () => {
 
 
 
-const { darkMode } = useDarkContext();
 
 
 

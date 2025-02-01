@@ -122,7 +122,7 @@ const ClientsPage = () => {
 
   const { pathname } = useLocation();
 
-  const selectClient = (id: BaseKey |undefined) => {
+  const selectClient = (id: BaseKey |undefined ) => {
     setSelectedClient((prevSelectedClients) => {
       // Check if the client is already selected
       const isAlreadySelected = prevSelectedClients.some((client) => client.id === id);

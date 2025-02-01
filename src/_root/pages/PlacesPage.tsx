@@ -14,6 +14,33 @@ import { getHours } from 'date-fns';
 import { useDateContext } from '../../context/DateContext'; 
 import { BaseKey, BaseRecord, useList } from '@refinedev/core';
 
+interface Reservation {
+  id: BaseKey;
+  full_name: string;
+  time: string;
+  date: string;
+  status: "PENDING" | "CONFIRMED" | "CANCELED";
+  number_of_guests: number;
+  occasion?: string;
+  created_at: string;
+  tables: TableType[];
+}
+
+interface TableType {
+  id: BaseKey;
+  name: string;
+  type: 'CIRCLE' | 'RECTANGLE';
+  x: number;
+  floor_name: string;
+  y: number;
+  height: number;
+  width: number;
+  max: number;
+  min: number;
+  reservations: Reservation[];
+}
+
+
 function isTouchDevice() {
   return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 }
@@ -37,7 +64,7 @@ const PlacePage: React.FC = () => {
     },
   });
 
-  const { data: reservationsData, isLoading: isLoadingReservations, error: errorReservations } = useList({
+  const { data: reservationsData, isLoading: isLoadingReservations, error: errorReservations } = useList<Reservation>({
     resource: "api/v1/bo/reservations",
     meta: {
       headers: {
@@ -45,13 +72,14 @@ const PlacePage: React.FC = () => {
       },
     },
   });
+  
 
 
-  const [reservations, setReservations] = useState<BaseRecord[]>([]);
   const [roofData, setRoofData] = useState<BaseRecord[]>([]);
-  const [tables, setTables] = useState<BaseRecord[]>([]);
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [tables, setTables] = useState<TableType[]>([]);
   const [focusedRoof, setFocusedRoof] = useState<BaseKey | undefined>(undefined);
-  const [floorId, setFloorId] = useState<BaseKey | undefined>(undefined);
+  const [floorId, setFloorId] = useState<string>('');
   const { t } = useTranslation();
   const { chosenDay } = useDateContext(); 
 
@@ -64,18 +92,18 @@ const PlacePage: React.FC = () => {
       setFocusedRoof(data.data[0]?.id);
     }
     if (tablesData?.data) {
-      setTables(tablesData.data);
+      setTables(tablesData.data as TableType[]);
     }
   }, [data, tablesData, reservationsData]);
 
   useEffect(() => {
     if (focusedRoof) {
       const foundFloor = roofData.find((floor) => floor.id === focusedRoof);
-      setFloorId(foundFloor?.id);
+      setFloorId(foundFloor?.name || '');
     }
   }, [focusedRoof, roofData]);
 
-  console.log('reservations', reservations);
+  console.log( tables);
 
   // const reservations = [
   //   { id: 1, name: 'Caprim Zack', time: '12:00 PM', date: '26 jan 2025', guests: 4, occasion: 'Birthday', tableNumber: 1 },
@@ -102,8 +130,8 @@ const PlacePage: React.FC = () => {
   const searchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
     const keyword = e.target.value.toLowerCase();
     setSearchResults(reservations.filter((item) => item.full_name.toLowerCase().includes(keyword)));
-
   };
+  
 
 
   return (
@@ -129,9 +157,10 @@ const PlacePage: React.FC = () => {
               <button className={showOnly==='PENDING'? 'btn-primary':'btn-secondary'} onClick={()=>{setShowOnly("PENDING")}}>{t('placeManagement.filters.pending')}</button>
             </div>
             <div className='overflow-y-auto h-[55vh] bar-hide'>
-              {searchResults.filter(item=>item.status.toUpperCase().includes(showOnly)).map((item) => (
+              {searchResults.filter(item => item.status === showOnly).map((item) => (
                 <DraggableItem itemData={item} key={item.id} />
               ))}
+
             </div>
           </div>
           
@@ -161,7 +190,7 @@ const PlacePage: React.FC = () => {
             </div>
 
             <div className='relative lt-sm:h-[55vh] lt-sm:overflow-x-auto'>
-              {tables.filter(table => table.floor === floorId).map((table) => (
+              {tables.filter(table => table.floor_name === floorId).map((table) => (
                 <DropTarget 
                   key={table.id} 
                   id= {table.name}
@@ -172,7 +201,7 @@ const PlacePage: React.FC = () => {
                   width= {table.width}
                   max= {table.max}
                   min= {table.min}
-                  reservedBy= {table.reservations}
+                  reservedBy= {table.reservations[0]}
                   hourChosen= {filteringHour}
                   />
                   

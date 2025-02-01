@@ -1,5 +1,3 @@
-'use client'
-
 import { useEffect, useState } from "react"
 import { format } from 'date-fns'
 import SearchBar from "../../components/header/SearchBar"
@@ -10,40 +8,35 @@ import 'i18next'
 import { useTranslation } from 'react-i18next';
 import ReservationModal from "../../components/reservation/ReservationModal"
 import { BaseKey, BaseRecord, useList } from "@refinedev/core"
-interface Reservation {
-  id: string
-  email: string
-  fullName: string
-  date: string
-  time: string
-  reservationMade: string
-  guests: string
-  status: string
+
+interface Reservation extends BaseRecord {
+  id: BaseKey;
+  email: string;
+  fullName: string;
+  date: string;
+  time: string;
+  reservationMade: string;
+  guests: string;
+  status: string;
 }
 
 const ReservationsPage = () => {
-
   const { t } = useTranslation();
-
-  const [reservations, setReservations] = useState<BaseRecord[]>([])
-
-  const { data, isLoading, error } = useList({
-      resource: "api/v1/bo/reservations",
-      meta: {
-        headers: {
-          "X-Restaurant-ID": 1,
-        },
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const { data, isLoading, error } = useList<Reservation>({
+    resource: "api/v1/bo/reservations",
+    meta: {
+      headers: {
+        "X-Restaurant-ID": 1,
       },
-      
-    });
+    },
+  });
 
-    useEffect(() => {
-      if (data?.data) {
-        setReservations(data.data)
-      }
-    }, [data])
-
-    console.log(reservations)
+  useEffect(() => {
+    if (data?.data) {
+      setReservations(data.data as Reservation[]);
+    }
+  }, [data]);
   // const [reservations, setReservations] = useState([
   //   {
   //     id: '1',
@@ -207,13 +200,14 @@ const ReservationsPage = () => {
   const [showModal, setShowModal] = useState(false)
   const [selectedClient, setSelectedClient] = useState<Reservation | null>(null)
 
-  const EditClient = (id: BaseKey) => {
-    const client = reservations.find(r => r.id === id)
+  const EditClient = (id: BaseKey | undefined) => {
+    if (!id) return;
+    const client = reservations.find(r => r.id === id);
     if (client) {
-      setSelectedClient(client as Reservation)
-      setShowModal(true)
+      setSelectedClient(client);
+      setShowModal(true);
     }
-  }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     if (selectedClient) {
@@ -272,13 +266,12 @@ const ReservationsPage = () => {
   }
   const [showStatus, setShowStatus] = useState(false)
 
-  const [idStatusModification, setIdStatusModification] = useState('')
-
-  const showStatusModification = (id:string) => {
-    setIdStatusModification(id)
-    setShowStatus(!showStatus)
-  }
-  
+  const [idStatusModification, setIdStatusModification] = useState<BaseKey>('');
+  const showStatusModification = (id: BaseKey | undefined) => {
+    if (!id) return;
+    setIdStatusModification(id);
+    setShowStatus(!showStatus);
+  };
   const statusHandler = (status: string) => {
     setReservations(reservations.map(r => 
       r.id === idStatusModification ? {...r, status} : r
@@ -290,7 +283,7 @@ const ReservationsPage = () => {
 
   return (
     <div>
-      {showAddReservation && <ReservationModal onClick={()=>{setShowAddReservation(false)}}/>}
+      {showAddReservation && <ReservationModal  onClick={()=>{setShowAddReservation(false)}}  onSubmit={(data: Reservation)=>{setReservations([...reservations, data])}} />} 
       {showModal && selectedClient && (
         <div>
           <div className="overlay" onClick={() => setShowModal(false)}></div>
@@ -428,15 +421,15 @@ const ReservationsPage = () => {
           <tbody className={ `  ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme divide-y divide-gray-800':'bg-white divide-y divide-gray-200'}`} >
             {filteredReservations.map(reservation => (
               <tr key={reservation.id} className=" hover:opacity-75">
-                <td className="px-3 py-4 whitespace-nowrap cursor-pointer"  onClick={() => EditClient(reservation.id)}>{reservation.id}</td>
-                <td className="px-3 py-4 whitespace-nowrap cursor-pointer"  onClick={() => EditClient(reservation.id)}>{reservation.full_name}</td>
-                <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => EditClient(reservation.id)}>{reservation.email}</td>
-                <td className="px-3 py-4 flex items-center justify-center whitespace-nowrap cursor-pointer"  onClick={() => EditClient(reservation.id)}>
+                <td className="px-3 py-4 whitespace-nowrap cursor-pointer"  onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.id}</td>
+                <td className="px-3 py-4 whitespace-nowrap cursor-pointer"  onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.full_name}</td>
+                <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.email}</td>
+                <td className="px-3 py-4 flex items-center justify-center whitespace-nowrap cursor-pointer"  onClick={() => { if (reservation.id) EditClient(reservation.id); }}>
                   {reservationOrigin(reservation.reservationMade)}
                 </td>
-                <td className="px-3 py-4 whitespace-nowrap cursor-pointer"  onClick={() => EditClient(reservation.id)}>{reservation.date }</td>
-                <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => EditClient(reservation.id)}>{reservation.time}</td>
-                <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => EditClient(reservation.id)}>{reservation.guests}</td>
+                <td className="px-3 py-4 whitespace-nowrap cursor-pointer"  onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.date }</td>
+                <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.time}</td>
+                <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.guests}</td>
                 <td className="px-3 py-4 whitespace-nowrap " onClick={()=> showStatusModification(reservation.id)}>
                   <span className={`${statusStyle(reservation.status)} text-center py-[.1em] px-3  rounded-[10px]`}> 
                     {reservation.status === 'Confirmed'? t('reservations.statusLabels.confirmed') : reservation.status === 'Pending' ? t('reservations.statusLabels.pending') : t('reservations.statusLabels.cancelled')}

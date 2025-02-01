@@ -3,15 +3,15 @@ import { format } from 'date-fns';
 import OurCalendar from '../Calendar/OurCalendar';
 
 
+type SelectedData = {
+  reserveDate: string ;
+  time: string ;
+  guests: number ;
+};
+
 type ReservationProcessProps = {
   onClick: () => void;
   getDateTime: (data: SelectedData) => void;
-};
-
-type SelectedData = {
-  reserveDate: string | null;
-  time: string | null;
-  guests: number | null;
 };
 
 
@@ -22,15 +22,15 @@ const ReservationProcess: React.FC<ReservationProcessProps> = (props) => {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [selectedGuests, setSelectedGuests] = useState<number | null>(null);
   const [selectedData, setSelectedData] = useState<SelectedData>({
-    reserveDate: null,
-    time: null,
-    guests: null,
+    reserveDate: '',
+    time: '',
+    guests: 0,
   });
 
   const handleDateClick = (day: Date) => {
     setSelectedDate(day);
     const formattedDate = format(day, 'dd MMMM yyyy');
-    setSelectedData((prevData) => ({ ...prevData, reserveDate: formattedDate }));
+    setSelectedData((prevData) => ({ ...prevData, reserveDate: formattedDate.toString() }));
     setActiveTab('time');
   };
 

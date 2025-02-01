@@ -14,19 +14,30 @@ const Roles = () => {
         { name: 'Manage Grid', value: false },
         { name: 'Manage Timeline', value: false },
     ]);
-    const [affectedPermissions, setAffectedPermissions] = useState([]);
+    const [affectedPermissions, setAffectedPermissions] = useState<Permission[]>([]);
 
     // State to track selected permissions
-    const [selectedAvailable, setSelectedAvailable] = useState(null);
-    const [selectedAffected, setSelectedAffected] = useState(null);
+    const [selectedAvailable, setSelectedAvailable] = useState<{ name: string; value: boolean } | null>(null);
+    const [selectedAffected, setSelectedAffected] = useState<{ name: string; value: boolean } | null>(null);
+
 
     // State for role name and saved roles
     const [roleName, setRoleName] = useState('');
-    const [savedRoles, setSavedRoles] = useState([
+    type Permission = {
+        name: string;
+        value: boolean;
+    };
+    
+    type Role = {
+        name: string;
+        permissions: Permission[];
+    };
+    
+    const [savedRoles, setSavedRoles] = useState<Role[]>([
         { name: 'Admin', permissions: [{ name: 'Manage Tables', value: false }] },
         { name: 'Manager', permissions: [{ name: 'Manage reservations', value: false }] },
     ]);
-
+    
     // Function to handle moving to the right
     const moveRight = () => {
         if (selectedAvailable) {
@@ -62,12 +73,14 @@ const Roles = () => {
         }
     };
 
-    const handleSearch = (e) => {
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         const keyword = e.target.value.toLowerCase();
-        const filteredPermissions = availablePermissions.filter(permission => permission.name.toLowerCase().includes(keyword));
+        const filteredPermissions = availablePermissions.filter(permission => 
+            permission.name.toLowerCase().includes(keyword)
+        );
         setAvailablePermissions(filteredPermissions);
-    }
-
+    };
+    
     return (
         <div className={`rounded-[10px] p-3 w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}>
             <h2 className="text-center mb-3">{t('settingsPage.roles.title')}</h2>

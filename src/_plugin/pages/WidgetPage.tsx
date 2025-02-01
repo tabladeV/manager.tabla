@@ -24,38 +24,13 @@ const WidgetPage = () => {
       link.click();
       document.body.removeChild(link);
     };
-
-    const { data: roofsData, isLoading: isLoadingRoofs,  error :roofsError } = useList({
-        resource: "api/v1/bo/floors",
-        meta: {
-          headers: {
-            "X-Restaurant-ID": 1,
-          },
-        },
-      });
-    
-      const { data: tablesData, isLoading: isLoadingTables, error: errorTables } = useList({
-        resource: "api/v1/bo/tables",
-        meta: {
-          headers: {
-            "X-Restaurant-ID": 1,
-          },
-        },
-      });
-      
-      const [roofs,setRoofs] = useState<BaseRecord>([]);
-      const [tables,setTables] = useState<BaseRecord>([]);
-      const [focusedRoof, setFocusedRoof] = useState<BaseKey | undefined>(undefined);
-      const [floorId, setFloorId] = useState<BaseKey | undefined>(undefined);
-      const [reservedTables, setReservedTables] = useState<BaseKey[]>([1,4]);
-      const [selectedTable, setSelectedTable] = useState<BaseKey | undefined>(undefined);
       const [step, setStep] = useState(1);
       const [showProcess, setShowProcess] = useState(false);
 
 
       interface infoType {
         tableId?: BaseKey;
-        reserveDate: string;
+        reserveDate?: string;
         source?: string;
         status?: string; 
         time: string;
@@ -71,32 +46,15 @@ const WidgetPage = () => {
 
       localStorage.setItem('darkMode', 'false');
 
-      useEffect(() => {
-        if (focusedRoof) {
-          const foundFloor = roofs.find((roof: BaseRecord) => roof.id === focusedRoof);
-          setFloorId(foundFloor?.id);
-        }
-      }, [focusedRoof, roofs]);
-
-      useEffect(() => {
-        if (roofsData?.data) {
-          setRoofs(roofsData.data);
-        }
-        if (tablesData?.data) {
-          setTables(tablesData.data);
-        }
-      }, [roofsData, tablesData]);
-
-
     interface dataTypes {  
-        reserveDate: string,
+        reserveDate: string ,
         time: string,
         guests: number
     }
 
 
     const [data, setData] = useState<dataTypes>({
-        reserveDate: '',
+        reserveDate: new Date().toISOString(),
         time: '',
         guests: 0
     });
@@ -114,7 +72,6 @@ const WidgetPage = () => {
 
     });
 
-    console.log(tablesData)
 
     const handleSubmit = (e: any) => {
         e.preventDefault();
@@ -256,7 +213,7 @@ const WidgetPage = () => {
         </div>
       }
 
-      {showProcess && <div className=''><ReservationProcess noDarkMode={true} onClick={()=>{setShowProcess(false)}} getDateTime={(data:dataTypes)=>{setData(data)}}/></div>}
+      {showProcess && <div className=''><ReservationProcess onClick={()=>{setShowProcess(false)}} getDateTime={(data:dataTypes)=>{setData(data)}}/></div>}
     </div>
   )
 }

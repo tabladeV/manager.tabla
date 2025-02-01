@@ -164,7 +164,7 @@ const ClientInterface = () => {
   ];
 
   const reservationOrigin = (origin: string) => {
-    if (origin === 'MarketPlace') {
+    if (origin === 'MARKETPLACE') {
       return (
         <div className={`flex p-1 rounded-md flex-col items-center ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}>
           <svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -368,12 +368,12 @@ const ClientInterface = () => {
                           {reservations?.map((reservation:any) => (
                             <tr 
                               key={reservation.id} 
-                              className={`${ localStorage.getItem('darkMode')==='true'? (reservation.id % 2 === 0 ? 'bg-bgdarktheme2 border-b border-gray-800 hover:bg-black' : 'bg-bgdarktheme border-b hover:bg-black border-gray-800') :(index % 2 === 0 ? 'bg-white hover:bg-gray-100' : 'bg-gray-50 hover:bg-gray-100')}  transition-colors duration-150 ease-in-out`}
+                              className={`${ localStorage.getItem('darkMode')==='true'? (reservation.id % 2 === 0 ? 'bg-bgdarktheme2 border-b border-gray-800 hover:bg-black' : 'bg-bgdarktheme border-b hover:bg-black border-gray-800') :(reservation.id % 2 === 0 ? 'bg-white hover:bg-gray-100' : 'bg-gray-50 hover:bg-gray-100')}  transition-colors duration-150 ease-in-out`}
                             >
                               <td className="p-3 ">{reservation.date}</td>
                               <td className="p-3 ">{reservation.time}</td>
                               <td className="p-3  flex h-full itmes-center justify-center">
-                                {reservationOrigin(reservation.madeBy)}
+                                {reservationOrigin(reservation.source)}
                               </td>
                               <td className="p-3 ">{reservation.roof}</td>
                               <td className="p-3 ">{reservation.tables}</td>

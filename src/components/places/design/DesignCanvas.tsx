@@ -4,7 +4,6 @@ import Rectangle from './Rectangle';
 import CircleShape from './CircleShape';
 import { useTranslation } from 'react-i18next';
 import { BaseKey, BaseRecord, useList } from '@refinedev/core';
-import { set } from 'date-fns';
 
 
 
@@ -24,17 +23,16 @@ const DesignCanvas: React.FC <canvasTypes>= (props) => {
     },
   });
 
-  const [shapes, setShapes] = useState<BaseRecord>();
+  const [shapes, setShapes] = useState<BaseRecord[]>([]);
   const [selectedId, selectShape] = useState<BaseKey | undefined>();
   const [showTools, setShowTools] = useState(false);
 
   useEffect(() => {
     if (props.focusedRoofId && tablesData?.data) {
-      console.log('tablesData', tablesData);
-      setShapes(tablesData?.data.filter((table: BaseRecord) => table.floor === props.focusedRoofId));
+      setShapes(tablesData.data.filter((table) => table.floor === props.focusedRoofId));
     }
-  }, [props.focusedRoofId, tablesData]);
-
+  }, [props.focusedRoofId, tablesData?.data]);
+  
 
 
 
@@ -53,7 +51,7 @@ const DesignCanvas: React.FC <canvasTypes>= (props) => {
 
   const addShape = (type: 'RECTANGLE' | 'CIRCLE') => {
     const newShape = {
-      id: `T${Math.random()*10 + Math.random()*10}`,
+      id: crypto.randomUUID(),
       x: 50,
       name: `Table ${Math.floor(Math.random()*10)}`,
       y: 50,
@@ -85,7 +83,7 @@ const DesignCanvas: React.FC <canvasTypes>= (props) => {
       setShowEdit(false);
       }}>
       <h1>Change Table Name</h1>
-      <input type="text"  defaultValue={shapes.find(shape => shape.id === id)?.name || ''} className={`inputs-unique mt-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-textdarktheme':'bg-white text-black'} `} />
+      <input type="text"  defaultValue={shapes?.find(shape => shape.id === id)?.name || ''} className={`inputs-unique mt-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-textdarktheme':'bg-white text-black'} `} />
       <button type="submit" className='btn-primary mt-2'>Save</button>
       </form>
     </div>
@@ -94,24 +92,18 @@ const DesignCanvas: React.FC <canvasTypes>= (props) => {
 
   const [showEdit, setShowEdit] = useState(false);
   const editShape = () => {
-
-    if(selectedId) {
-      if( shapes.filter(shape => shape.id !== selectedId).length > 0){
-        changingName(selectedId);
-        console.log(selectedId);
-        setShowEdit(true);
-        
-      }
-      }
-    console.log('Edit Shape');
-  }
+    if (selectedId) {
+      setShowEdit(true);
+    }
+  };
+  
 
   const saveLayout = () => {
     console.log(shapes);
     //we will send this to the server
   };
   const resetLayout = () => {
-    setShapes(tablesData?.data);
+    setShapes(tablesData?.data || []);
     //we will send this to the server
   };
 
@@ -119,7 +111,7 @@ const DesignCanvas: React.FC <canvasTypes>= (props) => {
     <>
       {showEdit?<div>
         <div className='overlay bg-white opacity-15 z-[200]' onClick={() => setShowEdit(false)}></div>
-        {changingName(selectedId)}
+        {selectedId && changingName(selectedId)}
       </div>:''}
       <div className='flex justify-between gap-5 my-4'>
         <div className={`p-2 flex  rounded-[10px] gap-2 ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme text-white':'bg-white text-subblack'}`}>

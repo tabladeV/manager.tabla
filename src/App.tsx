@@ -38,7 +38,7 @@ import Permissions from "./components/settings/Permissions";
 import Services from "./components/settings/Services";
 import { DateProvider } from "./context/DateContext";
 import ClientInterface from "./components/clients/ClientInterface";
-import IndexSettings from "./components/settings/indexSettings";
+import IndexSettings from "./components/settings/IndexSettings";
 import { PowerProvider } from "./context/PowerContext";
 
 

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import settingsPic from '../../assets/Settings.svg'
+
 const IndexSettings = () => {
   const { t } = useTranslation()
   return (

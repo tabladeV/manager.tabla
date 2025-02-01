@@ -3,7 +3,19 @@ import { useTranslation } from 'react-i18next';
 import ReservationProcess from './ReservationProcess';
 import { format, parseISO } from 'date-fns';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { BaseKey, BaseRecord } from '@refinedev/core';
 
+
+interface Reservation extends BaseRecord {
+  id: BaseKey;
+  email: string;
+  fullName: string;
+  date: string;
+  time: string;
+  reservationMade: string;
+  guests: string;
+  status: string;
+}
 interface reservationInfo {
     reserveDate: string;
     time: string;
@@ -12,7 +24,7 @@ interface reservationInfo {
 interface ReservationModalProps {
     onClick: () => void;
     // onSubmit: () => void;
-    onSubmit: (data:{name:string; email:string; number: string;comment:string ;reservationInfo: reservationInfo}) => void;
+    onSubmit: (data:Reservation) => void;
 }
 
 const ReservationModal = (props: ReservationModalProps) => {
@@ -35,12 +47,15 @@ const ReservationModal = (props: ReservationModalProps) => {
 
     const handleAddReservation = (event: React.FormEvent): void => {
         event.preventDefault();
-        const reservationData = {
-            name: formData.name,
+        const reservationData: Reservation = {
+            id: Date.now().toString(), // Generate a unique ID
+            fullName: formData.name,
             email: formData.email,
-            number: formData.phone,
-            comment: formData.comment,
-            reservationInfo: data
+            date: data.reserveDate || '',
+            time: data.time,
+            reservationMade: 'OTHER', // Example value
+            guests: data.guests.toString(),
+            status: 'PENDING' // Example value
         };
         props.onSubmit(reservationData);
         // Add your reservation handling logic here
@@ -56,27 +71,24 @@ const ReservationModal = (props: ReservationModalProps) => {
     };
 
     const handleAddNewClient = () => {
-        if (
-            inputName.trim() &&
-            !clients.some((client) => client.name.toLowerCase() === inputName.toLowerCase())
-        ) {
+        if (inputName.trim() && !clients.some((client) => client.name.toLowerCase() === inputName.toLowerCase())) {
             const newClient = {
                 name: inputName,
                 email: '',
                 phone: '',
+                comment: '', // Add comment field
             };
-            setClients([...clients, newClient]); // Add new client to the list
-            setSearchResults([...clients, newClient]); // Update search results
-            setFormData({ name: inputName, email: '', phone: '' }); // Autofill name in form
-            setInputName(''); // Clear input field
-            setFocusedClient(false); // Close the dropdown
+            setClients([...clients, newClient]);
+            setSearchResults([...clients, newClient]);
+            setFormData(newClient); // Ensure it matches formData structure
+            setInputName('');
+            setFocusedClient(false);
         }
     };
-
     const handleSelectClient = (client: { name: string; email: string; phone: string }) => {
-        setFormData(client); // Autofill the form with client data
-        setInputName(client.name); // Update the input field
-        setFocusedClient(false); // Close the dropdown
+        setFormData({ ...client, comment: '' }); // Ensure 'comment' field is included
+        setInputName(client.name);
+        setFocusedClient(false);
     };
 
     const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,10 +98,11 @@ const ReservationModal = (props: ReservationModalProps) => {
 
     const [showProcess, setShowProcess] = useState(false);
     interface dataTypes {  
-        reserveDate: string,
-        time: string,
-        guests: number
+        reserveDate: string | null;
+        time: string;
+        guests: number;
     }
+    
 
     const [data, setData] = useState<dataTypes>({
         reserveDate: '',

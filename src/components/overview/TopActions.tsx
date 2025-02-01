@@ -5,14 +5,13 @@ import { TrendingUp } from "lucide-react"
 import { Label, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts"
 import { useTranslation } from "react-i18next"
 import Filter from "./Filter"
-import { range } from "../../../../../../../Downloads/gridpack_trial/codebase/types/ts-common/core"
 
 interface Range {
   start: string,
   end: string
 }
 
-const generateChartData = (range: Range) => {
+const generateChartData = () => {
   // This is a placeholder function. Replace it with actual data fetching logic.
   // For now, it returns static data.
   return [
@@ -24,10 +23,10 @@ const generateChartData = (range: Range) => {
 
 export default function TopActions() {
   const [timeRange, setTimeRange] = useState<Range>({ start: '2023-01-01', end: '2023-12-31' })
-  const [chartData, setChartData] = useState(generateChartData(timeRange))
+  const [chartData, setChartData] = useState(generateChartData())
 
   useEffect(() => {
-    setChartData(generateChartData(timeRange))
+    setChartData(generateChartData())
   }, [timeRange])
 
   const totalActions = useMemo(() => {

@@ -16,7 +16,7 @@ const DesignPlaces: React.FC = () => {
   });
 
     const [showAddPlace, setShowAddPlace] = useState(false);
-    const [focusedRoof, setFocusedRoof] = useState<BaseKey | null>(1);
+    const [focusedRoof, setFocusedRoof] = useState<BaseKey | undefined>(1);
     const [roofs, setRoofs] = useState<BaseRecord[]>([]);
 
     useEffect(() => {
@@ -33,7 +33,7 @@ const DesignPlaces: React.FC = () => {
         }
         setRoofs(prevRoofs => prevRoofs.filter(r => r.id !== roofId));
         if (focusedRoof === roofId) {
-            setFocusedRoof(null);
+            setFocusedRoof(undefined);
         }
     };
 
