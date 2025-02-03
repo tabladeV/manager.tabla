@@ -91,14 +91,14 @@ const ReviewPage = () => {
       </p>
 
       {step===1 && <form onSubmit={handleSubmit} className="flex flex-col gap-3 items-center lg:w-[40%] w-[60%]  lt-sm:w-[90%] mt-3">
-        <input
+        {/* <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className={` bg-white p-3 rounded-md shadow-2xl border-[0px] shadow-[#88AB6120] w-full lt-sm:w-[90%] inputs-unique mt-3 `}
           placeholder="Email"
           required
-        />
+        /> */}
         <div className='grid grid-cols-2 gap-3 justify-between w-full lt-sm:w-[90%] bg-white p-3 rounded-md shadow-2xl shadow-[#88AB6120]'>
           <div className="flex font-[500] gap-3 items-center">Service</div>
           <div className="flex items-center gap-4">

@@ -1,79 +1,148 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ReservationProcess from './ReservationProcess';
-import { format, parseISO } from 'date-fns';
+import { format, formatDate, parseISO } from 'date-fns';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { BaseKey, BaseRecord } from '@refinedev/core';
+import { BaseKey, BaseRecord, useCreate, useList } from '@refinedev/core';
+import { create } from 'domain';
 
 
 interface Reservation extends BaseRecord {
-  id: BaseKey;
-  email: string;
-  fullName: string;
-  date: string;
-  time: string;
-  reservationMade: string;
-  guests: string;
-  status: string;
-}
-interface reservationInfo {
-    reserveDate: string;
+    id: BaseKey;
+    email: string;
+    full_name: string;
+    date: string;
     time: string;
-    guests: number;
-}
-interface ReservationModalProps {
-    onClick: () => void;
-    // onSubmit: () => void;
-    onSubmit: (data:Reservation) => void;
-}
+    source: string;
+    number_of_guests: string;
+    status: string;
+    comment?: string;
+    review?: boolean;
+  }
+
+  
+  interface reservationInfo {
+      reserveDate: string;
+      time: string;
+      guests: number;
+    }
+    interface ReservationModalProps {
+        onClick: () => void;
+        // onSubmit: () => void;
+        onSubmit: (data:Reservation) => void;
+    }
 
 const ReservationModal = (props: ReservationModalProps) => {
-    const [clients, setClients] = useState([
-        { name: 'John Doe', email: 'john@gmail.com', phone: '1234567890' },
-        { name: 'Jane Doe', email: 'jane@gmail.com', phone: '0987654321' },
-        { name: 'Chris Diaz', email: 'chris@gmail.com', phone: '1122334455' },
-    ]);
+    const {data: clientsData , isLoading, error} = useList({
+      resource: 'api/v1/bo/customers',
+      meta: {
+        headers: {
+          'X-Restaurant-ID': 1,
+        },
+      },
+    });
+
+    console.log('clients',clientsData?.data)
+
+    const {mutate , isLoading: isCreating, error: createError} = useCreate()
+
+
+    useEffect(() => {
+        createError && console.log(createError)
+    }, [createError])
+
+
+    interface Client {
+        full_name: string;
+        email: string;
+        phone: string;
+        comment?: string;
+    }
+
+    const [clients, setClients] = useState<Client[]>([]);
+
+    useEffect(() => {
+        if (clientsData?.data) {
+            setClients(clientsData.data as Client[]);
+        }
+    }, [clientsData]);
 
     const [focusedClient, setFocusedClient] = useState(false);
     const [searchResults, setSearchResults] = useState(clients);
     const [inputName, setInputName] = useState(''); // Holds the current input value
     const [formData, setFormData] = useState({
-        name: '',
+        full_name: '',
         email: '',
         phone: '',
         comment:'',
     }); // Holds the form data
     const { t } = useTranslation();
 
-    const handleAddReservation = (event: React.FormEvent): void => {
+    const handleAddReservation = (event: React.FormEvent, data: Reservation): void => {
         event.preventDefault();
+    
         const reservationData: Reservation = {
             id: Date.now().toString(), // Generate a unique ID
-            fullName: formData.name,
-            email: formData.email,
+            full_name: data.full_name, // Ensure this is coming from the correct source
+            email: data.email,
             date: data.reserveDate || '',
             time: data.time,
-            reservationMade: 'OTHER', // Example value
-            guests: data.guests.toString(),
-            status: 'PENDING' // Example value
+            source: 'OTHER', // Example value
+            number_of_guests: data.guests, // Ensure guests are a string
+            status: 'PENDING', // Example value
+            comment: data.comment, // Ensure this exists in dataTypes
         };
-        props.onSubmit(reservationData);
-        // Add your reservation handling logic here
+    
+        mutate(
+            {
+                resource: 'api/v1/bo/reservations',
+                values: {
+                    full_name: reservationData.full_name,
+                    email: reservationData.email,
+                    date: reservationData.date ? formatDate(parseISO(reservationData.date), 'yyyy-MM-dd') : '',
+                    time: `${reservationData.time}:00`,
+                    table_name: "", // Keep empty if no table is assigned
+                    source: "BACK_OFFICE",
+                    number_of_guests: reservationData.number_of_guests,
+                    status: "PENDING",
+                },
+                meta: {
+                    headers: {
+                        'X-Restaurant-ID': '1', // Ensure it's a string if required by the API
+                    },
+                },
+            },
+            {
+                onSuccess: (response) => {
+                    console.log("Reservation added:", response);
+                    props.onSubmit(reservationData);
+                },
+                onError: (error) => {
+                    console.error("Error adding reservation:", error);
+                },
+            }
+        );
     };
+    
 
     const searchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
         const keyword = e.target.value.toLowerCase();
-        setInputName(e.target.value); // Update the input value state
-        const results = clients.filter((client) =>
-            client.name.toLowerCase().includes(keyword)
-        );
-        setSearchResults(results);
+        if (!keyword) {
+            setSearchResults(clients);
+        }
+        else{
+            setInputName(e.target.value); // Update the input value state
+            const results = clients.filter((client) =>
+                client.full_name.toLowerCase().includes(keyword)
+            );
+            setSearchResults(results);
+        }
     };
 
     const handleAddNewClient = () => {
-        if (inputName.trim() && !clients.some((client) => client.name.toLowerCase() === inputName.toLowerCase())) {
+        if (inputName.trim() && !clients.some((client) => client.full_name.toLowerCase() === inputName.toLowerCase())) {
             const newClient = {
-                name: inputName,
+                full_name: inputName,
                 email: '',
                 phone: '',
                 comment: '', // Add comment field
@@ -85,15 +154,15 @@ const ReservationModal = (props: ReservationModalProps) => {
             setFocusedClient(false);
         }
     };
-    const handleSelectClient = (client: { name: string; email: string; phone: string }) => {
+    const handleSelectClient = (client: { full_name: string; email: string; phone: string }) => {
         setFormData({ ...client, comment: '' }); // Ensure 'comment' field is included
-        setInputName(client.name);
+        setInputName(client.full_name);
         setFocusedClient(false);
     };
 
     const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
-        setFormData((prev) => ({ ...prev, [id]: value })); // Update form field
+        setFormData((prev) => ({ ...prev, [id]: value } as Pick<typeof formData, keyof typeof formData>)); // Update form field
     };
 
     const [showProcess, setShowProcess] = useState(false);
@@ -159,7 +228,7 @@ const ReservationModal = (props: ReservationModalProps) => {
                                         setFindClient(false); // Set findClient to false
                                     }}
                                 >
-                                    <p>{client.name}</p>
+                                    <p>{client.full_name}</p>
                                 </div>
                             ))}
                         </div>
@@ -170,7 +239,20 @@ const ReservationModal = (props: ReservationModalProps) => {
             
             <form
                 className={`sm:sidepopup lt-sm:popup lt-sm:h-[70vh] lt-sm:w-full lt-sm:bottom-0 h-full gap-5 ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}
-                onSubmit={handleAddReservation}
+                onSubmit={(event) => {
+                    const reservationData: Reservation = {
+                        id: Date.now().toString(),
+                        full_name: formData.full_name,
+                        email: formData.email,
+                        date: data.reserveDate || '',
+                        time: data.time,
+                        source: 'OTHER',
+                        number_of_guests: data.guests.toString(),
+                        status: 'PENDING',
+                        comment: formData.comment,
+                    };
+                    handleAddReservation(event, reservationData);
+                }}
             >
                 <ArrowLeft className="cursor-pointer" onClick={() => setFindClient(true)} />
                 <h1 className="text-3xl font-[700]">
@@ -212,7 +294,7 @@ const ReservationModal = (props: ReservationModalProps) => {
                         placeholder={t('grid.placeHolders.intern')}
                         type="text"
                         className={`inputs-unique ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'}`}
-                        id="phone"
+                        id="comment"
                         value={formData.comment} // Autofill phone
                         onChange={handleFormChange} // Handle phone change
                         required

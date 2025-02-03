@@ -1,4 +1,4 @@
-import { BaseRecord, useList } from '@refinedev/core';
+import { BaseKey, BaseRecord, useList } from '@refinedev/core';
 import { da } from 'date-fns/locale';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
@@ -27,6 +27,21 @@ interface ClientData {
   notes: string;
 }
 
+interface Reservation extends BaseRecord {
+  id: BaseKey;
+  email: string;
+  full_name: string;
+  date: string;
+  time: string;
+  source: string;
+  number_of_guests: string;
+  status: string;
+  comment?: string;
+  review?: boolean;
+  floor_name?: string;
+  tables?: string;
+}
+
 const ClientInterface = () => {
   const { id } = useParams();
 
@@ -41,7 +56,7 @@ const ClientInterface = () => {
   });
 
   const {data: reservations, isLoading: isLoadingReservations, error: errorReservations} = useList({
-    resource: 'api/v1/bo/reservations/'+id,
+    resource: `api/v1/bo/reservations/${id}`,
     meta: {
       headers: {
         'X-Restaurant-ID': 1,
@@ -62,7 +77,7 @@ const ClientInterface = () => {
     }
   }, [data, reservations]);
 
-  console.log(client);
+  console.log(reservation, 'asdask');
 
 
 
@@ -132,34 +147,19 @@ const ClientInterface = () => {
       date: '2024-10-26',
       time: '09:00',
       status: 'Pending',
-      table: 'T-1',
-      madeBy: 'Website',
-      roof : 'Terrace'
+      tables: 'T-1',
+      source: 'Website',
+      floor_name : 'Terrace'
     },
     {
-      date: '2024-10-25',
-      time: '10:30',
-      status: 'Confirmed',
-      table: 'T-2',
-      madeBy: 'MarketPlace',
-      roof : 'Outdoor'
-    },
-    {
-      date: '2024-10-25',
-      time: '12:00',
-      status: 'Confirmed',
-      table: 'T-3',
-      madeBy: 'John Doe',
-      roof : 'Indoor'
-    },
-    {
-      date: '2024-10-25',
-      time: '13:00',
-      status: 'Cancelled',
-      table: 'T-1',
-      madeBy: 'MarketPlace',
-      roof : 'Terrace'
+      date: '2024-10-26',
+      time: '09:00',
+      status: 'Pending',
+      tables: 'T-1',
+      source: 'Website',
+      floor_name : 'Terrace'
     }
+    
     
   ];
 
@@ -365,25 +365,25 @@ const ClientInterface = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {reservations?.map((reservation:any) => (
+                          {reservationHistory?.map((res, index) => (
                             <tr 
-                              key={reservation.id} 
-                              className={`${ localStorage.getItem('darkMode')==='true'? (reservation.id % 2 === 0 ? 'bg-bgdarktheme2 border-b border-gray-800 hover:bg-black' : 'bg-bgdarktheme border-b hover:bg-black border-gray-800') :(reservation.id % 2 === 0 ? 'bg-white hover:bg-gray-100' : 'bg-gray-50 hover:bg-gray-100')}  transition-colors duration-150 ease-in-out`}
+                              key={index} 
+                              // className={`${ localStorage.getItem('darkMode')==='true'? (res.id % 2 === 0 ? 'bg-bgdarktheme2 border-b border-gray-800 hover:bg-black' : 'bg-bgdarktheme border-b hover:bg-black border-gray-800') :(reservation.id % 2 === 0 ? 'bg-white hover:bg-gray-100' : 'bg-gray-50 hover:bg-gray-100')}  transition-colors duration-150 ease-in-out`}
                             >
-                              <td className="p-3 ">{reservation.date}</td>
-                              <td className="p-3 ">{reservation.time}</td>
+                              <td className="p-3 ">{res.date}</td>
+                              <td className="p-3 ">{res.time}</td>
                               <td className="p-3  flex h-full itmes-center justify-center">
-                                {reservationOrigin(reservation.source)}
+                                {reservationOrigin(res.source)}
                               </td>
-                              <td className="p-3 ">{reservation.roof}</td>
-                              <td className="p-3 ">{reservation.tables}</td>
+                              <td className="p-3 ">{res.floor_name}</td>
+                              <td className="p-3 ">{res.tables}</td>
                               <td className="p-3 ">
                                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                  reservation.status === 'Confirmed' ? 'bg-softgreentheme text-greentheme' :
-                                  reservation.status === 'Cancelled' ? 'bg-softredtheme text-redtheme' :
+                                  res.status === 'Confirmed' ? 'bg-softgreentheme text-greentheme' :
+                                  res.status === 'Cancelled' ? 'bg-softredtheme text-redtheme' :
                                   'bg-softyellowtheme text-yellowtheme'
                                 }`}>
-                                  {reservation.status === 'Confirmed' ? t('clients.reservationHistorySection.statusLabels.confirmed') : reservation.status === 'Cancelled' ? t('clients.reservationHistorySection.statusLabels.cancelled') : t('clients.reservationHistorySection.statusLabels.pending')}
+                                  {res.status === 'Confirmed' ? t('clients.reservationHistorySection.statusLabels.confirmed') : res.status === 'Cancelled' ? t('clients.reservationHistorySection.statusLabels.cancelled') : t('clients.reservationHistorySection.statusLabels.pending')}
                                 </span>
                               </td>
                             </tr>

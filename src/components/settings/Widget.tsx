@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
-import { Upload, Check, X } from 'lucide-react'
+import { Upload, Check, X, Download } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 
 export default function WidgetConfig() {
   const [logo, setLogo] = useState<string | null>(null)
@@ -8,14 +9,15 @@ export default function WidgetConfig() {
   const [description, setDescription] = useState('')
   const [searchTabs, setSearchTabs] = useState({
     menu: true,
-    reviews: true,
-    features: true,
-    location: true
+    // reviews: true,
+    // features: true,
+    // location: true
   })
   const [payment, setPayment] = useState('enable')
   const [guestThreshold, setGuestThreshold] = useState(4)
   const [token, setToken] = useState('your-unique-token-here')
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const filePdfInputRef = useRef<HTMLInputElement>(null)
 
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -25,6 +27,25 @@ export default function WidgetConfig() {
       reader.readAsDataURL(file)
     }
   }
+  const handleMenuUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (e) => setMenuPdf(e.target?.result as string)
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const downloadPdf = () => {
+    if(menuPdf){
+      const linkSource = menuPdf;
+      const downloadLink = document.createElement("a");
+      const fileName = "menu.pdf";
+      downloadLink.href = linkSource;
+      downloadLink.download = fileName;
+      downloadLink.click();
+    }
+  };
 
   const handleSearchTabChange = (tab: keyof typeof searchTabs) => {
     setSearchTabs(prev => ({ ...prev, [tab]: !prev[tab] }))
@@ -41,6 +62,10 @@ export default function WidgetConfig() {
     })
     alert('Configuration saved!')
   }
+
+  const [menuPdf, setMenuPdf] = useState<string | null>(null)
+
+  
 
   const handleCopyToken = () => {
     navigator.clipboard.writeText(token)
@@ -117,6 +142,28 @@ export default function WidgetConfig() {
             </label>
           ))}
         </div>
+        {searchTabs.menu && <div className="flex justify-around  items-center">
+          <button 
+            onClick={() => filePdfInputRef.current?.click()} 
+            className="btn-secondary gap-2 flex mt-3"
+          >
+            <Upload className="mr-2" size={20} />
+            {t('settingsPage.widget.uploadMenu')}
+          </button>
+          <input
+            type="file"
+            ref={filePdfInputRef}
+            onChange={handleMenuUpload}
+            accept="application/pdf"
+            className="hidden"
+          />
+          {menuPdf?
+            <div className='btn-secondary flex gap-4 items-center mt-3 justify-center cursor-pointer'>
+              <p className='' onClick={downloadPdf}>Download Our Menu </p>
+              <Download size={20} />
+            </div>
+          :'No menu uploaded'}
+        </div>}
       </div>
       
       <div className="mb-6">
@@ -183,12 +230,13 @@ export default function WidgetConfig() {
         >
           {t('settingsPage.widget.buttons.save')}
         </button>
-        <button 
-          onClick={handleCopyToken}
-          className="flex-1 py-2 btn-secondary rounded-lg hover:opacity-90 transition-opacity"
+        <Link 
+          to="/widget/r/1"
+          target="_blank"
+          className="btn-secondary w-1/2  text-center"
         >
-          {t('settingsPage.widget.buttons.copyToken')}
-        </button>
+          {t('settingsPage.widget.buttons.preview')}
+        </Link>
       </div>
     </div>
   )

@@ -7,33 +7,29 @@ interface User {
   role: string
   phoneNumber: string
   email: string
-  status: "At Work" | "Rest"
 }
 
 const initialUsers: User[] = [
   {
     id: 1,
     name: 'John Doe',
-    role: 'Designer',
+    role: 'Staff',
     phoneNumber: '1234567890',
     email: 'JohnDoe@gmail.com',
-    status: 'At Work',
   },
   {
     id: 2,
     name: 'Jane Doe',
-    role: 'Developer',
+    role: 'Manager',
     phoneNumber: '1234567890',
     email: 'jane@gmail.com',
-    status: 'At Work',
   },
   {
     id: 3,
     name: 'Chris Diaz',
-    role: 'Designer',
+    role: 'Staff',
     phoneNumber: '1234567890',
     email: 'Chris@gmail.com',
-    status: 'Rest',
   }
 ]
 
@@ -77,7 +73,6 @@ export default function Users() {
       role: '',
       phoneNumber: '',
       email: '',
-      status: 'At Work',
     }
     openModal(newUser)
   }, [openModal])
@@ -93,12 +88,11 @@ export default function Users() {
             <h1 className="text-2xl font-bold mb-3">{selectedUser?.id ? 'Modify' : 'Add'} User</h1>
             <form onSubmit={handleSubmit} className="flex flex-col gap-3">
               <input type="text" id="name" placeholder="Name" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.name || ''} onChange={handleInputChange} required />
-              <input type="tel" id="phoneNumber" placeholder="Phone Number" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.phoneNumber || ''} onChange={handleInputChange} required />
+              <input type="tel" id="phoneNumber" placeholder="Phone Number" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.phoneNumber || ''} onChange={handleInputChange} />
               <input type="email" id="email" placeholder="Email" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.email || ''} onChange={handleInputChange} required />
-              <input type="text" id="role" placeholder="Role" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.role || ''} onChange={handleInputChange} required />
-              <select id="status" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.status || 'At Work'} onChange={handleInputChange}>
-                <option value="At Work">At Work</option>
-                <option value="Rest">Rest</option>
+              <select id="role" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.role} onChange={handleInputChange}>
+                <option value="Manager">Manager</option>
+                <option value="Staff">Staff</option>
               </select>
               <div className="flex justify-center gap-4">
                 <button type="button" className={localStorage.getItem('darkMode')==='true'?'btn text-white hover:text-redtheme border-white hover:border-redtheme':'btn'} onClick={closeModal}>Cancel</button>
@@ -118,7 +112,6 @@ export default function Users() {
               <th scope="col" className="px-6 py-4 font-medium ">{t('settingsPage.users.tableHeaders.phone')}</th>
               <th scope="col" className="px-6 py-4 font-medium ">{t('settingsPage.users.tableHeaders.email')}</th>
               <th scope="col" className="px-6 py-4 font-medium ">{t('settingsPage.users.tableHeaders.role')}</th>
-              <th scope="col" className="px-6 py-4 font-medium ">{t('settingsPage.users.tableHeaders.status')}</th>
             </tr>
           </thead>
           <tbody className={`divide-y  border-t ${localStorage.getItem('darkMode')==='true'?'border-darkthemeitems divide-darkthemeitems':'border-gray-200'}`}>
@@ -129,17 +122,6 @@ export default function Users() {
                 <td className="px-6 py-4">{user.phoneNumber}</td>
                 <td className="px-6 py-4">{user.email}</td>
                 <td className="px-6 py-4">{user.role}</td>
-                <td className="px-6 py-4">
-                  <span
-                    className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                      user.status === "At Work"
-                        ? "bg-softgreentheme text-greentheme"
-                        : "bg-softredtheme text-redtheme"
-                    }`}
-                  >
-                    {user.status === "At Work" ? t('settingsPage.users.statusLabels.working') : t('settingsPage.users.statusLabels.rest')}
-                  </span>
-                </td>
               </tr>
             ))}
           </tbody>

@@ -13,6 +13,9 @@ import { Fullscreen } from "lucide-react"
 import confirm from '../assets/confirm-icon.png'
 import cancel from '../assets/Cancel-icon.png'
 import pending from '../assets/pending-icon.png'
+import confirmDark from '../assets/confirm-icon-dark.png'
+import cancelDark from '../assets/Cancel-icon-dark.png'
+import pendingDark from '../assets/pending-icon-dark.png'
 
 import { Helmet } from "react-helmet-async";
 
@@ -85,7 +88,7 @@ const RootLayout = () => {
 
 
   return (
-    <div className={`flex  w-full ${(shownlang === 'ar') ? "rtl ":''} ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme text-textdarktheme':''}`}>
+    <div className={`flex overflow-hidden ${(shownlang === 'ar') ? "rtl ":''} ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme text-textdarktheme':''}`}>
       {/* <Helmet>
         <title>Your Custom Title</title> 
       </Helmet> */}
@@ -119,15 +122,28 @@ const RootLayout = () => {
           </button>
           <div className="flex gap-4 lt-sm:hidden">
             <div className="flex items-center gap-2 btn border-softbluetheme cursor-default hover:border-bluetheme  text-bluetheme">
-              <img src={pending} alt="confirm" className="w-6 h-6" />
+              {localStorage.getItem('darkMode')==='true'?
+                <img src={pendingDark} alt="pending" className="w-6 h-6" />
+                :
+                <img src={pending} alt="pending" className="w-6 h-6" />
+              }
               <span className="text-[1.6rem] font-[600]">{10}</span>
             </div>
             <div className="flex items-center gap-2 btn border-softgreentheme cursor-default hover:border-greentheme  text-greentheme">
-              <img src={confirm} alt="confirm" className="w-6 h-6" />
+              {localStorage.getItem('darkMode')==='true'?
+                <img src={confirmDark} alt="confirm" className="w-6 h-6" />
+                :
+                <img src={confirm} alt="confirm" className="w-6 h-6" />
+              }
+              
               <span className="text-[1.6rem] font-[600]">{20}</span>
             </div>
           <div className="flex items-center  gap-2 btn border-softredtheme cursor-default hover:border-redtheme  text-redtheme">
-              <img src={cancel} alt="cancel" className="w-6 h-6" />
+              {localStorage.getItem('darkMode')==='true'?
+                <img src={cancelDark} alt="cancel" className="w-6 h-6" />
+                :
+                <img src={cancel} alt="cancel" className="w-6 h-6" />
+              }
               <span className="text-[1.6rem] font-[600]">{2}</span>
             </div>
           </div>

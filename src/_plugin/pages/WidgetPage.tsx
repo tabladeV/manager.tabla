@@ -54,7 +54,7 @@ const WidgetPage = () => {
 
 
     const [data, setData] = useState<dataTypes>({
-        reserveDate: new Date().toISOString(),
+        reserveDate: '',
         time: '',
         guests: 0
     });

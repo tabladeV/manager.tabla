@@ -104,6 +104,7 @@
         "email": "Email",
         "phone": "Phone",
         "date": "Date",
+        "comment": "Comment",
         "time": "Time",
         "guests": "Guests",
         "madeBy": "Made From/By",
@@ -128,6 +129,8 @@
           "email": "Email",
           "phone": "Phone",
           "date": "Date",
+          "comment": "Comment",
+          "tableName": "Table Name",
           "time": "Time",
           "guests": "Guests",
           "madeBy": "Made From/By",
@@ -277,6 +280,7 @@
             "total": "Total",
             "comment": "Comment",
             "food":"Food",
+            "valueForMoney":"Value For Money",
             "service":"Service",
             "environment":"Environment"
         },
@@ -285,6 +289,7 @@
             "date": "Date"
         },
         "view":{
+            "valueForMoney":"Value For Money",
             "title": "View Review",
             "name"  : "Name",
             "email" : "Email",
@@ -342,6 +347,8 @@
         "widget": {
             "title": "Widget",
             "uploadLogo": "Upload Logo",
+            "uploadMenu": "Upload Menu",
+            "viewMenu": "View Menu",
             "addTitlePlaceholder": "Add title here",
             "addDescriptionPlaceholder": "Add description here",
             "searchTabs": {
@@ -360,7 +367,7 @@
                 "enable": "Enable"
             },
             "buttons": {
-                "copyToken": "Copy your token",
+                "preview": "Preview",
                 "save": "Save"
             }
         },

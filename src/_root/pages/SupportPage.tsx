@@ -1,7 +1,10 @@
 import { Contact, ContactIcon, FileQuestion } from "lucide-react"
+import { useState } from "react"
 import { Link } from "react-router-dom"
 
 const SupportPage = () => {
+
+  const [showMail, setShowMail] = useState(false)
   return (
     <div className="text-center">
       <h1 >Support Page</h1>
@@ -11,11 +14,22 @@ const SupportPage = () => {
           <FileQuestion size={30} />
           FAQ
         </Link>
-        <Link to="/support/contact" className="flex p-6 flex-col text-xl btn-secondary w-[20vw] items-center justify-center gap-2">
+        <div onClick={()=>{setShowMail(true)}} className="flex cursor-pointer p-6 flex-col text-xl btn-secondary w-[20vw] items-center justify-center gap-2">
           <ContactIcon size={30} />
           Contact Tabla
-        </Link>
+        </div>
+
       </div>
+
+      {showMail && 
+      <div className="flex flex-col gap-4 items-center mt-10 text-lg">
+        <p className="text-center font-[600]" >
+          contact us at:
+        </p>
+        <a href="mailto:contact@tabla.ma" className="btn-primary ">
+          contact@tabla.ma
+        </a>
+      </div>}
     </div>
   )
 }

@@ -6,11 +6,25 @@ import { Link } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import i18next from "i18next"
 import ReservationModal from "../../components/reservation/ReservationModal"
+import { BaseKey, BaseRecord } from "@refinedev/core"
 
 const halfHours = ['00', '30']
 
+interface Reservation extends BaseRecord {
+  id: BaseKey;
+  email: string;
+  full_name: string;
+  date: string;
+  time: string;
+  source: string;
+  number_of_guests: string;
+  status: string;
+  comment?: string;
+  review?: boolean;
+}
+
 // Sample reservations object
-const reservations: { [key: string]: { name: string; people: number }[] } = {
+const sampleReservations: Record<string, { name: string; people: number }[]> = {
   "16:00": [{ name: "James George", people: 4 }, { name: "John Doe", people: 2 }],
   "18:30": [{ name: "Alice Smith", people: 2 }],
   "20:00": [{ name: "Bob Johnson", people: 3 }],
@@ -25,6 +39,8 @@ const GridPage = () => {
   const [isDragging, setIsDragging] = useState(false)
   const [startX, setStartX] = useState(0)
   const [scrollLeft, setScrollLeft] = useState(0)
+    const [reservations, setReservations] = useState<Record<string, Reservation[]>>({});
+  
 
   useEffect(() => {
     const now = startOfHour(new Date())
@@ -82,43 +98,50 @@ const GridPage = () => {
     setAddingReservation(time)
   }
 
-  function handleAddReservation(e: React.FormEvent) {
-    e.preventDefault()
-    const form = e.currentTarget as HTMLFormElement
-    const firstName = (form.elements.namedItem('firstname') as HTMLInputElement).value
-    const lastName = (form.elements.namedItem('lastname') as HTMLInputElement).value
-    const email = (form.elements.namedItem('email') as HTMLInputElement).value
-    const phoneNumber = (form.elements.namedItem('phonenumber') as HTMLInputElement).value
-    const place = (form.elements.namedItem('places') as HTMLSelectElement).value
-    const table = (form.elements.namedItem('table') as HTMLSelectElement).value
+  
 
-    console.log('Add reservation', {
-      time: addingReservation,
-      firstName,
-      lastName,
-      email,
-      phoneNumber,
-      place,
-      table,
-    })
+  // function handleAddReservation(e: React.FormEvent) {
+  //   e.preventDefault()
+  //   const form = e.currentTarget as HTMLFormElement
+  //   const firstName = (form.elements.namedItem('firstname') as HTMLInputElement).value
+  //   const lastName = (form.elements.namedItem('lastname') as HTMLInputElement).value
+  //   const email = (form.elements.namedItem('email') as HTMLInputElement).value
+  //   const phoneNumber = (form.elements.namedItem('phonenumber') as HTMLInputElement).value
+  //   const place = (form.elements.namedItem('places') as HTMLSelectElement).value
+  //   const table = (form.elements.namedItem('table') as HTMLSelectElement).value
 
-    reservations[addingReservation] = [
-      ...(reservations[addingReservation] || []),
-      {
-        name: `${firstName} ${lastName}`,
-        people: 4,
-      },
-    ]
+  //   console.log('Add reservation', {
+  //     time: addingReservation,
+  //     firstName,
+  //     lastName,
+  //     email,
+  //     phoneNumber,
+  //     place,
+  //     table,
+  //   })
 
-    setFocusedAddReservation(false)
-  }
+  //   reservations[addingReservation] = [
+  //     ...(reservations[addingReservation] || []),
+  //     {
+  //       name: `${firstName} ${lastName}`,
+  //       people: 4,
+  //     },
+  //   ]
+
+  //   setFocusedAddReservation(false)
+  // }
 
 
   return (
     <div className="flex  flex-col">
       {
         focusedAddReservation &&
-        <ReservationModal onClick={()=>{setFocusedAddReservation(false)}} onSubmit={()=>{handleAddReservation}}/>
+        <ReservationModal onClick={()=>{setFocusedAddReservation(false)}} onSubmit={(data: Reservation) => {
+          setReservations(prevReservations => ({
+            ...prevReservations,
+            [data.time]: [...(prevReservations[data.time] || []), data]
+          }))
+        }}/>
       }
       <div className="flex mb-4 justify-between items-center">
         <h1 className="">{t('grid.title')}</h1>
@@ -145,11 +168,11 @@ const GridPage = () => {
         {/* Reservation grid */}
         {halfHours.map((minutes) => (
           <div key={minutes} className="flex  items-center ">
-            <div className={`w-20 mt-5 py-4  text-right pr-2 font-medium  z-10 min-h-[14em] ${localStorage.getItem('darkMode')==='true'?'border-darkthemeitems':'border-softgreytheme'}`}>:{minutes}</div>
+            <div className={`w-20 text-center  shrink-0   h-full z-20  ${localStorage.getItem('darkMode')==='true'?'border-darkthemeitems':'border-softgreytheme'}`}>--:{minutes}</div>
             {visibleHours.map((hour) => {
               const slotTime = setMinutes(hour, parseInt(minutes))
               const timeKey = format(slotTime, 'HH:mm')
-              const reservation = reservations[timeKey]
+              const reservation = sampleReservations[timeKey]
 
               return (
                 <div key={`${hour.toISOString()}-${minutes}`} className={`w-40 border-b shrink-0 flex flex-col  items-center p-1 justify-center gap-2 border-l relative  ${localStorage.getItem('darkMode')==='true'?'border-darkthemeitems':'border-softgreytheme'}`}>

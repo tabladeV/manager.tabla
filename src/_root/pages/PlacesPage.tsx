@@ -13,6 +13,8 @@ import { getHours } from 'date-fns';
 
 import { useDateContext } from '../../context/DateContext'; 
 import { BaseKey, BaseRecord, useList } from '@refinedev/core';
+import {format} from 'date-fns';
+import axios from 'axios';
 
 interface Reservation {
   id: BaseKey;
@@ -26,18 +28,27 @@ interface Reservation {
   tables: TableType[];
 }
 
+interface currentResType{
+  full_name: string;
+  time: string;
+  date: string;
+  email: string;
+  phone: string;
+  number_of_guests: number;
+}
+
 interface TableType {
   id: BaseKey;
   name: string;
   type: 'CIRCLE' | 'RECTANGLE';
   x: number;
-  floor_name: string;
+  floor: number;
   y: number;
   height: number;
   width: number;
   max: number;
   min: number;
-  reservations: Reservation[];
+  current_reservations: currentResType[];
 }
 
 
@@ -55,8 +66,33 @@ const PlacePage: React.FC = () => {
     },
   });
 
+  
+  const { chosenDay } = useDateContext(); 
+
+  const [time,settime]= useState('21:00:00');
+  const [chosenHour, setChosenHour]= useState('')
+
+
+  const upDateTime = (hour:string) =>{
+    setChosenHour(`${hour}:00`);
+    localStorage.setItem('timeNow',chosenHour)
+  }
+
+
   const { data: tablesData, isLoading: isLoadingTables, error: errorTables } = useList({
-    resource: "api/v1/bo/tables",
+    resource: "api/v1/bo/tables/tables_reservations",
+    filters: [
+      {
+        field: "reservations__date",
+        operator: "between",
+        value: format(chosenDay, 'yyyy-MM-dd'),
+      }
+      // {
+      //   field: "reservations__time",
+      //   operator: "between",
+      //   value: time,
+      // },
+    ],
     meta: {
       headers: {
         "X-Restaurant-ID": 1,
@@ -72,16 +108,28 @@ const PlacePage: React.FC = () => {
       },
     },
   });
+
   
 
+ 
 
+  // const TimeUpdate = (time:string) =>{
+  //   settime(`${time}:00`);
+  // }
+
+  console.log(time);
+
+  
+  
   const [roofData, setRoofData] = useState<BaseRecord[]>([]);
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [tables, setTables] = useState<TableType[]>([]);
   const [focusedRoof, setFocusedRoof] = useState<BaseKey | undefined>(undefined);
-  const [floorId, setFloorId] = useState<string>('');
+  const [floorId, setFloorId] = useState<BaseKey | undefined>(0);
   const { t } = useTranslation();
-  const { chosenDay } = useDateContext(); 
+
+  console.log(tablesData?.data);
+
 
   useEffect(() => {
     if (reservationsData?.data) {
@@ -99,11 +147,10 @@ const PlacePage: React.FC = () => {
   useEffect(() => {
     if (focusedRoof) {
       const foundFloor = roofData.find((floor) => floor.id === focusedRoof);
-      setFloorId(foundFloor?.name || '');
+      setFloorId(foundFloor?.id);
     }
   }, [focusedRoof, roofData]);
 
-  console.log( tables);
 
   // const reservations = [
   //   { id: 1, name: 'Caprim Zack', time: '12:00 PM', date: '26 jan 2025', guests: 4, occasion: 'Birthday', tableNumber: 1 },
@@ -121,7 +168,7 @@ const PlacePage: React.FC = () => {
   const [filteringHour, setFilteringHour] = useState(`${getCurrentHour()}:00`);
   const [searchResults, setSearchResults] = useState(reservations);
 
-  const [showOnly, setShowOnly] = useState('CONFIRMED');
+  const [showOnly, setShowOnly] = useState('APPROVED');
 
   useEffect(() => {
     setSearchResults(reservations);
@@ -129,7 +176,9 @@ const PlacePage: React.FC = () => {
 
   const searchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
     const keyword = e.target.value.toLowerCase();
-    setSearchResults(reservations.filter((item) => item.full_name.toLowerCase().includes(keyword)));
+
+    if(keyword === '') setSearchResults(reservations);
+    else setSearchResults(reservations.filter((item) => item.full_name.toLowerCase().includes(keyword)));
   };
   
 
@@ -152,7 +201,7 @@ const PlacePage: React.FC = () => {
           <div className={`lt-sm:hidden rounded-[10px] p-[1em] ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'} `}>
             <SearchBar SearchHandler={searchFilter} />
             <div className='grid grid-flow-col gap-3 font-[500] my-3 justify-between'>
-              <button className={showOnly==='CONFIRMED'? 'btn-primary':'btn-secondary'} onClick={()=>{setShowOnly("CONFIRMED")}}>{t('placeManagement.filters.confirmed')}</button>
+              <button className={showOnly==='APPROVED'? 'btn-primary':'btn-secondary'} onClick={()=>{setShowOnly("APPROVED")}}>{t('placeManagement.filters.confirmed')}</button>
               <button className={showOnly==='CANCELED'? 'btn-primary':'btn-secondary'} onClick={()=>{setShowOnly("CANCELED")}}>{t('placeManagement.filters.canceled')}</button>
               <button className={showOnly==='PENDING'? 'btn-primary':'btn-secondary'} onClick={()=>{setShowOnly("PENDING")}}>{t('placeManagement.filters.pending')}</button>
             </div>
@@ -167,7 +216,7 @@ const PlacePage: React.FC = () => {
 
           <div className='w-full sm:overflow-auto'>
             <div className='flex lt-sm:flex-wrap lt-sm:gap-2 justify-between'>
-              <div className='flex gap-2 w-full overflow-x-auto'>
+              <div className='flex gap-2 w-full overflow-x-scroll no-scrollbar'>
                 {roofData.map((roof) => (
                   <button
                     className={` ${focusedRoof === roof.id ? 'btn-primary ' : 'btn-secondary'}`}
@@ -181,7 +230,7 @@ const PlacePage: React.FC = () => {
               <div>
                 <select className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'} `} onChange={(e) => setFilteringHour(e.target.value)}>
                   {hours.map((hour) => (
-                    <option key={hour.id} value={hour.time}>
+                    <option key={hour.id} value={hour.time} onClick={()=>upDateTime(hour.time)}>
                       {hour.time}
                     </option>
                   ))}
@@ -190,7 +239,7 @@ const PlacePage: React.FC = () => {
             </div>
 
             <div className='relative lt-sm:h-[55vh] lt-sm:overflow-x-auto'>
-              {tables.filter(table => table.floor_name === floorId).map((table) => (
+              {tables.filter(table => table.floor === floorId).map((table) => (
                 <DropTarget 
                   key={table.id} 
                   id= {table.name}
@@ -201,7 +250,7 @@ const PlacePage: React.FC = () => {
                   width= {table.width}
                   max= {table.max}
                   min= {table.min}
-                  reservedBy= {table.reservations[0]}
+                  reservedBy= {table.current_reservations[0]}
                   hourChosen= {filteringHour}
                   />
                   

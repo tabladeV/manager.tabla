@@ -5,6 +5,7 @@ import { TrendingUp } from "lucide-react"
 import { Label, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts"
 import { useTranslation } from "react-i18next"
 import Filter from "./Filter"
+import { BaseRecord, useList } from "@refinedev/core"
 
 interface Range {
   start: string,
@@ -22,16 +23,67 @@ const generateChartData = () => {
 };
 
 export default function TopActions() {
-  const [timeRange, setTimeRange] = useState<Range>({ start: '2023-01-01', end: '2023-12-31' })
-  const [chartData, setChartData] = useState(generateChartData())
+
+  const {data, isLoading, error} = useList({
+    resource: 'api/v1/bo/reservations',
+    meta: {
+        headers: {
+            'X-Restaurant-ID': 1
+        }
+    }
+  })
+  console.log('reservations',data?.data)
+
+
+
+
+  const [reservations, setReservations] = useState<BaseRecord[]>([])
 
   useEffect(() => {
-    setChartData(generateChartData())
-  }, [timeRange])
+  if (data?.data) {
+    setReservations(data.data )
+  }
+  }, [data])
 
-  const totalActions = useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.count, 0)
-  }, [chartData])
+  const [canceled, setCanceled]= useState<BaseRecord>()
+  const [confirmed, setConfirmed]= useState<BaseRecord>()
+  const [pending, setPending]= useState<BaseRecord>()
+  
+  useEffect(()=>{
+
+    setPending(reservations.filter((reservation)=>reservation.status.includes("PENDING")))
+    setConfirmed(reservations.filter((reservation)=>reservation.status.includes("APPROVED")))
+    setCanceled(reservations.filter((reservation)=>reservation.status.includes("CANCELED")))
+
+  },[reservations])
+
+
+  interface chartType {
+    action:string
+    count:number
+    fill:string
+  }
+
+  const [timeRange, setTimeRange] = useState<Range>({ start: '2023-01-01', end: '2023-12-31' })
+  const [chartData, setChartData] = useState<chartType[]>()
+
+  useEffect(()=>{
+    if(pending && canceled && confirmed){
+      setChartData([
+        { action: "Confirmed", count: confirmed.length, fill: "#88AB61" },
+        { action: "Canceled", count: canceled.length, fill: "#FF4B4B" },
+        { action: "Pending", count: pending.length, fill: "#3F72AF" },
+      ])
+    }
+  },[canceled, confirmed , pending])
+
+
+  const [totalActions, setTotalActions] = useState(0)
+  useEffect(()=>{
+    if(reservations){
+      setTotalActions(reservations.length)
+    }
+  }, [reservations])
 
   const { t } = useTranslation()
 
@@ -84,7 +136,7 @@ export default function TopActions() {
                             y={viewBox.cy}
                             className={` text-2xl font-bold ${localStorage.getItem('darkMode') === 'true' ? 'fill-white' : 'fill-blacktheme'}`}
                           >
-                            {totalActions.toLocaleString()}
+                            {totalActions}
                           </tspan>
                           <tspan
                             x={viewBox.cx}

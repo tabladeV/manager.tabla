@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import profilepic from '../../assets/ProfilePic.png';
+import profilepic from '../../assets/profile.png';
 import i18n from 'i18next';
 import { useState, useEffect, useRef } from 'react';
 import english from '../../assets/english.png';

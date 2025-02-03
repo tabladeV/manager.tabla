@@ -251,10 +251,10 @@ const General = () => {
           />
           <div className="text-sm absolute mt-[3.2em] right-10">{t('settingsPage.general.basicInformationForm.labels.currency')}</div>
         </div>
-        <div>
+        {/* <div>
           <label>{t('settingsPage.general.basicInformationForm.labels.location')}</label>
           <Map />
-        </div>
+        </div> */}
         <div className="flex w-full justify-center gap-4">
           <button type="reset" className={`btn ${localStorage.getItem('darkMode')==='true'?'border-white text-white hover:border-redtheme hover:text-redtheme' :''}`}>{t('settingsPage.general.basicInformationForm.buttons.cancel')}</button>
           <button type="submit" className="btn-primary">{t('settingsPage.general.basicInformationForm.buttons.save')}</button>

@@ -4,6 +4,7 @@ import OurCalendar from '../Calendar/OurCalendar';
 
 
 type SelectedData = {
+  
   reserveDate: string ;
   time: string ;
   guests: number ;

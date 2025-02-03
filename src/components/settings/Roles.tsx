@@ -1,14 +1,15 @@
-import { ArrowLeft, ArrowRight } from "lucide-react";
-import { useState } from "react";
+import { ArrowLeft, ArrowRight, Trash } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import SearchBar from "../header/SearchBar";
+import { set } from "date-fns";
 
 const Roles = () => {
     const [isRoles, setIsRoles] = useState(true);
     const { t } = useTranslation();
 
     // State for available and affected permissions
-    const [availablePermissions, setAvailablePermissions] = useState([
+    const [availablePermissions, setAvailablePermissions] = useState<Permission[]>([
         { name: 'Manage Tables', value: false },
         { name: 'Manage reservations', value: false },
         { name: 'Manage Grid', value: false },
@@ -38,6 +39,54 @@ const Roles = () => {
         { name: 'Manager', permissions: [{ name: 'Manage reservations', value: false }] },
     ]);
     
+    
+    // Function to save the role
+    const saveRole = () => {
+        if (roleName && affectedPermissions.length > 0) {
+            setSavedRoles([...savedRoles, { name: roleName, permissions: affectedPermissions }]);
+            setRoleName('');
+            setAffectedPermissions([]);
+            setAvailablePermissions([
+                { name: 'Manage Tables', value: false },
+                { name: 'Manage reservations', value: false },
+                { name: 'Manage Grid', value: false },
+                { name: 'Manage Timeline', value: false },
+            ]);
+        } else {
+            alert('Please provide a role name and assign at least one permission.');
+        }
+    };
+    
+    
+    
+    const [searchAvailable, setSearchAvailable] = useState<Permission[]>(availablePermissions);
+    const [searchAffected, setSearchAffected] = useState<Permission[]>(affectedPermissions);
+    
+    useEffect(() => {
+        setSearchAvailable(availablePermissions);
+        setSearchAffected(affectedPermissions);
+    }, [availablePermissions, affectedPermissions]);
+
+    const handleSearchAvailable = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const keyword = e.target.value.toLowerCase();
+        if (keyword === '') {
+            setSearchAvailable(availablePermissions);
+        }
+        setSearchAvailable(availablePermissions.filter(permission =>
+            permission.name.toLowerCase().includes(keyword)
+        ));
+        
+    };
+    
+    const handleSearchAffected = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const keyword = e.target.value.toLowerCase();
+        if (keyword === '') {
+            setSearchAffected(affectedPermissions);
+        }
+        setAffectedPermissions(affectedPermissions.filter(permission =>
+            permission.name.toLowerCase().includes(keyword)
+        ));
+    }
     // Function to handle moving to the right
     const moveRight = () => {
         if (selectedAvailable) {
@@ -56,29 +105,10 @@ const Roles = () => {
         }
     };
 
-    // Function to save the role
-    const saveRole = () => {
-        if (roleName && affectedPermissions.length > 0) {
-            setSavedRoles([...savedRoles, { name: roleName, permissions: affectedPermissions }]);
-            setRoleName('');
-            setAffectedPermissions([]);
-            setAvailablePermissions([
-                { name: 'Manage Tables', value: false },
-                { name: 'Manage reservations', value: false },
-                { name: 'Manage Grid', value: false },
-                { name: 'Manage Timeline', value: false },
-            ]);
-        } else {
-            alert('Please provide a role name and assign at least one permission.');
-        }
-    };
+    const deleteRole = (role: Role) => {
+        alert('Are you sure you want to delete this role?');
+        setSavedRoles(savedRoles.filter(item => item !== role));
 
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const keyword = e.target.value.toLowerCase();
-        const filteredPermissions = availablePermissions.filter(permission => 
-            permission.name.toLowerCase().includes(keyword)
-        );
-        setAvailablePermissions(filteredPermissions);
     };
     
     return (
@@ -100,9 +130,9 @@ const Roles = () => {
                     {/* Available Permissions */}
                     <div className="flex w-full flex-col">
                         <label className="text-[17px]">{t('settingsPage.roles.labels.permissionsavailable')}</label>
-                        <SearchBar SearchHandler={handleSearch}/>
+                        {/* <SearchBar SearchHandler={handleSearchAvailable}/> */}
                         <div className={`rounded-md p-3 flex flex-col gap-2 h-[10em] overflow-y-auto ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2' : 'bg-softgreytheme'}`}>
-                            {availablePermissions.map((permission, index) => (
+                            {searchAvailable.map((permission, index) => (
                                 <div
                                     key={index}
                                     className={`flex justify-between items-center cursor-pointer hover:opacity-80 ${selectedAvailable === permission ? 'bg-softgreentheme' : ''}`}
@@ -133,9 +163,9 @@ const Roles = () => {
                     {/* Affected Permissions */}
                     <div className="flex w-full flex-col">
                         <label className="text-[17px]">{t('settingsPage.roles.labels.permissionsaffected')}</label>
-                        <SearchBar SearchHandler={handleSearch}/>
+                        {/* <SearchBar SearchHandler={handleSearchAffected}/> */}
                         <div className={`rounded-md p-3 flex flex-col gap-2 h-[10em] overflow-y-auto ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2' : 'bg-softgreytheme'}`}>
-                            {affectedPermissions.map((permission, index) => (
+                            {searchAffected.map((permission, index) => (
                                 <div
                                     key={index}
                                     className={`flex justify-between items-center cursor-pointer hover:opacity-80 ${selectedAffected === permission ? 'bg-softgreentheme' : ''}`}
@@ -164,8 +194,11 @@ const Roles = () => {
                             <p>{t('settingsPage.roles.labels.noRolesSaved')}</p>
                         ) : (
                             savedRoles.map((role, index) => (
-                                <div key={index} className="mb-3">
-                                    <h4 className="font-bold">{role.name}</h4>
+                                <div key={index} className="mb-3 border-b-2 pb-2" >
+                                    <div className="flex justify-between items-center">
+                                        <h4 className="font-bold">{role.name}</h4>
+                                        <Trash size={30} className="cursor-pointer text-redtheme bg-softredtheme p-2 rounded-md " onClick={()=>{deleteRole(role)}} />
+                                    </div>
                                     <ul className="list-disc ml-5">
                                         {role.permissions.map((perm, idx) => (
                                             <li key={idx}>{perm.name}</li>

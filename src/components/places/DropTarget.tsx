@@ -14,7 +14,7 @@ interface DropTargetProps {
   width: number;
   max: number;
   min: number;
-  reservedBy: Reservation;
+  reservedBy: currentResType | null; // Changed to Reservation type
   hourChosen: string;
 }
 
@@ -23,13 +23,22 @@ interface TableType {
   name: string;
   type: 'CIRCLE' | 'RECTANGLE';
   x: number;
-  floor_name: string;
+  floor: number;
   y: number;
   height: number;
   width: number;
   max: number;
   min: number;
-  reservations: Reservation[];
+  current_reservations: Reservation[];
+}
+
+interface currentResType{
+  full_name: string;
+  time: string;
+  date: string;
+  email: string;
+  phone: string;
+  number_of_guests: number;
 }
 
 interface Reservation {
@@ -48,29 +57,30 @@ interface DroppedItem {
   full_name: string;
   time: string;
   date: string;
+  email: string;
+  phone: string;
   number_of_guests: number;
-  occasion: string;
-  tables: TableType[];
+  occasion?: string;        // Added missing properties
+  tables?: TableType[];     // Added missing properties
 }
 
 const DropTarget: React.FC<DropTargetProps> = ({ height, width, min, max, id, type, x, y, reservedBy, hourChosen }) => {
-  const [droppedItems, setDroppedItems] = useState<DroppedItem[]>([]);
+  const [droppedItems, setDroppedItems] = useState<DroppedItem[]>([]); // Initialize empty array
 
   useEffect(() => {
-    if (reservedBy && reservedBy.full_name && reservedBy.time === hourChosen && reservedBy.date && reservedBy.number_of_guests) {
-      const table = reservedBy.tables.find((table) => table.name === id);
-      if (table) {
-        setDroppedItems([
-          {
-            full_name: reservedBy.full_name,
-            time: reservedBy.time,
-            date: reservedBy.date,
-            number_of_guests: reservedBy.number_of_guests,
-            occasion: reservedBy.occasion || "",
-            tables: [table],
-          },
-        ]);
-      }
+    if (reservedBy) {
+      
+        setDroppedItems([{
+          full_name: reservedBy.full_name,
+          time: reservedBy.time,
+          date: reservedBy.date,
+          number_of_guests: reservedBy.number_of_guests,
+          occasion: '',
+          tables: [],
+          email: reservedBy.email,       // Add default values for DroppedItem properties
+          phone: reservedBy.phone,       // Add default values for DroppedItem properties
+        }]);
+      
     } else {
       setDroppedItems([]);
     }
