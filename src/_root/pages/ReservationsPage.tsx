@@ -7,7 +7,7 @@ import 'i18next'
 
 import { useTranslation } from 'react-i18next';
 import ReservationModal from "../../components/reservation/ReservationModal"
-import { BaseKey, BaseRecord, useCreate, useList } from "@refinedev/core"
+import { BaseKey, BaseRecord, useCreate, useList, useUpdate } from "@refinedev/core"
 
 interface Reservation extends BaseRecord {
   id: BaseKey;
@@ -18,7 +18,7 @@ interface Reservation extends BaseRecord {
   source: string;
   number_of_guests: string;
   status: string;
-  comment?: string;
+  commenter?: string;
   review?: boolean;
 }
 
@@ -60,6 +60,13 @@ const ReservationsPage = () => {
       }
     );
   };
+  const [selectedClient, setSelectedClient] = useState<Reservation | null>(null)
+
+  const { mutate: upDateReservation } = useUpdate({
+    resource: `api/v1/bo/reservations/${selectedClient?.id}/`,
+  });
+
+
   
   useEffect(() => {
     if (data?.data) {
@@ -67,119 +74,7 @@ const ReservationsPage = () => {
     }
   }, [data]);
 
-  console.log(reservations)
-  // const [reservations, setReservations] = useState([
-  //   {
-  //     id: '1',
-  //     email: 'john.doe@gmail.com',
-  //     fullName: 'John Doe',
-  //     date: '23/08/2024',
-  //     time: '12:00 PM',
-  //     reservationMade: 'MarketPlace',
-  //     guests: '2',
-  //     status: 'Pending',
-  //     review: false
-  //   },
-  //   {
-  //     id: '2',
-  //     email: 'kwame1@gmail.com',
-  //     fullName: 'Kwame Dwayne',
-  //     date: '23/08/2024',
-  //     time: '12:00 PM',
-  //     reservationMade: 'MarketPlace',
-  //     guests: '4',
-  //     status: 'Confirmed',
-  //     review: true
-  //   },
-  //   {
-  //     id: '3',
-  //     email: 'asafo.w@gmail.com',
-  //     fullName: 'Asafo Yaw',
-  //     date: '21/08/2024',
-  //     time: '12:00 PM',
-  //     reservationMade: 'MarketPlace',
-  //     guests: '4',
-  //     status: 'Canceled',
-  //     review: false
-  //   },
-  //   {
-  //     id: '4',
-  //     email: 'dkqw@gmail.com',
-  //     fullName: 'Dk Qw',
-  //     date: '29/08/2024',
-  //     time: '12:00 PM',
-  //     reservationMade: 'MarketPlace',
-  //     guests: '2',
-  //     status: 'Confirmed',
-  //     review: true
-  //   },
-  //   {
-  //     id: '5',
-  //     email: 'lawuate@gmail.com',
-  //     fullName: 'Lawu Ate',
-  //     date: '23/08/2024',
-  //     time: '12:00 PM',
-  //     reservationMade: 'MarketPlace',
-  //     guests: '2',
-  //     status: 'Confirmed',
-  //     review: true
-  //   },
-  //   {
-  //     id: '6',
-  //     email: 'laquazettezak@gmail.com',
-  //     fullName: 'Laquazette Zak',
-  //     date: '20/08/2024',
-  //     time: '12:00 PM',
-  //     reservationMade: 'MarketPlace',
-  //     guests: '2',
-  //     status: 'Pending',
-  //     review: false
-  //   },
-  //   {
-  //     id: '7',
-  //     email: 'dalimeal@gmail.com',
-  //     fullName: 'Da Limeal',
-  //     date: '23/08/2024',
-  //     time: '12:00 PM',
-  //     reservationMade: 'MarketPlace',
-  //     guests: '2',
-  //     status: 'Confirmed',
-  //     review: true
-  //   },
-  //   {
-  //     id: '8',
-  //     email: 'alish.coleman@gmail.com',
-  //     fullName: 'Alish Coleman',
-  //     date: '23/08/2024',
-  //     time: '12:00 PM',
-  //     reservationMade: 'Jack Ma',
-  //     guests: '2',
-  //     status: 'Pending',
-  //     review: false
-  //   },
-  //   {
-  //     id: '9',
-  //     email: 'ashley.halsey@gmail.com',
-  //     fullName: 'Ashley Halsey',
-  //     date: '23/08/2024',
-  //     time: '12:00 PM',
-  //     reservationMade: 'MarketPlace',
-  //     guests: '2',
-  //     status: 'Confirmed',
-  //     review: true
-  //   },
-  //   {
-  //     id: '10',
-  //     email: 'armstrongschwazeneger@gmail.com',
-  //     fullName: 'Armstrong Schwazeneger',
-  //     date: '23/08/2024',
-  //     time: '12:00 PM',
-  //     reservationMade: 'Website',
-  //     guests: '2',
-  //     status: 'Pending',
-  //     review: false
-  //   },
-  // ])
+  
 
   function statusStyle(status: string) {
     if (status === 'PENDING') {
@@ -236,7 +131,6 @@ const ReservationsPage = () => {
   };
 
   const [showModal, setShowModal] = useState(false)
-  const [selectedClient, setSelectedClient] = useState<Reservation | null>(null)
 
   const EditClient = (id: BaseKey | undefined) => {
     if (!id) return;
@@ -255,6 +149,8 @@ const ReservationsPage = () => {
       })
     }
   }
+
+
 
   const saveChanges = () => {
     if (selectedClient) {
@@ -318,8 +214,8 @@ const ReservationsPage = () => {
     if (origin === 'BACK_OFFICE') {
       return (
         <div className={`flex p-1 rounded-md  items-center ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}>
-          <svg className="" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M16.36 14C16.44 13.34 16.5 12.68 16.5 12C16.5 11.32 16.44 10.66 16.36 10H19.74C19.9 10.64 20 11.31 20 12C20 12.69 19.9 13.36 19.74 14M14.59 19.56C15.19 18.45 15.65 17.25 15.97 16H18.92C17.9512 17.6683 16.4141 18.932 14.59 19.56ZM14.34 14H9.66C9.56 13.34 9.5 12.68 9.5 12C9.5 11.32 9.56 10.65 9.66 10H14.34C14.43 10.65 14.5 11.32 14.5 12C14.5 12.68 14.43 13.34 14.34 14ZM12 19.96C11.17 18.76 10.5 17.43 10.09 16H13.91C13.5 17.43 12.83 18.76 12 19.96ZM8 8H5.08C6.03864 6.32703 7.57466 5.06124 9.4 4.44C8.8 5.55 8.35 6.75 8 8ZM5.08 16H8C8.35 17.25 8.8 18.45 9.4 19.56C7.57827 18.9323 6.04429 17.6682 5.08 16ZM4.26 14C4.1 13.36 4 12.69 4 12C4 11.31 4.1 10.64 4.26 10H7.64C7.56 10.66 7.5 11.32 7.5 12C7.5 12.68 7.56 13.34 7.64 14M12 4.03C12.83 5.23 13.5 6.57 13.91 8H10.09C10.5 6.57 11.17 5.23 12 4.03ZM18.92 8H15.97C15.6565 6.76161 15.1931 5.56611 14.59 4.44C16.43 5.07 17.96 6.34 18.92 8ZM12 2C6.47 2 2 6.5 2 12C2 14.6522 3.05357 17.1957 4.92893 19.0711C5.85752 19.9997 6.95991 20.7362 8.17317 21.2388C9.38642 21.7413 10.6868 22 12 22C14.6522 22 17.1957 20.9464 19.0711 19.0711C20.9464 17.1957 22 14.6522 22 12C22 10.6868 21.7413 9.38642 21.2388 8.17317C20.7362 6.95991 19.9997 5.85752 19.0711 4.92893C18.1425 4.00035 17.0401 3.26375 15.8268 2.7612C14.6136 2.25866 13.3132 2 12 2Z" fill={localStorage.getItem('darkMode')==='true'?'#fff':'#1e1e1e90'}/>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M2.879 3.879C2 4.757 2 6.172 2 9V15C2 17.828 2 19.243 2.879 20.121C3.757 21 5.172 21 8 21H16C18.828 21 20.243 21 21.121 20.121C22 19.243 22 17.828 22 15V9C22 6.172 22 4.757 21.121 3.879C20.243 3 18.828 3 16 3H8C5.172 3 3.757 3 2.879 3.879ZM16 8C16.2652 8 16.5196 8.10536 16.7071 8.29289C16.8946 8.48043 17 8.73478 17 9V17C17 17.2652 16.8946 17.5196 16.7071 17.7071C16.5196 17.8946 16.2652 18 16 18C15.7348 18 15.4804 17.8946 15.2929 17.7071C15.1054 17.5196 15 17.2652 15 17V9C15 8.73478 15.1054 8.48043 15.2929 8.29289C15.4804 8.10536 15.7348 8 16 8ZM9 11C9 10.7348 8.89464 10.4804 8.70711 10.2929C8.51957 10.1054 8.26522 10 8 10C7.73478 10 7.48043 10.1054 7.29289 10.2929C7.10536 10.4804 7 10.7348 7 11V17C7 17.2652 7.10536 17.5196 7.29289 17.7071C7.48043 17.8946 7.73478 18 8 18C8.26522 18 8.51957 17.8946 8.70711 17.7071C8.89464 17.5196 9 17.2652 9 17V11ZM13 13C13 12.7348 12.8946 12.4804 12.7071 12.2929C12.5196 12.1054 12.2652 12 12 12C11.7348 12 11.4804 12.1054 11.2929 12.2929C11.1054 12.4804 11 12.7348 11 13V17C11 17.2652 11.1054 17.5196 11.2929 17.7071C11.4804 17.8946 11.7348 18 12 18C12.2652 18 12.5196 17.8946 12.7071 17.7071C12.8946 17.5196 13 17.2652 13 17V13Z"  fill={localStorage.getItem('darkMode')==='true'?'#fff':'#1e1e1e90'}/>
           </svg>
         </div>
       )
@@ -426,6 +322,16 @@ const ReservationsPage = () => {
                   className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
 />
               </div>
+              <div>
+                <label className="block text-sm font-medium ">{t('reservations.edit.informations.comment')}</label>
+                <input
+                  type="text"
+                  name="guests"
+                  value={selectedClient.commenter}
+                  onChange={handleInputChange}
+                  className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
+/>
+              </div>
               
               <div className="">
                 <label className="block text-sm font-medium ">{t('reservations.edit.informations.status')}</label>
@@ -502,12 +408,12 @@ const ReservationsPage = () => {
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer"  onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.id}</td>
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer"  onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.full_name}</td>
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.email}</td>
-                <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.comment}</td>
+                <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.commenter}</td>
                 <td className="px-3 py-4 flex items-center justify-center whitespace-nowrap cursor-pointer"  onClick={() => { if (reservation.id) EditClient(reservation.id); }}>
                   {reservationOrigin(reservation.source)}
                 </td>
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer"  onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.date }</td>
-                <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.time}</td>
+                <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.time.slice(0,5)}</td>
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.number_of_guests}</td>
                 <td className="px-3 py-4 whitespace-nowrap " onClick={()=> showStatusModification(reservation.id)}>
                   <span className={`${statusStyle(reservation.status)} text-center py-[.1em] px-3  rounded-[10px]`}> 

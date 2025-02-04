@@ -65,7 +65,7 @@ function App() {
             <RefineKbarProvider>
               <DevtoolsProvider>
                 <Refine
-                  dataProvider={dataProvider("http://128.199.50.127")}
+                  dataProvider={dataProvider("https://api.dev.tabla.ma")}
                   routerProvider={routerBindings}
                   options={{
                     syncWithLocation: true,

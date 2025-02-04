@@ -2,9 +2,43 @@ import React, { useEffect, useState } from 'react';
 import DesignCanvas from '../../components/places/design/DesignCanvas';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { BaseKey, BaseRecord, useList } from '@refinedev/core';
+import { BaseKey, BaseRecord, useCreate, useDelete, useList } from '@refinedev/core';
+import axios from 'axios';
 
 const DesignPlaces: React.FC = () => {
+
+
+    const { mutate: mutateDeleting} = useDelete();
+
+    const { mutate } = useCreate({
+        resource: "api/v1/bo/floors/", // Updated endpoint
+        meta: {
+          headers: {
+            "X-Restaurant-ID": 1,
+          },
+        },
+        mutationOptions: {
+          retry: 3,
+          onSuccess: (data) => {
+            console.log("Floor added:", data);
+          },
+          onError: (error) => {
+            console.log("Error adding floor:", error);
+          },
+        },
+      });
+      
+      const handleAddFloor = async () => {
+        const inputPlace = document.getElementById('inputPlace') as HTMLInputElement;
+
+        mutate({
+          values:{
+            name: inputPlace.value.trim(), 
+          }
+        });
+        window.location.reload();
+        
+      };
 
   const { data, isLoading, error } = useList({
     resource: "api/v1/bo/floors",
@@ -14,6 +48,8 @@ const DesignPlaces: React.FC = () => {
       },
     },
   });
+
+  console.log(data)
 
     const [showAddPlace, setShowAddPlace] = useState(false);
     const [focusedRoof, setFocusedRoof] = useState<BaseKey | undefined>(1);
@@ -31,12 +67,40 @@ const DesignPlaces: React.FC = () => {
         if (!confirm('Are you sure you want to delete this roof?')) {
             return;
         }
-        setRoofs(prevRoofs => prevRoofs.filter(r => r.id !== roofId));
-        if (focusedRoof === roofId) {
-            setFocusedRoof(undefined);
-        }
+        // mutateDeleting(
+        //     {
+        //         resource: `api/v1/bo/floors/${roofId}/`, // Correct resource for roofs
+        //         id: roofId,
+        //         meta: {
+        //             headers: {
+        //                 "X-Restaurant-ID": 1,
+        //             },
+        //         },
+        //     },
+        //     {
+        //         onSuccess: () => {
+        //             // Update local state instead of reloading the page
+        //             setRoofs((prevRoofs) => prevRoofs.filter((r) => r.id !== roofId));
+        //             if (focusedRoof === roofId) {
+        //                 setFocusedRoof(undefined);
+        //             }
+        //             console.log("Roof deleted successfully!");
+        //         },
+        //         onError: (error) => {
+        //             console.error("Error deleting roof:", error);
+        //             alert("Failed to delete roof. Please try again.");
+        //         },
+        //     }
+        // );
+        // window.location.reload();
+        // setRoofs(prevRoofs => prevRoofs.filter(r => r.id !== roofId));
+        // if (focusedRoof === roofId) {
+        //     setFocusedRoof(undefined);
+        // }
     };
 
+
+    
 
     
   const handlePlaceAdded = (e: React.FormEvent<HTMLFormElement>) => {
@@ -58,7 +122,7 @@ const DesignPlaces: React.FC = () => {
             {showAddPlace && (
                 <div>
                 <div className='overlay' onClick={() => setShowAddPlace(false)}></div>
-                <form className={`popup gap-5 ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'}`} onSubmit={handlePlaceAdded}>
+                <form className={`popup gap-5 ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'}`}  onSubmit={handlePlaceAdded}>
                     <h1 className='text-3xl font-[700]'>Add Place</h1>
                     <input
                     type="text"
@@ -66,7 +130,7 @@ const DesignPlaces: React.FC = () => {
                     placeholder='Place Alias'
                     className={`inputs-unique ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-textdarktheme':'bg-white text-black'} `}
                     />
-                    <button className='btn-primary w-full'>Add Place</button>
+                    <button onClick={handleAddFloor} className='btn-primary w-full'>Add Place</button>
                 </form>
                 </div>
             )}
@@ -74,7 +138,7 @@ const DesignPlaces: React.FC = () => {
                 <Link to='/places' className='hover:bg-softgreentheme px-4 items-center flex justify-center text-greentheme font-bold rounded-[10px]' >{'<'}</Link>
                 <h1 className='text-3xl font-[700]'>{t('editPlace.title')}</h1>
             </div>
-            <div className='flex gap-5'>
+            <div className='flex overflow-y-scroll w-[80vw] mx-auto  no-scrollbar gap-5'>
                 {roofs.map((roof) => (
                     <div
                         key={roof.id}

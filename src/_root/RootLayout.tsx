@@ -88,7 +88,7 @@ const RootLayout = () => {
 
 
   return (
-    <div className={`flex overflow-hidden ${(shownlang === 'ar') ? "rtl ":''} ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme text-textdarktheme':''}`}>
+    <div className={`flex w-max-[100vw] overflow-hidden ${(shownlang === 'ar') ? "rtl ":''} ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme text-textdarktheme':''}`}>
       {/* <Helmet>
         <title>Your Custom Title</title> 
       </Helmet> */}

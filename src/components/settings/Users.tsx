@@ -1,40 +1,47 @@
-import { useState, useCallback } from "react"
+import { useList } from "@refinedev/core"
+import { useState, useCallback, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 
 interface User {
   id: number
-  name: string
+  first_name: string
+  last_name: string
   role: string
-  phoneNumber: string
+  phone: string
   email: string
 }
 
 const initialUsers: User[] = [
   {
     id: 1,
-    name: 'John Doe',
-    role: 'Staff',
-    phoneNumber: '1234567890',
-    email: 'JohnDoe@gmail.com',
-  },
-  {
-    id: 2,
-    name: 'Jane Doe',
+    first_name: 'John',
+    last_name: 'Doe',
     role: 'Manager',
-    phoneNumber: '1234567890',
-    email: 'jane@gmail.com',
-  },
-  {
-    id: 3,
-    name: 'Chris Diaz',
-    role: 'Staff',
-    phoneNumber: '1234567890',
-    email: 'Chris@gmail.com',
+    phone: '1234567890',
+    email: 'JohnDoe@gmail.com',
   }
 ]
 
 export default function Users() {
+
+  const{data, isLoading, error} = useList({
+    resource: 'api/v1/api/v1/bo/restaurants/users',
+    meta: {
+      headers: {
+        'X-Restaurant-ID': 1
+      }
+    }
+  })
+
+  console.log('users',data?.data)
+
+
   const [users, setUsers] = useState<User[]>(initialUsers)
+  useEffect(() => {
+    if (data?.data) {
+      setUsers(data.data as User[])
+    }
+  }, [data])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
 
@@ -69,9 +76,10 @@ export default function Users() {
   const addUser = useCallback(() => {
     const newUser: User = {
       id: 0,
-      name: '',
+      first_name: '',
+      last_name: '',
       role: '',
-      phoneNumber: '',
+      phone: '',
       email: '',
     }
     openModal(newUser)
@@ -87,10 +95,10 @@ export default function Users() {
           <div className={`sidepopup lt-sm:popup lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:rounded-b-none lt-sm:w-full h-full ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'}`}>
             <h1 className="text-2xl font-bold mb-3">{selectedUser?.id ? 'Modify' : 'Add'} User</h1>
             <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-              <input type="text" id="name" placeholder="Name" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.name || ''} onChange={handleInputChange} required />
-              <input type="tel" id="phoneNumber" placeholder="Phone Number" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.phoneNumber || ''} onChange={handleInputChange} />
+              <input type="text" id="name" placeholder="Name" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.first_name || ''} onChange={handleInputChange} required />
+              {/* <input type="tel" id="phoneNumber" placeholder="Phone Number" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.phone || ''} onChange={handleInputChange} /> */}
               <input type="email" id="email" placeholder="Email" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.email || ''} onChange={handleInputChange} required />
-              <select id="role" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.role} onChange={handleInputChange}>
+              <select id="groups" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.role || ''} onChange={handleInputChange}>
                 <option value="Manager">Manager</option>
                 <option value="Staff">Staff</option>
               </select>
@@ -109,7 +117,7 @@ export default function Users() {
             <tr>
               <th scope="col" className="px-6 py-4 font-medium ">{t('settingsPage.users.tableHeaders.id')}</th>
               <th scope="col" className="px-6 py-4 font-medium ">{t('settingsPage.users.tableHeaders.name')}</th>
-              <th scope="col" className="px-6 py-4 font-medium ">{t('settingsPage.users.tableHeaders.phone')}</th>
+              {/* <th scope="col" className="px-6 py-4 font-medium ">{t('settingsPage.users.tableHeaders.phone')}</th> */}
               <th scope="col" className="px-6 py-4 font-medium ">{t('settingsPage.users.tableHeaders.email')}</th>
               <th scope="col" className="px-6 py-4 font-medium ">{t('settingsPage.users.tableHeaders.role')}</th>
             </tr>
@@ -118,8 +126,8 @@ export default function Users() {
             {users.map((user) => (
               <tr key={user.id} className={` cursor-pointer ${localStorage.getItem('darkMode')==='true'?'hover:bg-bgdarktheme':'hover:bg-gray-50'}`} onClick={() => openModal(user)}>
                 <td className="px-6 py-4 font-medium">{user.id}</td>
-                <td className="px-6 py-4">{user.name}</td>
-                <td className="px-6 py-4">{user.phoneNumber}</td>
+                <td className="px-6 py-4">{user.first_name} {user.last_name}</td>
+                {/* <td className="px-6 py-4">{user.phone}</td> */}
                 <td className="px-6 py-4">{user.email}</td>
                 <td className="px-6 py-4">{user.role}</td>
               </tr>

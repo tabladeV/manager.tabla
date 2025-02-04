@@ -451,7 +451,7 @@
             "unavailable": "Unavailable",
             "type":"Type",
             "from": "From",
-            "puffer": "Puffer",
+            "puffer": "Reservation Duration",
             "addAnotherSlot": "Add another slot",
             "to": "To",
             "applyToWeek": "Apply to weekly",

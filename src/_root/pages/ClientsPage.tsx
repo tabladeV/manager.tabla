@@ -46,7 +46,7 @@ const ClientsPage = () => {
     
   }, [data]);
   
-  console.log(clients);
+  console.log(data);
   const {t} = useTranslation();
 
   // const clients = [

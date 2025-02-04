@@ -3,18 +3,106 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Map from '../map/Map';
 import { Plus, Trash2 } from 'lucide-react';
+import { BaseKey, BaseRecord, useList } from '@refinedev/core';
+import loading from '../../assets/loading.png';
+
+interface Restaurant {
+  id: BaseKey,
+  name: string,
+  email: string,
+  website: string,
+  phone:string,
+  location: string,
+  address: string,
+  is_approved: boolean,
+  max_of_guests: number,
+  description: string,
+  allow_reservation: boolean,
+  average_price: string,
+  due_cancellation_period: number,
+  buffer: string,
+  created_at: string,
+  edit_at: string,
+  country: number,
+  city: number,
+  category: number,
+  manager: number,
+  restaurant_type: number,
+  categories: [],
+  staff: []
+}
 
 const General = () => {
+
+  const [restaurantId, setRestaurantId] = useState(1);
+
+  const {data: restaurantData, isLoading, error} = useList({
+    resource: `api/v1/bo/restaurants/1/current`,
+    // meta: {
+    //   headers: {
+    //     'id': 1,
+    //   },
+    // },
+  });
+
+  
+  const [restaurant, setRestaurant] = useState<Restaurant>();
+  console.log(restaurantData);
+  
+  useEffect(() => {
+    if (restaurantData?.data) {
+      setRestaurant(restaurantData.data as Restaurant);
+    }
+  }, [restaurantData]);
+  console.log(restaurant);
+  
+  const {data:cityData, isLoading:isLoadingCity, error:errorCity} = useList({
+    resource: `api/v1/api/v1/bo/cities/${restaurant?.city}`,
+  });
+
+  const {data:countryData, isLoading:isLoadingCountry, error:errorCountry} = useList({
+    resource: `api/v1/api/v1/bo/countries/${restaurant?.country}`,
+  });
+
+  console.log('city,',cityData);
+  
+  const {data : allCities, isLoading:isLoadingAllCities, error:errorAllCities} = useList({
+    resource: 'api/v1/api/v1/bo/cities',
+  });
+
+  const {data : allCountries, isLoading:isLoadingAllCountries, error:errorAllCountries} = useList({
+    resource: 'api/v1/api/v1/bo/countries',
+  });
+
+  console.log('all cities',allCountries);
+
+
   // State for form data
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    city: '',
-    country: '',
-    description: '',
-    phone: '',
-    website: ''
+    name: restaurant?.name ,
+    email: restaurant?.email ,
+    city: restaurant?.city ,
+    country: restaurant?.country ,
+    average_price: restaurant?.average_price ,
+    description: restaurant?.description ,
+    phone: restaurant?.phone ,
+    website: restaurant?.website 
   });
+
+  useEffect(() => {
+    if (restaurant) {
+      setFormData({
+        name: restaurant.name,
+        email: restaurant.email,
+        city: restaurant.city,
+        average_price: restaurant.average_price,
+        country: restaurant.country,
+        description: restaurant.description,
+        phone: restaurant.phone,
+        website: restaurant.website
+      });
+    }
+  }, [restaurant]);
 
   // State for countries and cities
   const [countries, setCountries] = useState<string[]>([]);
@@ -69,29 +157,9 @@ const General = () => {
   };
   
   // Handle country selection
-  const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedValue = e.target.value;
-    setSelectedCountry(selectedValue);
-    setFormData((prevData) => ({
-      ...prevData,
-      country: selectedValue
-    }));
-  };
-
-  // Handle city selection
-  const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedCity = e.target.value;
-    setFormData((prevData) => ({
-      ...prevData,
-      city: selectedCity
-    }));
-  };
 
   // Categories
-  const [categories, setCategories] = useState([
-    'Fast Food',
-    'Restaurant',
-  ]);
+  const [categories, setCategories] = useState(restaurant?.categories || ['']);
 
   const editCategory = (index: number, value: string) => {
     setCategories((prevCategories) => {
@@ -131,6 +199,7 @@ const General = () => {
 
   const {t}= useTranslation();
 
+
   return (
     <div className={`rounded-[10px] p-3 w-full ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'}`}>
       <h2 className="text-center mb-3">{t('settingsPage.general.basicInformationForm.title')}</h2>
@@ -160,9 +229,9 @@ const General = () => {
           value={selectedCountry}
           onChange={handleSelectChange}
         >
-          {countries.map((country) => (
-            <option key={country} value={country}>
-              {country}
+          {allCountries?.data.map((country) => (
+            <option key={country.id} value={country.name}>
+              {country.name}
             </option>
           ))}
         </select>
@@ -173,9 +242,9 @@ const General = () => {
           onChange={handleSelectChange} // Use the same handler for city
         >
           <option value="">{t('settingsPage.general.basicInformationForm.labels.city')}</option>
-          {cities.map((city) => (
-            <option key={city} value={city}>
-              {city}
+          {allCities?.data.map((city) => (
+            <option key={city.id} value={city.name}>
+              {city.name}
             </option>
           ))}
         </select>
@@ -247,6 +316,9 @@ const General = () => {
           <input 
             type="number" 
             placeholder={t('settingsPage.general.basicInformationForm.labels.avgPrice')} 
+            id="avgPrice"
+            value={formData.average_price}
+            onChange={handleInputChange}
             className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`}
           />
           <div className="text-sm absolute mt-[3.2em] right-10">{t('settingsPage.general.basicInformationForm.labels.currency')}</div>

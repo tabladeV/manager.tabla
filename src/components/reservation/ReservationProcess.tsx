@@ -4,7 +4,7 @@ import OurCalendar from '../Calendar/OurCalendar';
 
 
 type SelectedData = {
-  
+
   reserveDate: string ;
   time: string ;
   guests: number ;
@@ -30,7 +30,7 @@ const ReservationProcess: React.FC<ReservationProcessProps> = (props) => {
 
   const handleDateClick = (day: Date) => {
     setSelectedDate(day);
-    const formattedDate = format(day, 'dd MMMM yyyy');
+    const formattedDate = format(day, 'yyyy-MM-dd');
     setSelectedData((prevData) => ({ ...prevData, reserveDate: formattedDate.toString() }));
     setActiveTab('time');
   };

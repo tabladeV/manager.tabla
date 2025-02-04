@@ -1,9 +1,37 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Upload, Check, X, Download } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
+import { BaseKey, useList } from '@refinedev/core'
+
+interface Widget{
+  id:BaseKey
+  image: string
+  title: string
+  restaurant: string
+  description: string
+  menu_file:string
+}
 
 export default function WidgetConfig() {
+
+  const [restaurantId, setRestaurantId] = useState(1)
+
+  const {data:widgetData, isLoading, error} = useList({
+    resource: `api/v1/bo/restaurants/${restaurantId}/widget`
+  })
+
+  const [widgetInfo, setWidgetInfo] = useState<Widget>()
+
+  useEffect(() => {
+    if (widgetData?.data) {
+      setWidgetInfo(widgetData.data as Widget)
+    }
+  }, [widgetData])
+
+  console.log('widgetInfo',widgetInfo)
+  
+
   const [logo, setLogo] = useState<string | null>(null)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -56,9 +84,10 @@ export default function WidgetConfig() {
       logo,
       title,
       description,
-      searchTabs,
-      payment,
-      guestThreshold
+      // searchTabs,
+      menu_file:menuPdf,
+      // payment,
+      // guestThreshold
     })
     alert('Configuration saved!')
   }
@@ -75,14 +104,16 @@ export default function WidgetConfig() {
 
   const {t} = useTranslation();
 
+  if(isLoading) return <div>Loading...</div>
+
   return (
     <div className={`w-full mx-auto p-6 rounded-[10px] ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme text-white':'bg-white text-black'}`}>
-      <h1 className="text-2xl font-bold text-center mb-6">{t('settingsPage.widget.title')}</h1>
+      <h1 className="text-2xl font-bold text-center mb-6">{t('settingsPage.widget.title')} for {widgetInfo?.restaurant}</h1>
       
       <div className="mb-6">
-        {logo ? (
+        {widgetInfo?.image ? (
           <div className="relative w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden">
-            <img src={logo} alt="Uploaded logo" className="w-full h-full object-contain" />
+            <img src={widgetInfo?.image} alt="Uploaded logo" className="w-full h-full object-contain" />
             <button 
               onClick={() => setLogo(null)} 
               className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
@@ -113,13 +144,13 @@ export default function WidgetConfig() {
           type="text"
           placeholder={t('settingsPage.widget.addTitlePlaceholder')}
           className="inputs p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white"
-          value={title}
+          value={widgetInfo?.title}
           onChange={(e) => setTitle(e.target.value)}
         />
         <textarea
           placeholder={t('settingsPage.widget.addDescriptionPlaceholder')}
           className="w-full inputs p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white lt-sm:w-full h-24 resize-none"
-          value={description}
+          value={widgetInfo?.description}
           onChange={(e) => setDescription(e.target.value)}
         />
       </div>
@@ -166,7 +197,7 @@ export default function WidgetConfig() {
         </div>}
       </div>
       
-      <div className="mb-6">
+      {/* <div className="mb-6">
         <h2 className="text-lg font-semibold mb-2">{t('settingsPage.widget.payment.title')}</h2>
         <div className="flex items-center flex-wrap gap-3">
           <label className="flex items-center">
@@ -221,7 +252,7 @@ export default function WidgetConfig() {
             />
           </div>
         </div>
-      </div>
+      </div> */}
       
       <div className="flex gap-3 space-x-4">
         <button 

@@ -5,6 +5,7 @@ import { format, formatDate, parseISO } from 'date-fns';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { BaseKey, BaseRecord, useCreate, useList } from '@refinedev/core';
 import { create } from 'domain';
+import { id } from 'date-fns/locale';
 
 
 interface Reservation extends BaseRecord {
@@ -44,21 +45,61 @@ const ReservationModal = (props: ReservationModalProps) => {
 
     console.log('clients',clientsData?.data)
 
-    const {mutate , isLoading: isCreating, error: createError} = useCreate()
+    const { mutate } = useCreate({
+        resource: "api/v1/bo/reservations/", // Updated endpoint
+        meta: {
+            headers: {
+            "X-Restaurant-ID": 1,
+            },
+        },
+        mutationOptions: {
+            retry: 3,
+            onSuccess: (data) => {
+            console.log("Floor added:", data);
+            },
+            onError: (error) => {
+            console.log("Error adding floor:", error);
+            },
+        },
+    });
+    
+    const { mutate: mutateClient } = useCreate({
+        resource: "api/v1/bo/customers/", // Updated endpoint
+        meta: {
+            headers: {
+            "X-Restaurant-ID": 1,
+            },
+        },
+        mutationOptions: {
+            retry: 3,
+            onSuccess: (data) => {
+            console.log("client added:", data);
+            },
+            onError: (error) => {
+            console.log("Error adding client:", error);
+            },
+        },
+    });
 
-
-    useEffect(() => {
-        createError && console.log(createError)
-    }, [createError])
 
 
     interface Client {
+        id: BaseKey;
         full_name: string;
         email: string;
         phone: string;
         comment?: string;
     }
 
+    const [data, setData] = useState<dataTypes>({
+        reserveDate: '',
+        time: '',
+        guests: 0
+    });
+
+    useEffect(() => {
+        console.log(data);
+    }, [data]);
     const [clients, setClients] = useState<Client[]>([]);
 
     useEffect(() => {
@@ -71,6 +112,7 @@ const ReservationModal = (props: ReservationModalProps) => {
     const [searchResults, setSearchResults] = useState(clients);
     const [inputName, setInputName] = useState(''); // Holds the current input value
     const [formData, setFormData] = useState({
+        id: 0,
         full_name: '',
         email: '',
         phone: '',
@@ -78,11 +120,17 @@ const ReservationModal = (props: ReservationModalProps) => {
     }); // Holds the form data
     const { t } = useTranslation();
 
+    const [dateTimeGuests,setDateTimeGuests]= useState<dataTypes>()
+
+    useEffect(()=>{
+        setDateTimeGuests(data)
+    },[data])
+
     const handleAddReservation = (event: React.FormEvent, data: Reservation): void => {
         event.preventDefault();
     
         const reservationData: Reservation = {
-            id: Date.now().toString(), // Generate a unique ID
+            id: 1, // Generate a unique ID
             full_name: data.full_name, // Ensure this is coming from the correct source
             email: data.email,
             date: data.reserveDate || '',
@@ -92,38 +140,34 @@ const ReservationModal = (props: ReservationModalProps) => {
             status: 'PENDING', // Example value
             comment: data.comment, // Ensure this exists in dataTypes
         };
+
+        console.log("Formatted date:", data.reserveDate );
+        console.log("Reservation Data:", reservationData);
+
     
-        mutate(
-            {
-                resource: 'api/v1/bo/reservations',
-                values: {
-                    full_name: reservationData.full_name,
-                    email: reservationData.email,
-                    date: reservationData.date ? formatDate(parseISO(reservationData.date), 'yyyy-MM-dd') : '',
-                    time: `${reservationData.time}:00`,
-                    table_name: "", // Keep empty if no table is assigned
-                    source: "BACK_OFFICE",
-                    number_of_guests: reservationData.number_of_guests,
-                    status: "PENDING",
-                },
-                meta: {
-                    headers: {
-                        'X-Restaurant-ID': '1', // Ensure it's a string if required by the API
-                    },
-                },
+        mutate({
+            values: {
+                "occasion": "none",
+                "status": "PENDING",
+                "source": "BACK_OFFICE",
+                "commenter": reservationData.comment,
+                "internal_note": reservationData.comment,
+                "number_of_guests": dateTimeGuests?.guests,
+                "date": dateTimeGuests?.reserveDate,
+                "time": `${dateTimeGuests?.time}:00`,
+                "restaurant": 1,
+                "customer": selectedClient?.id 
             },
-            {
-                onSuccess: (response) => {
-                    console.log("Reservation added:", response);
-                    props.onSubmit(reservationData);
-                },
-                onError: (error) => {
-                    console.error("Error adding reservation:", error);
-                },
-            }
-        );
+          });
+
+        props.onClick();
+        window.location.reload();
+        
     };
     
+    useEffect(()=>{
+        setSearchResults(clients)
+    },[clients])
 
     const searchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
         const keyword = e.target.value.toLowerCase();
@@ -139,24 +183,11 @@ const ReservationModal = (props: ReservationModalProps) => {
         }
     };
 
-    const handleAddNewClient = () => {
-        if (inputName.trim() && !clients.some((client) => client.full_name.toLowerCase() === inputName.toLowerCase())) {
-            const newClient = {
-                full_name: inputName,
-                email: '',
-                phone: '',
-                comment: '', // Add comment field
-            };
-            setClients([...clients, newClient]);
-            setSearchResults([...clients, newClient]);
-            setFormData(newClient); // Ensure it matches formData structure
-            setInputName('');
-            setFocusedClient(false);
-        }
-    };
-    const handleSelectClient = (client: { full_name: string; email: string; phone: string }) => {
-        setFormData({ ...client, comment: '' }); // Ensure 'comment' field is included
+    const [clientId, setClientId] = useState<BaseKey>(0);
+    const handleSelectClient = (client: {id:BaseKey; full_name: string; email: string; phone: string }) => {
+        setFormData({ ...client, id: 0, comment: '' }); // Ensure 'comment' field is included
         setInputName(client.full_name);
+        setClientId(client.id);
         setFocusedClient(false);
     };
 
@@ -171,17 +202,47 @@ const ReservationModal = (props: ReservationModalProps) => {
         time: string;
         guests: number;
     }
-    
 
-    const [data, setData] = useState<dataTypes>({
-        reserveDate: '',
-        time: '',
-        guests: 0
+    interface Client {
+        first_name:string,
+        last_name: string,
+        email:string,
+        phone:string
+    }
+
+    const [selectedClient, setSelectedClient]= useState<Client>()
+
+    const [newClientData, setNewClientData] = useState({
+        new_first_name: '',
+        new_last_name: '',
+        new_email: 'user@aesaxample.com',
+        new_phone: 'string',
     });
 
-    useEffect(() => {
-        console.log(data);
-    }, [data]);
+
+    const handleNewClientChange  = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { id, value } = e.target;
+        setNewClientData((prev) => ({ ...prev, [id]: value } as Pick<typeof newClientData, keyof typeof newClientData>)); // Update form field
+    };
+
+    const handleNewClient = (event: React.FormEvent) => {
+        event.preventDefault();
+        console.log('this is new client',newClientData)
+        
+        mutateClient({
+            values: {
+                "first_name": newClientData.new_first_name,
+                "last_name": newClientData.new_last_name,
+                "email": newClientData.new_email,
+                "phone": newClientData.new_phone
+            },
+        });
+        window.location.reload()
+
+    };
+    
+
+    const [newClient, setNewClient] = useState(false)
 
     const [findClient, setFindClient] = useState(true);
 
@@ -201,29 +262,30 @@ const ReservationModal = (props: ReservationModalProps) => {
                     placeholder={t('grid.placeHolders.searchClient')}
                     onChange={searchFilter}
                     onFocus={() => setFocusedClient(true)}
-                    value={inputName} // Bind input value to state
+                    // value={inputName} 
                     type="text"
-                    className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                    className={`inputs block ${newClient && 'hidden'} ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
                     id="name"
                     required
                 />
                 {focusedClient && (
-                    <div className={`absolute mt-[7em] flex flex-col gap-3  w-[36vw] p-2 shadow-md rounded-md lt-sm:w-[87vw] ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'}`}>
+                    !newClient ?<div className={`absolute mt-[7em] flex flex-col gap-3  w-[36vw] p-2 shadow-md rounded-md lt-sm:w-[87vw] ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'}`}>
                         <div
                             className="btn-secondary cursor-pointer"
                             onClick={() => {
-                                handleAddNewClient();
-                                setFindClient(false); // Set findClient to false to move to the next form
+                                setNewClient(!newClient);
+                                 // Set findClient to false to move to the next form
                             }}
                         >
                             {t('grid.buttons.addNewClient')}
                         </div>
                         <div className="flex flex-col h-[10em] overflow-y-auto gap-3">
-                            {searchResults.map((client, index) => (
+                            {searchResults.map((client) => (
                                 <div
-                                    key={index}
+                                    key={client.id}
                                     className={`flex btn cursor-pointer flex-row gap-2 ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : 'bg-white'}`}
                                     onClick={() => {
+                                        setSelectedClient(client)
                                         handleSelectClient(client); // Handle client selection
                                         setFindClient(false); // Set findClient to false
                                     }}
@@ -232,6 +294,23 @@ const ReservationModal = (props: ReservationModalProps) => {
                                 </div>
                             ))}
                         </div>
+                    </div>:
+                    <div className='flex flex-col gap-3 '  >
+                        {/* {
+                            "first_name": "string",
+                            "last_name": "sajs",
+                            "email": "user@aesaxample.com",
+                            "phone": "string",
+                            "internal_note": "string",
+                            "created_at": "2025-02-04T00:27:58.885Z"
+                        } */}
+                        <input onChange={handleNewClientChange} type="text" placeholder="First Name" id='new_first_name' className={`inputs-unique ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'}`} />
+                        <input onChange={handleNewClientChange} type='text' placeholder='Last Name' id='new_last_name' className={`inputs-unique ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'}`}/>
+                        <input onChange={handleNewClientChange} type='text' placeholder='Phone Number' id='new_phone' className={`inputs-unique ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'}`}/>
+                        <input onChange={handleNewClientChange} type='text' placeholder='Email' id='new_email' className={`inputs-unique ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'}`}/>
+                        <button onClick={handleNewClient} className='btn-primary' type='submit'>
+                            Save client
+                        </button>
                     </div>
                 )}
             </form>

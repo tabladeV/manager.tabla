@@ -3,18 +3,40 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import SearchBar from "../header/SearchBar";
 import { set } from "date-fns";
+import { useList } from "@refinedev/core";
 
 const Roles = () => {
+
+    const {data : permissionsData, isLoading, error} = useList({
+        resource: 'api/v1/bo/permissions',
+        
+    });
+
+    console.log('permissions',permissionsData?.data)
+
+    type PermissionType = {
+        name: string;
+        value: boolean;
+    };
+
+    const [permissions, setPermissions] = useState<PermissionType[]>([]);
+
+    useEffect(() => {
+        if (permissionsData?.data) {
+            setPermissions(permissionsData.data as PermissionType[]);
+        }
+    }, [permissionsData]);
+
+    console.log('asdas',permissions);
+
     const [isRoles, setIsRoles] = useState(true);
     const { t } = useTranslation();
 
     // State for available and affected permissions
-    const [availablePermissions, setAvailablePermissions] = useState<Permission[]>([
-        { name: 'Manage Tables', value: false },
-        { name: 'Manage reservations', value: false },
-        { name: 'Manage Grid', value: false },
-        { name: 'Manage Timeline', value: false },
-    ]);
+    const [availablePermissions, setAvailablePermissions] = useState(permissions);
+    useEffect(() => {
+        setAvailablePermissions(permissions);
+    }, [permissions]);
     const [affectedPermissions, setAffectedPermissions] = useState<Permission[]>([]);
 
     // State to track selected permissions
@@ -35,8 +57,7 @@ const Roles = () => {
     };
     
     const [savedRoles, setSavedRoles] = useState<Role[]>([
-        { name: 'Admin', permissions: [{ name: 'Manage Tables', value: false }] },
-        { name: 'Manager', permissions: [{ name: 'Manage reservations', value: false }] },
+        
     ]);
     
     
@@ -46,12 +67,7 @@ const Roles = () => {
             setSavedRoles([...savedRoles, { name: roleName, permissions: affectedPermissions }]);
             setRoleName('');
             setAffectedPermissions([]);
-            setAvailablePermissions([
-                { name: 'Manage Tables', value: false },
-                { name: 'Manage reservations', value: false },
-                { name: 'Manage Grid', value: false },
-                { name: 'Manage Timeline', value: false },
-            ]);
+            setAvailablePermissions(permissions);
         } else {
             alert('Please provide a role name and assign at least one permission.');
         }
@@ -71,21 +87,25 @@ const Roles = () => {
         const keyword = e.target.value.toLowerCase();
         if (keyword === '') {
             setSearchAvailable(availablePermissions);
+        }else{
+            setSearchAvailable(availablePermissions.filter(permission =>
+                permission.name.toLowerCase().includes(keyword)
+            ));
         }
-        setSearchAvailable(availablePermissions.filter(permission =>
-            permission.name.toLowerCase().includes(keyword)
-        ));
         
     };
+
+    const [permissionsAffectedForSearch, setPermissionsAffectedForSearch] = useState<Permission[]>(affectedPermissions);
     
     const handleSearchAffected = (e: React.ChangeEvent<HTMLInputElement>) => {
         const keyword = e.target.value.toLowerCase();
         if (keyword === '') {
             setSearchAffected(affectedPermissions);
+        } else {
+            setSearchAffected(affectedPermissions.filter(permission =>
+                permission.name.toLowerCase().includes(keyword)
+            ));
         }
-        setAffectedPermissions(affectedPermissions.filter(permission =>
-            permission.name.toLowerCase().includes(keyword)
-        ));
     }
     // Function to handle moving to the right
     const moveRight = () => {
@@ -130,7 +150,7 @@ const Roles = () => {
                     {/* Available Permissions */}
                     <div className="flex w-full flex-col">
                         <label className="text-[17px]">{t('settingsPage.roles.labels.permissionsavailable')}</label>
-                        {/* <SearchBar SearchHandler={handleSearchAvailable}/> */}
+                        <SearchBar SearchHandler={handleSearchAvailable}/>
                         <div className={`rounded-md p-3 flex flex-col gap-2 h-[10em] overflow-y-auto ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2' : 'bg-softgreytheme'}`}>
                             {searchAvailable.map((permission, index) => (
                                 <div
@@ -163,7 +183,7 @@ const Roles = () => {
                     {/* Affected Permissions */}
                     <div className="flex w-full flex-col">
                         <label className="text-[17px]">{t('settingsPage.roles.labels.permissionsaffected')}</label>
-                        {/* <SearchBar SearchHandler={handleSearchAffected}/> */}
+                        <SearchBar SearchHandler={handleSearchAffected}/>
                         <div className={`rounded-md p-3 flex flex-col gap-2 h-[10em] overflow-y-auto ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2' : 'bg-softgreytheme'}`}>
                             {searchAffected.map((permission, index) => (
                                 <div

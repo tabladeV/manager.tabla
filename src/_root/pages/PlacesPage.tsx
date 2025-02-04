@@ -185,8 +185,8 @@ const PlacePage: React.FC = () => {
 
   return (
 
-    <div>
-      <div className='flex justify-between mb-2'>
+    <div className=''>
+      <div className='flex w-[94%] justify-between mb-2'>
         <h1 className='text-3xl font-[700]'>{t('placeManagement.title')}</h1>
         <Link to='/places/design' className='btn-primary flex gap-2 items-center lt-sm:hidden'>
           {t('placeManagement.buttons.designPlace')}
@@ -197,7 +197,7 @@ const PlacePage: React.FC = () => {
       </div>
 
       <DndProvider backend={isTouchDevice() ? TouchBackend : HTML5Backend}>
-        <div className="flex gap-[10px]">
+        <div className="flex w-[94%] gap-[10px]">
           <div className={`lt-sm:hidden rounded-[10px] p-[1em] ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'} `}>
             <SearchBar SearchHandler={searchFilter} />
             <div className='grid grid-flow-col gap-3 font-[500] my-3 justify-between'>
@@ -216,10 +216,10 @@ const PlacePage: React.FC = () => {
 
           <div className='w-full sm:overflow-auto'>
             <div className='flex lt-sm:flex-wrap lt-sm:gap-2 justify-between'>
-              <div className='flex gap-2 w-full overflow-x-scroll no-scrollbar'>
+              <div className='flex gap-2 w-[90%] overflow-x-scroll no-scrollbar'>
                 {roofData.map((roof) => (
                   <button
-                    className={` ${focusedRoof === roof.id ? 'btn-primary ' : 'btn-secondary'}`}
+                    className={` flex items-center ${focusedRoof === roof.id ? 'btn-primary ' : 'btn-secondary'}`}
                     key={roof.id}
                     onClick={() => setFocusedRoof(roof.id)}
                   >
