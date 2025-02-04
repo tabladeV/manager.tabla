@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useDrop } from 'react-dnd';
 import { useDateContext } from '../../context/DateContext';
-import { BaseKey } from '@refinedev/core';
+import { BaseKey, useUpdate } from '@refinedev/core';
+import { Trash } from 'lucide-react';
 
 const ItemType = 'BOX';
 
 interface DropTargetProps {
-  id: string;
+  id: BaseKey;
+  name:string;
   type: 'RECTANGLE' | 'CIRCLE';
+  floorId: BaseKey| undefined;
   x: number;
   y: number;
   height: number;
@@ -33,6 +36,7 @@ interface TableType {
 }
 
 interface currentResType{
+  id: BaseKey;
   full_name: string;
   time: string;
   date: string;
@@ -54,6 +58,7 @@ interface Reservation {
 }
 
 interface DroppedItem {
+  id:BaseKey;
   full_name: string;
   time: string;
   date: string;
@@ -64,13 +69,22 @@ interface DroppedItem {
   tables?: TableType[];     // Added missing properties
 }
 
-const DropTarget: React.FC<DropTargetProps> = ({ height, width, min, max, id, type, x, y, reservedBy, hourChosen }) => {
+const DropTarget: React.FC<DropTargetProps> = ({ height,name , width, min, max, id, type, x, y, reservedBy, hourChosen }) => {
   const [droppedItems, setDroppedItems] = useState<DroppedItem[]>([]); // Initialize empty array
 
+  const { mutate} = useUpdate({
+    resource: `api/v1/bo/tables`,
+    meta:{
+      headers: {
+        "X-Restaurant-ID": 1,
+      },
+    },
+  });
   useEffect(() => {
     if (reservedBy) {
       
         setDroppedItems([{
+          id: reservedBy.id,
           full_name: reservedBy.full_name,
           time: reservedBy.time,
           date: reservedBy.date,
@@ -86,12 +100,44 @@ const DropTarget: React.FC<DropTargetProps> = ({ height, width, min, max, id, ty
     }
   }, [reservedBy, hourChosen, id]);
 
-  const [{ isOver }, drop] = useDrop({
+  const [, drop] = useDrop({
     accept: ItemType,
     drop: (item: DroppedItem) => {
       const isTimeAlreadyDropped = droppedItems.some((droppedItem) => droppedItem.time === item.time);
       if (!isTimeAlreadyDropped && droppedItems.length < 1 && item.number_of_guests <= max && item.number_of_guests >= min) {
         setDroppedItems((prevItems) => [...prevItems, item]);
+        mutate({
+          id: id+'/',
+          values: {
+            // "name": name,
+            // "type": type,
+            // "width": width,
+            // "height": height,
+            // "x": x,
+            // "y": y,
+            // "max": max,
+            // "min": min,
+            // "floor": floorId,
+            "reservations": [
+              item.id
+            ]
+          },
+        });
+        // console.log({
+        //   "name": name,
+        //     "type": type,
+        //     "width": width,
+        //     "height": height,
+        //     "x": x,
+        //     "y": y,
+        //     "max": max,
+        //     "min": min,
+        //     "floor": floorId,
+        //     "reservations": [
+        //       item.id
+        //     ]
+        // })
+        
       }
     },
     collect: (monitor) => ({
@@ -100,6 +146,10 @@ const DropTarget: React.FC<DropTargetProps> = ({ height, width, min, max, id, ty
   });
 
   const [isClients, setIsClients] = useState(false);
+
+  const removeReservation = ()=>{
+    setDroppedItems([])
+  }
 
   return (
     <div
@@ -119,7 +169,7 @@ const DropTarget: React.FC<DropTargetProps> = ({ height, width, min, max, id, ty
         borderRadius: type === 'RECTANGLE' ? '10px' : '50%',
       }}
     >
-      <h2 className="text-[14px] font-semibold">{id}</h2>
+      <h2 className="text-[14px] font-semibold">{name}</h2>
       <p className="text-[13px] p-1 bg-[#1e1e1e10] rounded-[5px]">{max} seats</p>
       {isClients && (
         <div
@@ -127,15 +177,16 @@ const DropTarget: React.FC<DropTargetProps> = ({ height, width, min, max, id, ty
             localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-white' : 'bg-white text-greytheme'
           }`}
         >
-          {id} has {droppedItems.length} clients
+          {name} has {droppedItems.length} client
           {droppedItems.slice(0, 3).map((item, index) => (
             <div
-              className={`p-1 rounded-[5px] mt-1 font-semibold ${
+              className={`p-1 flex justify-between items-center gap-2 rounded-[5px] mt-1 font-semibold ${
                 localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-softgreytheme'
               }`}
               key={index}
             >
               {item.full_name}
+              <Trash size={30} className='bg-softredtheme text-redtheme p-2 rounded-md cursor-pointer' onClick={removeReservation}/>
             </div>
           ))}
           {droppedItems.length > 3 && (

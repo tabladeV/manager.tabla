@@ -1,4 +1,4 @@
-// DraggableItem.js
+// DraggableItem.tsx
 import { BaseKey } from '@refinedev/core';
 import { useDrag } from 'react-dnd';
 import { useTranslation } from 'react-i18next';
@@ -18,9 +18,10 @@ const DraggableItem = (props:DraggableItemProps) => {
   const {t} = useTranslation();
  // Data to pass on drop
   const { itemData } = props;
-  const [,drag] = useDrag(() => ({
+  const [, drag] = useDrag(() => ({
     type: ItemType,
-    item: itemData, // This is the data being passed
+    item: { id: itemData.id }, // This is the data being passed
+    canDrag: true,
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),

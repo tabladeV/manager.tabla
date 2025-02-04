@@ -18,7 +18,7 @@ export default function WidgetConfig() {
   const [restaurantId, setRestaurantId] = useState(1)
 
   const {data:widgetData, isLoading, error} = useList({
-    resource: `api/v1/bo/restaurants/${restaurantId}/widget`
+    resource: `api/v1/bo/restaurants/${restaurantId}/widget/`
   })
 
   const [widgetInfo, setWidgetInfo] = useState<Widget>()

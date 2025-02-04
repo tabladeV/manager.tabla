@@ -92,6 +92,10 @@ const ReservationsPage = () => {
   const [focusedDate, setFocusedDate] = useState(false)
   const [searchResults, setSearchResults] = useState(reservations)
 
+  useEffect(()=>{
+    setSearchResults(reservations)
+  },[reservations])
+
   const handleDateClick = (range: { start: Date, end: Date }) => {
     setSelectedDateRange(range)
   }
@@ -403,7 +407,7 @@ const ReservationsPage = () => {
             </tr>
           </thead>
           <tbody className={ `  ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme divide-y divide-gray-800':'bg-white divide-y divide-gray-200'}`} >
-            {filteredReservations.map(reservation => (
+            {filteredReservations.sort((a, b) => (a.id < b.id ? 1 : -1)).map(reservation => (
               <tr key={reservation.id} className=" hover:opacity-75">
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer"  onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.id}</td>
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer"  onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.full_name}</td>

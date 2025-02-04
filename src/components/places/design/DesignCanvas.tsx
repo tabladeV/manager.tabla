@@ -6,39 +6,41 @@ import { useTranslation } from 'react-i18next';
 import { BaseKey, BaseRecord, useList } from '@refinedev/core';
 
 
+interface Table extends BaseRecord {
+    id: BaseKey ,
+    name: string,
+    type: string,
+    width: number,
+    height: number,
+    x: number,
+    y: number,
+    max: number,
+    min:  number,
+    floor: BaseKey,
+    reservations: BaseKey[]
+}
 
 interface canvasTypes {
   focusedRoofId : BaseKey | undefined | null;
+  tables: Table[];
+  onSave: (table:Table[]) => void;
+  isLoading: boolean;
 }
 
 const DesignCanvas: React.FC <canvasTypes>= (props) => {
 
 
-  const { data: tablesData, isLoading: isLoadingTables, error: errorTables } = useList({
-    resource: "api/v1/bo/tables",
-    meta: {
-      headers: {
-        "X-Restaurant-ID": 1,
-      },
-    },
-  });
 
-  const [shapes, setShapes] = useState<BaseRecord[]>([]);
-  const [selectedId, selectShape] = useState<BaseKey | undefined>();
+  const [shapes, setShapes] = useState<Table[]>([]);
+  const [selectedId, selectShape] = useState<string>();
   const [showTools, setShowTools] = useState(false);
 
   useEffect(() => {
-    if (props.focusedRoofId && tablesData?.data) {
-      setShapes(tablesData.data.filter((table) => table.floor === props.focusedRoofId));
+    if (props.focusedRoofId ) {
+      setShapes(props.tables);
     }
-  }, [props.focusedRoofId, tablesData?.data]);
+  }, [props.focusedRoofId, props.tables]);
   
-
-
-
-  useEffect(() => {
-    console.log(shapes)
-  }, [shapes])
 
   const checkDeselect = (e: any) => {
     const clickedOnEmpty = e.target === e.target.getStage();
@@ -50,13 +52,19 @@ const DesignCanvas: React.FC <canvasTypes>= (props) => {
   const {t} = useTranslation(); 
 
   const addShape = (type: 'RECTANGLE' | 'CIRCLE') => {
-    const newShape = {
-      id: crypto.randomUUID(),
-      x: 50,
-      name: `Table ${Math.floor(Math.random()*10)}`,
-      y: 50,
+    const newShape: Table = {
+      id: 0,
+      name: `Table ${Math.floor(Math.random() * 10)}`,
       type,
-      ...(type === 'RECTANGLE' ? { width: 100, height: 100 } : { radius: 50 }),
+      width: type === 'RECTANGLE' ? 100 : 0,
+      height: type === 'RECTANGLE' ? 100 : 0,
+      x: 50,
+      y: 50,
+      max: Math.floor(innerWidth/250),
+      min: 1,
+      floor: props.focusedRoofId!,
+      reservations: [],
+      ...(type === 'CIRCLE' && { width: 0, height: 0, radius: 50 }),
     };
     setShapes([...(shapes || []), newShape]);
   };
@@ -67,26 +75,48 @@ const DesignCanvas: React.FC <canvasTypes>= (props) => {
       return;
     }
     if (selectedId) {
-      const newShapes = shapes?.filter((shape: BaseRecord) => shape.id !== selectedId) || [];
+      const newShapes = shapes?.filter((shape: BaseRecord) => shape.name !== selectedId) || [];
       setShapes(newShapes);
       selectShape(undefined); // Deselect after deletion
     }
   };
 
-  const changingName = (id:BaseKey) => {
+
+  useEffect(() => {
+    if(window.location.pathname !== '/places/design' && !props.isLoading && props.tables !== shapes){
+      if(confirm('Save before switching to another floor!')){
+        props.onSave(shapes as Table[]);
+      }
+    }
+    
+  },[window.location.pathname]);
+  function changingName(name: string) {
     return (
-    <div className=''>
-      <form className={`popup bg-bgdarktheme ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-textdarktheme':'bg-white text-black'}`} onSubmit={(e) => {
-      e.preventDefault();
-      const newName = (e.target as any).elements[0].value;
-      setShapes(shapes?.map((shape: BaseRecord) => shape.id === id ? { ...shape, name: newName } : shape));
-      setShowEdit(false);
-      }}>
-      <h1>Change Table Name</h1>
-      <input type="text"  defaultValue={shapes?.find(shape => shape.id === id)?.name || ''} className={`inputs-unique mt-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-textdarktheme':'bg-white text-black'} `} />
-      <button type="submit" className='btn-primary mt-2'>Save</button>
-      </form>
-    </div>
+      <div className=''>
+        <form className={`popup bg-bgdarktheme ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-textdarktheme' : 'bg-white text-black'}`} onSubmit={(e) => {
+          e.preventDefault();
+          const newName = (e.target as any).elements[0].value;
+          const newMax = (e.target as any).elements[1].value;
+          const newMin = (e.target as any).elements[2].value;
+          if (shapes.find(shape => shape.name === newName && shape.name !== name)) {
+            alert('Table name already exists');
+            return;
+          } else {
+            setShapes(shapes?.map((shape: Table) => shape.name === name ? { ...shape, name: newName, max: newMax, min: newMin } : shape));
+            setShowEdit(false);
+
+          }
+        } }>
+          <h1>Edit {shapes?.find(shape => shape.name === name)?.name || ''}</h1>
+          <p>Change Table Name</p>
+          <input type="text" defaultValue={shapes?.find(shape => shape.name === name)?.name || ''} className={`inputs-unique mt-2 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-textdarktheme' : 'bg-white text-black'} `} />
+          <p>Change maximum capacity</p>
+          <input type="text" defaultValue={shapes?.find(shape => shape.name === name)?.max || ''} className={`inputs-unique mt-2 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-textdarktheme' : 'bg-white text-black'} `} />
+          <p>Change minimum capacity</p>
+          <input type="text" defaultValue={shapes?.find(shape => shape.name === name)?.min || ''} className={`inputs-unique mt-2 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-textdarktheme' : 'bg-white text-black'} `} />
+          <button type="submit" className='btn-primary mt-2'>Save</button>
+        </form>
+      </div>
     );
   }
 
@@ -96,14 +126,17 @@ const DesignCanvas: React.FC <canvasTypes>= (props) => {
       setShowEdit(true);
     }
   };
+
+  console.log(shapes);
   
 
   const saveLayout = () => {
     console.log(shapes);
+    props.onSave(shapes as Table[]);
     //we will send this to the server
   };
   const resetLayout = () => {
-    setShapes(tablesData?.data || []);
+    setShapes(props.tables );
     //we will send this to the server
   };
 
@@ -175,10 +208,10 @@ const DesignCanvas: React.FC <canvasTypes>= (props) => {
               if (shape.type === 'RECTANGLE') {
                 return (
                   <Rectangle
-                    key={shape.id}
+                    key={shape.name}
                     shapeProps={shape}
-                    isSelected={shape.id === selectedId}
-                    onSelect={() => selectShape(shape.id)}
+                    isSelected={shape.name === selectedId}
+                    onSelect={() => selectShape(shape.name)}
                     onChange={(newAttrs) => {
                       const newShapes = shapes.slice();
                       newShapes[i] = newAttrs;
@@ -189,10 +222,10 @@ const DesignCanvas: React.FC <canvasTypes>= (props) => {
               } else if (shape.type === 'CIRCLE') {
                 return (
                   <CircleShape
-                    key={shape.id}
+                    key={shape.name}
                     shapeProps={shape}
-                    isSelected={shape.id === selectedId}
-                    onSelect={() => selectShape(shape.id)}
+                    isSelected={shape.name === selectedId}
+                    onSelect={() => selectShape(shape.name)}
                     onChange={(newAttrs) => {
                       const newShapes = shapes.slice();
                       newShapes[i] = newAttrs;

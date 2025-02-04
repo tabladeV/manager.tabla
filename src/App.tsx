@@ -1,4 +1,4 @@
-import {  Refine } from "@refinedev/core";
+import {  AuthProvider, Refine } from "@refinedev/core";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 
@@ -49,11 +49,130 @@ import Reviews from "./_root/pages/Reviews";
 import Profile from "./_root/pages/Profile";
 import ReviewPage from "./_plugin/pages/ReviewPage";
 import WidgetPage from "./_plugin/pages/WidgetPage";
+import authProvider from "./components/auth/authProvider";
+import DesignPlacesIndex from "./_root/pages/DesignPlacesIndex";
 
 
 
 
 function App() {
+
+  const authProvider: AuthProvider = {
+    login: async ({ providerName, email }) => {
+      if (providerName === "google") {
+        window.location.href = "https://accounts.google.com/o/oauth2/v2/auth";
+        return {
+          success: true,
+        };
+      }
+
+      if (providerName === "github") {
+        window.location.href = "https://github.com/login/oauth/authorize";
+        return {
+          success: true,
+        };
+      }
+
+      if (email) {
+        localStorage.setItem("email", email);
+        return {
+          success: true,
+          redirectTo: "/",
+        };
+      }
+
+      return {
+        success: false,
+        error: {
+          message: "Login failed",
+          name: "Invalid email or password",
+        },
+      };
+    },
+    register: async ({ email, password }) => {
+      if (email && password) {
+        localStorage.setItem("email", email);
+        return {
+          success: true,
+          redirectTo: "/",
+        };
+      }
+      return {
+        success: false,
+        error: {
+          message: "Register failed",
+          name: "Invalid email or password",
+        },
+      };
+    },
+    updatePassword: async ({ password }) => {
+      if (password) {
+        //we can update password here
+        return {
+          success: true,
+          redirectTo: "/login",
+        };
+      }
+      return {
+        success: false,
+        error: {
+          message: "Update password failed",
+          name: "Invalid password",
+        },
+      };
+    },
+    forgotPassword: async ({ email }) => {
+      if (email) {
+        //we can send email with forgot password link here
+        return {
+          success: true,
+          redirectTo: "/login",
+        };
+      }
+      return {
+        success: false,
+        error: {
+          message: "Forgot password failed",
+          name: "Invalid email",
+        },
+      };
+    },
+    logout: async () => {
+      localStorage.removeItem("email");
+      return {
+        success: true,
+        redirectTo: "/",
+      };
+    },
+    onError: async (error) => {
+      if (error.response?.status === 401) {
+        return {
+          logout: true,
+        };
+      }
+
+      return { error };
+    },
+    check: async () => {
+      return localStorage.getItem("email")
+        ? { authenticated: true }
+        : {
+            authenticated: false,
+            redirectTo: "/login",
+            error: {
+              message: "Check failed",
+              name: "Not authenticated",
+            },
+          };
+    },
+    getPermissions: async () => ["admin"],
+    getIdentity: async () => ({
+      id: 1,
+      name: "Jane Doe",
+      avatar:
+        "https://unsplash.com/photos/IWLOvomUmWU/download?force=true&w=640",
+    }),
+  };
 
   
   return (
@@ -65,6 +184,7 @@ function App() {
             <RefineKbarProvider>
               <DevtoolsProvider>
                 <Refine
+                  authProvider={authProvider}
                   dataProvider={dataProvider("https://api.dev.tabla.ma")}
                   routerProvider={routerBindings}
                   options={{
@@ -97,7 +217,9 @@ function App() {
                         <Route index element={<Home />} />
                         <Route path='/reservations' element={<ReservationsPage />} />
                         <Route path='/places' element={<PlacesPage />} />
-                        <Route path='/places/design' element={<DesignPlaces />} />
+                        <Route path='/places/design' element={<DesignPlacesIndex />} >
+                          <Route path='/places/design/:roofId' element={<DesignPlaces />} />
+                        </Route>
                         <Route path='/agenda' element={<AgendaPage />} />
                         <Route path='/agenda/grid' element={<GridPage />} />
                         <Route path='/payment' element={<PaymentPage />} />

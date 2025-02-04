@@ -184,7 +184,7 @@ const ClientsPage = () => {
           {!(selectedClient.length === clients.length) ? (
             <button className={`btn-secondary hover:bg-softgreentheme hover:text-greentheme ${selectedClient === clients ? 'hidden':''}`} onClick={selectAll}>{t('clients.buttons.selectAll')}</button>
           ) : (
-            <button className={`btn ${localStorage.getItem('darkMode')==='true'?'text-white':''} ${selectedClient === clients ? 'hidden':''}`} onClick={() => setSelectedClient([])}>{t('clients.buttons.deselectAll')}</button>
+            <button className={`btn ${localStorage.getItem('darkMode')==='true'?'text-white':''} ${selectedClient !== clients ? 'hidden':''}`} onClick={() => setSelectedClient([])}>{t('clients.buttons.deselectAll')}</button>
           )  
           }
 

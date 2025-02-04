@@ -47,7 +47,7 @@ const ClientInterface = () => {
 
 
   const {data , isLoading, error} = useList({
-    resource: 'api/v1/bo/customers/'+id,
+    resource: 'api/v1/bo/customers/'+id+'/',
     meta: {
       headers: {
         'X-Restaurant-ID': 1,
@@ -63,6 +63,7 @@ const ClientInterface = () => {
       },
     },
   });
+  console.log(data)
 
   const [reservation, setReservation] = useState<BaseRecord[]>([]);
 
@@ -142,15 +143,8 @@ const ClientInterface = () => {
   //   },
   // ];
 
+  
   const reservationHistory = [
-    {
-      date: '2024-10-26',
-      time: '09:00',
-      status: 'Pending',
-      tables: 'T-1',
-      source: 'Website',
-      floor_name : 'Terrace'
-    },
     {
       date: '2024-10-26',
       time: '09:00',
@@ -381,7 +375,7 @@ const ClientInterface = () => {
                                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                                   res.status === 'Confirmed' ? 'bg-softgreentheme text-greentheme' :
                                   res.status === 'Cancelled' ? 'bg-softredtheme text-redtheme' :
-                                  'bg-softyellowtheme text-yellowtheme'
+                                  'bg-softbluetheme text-bluetheme'
                                 }`}>
                                   {res.status === 'Confirmed' ? t('clients.reservationHistorySection.statusLabels.confirmed') : res.status === 'Cancelled' ? t('clients.reservationHistorySection.statusLabels.cancelled') : t('clients.reservationHistorySection.statusLabels.pending')}
                                 </span>

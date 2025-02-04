@@ -1,12 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import DesignCanvas from '../../components/places/design/DesignCanvas';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { BaseKey, BaseRecord, useCreate, useDelete, useList } from '@refinedev/core';
+import { BaseKey, BaseRecord, useCreate, useDelete, useList, useUpdate } from '@refinedev/core';
 import axios from 'axios';
 
 const DesignPlaces: React.FC = () => {
 
+    const { roofId } = useParams();
+
+    
+
+    const { mutate: upDateFloor} = useUpdate({
+        resource: `api/v1/bo/floors`,
+        meta:{
+          headers: {
+            "X-Restaurant-ID": 1,
+          },
+        },
+      });
 
     const { mutate: mutateDeleting} = useDelete();
 
@@ -33,15 +45,26 @@ const DesignPlaces: React.FC = () => {
 
         mutate({
           values:{
-            name: inputPlace.value.trim(), 
+            name: inputPlace.value.trim(),
+            tables: []
           }
         });
-        window.location.reload();
+
+        // window.location.reload();
         
       };
 
+      const {data: oneFloor, isLoading: oneFloorLoading, error: oneFloorError} = useList({
+        resource: `api/v1/bo/floors/${roofId}/`,
+        meta:{
+          headers: {
+            "X-Restaurant-ID": 1,
+          },
+        },
+      });
+
   const { data, isLoading, error } = useList({
-    resource: "api/v1/bo/floors",
+    resource: "api/v1/bo/floors/",
     meta: {
       headers: {
         "X-Restaurant-ID": 1,
@@ -49,11 +72,48 @@ const DesignPlaces: React.FC = () => {
     },
   });
 
-  console.log(data)
+  console.log(data);
+
+
+  interface Table {
+    id: BaseKey,
+    name: string,
+    type: string,
+    width: number,
+    height: number,
+    x: number,
+    y: number,
+    max: number,
+    min:  number,
+    floor: BaseKey,
+    reservations: BaseKey[]
+}
 
     const [showAddPlace, setShowAddPlace] = useState(false);
     const [focusedRoof, setFocusedRoof] = useState<BaseKey | undefined>(1);
+    const [focusedFloorTables, setFocusedFloorTables] = useState<Table[]>([]);
     const [roofs, setRoofs] = useState<BaseRecord[]>([]);
+
+    const saveFloor = (tables: Table[]) => {
+        upDateFloor({
+            id: focusedRoof+'/',
+            values: {
+                tables,
+            },
+        });
+    }
+
+    const [thisFloor, setThisFloor] = useState<BaseRecord | undefined>();
+
+    useEffect(() => {
+        setThisFloor(oneFloor?.data as BaseRecord);
+    }, [oneFloor]);
+
+    useEffect(() => {
+        if (thisFloor) {
+            setFocusedFloorTables(thisFloor.tables);
+        }
+    }, [thisFloor]);
 
     useEffect(() => {
         if (data?.data) {
@@ -67,31 +127,31 @@ const DesignPlaces: React.FC = () => {
         if (!confirm('Are you sure you want to delete this roof?')) {
             return;
         }
-        // mutateDeleting(
-        //     {
-        //         resource: `api/v1/bo/floors/${roofId}/`, // Correct resource for roofs
-        //         id: roofId,
-        //         meta: {
-        //             headers: {
-        //                 "X-Restaurant-ID": 1,
-        //             },
-        //         },
-        //     },
-        //     {
-        //         onSuccess: () => {
-        //             // Update local state instead of reloading the page
-        //             setRoofs((prevRoofs) => prevRoofs.filter((r) => r.id !== roofId));
-        //             if (focusedRoof === roofId) {
-        //                 setFocusedRoof(undefined);
-        //             }
-        //             console.log("Roof deleted successfully!");
-        //         },
-        //         onError: (error) => {
-        //             console.error("Error deleting roof:", error);
-        //             alert("Failed to delete roof. Please try again.");
-        //         },
-        //     }
-        // );
+        mutateDeleting(
+            {
+                resource: `api/v1/bo/floors`, // Correct resource for roofs
+                id: roofId+'/',
+                meta: {
+                    headers: {
+                        "X-Restaurant-ID": 1,
+                    },
+                },
+            },
+            {
+                onSuccess: () => {
+                    // Update local state instead of reloading the page
+                    setRoofs((prevRoofs) => prevRoofs.filter((r) => r.id !== roofId));
+                    if (focusedRoof === roofId) {
+                        setFocusedRoof(undefined);
+                    }
+                    console.log("Roof deleted successfully!");
+                },
+                onError: (error) => {
+                    console.error("Error deleting roof:", error);
+                    alert("Failed to delete roof. Please try again.");
+                },
+            }
+        );
         // window.location.reload();
         // setRoofs(prevRoofs => prevRoofs.filter(r => r.id !== roofId));
         // if (focusedRoof === roofId) {
@@ -115,6 +175,7 @@ const DesignPlaces: React.FC = () => {
     setShowAddPlace(false);
   };
 
+
   const { t } = useTranslation();
 
     return (
@@ -135,7 +196,7 @@ const DesignPlaces: React.FC = () => {
                 </div>
             )}
             <div className='flex justify-start gap-3 mb-2'>
-                <Link to='/places' className='hover:bg-softgreentheme px-4 items-center flex justify-center text-greentheme font-bold rounded-[10px]' >{'<'}</Link>
+                <Link to='/places/design' className='hover:bg-softgreentheme px-4 items-center flex justify-center text-greentheme font-bold rounded-[10px]' >{'<'}</Link>
                 <h1 className='text-3xl font-[700]'>{t('editPlace.title')}</h1>
             </div>
             <div className='flex overflow-y-scroll w-[80vw] mx-auto  no-scrollbar gap-5'>
@@ -143,12 +204,12 @@ const DesignPlaces: React.FC = () => {
                     <div
                         key={roof.id}
                         className={`${
-                            focusedRoof === roof.id ? 'btn-primary' : 'btn-secondary'
+                            window.location.pathname === '/places/design/'+roof.id ? 'btn-primary' : 'btn-secondary'
                         } gap-3 flex`}
                     >
-                        <button onClick={() => setFocusedRoof(roof.id)}>
+                        <Link to={`/places/design/`+roof.id} onClick={() => setFocusedRoof(roof.id)} className='flex gap-3'>
                             {roof.name}
-                        </button>
+                        </Link>
                         <button className='' onClick={() => roof.id && deleteRoof(roof.id)}>
                             <svg
                                 width="13"
@@ -184,7 +245,7 @@ const DesignPlaces: React.FC = () => {
               </button>
             </div>
 
-            <DesignCanvas focusedRoofId={focusedRoof}/>
+            <DesignCanvas isLoading={isLoading} onSave={saveFloor} tables={focusedFloorTables} focusedRoofId={focusedRoof}/>
         </div>
     );
 };
