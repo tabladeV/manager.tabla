@@ -26,14 +26,10 @@ interface Review {
 }
 
 
-interface range {
-  start: string,
-  end: string
-}
 
 const HistoryList  = () => {
 
-  const [timeRange, setTimeRange] = useState<range>({start: '2023-01-01', end: '2023-12-31'})
+  const [timeRange, setTimeRange] = useState<string>('last_7_days');
 
   const {data: reviewsData, isLoading, error} = useList({
           resource: 'api/v1/reviews',
@@ -59,42 +55,13 @@ const HistoryList  = () => {
 
   const { t } = useTranslation()
 
-  const generateData = (range: range) => {
-    const startDate = new Date(range.start);
-    const endDate = new Date(range.end);
-    const names = ['Ada Lovelace', 'Grace Hopper', 'Alan Turing', 'Linus Torvalds', 'Margaret Hamilton'];
-    const comments = ['Had a great time', 'Would recommend', 'Will come back', 'Not satisfied', 'Would not recommend'];
-    const ratings = ['5', '3.5','4.5', '2', '1'];
-    const colors = ['bg-redtheme', 'bg-bluetheme', 'bg-greentheme'];
-
-    const data = [];
-    for (let d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
-      const name = names[Math.floor(Math.random() * names.length)];
-      const comment = comments[Math.floor(Math.random() * comments.length)];
-      const color = colors[Math.floor(Math.random() * colors.length)];
-      const rating = ratings[Math.floor(Math.random() * ratings.length)];
-      data.push({
-        name,
-        color,
-        time: `${d.toLocaleTimeString()} ${d.toLocaleDateString()}`,
-        rating,
-        comment,
-      });
-    }
-    return data;
-  };
-
   const colors = [
     'bg-redtheme',
     'bg-bluetheme',
     'bg-greentheme',
   ]
 
-  const [data, setData] = useState(generateData(timeRange));
 
-  useEffect(() => {
-    setData(generateData(timeRange));
-  }, [timeRange]);
 
   const [showText,setShowText] = useState(false)
   
@@ -104,7 +71,7 @@ const HistoryList  = () => {
       <div className='flex justify-between items-center p-4'>
         <h1 className='text-xl font-bold'>{t('overview.reviews.title')}</h1>
         
-        <Filter onClick={(range: range) => setTimeRange(range)} />
+        <Filter onClick={(range: string) => setTimeRange(range)} />
       </div>
       <div className='flex flex-col no-scrollbar overflow-y-scroll h-[330px] gap-4 p-2'>
         {reviews.map((item, index) => (

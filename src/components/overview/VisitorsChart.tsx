@@ -14,10 +14,10 @@ interface range {
 
 export default function ReservationSource() {
   
-  const [timeRange, setTimeRange] = useState<range>({start: '2023-01-01', end: '2023-12-31'})
+  const [timeRange, setTimeRange] = useState<string>('last_7_days')
 
 
-  const generateChartData = (start: string, end: string) => {
+  const generateChartData = () => {
     // Example logic to generate data based on date range
     const data = [
       { action: "Market Place", count: Math.floor(Math.random() * 200), fill: "#6411ad" },
@@ -28,11 +28,11 @@ export default function ReservationSource() {
     return data;
   };
 
-  const [chartData, setChartData] = useState(generateChartData(timeRange.start, timeRange.end));
+  const [chartData, setChartData] = useState(generateChartData());
 
  // Update chart data when time range changes
   useEffect(() => {
-    setChartData(generateChartData(timeRange.start, timeRange.end));
+    setChartData(generateChartData());
   }, [timeRange]);
 
 
@@ -47,10 +47,10 @@ export default function ReservationSource() {
     <div className={` ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme text-textdarktheme':'bg-white text-blacktheme'}  rounded-[20px] lt-sm:w-full overflow-hidden`}>
       <div className="px-6 py-4 flex justify-between">
         <h2 className="text-xl  font-bold mb-2">{t('overview.charts.reservationsSource.title')}</h2>
-        <Filter onClick={(range: range) => setTimeRange(range)} />
+        <Filter onClick={(range: string) => setTimeRange(range)} />
       </div>
       <div>
-        <div className="flex items-center justify-center gap-2">
+        {/* <div className="flex items-center justify-center gap-2">
           <TrendingUp size={24} />
           <span className={`text-sm font-[600] ${localStorage.getItem('darkMode') === 'true' ? 'text-gray-200' : 'text-gray-600'}`}>{t('overview.charts.topUserActions.subtitle')}</span>
           {timeRange && (
@@ -58,7 +58,7 @@ export default function ReservationSource() {
               {`${timeRange.start} to ${timeRange.end}`}
             </span>
           )}
-        </div>
+        </div> */}
       </div>
       <div className="px-6 py-4">
         <div className="h-64">

@@ -64,7 +64,7 @@ export default function TopActions() {
     fill:string
   }
 
-  const [timeRange, setTimeRange] = useState<Range>({ start: '2023-01-01', end: '2023-12-31' })
+  const [timeRange, setTimeRange] = useState<string>()
   const [chartData, setChartData] = useState<chartType[]>()
 
   useEffect(()=>{
@@ -91,10 +91,10 @@ export default function TopActions() {
     <div className={` ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-textdarktheme' : 'bg-white text-blacktheme'}  rounded-[20px] lt-sm:w-full overflow-hidden`}>
       <div className="px-6 py-4 flex justify-between">
         <h2 className="text-xl font-bold mb-2">{t('overview.charts.topUserActions.title')}</h2>
-        <Filter onClick={(range: Range) => setTimeRange(range)} />
+        <Filter onClick={() => setTimeRange('last_7_days')} />
       </div>
       <div>
-        <div className="flex items-center justify-center gap-2">
+        {/* <div className="flex items-center justify-center gap-2">
           <TrendingUp size={24} />
           <span className={`text-sm font-[600] ${localStorage.getItem('darkMode') === 'true' ? 'text-gray-200' : 'text-gray-600'}`}>{t('overview.charts.topUserActions.subtitle')}</span>
           {timeRange && (
@@ -102,7 +102,7 @@ export default function TopActions() {
               {`${timeRange.start} to ${timeRange.end}`}
             </span>
           )}
-        </div>
+        </div> */}
       </div>
       <div className="px-6 py-4">
         <div className="h-64">
