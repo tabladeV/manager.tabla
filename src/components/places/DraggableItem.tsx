@@ -9,7 +9,7 @@ interface tablesType {
   name: string;
 }
 interface DraggableItemProps {
-  itemData: { id: BaseKey; full_name: string; time: string; date: string; status: "PENDING" | "CONFIRMED" | "CANCELED";number_of_guests: number; occasion?: string ; created_at: string; tables: tablesType[] }; 
+  itemData: { id: BaseKey; full_name: string; time: string; date: string; status: "PENDING" | "APPROVED" | "CANCELED";number_of_guests: number; occasion?: string ; created_at: string; tables: tablesType[] }; 
 }
 
 const ItemType = 'BOX';
@@ -20,8 +20,18 @@ const DraggableItem = (props:DraggableItemProps) => {
   const { itemData } = props;
   const [, drag] = useDrag(() => ({
     type: ItemType,
-    item: { id: itemData.id }, // This is the data being passed
-    canDrag: true,
+    item: { 
+      id: itemData.id,
+      full_name: itemData.full_name,
+      time: itemData.time,
+      date: itemData.date,
+      status: itemData.status,
+      number_of_guests: itemData.number_of_guests,
+      occasion: itemData.occasion,
+      created_at: itemData.created_at,
+      tables: itemData.tables
+     }, // This is the data being passed
+    canDrag: itemData.status === 'APPROVED',
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),

@@ -9,7 +9,7 @@ import DraggableItem from '../../components/places/DraggableItem';
 import DropTarget from '../../components/places/DropTarget';
 import SearchBar from '../../components/header/SearchBar';
 import { Link } from 'react-router-dom';
-import { getHours, getMinutes, getSeconds } from 'date-fns';
+import { addHours, getHours, getMinutes, getSeconds, parse, set } from 'date-fns';
 
 import { useDateContext } from '../../context/DateContext'; 
 import { BaseKey, BaseRecord, useList } from '@refinedev/core';
@@ -21,7 +21,7 @@ interface Reservation {
   full_name: string;
   time: string;
   date: string;
-  status: "PENDING" | "CONFIRMED" | "CANCELED";
+  status: "PENDING" | "APPROVED" | "CANCELED";
   number_of_guests: number;
   occasion?: string;
   created_at: string;
@@ -71,8 +71,13 @@ const PlacePage: React.FC = () => {
   const { chosenDay } = useDateContext(); 
 
   
-  const currentHour = `${getHours(new Date())}:${getMinutes(new Date())}:${getSeconds(new Date())}`;
+  const currentHour = `${getHours(new Date())}:00:00`;
   const [time, setTime] = useState(currentHour);
+  useEffect(() => {
+    setTime(currentHour);
+  }, [currentHour]);
+
+  console.log(time.slice(0,5), 'currentHour');
   const [chosenHour, setChosenHour] = useState(currentHour);
 
   function selectedHour(hour: string) {
@@ -120,26 +125,28 @@ const PlacePage: React.FC = () => {
       },
     },
   });
+
+  console.log(tablesData?.data);
   
   const { data: reservationsData, isLoading: isLoadingReservations, error: errorReservations } = useList<Reservation>({
     resource: "api/v1/bo/reservations/",
-    // filters: [
-    //   {
-    //     field: "date",
-    //     operator: "between",
-    //     value: format(chosenDay, 'yyyy-MM-dd'),
-    //   },
-    //   // {
-    //   //   field: "time__gte",
-    //   //   operator: "gte",
-    //   //   value: time,
-    //   // },
-    //   // {
-    //   //   field: "time__lte",
-    //   //   operator: "lte",
-    //   //   value: '23:59:59',
-    //   // },
-    // ],
+    filters: [
+      {
+        field: "date",
+        operator: "eq",
+        value: format(chosenDay, 'yyyy-MM-dd'),
+      },
+      {
+        field: "time",
+        operator: "eq",
+        value: time+':00',
+      },
+      // {
+      //   field: "time__lte",
+      //   operator: "lte",
+      //   value: '23:59:59',
+      // },
+    ],
     meta: {
       headers: {
         "X-Restaurant-ID": 1,
@@ -246,6 +253,8 @@ const PlacePage: React.FC = () => {
   };
   
 
+  
+
 
   return (
 
@@ -292,12 +301,12 @@ const PlacePage: React.FC = () => {
                 ))}
               </div>
               <div>
-                <select id='hourChosen' className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'} `} onChange={(e) => { setFilteringHour(e.target.value); selectedHour(e.target.value); }}>
+                <select defaultValue={time} id='hourChosen' className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'} `} onChange={(e) => { setFilteringHour(e.target.value); selectedHour(e.target.value); }}>
                   {hours.map((hour) => (
-                    <option key={hour.id} selected={hour.time === currentHour.slice(5)} value={hour.time}>
+                    <option key={hour.id} selected={hour.time === time} value={hour.time}>
                       {hour.time}
                     </option>
-                  ))}
+                  ))} 
                 </select>
               </div>
             </div>

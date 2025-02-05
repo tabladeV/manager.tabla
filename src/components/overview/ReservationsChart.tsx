@@ -18,6 +18,7 @@ const generateMockData = (months: number) => {
   }))
 }
 
+
 const determineTimeUnit = (start: string, end: string) => {
   const startDate = new Date(start);
   const endDate = new Date(end);
@@ -78,6 +79,7 @@ const generateData = (start: string, end: string) => {
   return data;
 };
 
+
 interface range {
   start: string,
   end: string
@@ -111,7 +113,7 @@ export default function ReservationsChart() {
   const { t } = useTranslation()
   
   const { data, isLoading, error } = useList({
-    resource: "api/v1/bo/floors",
+    resource: "api/v1/dashboard/chart",
     meta: {
       headers: {
         "X-Restaurant-ID": 1,
@@ -120,28 +122,17 @@ export default function ReservationsChart() {
     
   });
 
-  console.log(data)
-
 
   
-  // useEffect(() => {
-  //   axios
-  //     .get("http://128.199.50.127/api/v1/bo/tables", {
-        
-  //       headers: {
-  //         "X-Restaurant-ID": 1
-  //       },
-  //     })
-  //     .then((res) => {
-  //       console.log(res.data);
-        
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     })
-      
-  // }, []);
 
+
+  const [chartReservationsData, setReservationsData] = useState()
+
+  useEffect(() => {
+    if (data?.data) {
+      setChartData(data.data.last_year as any)
+    }
+  }, [data])
 
 
   

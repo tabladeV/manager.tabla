@@ -4,7 +4,7 @@ import { format, set, subDays, subMonths } from 'date-fns';
 import IntervalCalendar from '../Calendar/IntervalCalendar';
 import { Console } from 'console';
 interface FilterProps {
-    onClick: (range: {start: string, end: string}) => void;
+    onClick: (range: string) => void;
 }
 
 const Filter = (props:FilterProps) => {
@@ -16,66 +16,66 @@ const Filter = (props:FilterProps) => {
     //   props.onClick({ start, end });
     // };
 
-    const handleLast3DaysClick = () => {
-      const start = format(subDays(new Date(), 3), 'yyyy-MM-dd');
-      const end = format(new Date(), 'yyyy-MM-dd');
-      props.onClick({ start, end });
-      console.log(start, end);
+    const last7Days = () => {
+      // const start = format(subDays(new Date(), 3), 'yyyy-MM-dd');
+      // const end = format(new Date(), 'yyyy-MM-dd');
+      props.onClick('last_7_days');
+      // console.log(start, end);
       setShowFilter(false);
     };
 
-    const handleLast7DaysClick = () => {
-      const start = format(subDays(new Date(), 7), 'yyyy-MM-dd');
-      const end = format(new Date(), 'yyyy-MM-dd');
-      props.onClick({ start, end });
+    const lastMonth = () => {
+      // const start = format(subDays(new Date(), 7), 'yyyy-MM-dd');
+      // const end = format(new Date(), 'yyyy-MM-dd');
+      props.onClick('last_month');
       setShowFilter(false);
 
     };
 
-    const handleLast3MonthsClick = () => {
-      const start = format(subMonths(new Date(), 3), 'yyyy-MM-dd');
-      const end = format(new Date(), 'yyyy-MM-dd');
-      props.onClick({ start, end });
+    const lastYear = () => {
+      // const start = format(subMonths(new Date(), 3), 'yyyy-MM-dd');
+      // const end = format(new Date(), 'yyyy-MM-dd');
+      props.onClick('last_year');
       setShowFilter(false);
 
     };
 
     const [selection, setSelection] = React.useState(false);
 
-    const handleDateClick = (range: { start: Date, end: Date }) => {
-      const start = format(range.start, 'yyyy-MM-dd');
-      const end = format(range.end, 'yyyy-MM-dd');
-      props.onClick({ start, end });
-      setShowFilter(false);
-      setSelection(false);
-      console.log(start, end);
+    // const handleDateClick = (range: { start: Date, end: Date }) => {
+    //   const start = format(range.start, 'yyyy-MM-dd');
+    //   const end = format(range.end, 'yyyy-MM-dd');
+    //   props.onClick({ start, end });
+    //   setShowFilter(false);
+    //   setSelection(false);
+    //   console.log(start, end);
 
-    }
+    // }
 
-    const rangeOfDays = () => {
-      setSelection(true);
-      setShowFilter(false);
-    }
+    // const rangeOfDays = () => {
+    //   setSelection(true);
+    //   setShowFilter(false);
+    // }
 
     
   return (
     <div className='relative'>
-        {selection && 
+        {/* {selection && 
           <div>
             <div className='overlay' onClick={()=>{setSelection(false)}}/>
             <div className={`popup lt-sm:w-full h-[50vh] lt-sm:h-[70vh] z-[250] lt-sm:bottom-0 ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'}`}>
               <IntervalCalendar onRangeSelect={handleDateClick} />
             </div>
           </div>
-        }
+        } */}
         {showFilter && 
             <div>
                 <div className='overlay bg-transparent' onClick={()=>{setShowFilter(false)}}/>
                 <div className={`absolute w-[11em] flex flex-col p-2 rounded-md ml-[-5.8em] justify-between items-start mt-[2.6em] z-[230]  ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`}>
-                    <div onClick={rangeOfDays} className='items-center w-full cursor-pointer hover:opacity-70 p-1 flex gap-2 justify-start'>Select date range</div>
-                    <div onClick={handleLast3DaysClick} className='items-center w-full cursor-pointer hover:opacity-70 p-1 flex gap-2 justify-start'>Last 3 days</div>
-                    <div onClick={handleLast7DaysClick} className='items-center w-full cursor-pointer hover:opacity-70 p-1 flex gap-2 justify-start'>Last 7 days</div>
-                    <div onClick={handleLast3MonthsClick} className='items-center w-full cursor-pointer hover:opacity-70 p-1 flex gap-2 justify-start'>Last 3 months</div>
+                    {/* <div onClick={rangeOfDays} className='items-center w-full cursor-pointer hover:opacity-70 p-1 flex gap-2 justify-start'>Select date range</div> */}
+                    <div onClick={last7Days} className='items-center w-full cursor-pointer hover:opacity-70 p-1 flex gap-2 justify-start'>Last week</div>
+                    <div onClick={lastMonth} className='items-center w-full cursor-pointer hover:opacity-70 p-1 flex gap-2 justify-start'>Last month</div>
+                    <div onClick={lastYear} className='items-center w-full cursor-pointer hover:opacity-70 p-1 flex gap-2 justify-start'>Last year</div>
                 </div>
             </div>
         }

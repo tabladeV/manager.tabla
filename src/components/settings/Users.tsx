@@ -1,4 +1,6 @@
-import { useList } from "@refinedev/core"
+import { BaseKey, useCreate, useList, useUpdate } from "@refinedev/core"
+import { set } from "date-fns"
+import { is } from "date-fns/locale"
 import { useState, useCallback, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -6,7 +8,10 @@ interface User {
   id: number
   first_name: string
   last_name: string
-  role: string
+  role: {
+    id: BaseKey,
+    name: string
+  }
   phone: string
   email: string
 }
@@ -14,24 +19,48 @@ interface User {
 const initialUsers: User[] = [
   {
     id: 1,
-    first_name: 'John',
-    last_name: 'Doe',
-    role: 'Manager',
-    phone: '1234567890',
-    email: 'JohnDoe@gmail.com',
+    first_name: '',
+    last_name: '',
+    role: {
+      id: 0,
+      name: ''
+    },
+    phone: '',
+    email: '',
   }
 ]
 
 export default function Users() {
 
-  const{data, isLoading, error} = useList({
-    resource: 'api/v1/api/v1/bo/restaurants/users',
+  const {data:rolesData, isLoading:rolesLoading, error:rolesError} = useList({
+    resource: 'api/v1/bo/roles/',
     meta: {
       headers: {
         'X-Restaurant-ID': 1
       }
     }
   })
+  console.log('roles',rolesData?.data)
+
+  const{data, isLoading, error} = useList({
+    resource: 'api/v1/api/v1/bo/restaurants/users/',
+    meta: {
+      headers: {
+        'X-Restaurant-ID': 1
+      }
+    }
+  })
+
+  const{mutate: updateUser} = useUpdate({
+    resource: `api/v1/api/v1/bo/restaurants/users`,
+    meta:{
+      headers: {
+        "X-Restaurant-ID": 1,
+      },
+    },
+  });
+
+
 
   console.log('users',data?.data)
 
@@ -48,6 +77,7 @@ export default function Users() {
   const openModal = useCallback((user: User | null) => {
     setSelectedUser(user)
     setIsModalOpen(true)
+    setIsUpdating(true)
   }, [])
 
   const closeModal = useCallback(() => {
@@ -73,40 +103,123 @@ export default function Users() {
     }
   }, [selectedUser, users, closeModal])
 
+  const [isUpdating, setIsUpdating] = useState(false)
+
   const addUser = useCallback(() => {
     const newUser: User = {
       id: 0,
       first_name: '',
       last_name: '',
-      role: '',
+      role: {
+        id: 0,
+        name: ''
+      },
       phone: '',
       email: '',
     }
     openModal(newUser)
+    setIsUpdating(false)
   }, [openModal])
 
   const {t}= useTranslation();
 
+  const [roleSelected, setRoleSelected] = useState<string>()
+  useEffect(() => {
+    setRoleSelected(selectedUser?.role.id.toString())
+  }, [roleSelected])
+
+  const {mutate: updateRole} = useCreate({
+    resource: `api/v1/bo/roles/${selectedUser?.role.id}/assign-user/${selectedUser?.id}/`,
+    meta:{
+      headers: {
+        "X-Restaurant-ID": 1,
+      },
+    },
+  });
+
+  useEffect(() => {
+    setRoleSelected((document.getElementById('roleUpdate') as HTMLSelectElement)?.value || '')
+  }, [])
+  console.log('roleSelected',roleSelected)
+
+  const handleUserUpdate = () => {
+
+
+    if (selectedUser) {
+      updateUser({
+        id: '1/',
+        values: {
+          first_name: selectedUser.first_name,
+          last_name: selectedUser.last_name,
+          email: selectedUser.email,
+        },
+      });
+      updateRole({
+        values: {
+          // role: roleSelected,
+        },
+        
+      });
+      // setIsUpdating(false);
+      // setIsModalOpen(false);
+
+    }
+  };
+
+
+
   return (
     <div className={`w-full rounded-[10px] flex flex-col items-center p-10 ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'}`}>
-      {isModalOpen && (
+      {( !isUpdating ) ? (isModalOpen && (
         <div >
-          <div className="overlay" onClick={closeModal}></div>
+          {/* <div className="overlay" onClick={closeModal}></div>
           <div className={`sidepopup lt-sm:popup lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:rounded-b-none lt-sm:w-full h-full ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'}`}>
             <h1 className="text-2xl font-bold mb-3">{selectedUser?.id ? 'Modify' : 'Add'} User</h1>
             <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-              <input type="text" id="name" placeholder="Name" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.first_name || ''} onChange={handleInputChange} required />
-              {/* <input type="tel" id="phoneNumber" placeholder="Phone Number" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.phone || ''} onChange={handleInputChange} /> */}
+              <input type="text" id="first_name" placeholder="first Name" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.first_name || ''} onChange={handleInputChange} required />
+              <input type="text" id="last_name" placeholder="Last Name" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.last_name || ''} onChange={handleInputChange} required />
               <input type="email" id="email" placeholder="Email" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.email || ''} onChange={handleInputChange} required />
-              <select id="groups" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.role || ''} onChange={handleInputChange}>
-                <option value="Manager">Manager</option>
-                <option value="Staff">Staff</option>
-              </select>
+                <select id="role" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.role.name || ''} onChange={handleInputChange}>
+                {
+                  rolesData?.data.map((role:any)=>(
+                    <option key={role.id} value={role.name}>{role.name}</option>
+                  ))
+                 }
+                </select>
               <div className="flex justify-center gap-4">
                 <button type="button" className={localStorage.getItem('darkMode')==='true'?'btn text-white hover:text-redtheme border-white hover:border-redtheme':'btn'} onClick={closeModal}>Cancel</button>
                 <button type="submit" className="btn-primary">Save</button>
               </div>
             </form>
+          </div> */}
+        </div>
+      )): isModalOpen && (
+        <div >
+          <div className="overlay" onClick={closeModal}></div>
+          <div className={`sidepopup lt-sm:popup lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:rounded-b-none lt-sm:w-full h-full ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'}`}>
+            <h1 className="text-2xl font-bold mb-3">{selectedUser?.id ? 'Modify' : 'Add'} User</h1>
+            <div className="flex flex-col gap-3">
+              <input type="text" id="first_name" placeholder="first Name" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.first_name || ''} onChange={handleInputChange} required />
+              <input type="text" id="last_name" placeholder="Last Name" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.last_name || ''} onChange={handleInputChange} required />
+              {/* <input type="tel" id="phoneNumber" placeholder="Phone Number" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.phone || ''} onChange={handleInputChange} /> */}
+              <input type="email" id="email" placeholder="Email" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.email || ''} onChange={handleInputChange} required />
+              <select
+                id="roleUpdate"
+                className={`inputs ${localStorage.getItem('darkMode')==='true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                defaultValue={roleSelected || selectedUser?.role.id} // Ensure the value is ID, not name
+                onChange={(e)=>{setRoleSelected(e.target.value)}} // Set role ID
+              >
+                {
+                  rolesData?.data.map((role: any) => (
+                    <option key={role.id} value={role.id}>{role.name}</option>
+                  ))
+                }
+              </select>
+              <div className="flex justify-center gap-4">
+                {/* <button type="button"  className={localStorage.getItem('darkMode')==='true'?'btn text-white hover:text-redtheme border-white hover:border-redtheme':'btn'} onClick={closeModal}>Cancel</button> */}
+                <button onClick={handleUserUpdate} className="btn-primary">Save</button>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -129,7 +242,7 @@ export default function Users() {
                 <td className="px-6 py-4">{user.first_name} {user.last_name}</td>
                 {/* <td className="px-6 py-4">{user.phone}</td> */}
                 <td className="px-6 py-4">{user.email}</td>
-                <td className="px-6 py-4">{user.role}</td>
+                <td className="px-6 py-4">{user.role.name}</td>
               </tr>
             ))}
           </tbody>

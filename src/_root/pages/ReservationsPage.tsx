@@ -8,6 +8,7 @@ import 'i18next'
 import { useTranslation } from 'react-i18next';
 import ReservationModal from "../../components/reservation/ReservationModal"
 import { BaseKey, BaseRecord, useCreate, useList, useUpdate } from "@refinedev/core"
+import ReservationProcess from "../../components/reservation/ReservationProcess"
 
 interface Reservation extends BaseRecord {
   id: BaseKey;
@@ -23,6 +24,16 @@ interface Reservation extends BaseRecord {
 }
 
 const ReservationsPage = () => {
+
+
+  interface dataTypes {
+    reserveDate: string,
+    time: string,
+    guests: number
+  }
+  const [showProcess, setShowProcess] = useState(false)
+  
+
   const { t } = useTranslation();
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const { data, isLoading, error } = useList<Reservation>({
@@ -33,38 +44,42 @@ const ReservationsPage = () => {
       },
     },
   });
+
+  console.log(data)
   const { mutate, isLoading: postLoading, error: postError } = useCreate();
 
-  const handleCreate = () => {
+  // const handleCreate = () => {
     
-    mutate(
-      {
-        resource: "api/v1/bo/reservations", // API resource
-        values: {
-          title: "My New Post",
-          content: "This is the content of the new post.",
-        },
-        meta: {
-          headers: {
-            "X-Restaurant-ID": 1,
-          },
-        },
-      },
-      {
-        onSuccess: (data) => {
-          console.log("Post created successfully:", data);
-        },
-        onError: (error) => {
-          console.error("Error creating post:", error);
-        },
-      }
-    );
-  };
+  //   mutate(
+  //     {
+  //       resource: "api/v1/bo/reservations", // API resource
+  //       values: {
+  //         title: "My New Post",
+  //         content: "This is the content of the new post.",
+  //       },
+  //       meta: {
+  //         headers: {
+  //           "X-Restaurant-ID": 1,
+  //         },
+  //       },
+  //     },
+  //     {
+  //       onSuccess: (data) => {
+  //         console.log("Post created successfully:", data);
+  //       },
+  //       onError: (error) => {
+  //         console.error("Error creating post:", error);
+  //       },
+  //     }
+  //   );
+  // };
   const [selectedClient, setSelectedClient] = useState<Reservation | null>(null)
 
-  const { mutate: upDateReservation } = useUpdate({
-    resource: `api/v1/bo/reservations/${selectedClient?.id}/`,
-  });
+  const [reservationProgressData, setReservationProgressData] = useState({
+    reserveDate: selectedClient?.date,
+    time: selectedClient?.time,
+    guests: selectedClient?.guests
+  })
 
 
   
@@ -136,7 +151,56 @@ const ReservationsPage = () => {
 
   const [showModal, setShowModal] = useState(false)
 
+  const [editingClient, setEditingClient] = useState<BaseKey | undefined>(undefined)
+
+  const { mutate: upDateReservation } = useUpdate({
+    resource: `api/v1/bo/reservations`,
+  });
+
+  
+
+  const upDateHandler = () => {
+    
+    if (selectedClient) {
+
+      console.log(selectedClient)
+      upDateReservation({
+        id: editingClient+'/',
+        values: {
+          full_name: selectedClient.full_name,
+          email: selectedClient.email,
+          table_name: selectedClient.table_name,
+          source: selectedClient.source,
+          status: selectedClient.status,
+          date: reservationProgressData.reserveDate,
+          time: reservationProgressData.time+ ':00',
+          number_of_guests: reservationProgressData.guests ,
+          commenter: selectedClient.commenter,
+        },
+        meta: {
+          headers: {
+            "X-Restaurant-ID": 1,
+          },
+        },
+        
+      });
+      window.location.reload();
+      
+    }
+  }
+
+  useEffect(() => {
+    if (selectedClient) {
+      setReservationProgressData({
+        reserveDate: selectedClient.date,
+        time: selectedClient.time.slice(0,5),
+        guests: parseInt(selectedClient.number_of_guests)
+      })
+    }
+  }, [selectedClient])
+
   const EditClient = (id: BaseKey | undefined) => {
+    setEditingClient(id);
     if (!id) return;
     const client = reservations.find(r => r.id === id);
     if (client) {
@@ -249,11 +313,13 @@ const ReservationsPage = () => {
 
   return (
     <div>
+      {showProcess && <div className=''><ReservationProcess onClick={()=>{setShowProcess(false)}} getDateTime={(data:dataTypes)=>{setReservationProgressData(data)}}/></div>}
+
       {showAddReservation && <ReservationModal  onClick={()=>{setShowAddReservation(false)}}  onSubmit={(data: Reservation)=>{setReservations([...reservations, data])}} />} 
       {showModal && selectedClient && (
         <div>
           <div className="overlay" onClick={() => setShowModal(false)}></div>
-          <div className={`sidepopup overflow-y-auto lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:overflow-y-auto h-full ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'} `}>
+          <div className={`sidepopup w-[45%] overflow-y-auto lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:overflow-y-auto h-full ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'} `}>
             <h1 className="text-2xl font-[600] mb-4">{t('reservations.edit.title')} by <span className="font-[800]">{selectedClient.full_name}</span></h1>
             <div className="space-y-2">
               <div>
@@ -262,7 +328,7 @@ const ReservationsPage = () => {
                   type="text"
                   name="fullName"
                   value={selectedClient.full_name}
-                  onChange={handleInputChange}
+                  onChange={(e)=>setSelectedClient({...selectedClient, full_name: e.target.value})}
                   className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
 />
               </div>
@@ -272,67 +338,40 @@ const ReservationsPage = () => {
                   type="email"
                   name="email"
                   value={selectedClient.email}
-                  onChange={handleInputChange}
+                  onChange={(e)=>setSelectedClient({...selectedClient, email: e.target.value})}
                   className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
 />
               </div>
-              <div>
-                <label className="block text-sm font-medium ">{t('reservations.edit.informations.date')}</label>
-                <input
-                  type="text"
-                  name="date"
-                  value={selectedClient.date}
-                  onChange={handleInputChange}
-                  className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
-/>
-              </div>
-              <div>
-                <label className="block text-sm font-medium ">{t('reservations.edit.informations.time')}</label>
-                <input
-                  type="text"
-                  name="time"
-                  value={selectedClient.time}
-                  onChange={handleInputChange}
-                  className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
-/>
-              </div>
-              <div>
+              
+              
+              {/* <div>
                 <label className="block text-sm font-medium ">{t('reservations.edit.informations.tableName')}</label>
                 <input
                   type="text"
                   name="place"
                   value={selectedClient.table_name}
-                  onChange={handleInputChange}
+                  onChange={(e)=>setSelectedClient({...selectedClient, table: e.target.value})}
                   className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
 />
-              </div>
+              </div> */}
               <div>
                 <label className="block text-sm font-medium ">{t('reservations.edit.informations.madeBy')}</label>
                 <input
                   type="text"
                   name="reservationMade"
-                  value={selectedClient.source}
-                  onChange={handleInputChange}
+                  defaultValue={selectedClient.source}
+                  onChange={(e)=>setSelectedClient({...selectedClient, source: e.target.value})}
                   className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
 />
               </div>
-              <div>
-                <label className="block text-sm font-medium ">{t('reservations.edit.informations.guests')}</label>
-                <input
-                  type="text"
-                  name="guests"
-                  value={selectedClient.number_of_guests}
-                  onChange={handleInputChange}
-                  className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
-/>
-              </div>
+              
               <div>
                 <label className="block text-sm font-medium ">{t('reservations.edit.informations.comment')}</label>
                 <input
                   type="text"
-                  name="guests"
+                  name="comment"
                   value={selectedClient.commenter}
-                  onChange={handleInputChange}
+                  onChange={(e)=>setSelectedClient({...selectedClient, commenter: e.target.value})}
                   className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
 />
               </div>
@@ -342,18 +381,26 @@ const ReservationsPage = () => {
                 <select
                   name="status"
                   value={selectedClient.status}
-                  onChange={handleInputChange}
+                  onChange={(e)=>setSelectedClient({...selectedClient, status: e.target.value})}
                   className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
 >
                   <option value="PENDING">{t('reservations.statusLabels.pending')}</option>
-                  <option value="CONFIRMED">{t('reservations.statusLabels.confirmed')}</option>
+                  <option value="APPROVED">{t('reservations.statusLabels.confirmed')}</option>
                   <option value="CANCELED">{t('reservations.statusLabels.cancelled')}</option>
                 </select>
+              </div>
+              <div onClick={()=>{setShowProcess(true)}} className={`btn flex justify-around cursor-pointer ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'}`}>
+                  {(reservationProgressData.reserveDate === '') ?<div>date </div>:<span>{reservationProgressData.reserveDate}</span>}
+                  {(reservationProgressData.time === '') ? <div>Time </div>:<span>{reservationProgressData.time}</span>} 
+                  {(reservationProgressData.guests===0) ? <div>Guests </div>:<span>{reservationProgressData.guests}</span>}
+                  
+                  
+
               </div>
               <div className="h-10 sm:hidden"></div>
               <div className="flex justify-center lt-sm:fixed lt-sm:bottom-0 lt-sm: lt-sm:p-3 lt-sm:w-full space-x-2">
                 <button onClick={() => setShowModal(false)} className="btn-secondary hover:bg-[#88AB6150] hover:text-greentheme transition-colors">{t('reservations.edit.buttons.cancel')}</button>
-                <button onClick={saveChanges} className="btn-primary">{t('reservations.edit.buttons.save')}</button>
+                <button onClick={upDateHandler} className="btn-primary">{t('reservations.edit.buttons.save')}</button>
               </div>
             </div>
           </div>

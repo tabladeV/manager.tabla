@@ -161,7 +161,7 @@ const ReservationModal = (props: ReservationModalProps) => {
           });
 
         props.onClick();
-        window.location.reload();
+        // window.location.reload();
         
     };
     
