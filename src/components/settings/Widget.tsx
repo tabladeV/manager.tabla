@@ -15,75 +15,91 @@ interface Widget {
 
 export default function WidgetConfig() {
   const [restaurantId, setRestaurantId] = useState(1);
+  const { t } = useTranslation();
 
+  // Fetch widget data
   const { data: widgetData, isLoading, error } = useList({
     resource: `api/v1/bo/restaurants/${restaurantId}/widget/`,
   });
 
-  const { mutate: updateWidget } = useUpdate();
-
+  // State for widget information
   const [widgetInfo, setWidgetInfo] = useState<Widget>();
-
-  useEffect(() => {
-    if (widgetData?.data) {
-      setWidgetInfo(widgetData.data as Widget);
-      setTitle(widgetData.data.title);
-      setDescription(widgetData.data.description);
-      setMenuPdf(widgetData.data.menu_file);
-    }
-  }, [widgetData]);
-
   const [logo, setLogo] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [menuPdf, setMenuPdf] = useState<string | null>(null);
   const [searchTabs, setSearchTabs] = useState({
     menu: true,
   });
-  const [payment, setPayment] = useState('enable');
-  const [guestThreshold, setGuestThreshold] = useState(4);
-  const [token, setToken] = useState('your-unique-token-here');
+
+  // Refs for file inputs
   const fileInputRef = useRef<HTMLInputElement>(null);
   const filePdfInputRef = useRef<HTMLInputElement>(null);
-  const [menuPdf, setMenuPdf] = useState<string | null>(null);
 
+  // Initialize widget data
+  useEffect(() => {
+    if (widgetData?.data) {
+      const data = widgetData.data as unknown as Widget;
+      setWidgetInfo(data);
+      setTitle(data.title);
+      setDescription(data.description);
+      setMenuPdf(data.menu_file || null);
+      setLogo(data.image || null);
+    }
+  }, [widgetData]);
+
+  // Handle logo upload
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      if (!file.type.startsWith('image/')) {
+        alert('Please upload an image file.');
+        return;
+      }
       const reader = new FileReader();
       reader.onload = (e) => setLogo(e.target?.result as string);
       reader.readAsDataURL(file);
     }
   };
 
+  // Handle menu PDF upload
   const handleMenuUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      if (file.type !== 'application/pdf') {
+        alert('Please upload a PDF file.');
+        return;
+      }
       const reader = new FileReader();
       reader.onload = (e) => setMenuPdf(e.target?.result as string);
       reader.readAsDataURL(file);
     }
   };
 
+  // Download menu PDF
   const downloadPdf = () => {
-    if (menuPdf) {
-      const linkSource = menuPdf;
-      const downloadLink = document.createElement('a');
-      const fileName = 'menu.pdf';
-      downloadLink.href = linkSource;
-      downloadLink.download = fileName;
-      downloadLink.click();
+    if (!menuPdf) {
+      alert('No menu PDF available to download.');
+      return;
     }
+    const linkSource = menuPdf;
+    const downloadLink = document.createElement('a');
+    const fileName = 'menu.pdf';
+    downloadLink.href = linkSource;
+    downloadLink.download = fileName;
+    downloadLink.click();
   };
 
+  // Toggle search tabs
   const handleSearchTabChange = (tab: keyof typeof searchTabs) => {
     setSearchTabs((prev) => ({ ...prev, [tab]: !prev[tab] }));
   };
 
-  const { mutate: updateWidgetInfo } = useUpdate();
-
+  // Save widget configuration
+  const { mutate: updateWidget } = useUpdate();
   const handleSave = () => {
     if (!widgetInfo) return;
-  
+
     const updatedData = {
       title,
       description,
@@ -91,14 +107,13 @@ export default function WidgetConfig() {
       menu_file: menuPdf,
       has_menu: searchTabs.menu,
     };
-  
+
     console.log('Updated Data:', updatedData);
-  
+
     // Use the `useUpdate` hook to send a PATCH request
-    updateWidgetInfo(
+    updateWidget(
       {
-        resource: `api/v1/bo/restaurants`,
-        id: `${restaurantId}/widget_partial_update/`, // Pass the widget ID
+        resource: `api/v1/bo/restaurants/${restaurantId}/widget_partial_update/`,
         values: updatedData,
       },
       {
@@ -113,54 +128,18 @@ export default function WidgetConfig() {
     );
   };
 
-  // const handleSave = () => {
-  //   if (!widgetInfo) return;
+  // Dark mode class
+  const darkModeClass = localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-white' : 'bg-white text-black';
 
-  //   const updatedData = {
-  //     title,
-  //     // description,
-  //     // menu_file: menuPdf,
-  //     // has_menu: searchTabs.menu,
-  //   };
-
-  //   console.log(updatedData);
-
-  //   // Use the `useUpdate` hook to send a PATCH request
-  //   updateWidget({
-  //     resource: `api/v1/bo/restaurants`,
-  //     id: `${restaurantId}/widget_partial_update/`,
-  //     values: updatedData,
-  //     meta: {
-  //       headers: {
-  //         'id': restaurantId,
-  //       },
-  //     },
-  //   });
-
-  //   alert('Configuration saved!');
-  // };
-
-  
-
-  const handleCopyToken = () => {
-    navigator.clipboard.writeText(token);
-    alert('Token copied to clipboard!');
-  };
-
-  const { t } = useTranslation();
-
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div className="text-center">Loading...</div>;
 
   return (
-    <div
-      className={`w-full mx-auto p-6 rounded-[10px] ${
-        localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-white' : 'bg-white text-black'
-      }`}
-    >
+    <div className={`w-full mx-auto p-6 rounded-[10px] ${darkModeClass}`}>
       <h1 className="text-2xl font-bold text-center mb-6">
         {t('settingsPage.widget.title')} for {widgetInfo?.restaurant}
       </h1>
 
+      {/* Logo Upload Section */}
       <div className="mb-6">
         {logo ? (
           <div className="relative w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden">
@@ -190,6 +169,7 @@ export default function WidgetConfig() {
         />
       </div>
 
+      {/* Title and Description Section */}
       <div className="space-y-4 mb-6">
         <input
           type="text"
@@ -206,6 +186,7 @@ export default function WidgetConfig() {
         />
       </div>
 
+      {/* Search Tabs Section */}
       <div className="mb-6">
         <h2 className="text-lg font-semibold mb-2">{t('settingsPage.widget.searchTabs.title')}</h2>
         <div className="flex flex-wrap gap-4">
@@ -259,6 +240,7 @@ export default function WidgetConfig() {
         )}
       </div>
 
+      {/* Save and Preview Buttons */}
       <div className="flex gap-3 space-x-4">
         <button
           onClick={handleSave}
@@ -266,7 +248,7 @@ export default function WidgetConfig() {
         >
           {t('settingsPage.widget.buttons.save')}
         </button>
-        <Link to="/widget/r/1" target="_blank" className="btn-secondary w-1/2 text-center">
+        <Link to={`/widget/r/${restaurantId}`} target="_blank" className="btn-secondary w-1/2 text-center">
           {t('settingsPage.widget.buttons.preview')}
         </Link>
       </div>

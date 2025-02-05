@@ -43,7 +43,7 @@ const General = () => {
 
   useEffect(() => {
     if (restaurantData?.data) {
-      setRestaurant(restaurantData.data as Restaurant);
+      setRestaurant(restaurantData.data as unknown as Restaurant);
     }
   }, [restaurantData]);
 
