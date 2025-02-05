@@ -50,6 +50,7 @@ import Profile from "./_root/pages/Profile";
 import ReviewPage from "./_plugin/pages/ReviewPage";
 import WidgetPage from "./_plugin/pages/WidgetPage";
 import DesignPlacesIndex from "./_root/pages/DesignPlacesIndex";
+import ErrorPage from "./_root/pages/ErrorPage";
 
 
 
@@ -128,6 +129,7 @@ function App() {
                           <Route path="/settings/photos" element={<Photos />} />
                         </Route>
                     </Route>
+                    <Route path='*' element={<ErrorPage />} />
 
                   </Routes>
                   
