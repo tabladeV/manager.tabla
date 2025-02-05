@@ -56,15 +56,15 @@ const DesignCanvas: React.FC <canvasTypes>= (props) => {
       id: 0,
       name: `Table ${Math.floor(Math.random() * 10)}`,
       type,
-      width: type === 'RECTANGLE' ? 100 : 0,
-      height: type === 'RECTANGLE' ? 100 : 0,
+      width: type === 'RECTANGLE' ? 100 : 100,
+      height: type === 'RECTANGLE' ? 100 : 100,
       x: 50,
       y: 50,
-      max: Math.floor(innerWidth/250),
+      max: Math.floor(innerWidth/300),
       min: 1,
       floor: props.focusedRoofId!,
       reservations: [],
-      ...(type === 'CIRCLE' && { width: 0, height: 0, radius: 50 }),
+      ...(type === 'CIRCLE' && { width: 100, height: 100, radius: 50 }),
     };
     setShapes([...(shapes || []), newShape]);
   };

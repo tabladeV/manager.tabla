@@ -136,11 +136,11 @@ const PlacePage: React.FC = () => {
         operator: "eq",
         value: format(chosenDay, 'yyyy-MM-dd'),
       },
-      {
-        field: "time",
-        operator: "eq",
-        value: time+':00',
-      },
+      // {
+      //   field: "time",
+      //   operator: "eq",
+      //   value: time+':00',
+      // },
       // {
       //   field: "time__lte",
       //   operator: "lte",

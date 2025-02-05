@@ -96,7 +96,7 @@ const DesignPlaces: React.FC = () => {
 
     const saveFloor = (tables: Table[]) => {
         upDateFloor({
-            id: focusedRoof+'/',
+            id: roofId+'/',
             values: {
                 tables,
             },
