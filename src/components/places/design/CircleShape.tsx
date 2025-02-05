@@ -22,6 +22,7 @@ const CircleShape: React.FC<CircleShapeProps> = ({ shapeProps, isSelected, onSel
     }
   }, [isSelected]);
 
+
   return (
     <>
       <Circle
@@ -32,11 +33,11 @@ const CircleShape: React.FC<CircleShapeProps> = ({ shapeProps, isSelected, onSel
         {...shapeProps}
         draggable
         onDragEnd={(e) => {
-          onChange({
+            onChange({
             ...shapeProps,
             x: e.target.x(),
             y: e.target.y(),
-          });
+            });
         }}
         onTransformEnd={(e) => {
           const node = shapeRef.current;
@@ -51,6 +52,8 @@ const CircleShape: React.FC<CircleShapeProps> = ({ shapeProps, isSelected, onSel
             ...shapeProps,
             x: node.x(),
             y: node.y(),
+            width: Math.max(5, node.width() * scaleX),
+            height: Math.max(5, node.height() * scaleY),
             radius: Math.max(5, node.radius() * Math.max(scaleX, scaleY)),
           });
         }}

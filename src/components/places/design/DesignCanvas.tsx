@@ -147,6 +147,10 @@ const DesignCanvas: React.FC <canvasTypes>= (props) => {
     //we will send this to the server
   };
 
+  useEffect(() => {
+    console.log(shapes,'shapes')
+  }, [shapes])
+
   return (
     <>
       {showEdit?<div>
