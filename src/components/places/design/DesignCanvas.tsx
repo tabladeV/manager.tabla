@@ -7,7 +7,7 @@ import { BaseKey, BaseRecord, useList } from '@refinedev/core';
 
 
 interface Table extends BaseRecord {
-    id: BaseKey ,
+    // id: BaseKey ,
     name: string,
     type: string,
     width: number,
@@ -52,21 +52,28 @@ const DesignCanvas: React.FC <canvasTypes>= (props) => {
   const {t} = useTranslation(); 
 
   const addShape = (type: 'RECTANGLE' | 'CIRCLE') => {
+    let counter = 1;
+    let tableName = `Table ${counter}`;
+    
+    // Keep incrementing counter until we find a unique name
+    while (shapes?.some(shape => shape.name === tableName)) {
+      counter++;
+      tableName = `Table ${counter}`;
+    }
+
     const newShape: Table = {
-      id: 0,
-      name: `Table ${Math.floor(Math.random() * 10)}`,
-      type,
-      width: type === 'RECTANGLE' ? 100 : 100,
-      height: type === 'RECTANGLE' ? 100 : 100,
+      name: tableName,
+      type: type,
+      width: 100,
+      height: 100,
       x: 50,
       y: 50,
-      max: Math.floor(innerWidth/300),
+      max: Math.floor(innerWidth/220),
       min: 1,
       floor: props.focusedRoofId!,
       reservations: [],
-      ...(type === 'CIRCLE' && { width: 100, height: 100, radius: 50 }),
     };
-    setShapes([...(shapes || []), newShape]);
+    setShapes([...shapes , newShape]);
   };
 
   const deleteShape = () => {

@@ -101,6 +101,7 @@ const DesignPlaces: React.FC = () => {
                 tables,
             },
         });
+        console.log(tables)
     }
 
     const [thisFloor, setThisFloor] = useState<BaseRecord | undefined>();
