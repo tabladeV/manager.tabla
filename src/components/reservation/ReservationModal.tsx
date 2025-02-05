@@ -35,7 +35,7 @@ interface Reservation extends BaseRecord {
 
 const ReservationModal = (props: ReservationModalProps) => {
     const {data: clientsData , isLoading, error} = useList({
-      resource: 'api/v1/bo/customers',
+      resource: 'api/v1/bo/customers/',
       meta: {
         headers: {
           'X-Restaurant-ID': 1,

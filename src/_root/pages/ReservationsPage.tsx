@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import ReservationModal from "../../components/reservation/ReservationModal"
 import { BaseKey, BaseRecord, useCreate, useList, useUpdate } from "@refinedev/core"
 import ReservationProcess from "../../components/reservation/ReservationProcess"
+import { use } from "i18next"
 
 interface Reservation extends BaseRecord {
   id: BaseKey;
@@ -37,13 +38,49 @@ const ReservationsPage = () => {
   const { t } = useTranslation();
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const { data, isLoading, error } = useList<Reservation>({
-    resource: "api/v1/bo/reservations",
+    resource: "api/v1/bo/reservations/",
     meta: {
       headers: {
         "X-Restaurant-ID": 1,
       },
     },
   });
+
+  const {data: floorsData, isLoading: floorLoading, error: floorError} = useList({
+    resource: 'api/v1/bo/floors/',
+    meta: {
+      headers: {
+        'X-Restaurant-ID': 1,
+      },
+    },
+  });
+
+  const {data: tablesData, isLoading: tableLoading, error: tableError} = useList({
+    resource: 'api/v1/bo/tables/',
+    meta: {
+      headers: {
+        'X-Restaurant-ID': 1,
+      },
+    },
+  });
+
+  const [tables, setTables] = useState<BaseRecord[]>([]);
+
+  
+
+  const [floors, setFloors] = useState<BaseRecord[]>([]);
+
+  useEffect(() => {
+    if(tablesData?.data){
+      setTables(tablesData.data)
+    }
+
+    if (floorsData?.data) {
+      setFloors(floorsData.data);
+    }
+  }, [floorsData,tablesData]);
+
+  console.log(floors)
 
   console.log(data)
   const { mutate, isLoading: postLoading, error: postError } = useCreate();
@@ -209,37 +246,37 @@ const ReservationsPage = () => {
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    if (selectedClient) {
-      setSelectedClient({
-        ...selectedClient,
-        [e.target.name]: e.target.value
-      })
-    }
-  }
+  // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  //   if (selectedClient) {
+  //     setSelectedClient({
+  //       ...selectedClient,
+  //       [e.target.name]: e.target.value
+  //     })
+  //   }
+  // }
 
 
 
-  const saveChanges = () => {
-    if (selectedClient) {
-      setReservations(reservations.map(r => 
-        r.id === selectedClient.id ? selectedClient : r
-      ))
-      setSearchResults(searchResults.map(r => 
-        r.id === selectedClient.id ? selectedClient : r
-      ))
-      setShowModal(false)
-      mutate({
-        resource: "api/v1/bo/reservations", // API resource
-        values: selectedClient,
-        meta: {
-          headers: {
-            "X-Restaurant-ID": 1,
-          },
-        },
-      })
-    }
-  }
+  // const saveChanges = () => {
+  //   if (selectedClient) {
+  //     setReservations(reservations.map(r => 
+  //       r.id === selectedClient.id ? selectedClient : r
+  //     ))
+  //     setSearchResults(searchResults.map(r => 
+  //       r.id === selectedClient.id ? selectedClient : r
+  //     ))
+  //     setShowModal(false)
+  //     mutate({
+  //       resource: "api/v1/bo/reservations", // API resource
+  //       values: selectedClient,
+  //       meta: {
+  //         headers: {
+  //           "X-Restaurant-ID": 1,
+  //         },
+  //       },
+  //     })
+  //   }
+  // }
 
   const [filteredReservations, setFilteredReservations] = useState(reservations)
   
@@ -309,6 +346,8 @@ const ReservationsPage = () => {
     
   }
 
+  const [floorId, setFloorId] = useState<BaseKey>()
+
   const [showAddReservation, setShowAddReservation] = useState(false)
 
   return (
@@ -320,9 +359,9 @@ const ReservationsPage = () => {
         <div>
           <div className="overlay" onClick={() => setShowModal(false)}></div>
           <div className={`sidepopup w-[45%] overflow-y-auto lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:overflow-y-auto h-full ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'} `}>
-            <h1 className="text-2xl font-[600] mb-4">{t('reservations.edit.title')} by <span className="font-[800]">{selectedClient.full_name}</span></h1>
+            <h1 className="text-2xl font-[600] mb-4">{t('reservations.edit.title')} by <span className="font-[800]">{selectedClient.full_name} </span><span className="text-sm font-[500] text-subblack">{`(Reservation id: ${selectedClient.id})`}</span></h1>
             <div className="space-y-2">
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium ">{t('reservations.edit.informations.name')}</label>
                 <input
                   type="text"
@@ -341,7 +380,7 @@ const ReservationsPage = () => {
                   onChange={(e)=>setSelectedClient({...selectedClient, email: e.target.value})}
                   className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
 />
-              </div>
+              </div> */}
               
               
               {/* <div>
@@ -356,15 +395,45 @@ const ReservationsPage = () => {
               </div> */}
               <div>
                 <label className="block text-sm font-medium ">{t('reservations.edit.informations.madeBy')}</label>
-                <input
-                  type="text"
-                  name="reservationMade"
-                  defaultValue={selectedClient.source}
+                <select 
+                  name="source"
+                  value={selectedClient.source}
                   onChange={(e)=>setSelectedClient({...selectedClient, source: e.target.value})}
                   className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
-/>
+>
+                  <option value="MARKETPLACE">Market Place</option>
+                  <option value="WEBSITE">Website</option>
+                  <option value="BACK_OFFICE">Back Office</option>
+                </select>
               </div>
-              
+              {/* <div>
+                <label className="block text-sm font-medium ">{t('reservations.edit.informations.floor')}</label>
+                <select 
+                  name="floor"
+                  value={selectedClient.floor}
+                  onChange={(e)=> setSelectedClient({...selectedClient, floor: e.target.value})}
+                  className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
+>
+                  {floors.map((floor) => (
+                    <option key={floor.id} value={floor.id}>{floor.name}</option>
+                  ))}
+                </select>
+              </div> */}
+              <div>
+                  
+                <label className="block text-sm font-medium ">{t('reservations.edit.informations.table')}</label>
+                <select 
+                  name="table"
+                  value={selectedClient.table_name}
+                  onChange={(e)=>setSelectedClient({...selectedClient, table_name: e.target.value})}
+                  className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
+>
+                  {tables.map((table) => (
+                    <option key={table.id} value={table.name}>{table.name}</option>
+                  ))}
+                </select>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium ">{t('reservations.edit.informations.comment')}</label>
                 <input
@@ -461,7 +530,7 @@ const ReservationsPage = () => {
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.email}</td>
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.commenter}</td>
                 <td className="px-3 py-4 flex items-center justify-center whitespace-nowrap cursor-pointer"  onClick={() => { if (reservation.id) EditClient(reservation.id); }}>
-                  {reservationOrigin(reservation.source)}
+                  {reservation.tables_name}
                 </td>
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer"  onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.date }</td>
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.time.slice(0,5)}</td>

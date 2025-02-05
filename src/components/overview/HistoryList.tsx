@@ -32,7 +32,7 @@ const HistoryList  = () => {
   const [timeRange, setTimeRange] = useState<string>('last_7_days');
 
   const {data: reviewsData, isLoading, error} = useList({
-          resource: 'api/v1/reviews',
+          resource: 'api/v1/reviews/',
           meta: {
               headers: {
                   'X-Restaurant-ID': 1

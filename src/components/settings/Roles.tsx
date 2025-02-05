@@ -18,7 +18,7 @@ interface RoleType {
 
 const Roles = () => {
     const { data: permissionsData, isLoading, error } = useList({
-        resource: "api/v1/bo/permissions",
+        resource: "api/v1/bo/permissions/",
     });
 
     const { data: rolesData, isLoading: rolesLoading, error: rolesError } = useList({

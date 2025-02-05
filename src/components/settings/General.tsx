@@ -48,19 +48,19 @@ const General = () => {
   }, [restaurantData]);
 
   const { data: cityData, isLoading: isLoadingCity, error: errorCity } = useList({
-    resource: `api/v1/api/v1/bo/cities/${restaurant?.city}`,
+    resource: `api/v1/api/v1/bo/cities/${restaurant?.city}/`,
   });
 
   const { data: countryData, isLoading: isLoadingCountry, error: errorCountry } = useList({
-    resource: `api/v1/api/v1/bo/countries/${restaurant?.country}`,
+    resource: `api/v1/api/v1/bo/countries/${restaurant?.country}/`,
   });
 
   const { data: allCities, isLoading: isLoadingAllCities, error: errorAllCities } = useList({
-    resource: 'api/v1/api/v1/bo/cities',
+    resource: 'api/v1/api/v1/bo/cities/',
   });
 
   const { data: allCountries, isLoading: isLoadingAllCountries, error: errorAllCountries } = useList({
-    resource: 'api/v1/api/v1/bo/countries',
+    resource: 'api/v1/api/v1/bo/countries/',
   });
 
   const [formData, setFormData] = useState({
@@ -104,17 +104,17 @@ const General = () => {
       });
   }, []);
 
-  useEffect(() => {
-    if (selectedCountry) {
-      axios.post('https://countriesnow.space/api/v0.1/countries/cities', { country: selectedCountry })
-        .then(response => {
-          setCities(response.data.data || []);
-        })
-        .catch(error => {
-          console.error('Error fetching cities:', error);
-        });
-    }
-  }, [selectedCountry]);
+  // useEffect(() => {
+  //   if (selectedCountry) {
+  //     axios.post('https://countriesnow.space/api/v0.1/countries/cities', { country: selectedCountry })
+  //       .then(response => {
+  //         setCities(response.data.data || []);
+  //       })
+  //       .catch(error => {
+  //         console.error('Error fetching cities:', error);
+  //       });
+  //   }
+  // }, [selectedCountry]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;

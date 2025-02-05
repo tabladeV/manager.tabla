@@ -56,7 +56,7 @@ const ClientInterface = () => {
   });
 
   const {data: reservations, isLoading: isLoadingReservations, error: errorReservations} = useList({
-    resource: `api/v1/bo/reservations/${id}`,
+    resource: `api/v1/bo/reservations/${id}/`,
     meta: {
       headers: {
         'X-Restaurant-ID': 1,

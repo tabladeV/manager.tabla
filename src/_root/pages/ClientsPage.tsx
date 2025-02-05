@@ -28,7 +28,7 @@ interface ClientData {
 const ClientsPage = () => {
 
   const {data , isLoading, error} = useList({
-    resource: 'api/v1/bo/customers',
+    resource: 'api/v1/bo/customers/',
     meta: {
       headers: {
         'X-Restaurant-ID': 1,

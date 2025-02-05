@@ -59,7 +59,7 @@ function isTouchDevice() {
 
 const PlacePage: React.FC = () => {
   const { data, isLoading, error } = useList({
-    resource: "api/v1/bo/floors",
+    resource: "api/v1/bo/floors/",
     meta: {
       headers: {
         "X-Restaurant-ID": 1,

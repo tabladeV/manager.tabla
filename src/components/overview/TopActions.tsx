@@ -25,7 +25,7 @@ const generateChartData = () => {
 export default function TopActions() {
 
   const {data, isLoading, error} = useList({
-    resource: 'api/v1/bo/reservations',
+    resource: 'api/v1/bo/reservations/',
     meta: {
         headers: {
             'X-Restaurant-ID': 1
