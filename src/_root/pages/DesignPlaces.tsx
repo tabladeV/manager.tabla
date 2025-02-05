@@ -88,13 +88,25 @@ const DesignPlaces: React.FC = () => {
     floor: BaseKey,
     reservations: BaseKey[]
 }
+  interface TableReceived {
+    name: string,
+    type: string,
+    width: number,
+    height: number,
+    x: number,
+    y: number,
+    max: number,
+    min:  number,
+    floor: BaseKey,
+    reservations: BaseKey[]
+}
 
     const [showAddPlace, setShowAddPlace] = useState(false);
     const [focusedRoof, setFocusedRoof] = useState<BaseKey | undefined>(1);
     const [focusedFloorTables, setFocusedFloorTables] = useState<Table[]>([]);
     const [roofs, setRoofs] = useState<BaseRecord[]>([]);
 
-    const saveFloor = (tables: Table[]) => {
+    const saveFloor = (tables: TableReceived[]) => {
         upDateFloor({
             id: roofId+'/',
             values: {
