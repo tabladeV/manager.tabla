@@ -1,55 +1,114 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Plus, X, Copy } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import i18next from 'i18next';
+import { BaseKey, BaseRecord, useCreate, useList, useUpdate } from '@refinedev/core';
+import { id } from 'date-fns/locale';
+import { set } from 'date-fns';
 
 interface SlotData {
-  type: string;
-  start: string;
-  end: string;
-  placeLimit: number;
+  name: string; // Renamed from 'type'
+  start_shift: string; // Renamed from 'start'
+  end_shift: string; // Renamed from 'end'
+  max_party_size: number; // Renamed from 'placeLimit'
 }
 
 interface DayData {
+  id: BaseKey;
   day: string;
-  available: boolean;
-  slots: SlotData[];
+  closed_day: boolean; // Renamed from 'available' (inverted logic)
+  availability_hours: SlotData[]; // Renamed from 'slots'
 }
 
 const Availability = () => {
-  const [selectedArea, setSelectedArea] = useState('Restaurant');
+  const { data: availabilityDays, isLoading, error } = useList({
+    resource: `api/v1/bo/availability/days/`,
+    meta: {
+      headers: {
+        'X-Restaurant-ID': 1,
+      },
+    },
+  });
 
+  const {mutate : updateAvailability} = useCreate();
+
+  const { data: restaurantData, isLoading: restaurantLoading, error: restaurantError } = useList({
+    resource: `api/v1/bo/restaurants/1/current`,
+  });
+
+
+  
+
+
+  const [duration, setDuration] = useState<string>('');
+
+  useEffect(() => {
+    if(restaurantData?.data){
+      setDuration((restaurantData.data as BaseRecord).reservation_max_duration as string);
+    }
+  }, [restaurantData]);
+  
+  const [selectedArea, setSelectedArea] = useState('Restaurant');
   const areas = ['Restaurant', 'Table 01', 'Table 02'];
 
   const initialData: DayData[] = [
-    { day: 'SUN', available: false, slots: [] },
-    { day: 'MON', available: true, slots: [{ type: 'Lunch', start: '09:00', end: '12:00', placeLimit: 15 }] },
-    { day: 'TUE', available: true, slots: [{ type: 'Lunch', start: '09:00', end: '12:00', placeLimit: 15 }] },
-    { day: 'WED', available: true, slots: [{ type: 'Lunch', start: '09:00', end: '12:00', placeLimit: 15 }] },
-    { day: 'THU', available: true, slots: [{ type: 'Lunch', start: '09:00', end: '12:00', placeLimit: 15 }] },
-    { day: 'FRI', available: true, slots: [{ type: 'Lunch', start: '09:00', end: '12:00', placeLimit: 15 }] },
-    { day: 'SAT', available: false, slots: [] },
+    { id: 1, day: 'SUN', closed_day: true, availability_hours: [] },
+    { id: 2, day: 'MON', closed_day: false, availability_hours: [] },
+    { id: 3, day: 'TUE', closed_day: false, availability_hours: [{ name: 'Lunch', start_shift: '09:00', end_shift: '12:00', max_party_size: 15 }] },
+    { id: 4, day: 'WED', closed_day: false, availability_hours: [{ name: 'Lunch', start_shift: '09:00', end_shift: '12:00', max_party_size: 15 }] },
+    { id: 5, day: 'THU', closed_day: false, availability_hours: [{ name: 'Lunch', start_shift: '09:00', end_shift: '12:00', max_party_size: 15 }] },
+    { id: 6, day: 'FRI', closed_day: false, availability_hours: [{ name: 'Lunch', start_shift: '09:00', end_shift: '12:00', max_party_size: 15 }] },
+    { id: 7, day: 'SAT', closed_day: true, availability_hours: [] },
   ];
 
   const [data, setData] = useState<DayData[]>(initialData);
 
+  const [fetchedData,setFetchedData] = useState<DayData[]>(initialData)
+
+  useEffect(() => {
+    if (availabilityDays?.data) {
+      const newData = availabilityDays.data as BaseRecord[];
+      const updatedData = newData.map((day) => ({
+        id: day.id as BaseKey,
+        day: day.day,
+        closed_day: day.closed_day,
+        availability_hours: day.availability_hours.map((slot: any) => ({
+          name: slot.name,
+          start_shift: slot.start_shift,
+          end_shift: slot.end_shift,
+          max_party_size: slot.max_party_size,
+        })),
+      }));
+      setData(updatedData);
+      setFetchedData(availabilityDays.data as DayData[]);
+    }
+  }, [availabilityDays]);
+
   const toggleAvailability = (index: number) => {
     const newData = [...data];
-    newData[index].available = !newData[index].available;
-    if (!newData[index].available) newData[index].slots = [];
-    else newData[index].slots = [{ type: 'Lunch', start: '09:00', end: '12:00', placeLimit: 15 }];
+    newData[index].closed_day = !newData[index].closed_day;
+    if (newData[index].closed_day) newData[index].availability_hours = [];
+    else
+      newData[index].availability_hours = [
+        { name: 'Lunch', start_shift: '09:00', end_shift: '12:00', max_party_size: 15 },
+      ];
     setData(newData);
   };
 
   const addSlot = (dayIndex: number) => {
     const newData = [...data];
-    newData[dayIndex].slots.push({ type: 'Lunch', start: '09:00', end: '12:00', placeLimit: 15 });
+    newData[dayIndex].availability_hours.push({
+      name: 'Lunch',
+      start_shift: '09:00',
+      end_shift: '12:00',
+      max_party_size: 15,
+    });
     setData(newData);
   };
 
   const removeSlot = (dayIndex: number, slotIndex: number) => {
     const newData = [...data];
-    newData[dayIndex].slots.splice(slotIndex, 1);
+    newData[dayIndex].availability_hours.splice(slotIndex, 1);
     setData(newData);
   };
 
@@ -60,22 +119,18 @@ const Availability = () => {
     value: string | number
   ) => {
     const newData = [...data];
-
-    if (field === 'type' || field === 'start' || field === 'end') {
-      newData[dayIndex].slots[slotIndex][field] = value as string;
-    } else if (field === 'placeLimit') {
-      newData[dayIndex].slots[slotIndex][field] = value as number;
+    if (field === 'name' || field === 'start_shift' || field === 'end_shift') {
+      newData[dayIndex].availability_hours[slotIndex][field] = value as string;
+    } else if (field === 'max_party_size') {
+      newData[dayIndex].availability_hours[slotIndex][field] = value as number;
     }
-
     setData(newData);
   };
 
   const { t } = useTranslation();
-
   const [manageWeekly, setManageWeekly] = useState(false);
-
   const [weeklySlots, setWeeklySlots] = useState<SlotData[]>([
-    { type: '', start: '', end: '', placeLimit: 0 },
+    { name: '', start_shift: '', end_shift: '', max_party_size: 0 },
   ]);
 
   const updateWeeklySlot = (index: number, field: keyof SlotData, value: string | number) => {
@@ -87,13 +142,14 @@ const Availability = () => {
   };
 
   const addWeeklySlot = () => {
-    setWeeklySlots((prev) => [...prev, { type: '', start: '', end: '', placeLimit: 0 }]);
+    setWeeklySlots((prev) => [...prev, { name: '', start_shift: '', end_shift: '', max_party_size: 0 }]);
   };
 
   const applyWeeklyChanges = () => {
     const newData = data.map((day) => ({
       ...day,
-      slots: [...weeklySlots],
+      availability_hours: [...weeklySlots],
+      closed_day: weeklySlots.length === 0,
     }));
     setData(newData);
     setManageWeekly(false); // Close the modal
@@ -101,8 +157,45 @@ const Availability = () => {
 
   const [pufferValue, setPufferValue] = useState<number | ''>('');
 
+  const {mutate : updateDuration } = useUpdate()
+
+  const handleSaveAvailability = () => {
+
+    updateDuration({
+      resource: "api/v1/bo/restaurants",
+      values: {
+        reservation_max_duration: duration,
+      },
+      id: 1 + "/", // Ensure the ID is appended correctly
+    });
+
+    const newData = data.map((day) => ({
+      day: day.day,
+      closed_day: day.closed_day,
+      availability_hours: day.availability_hours.map((slot) => ({
+        name: slot.name,
+        start_shift: slot.start_shift,
+        end_shift: slot.end_shift,
+        max_party_size: slot.max_party_size,
+      }))
+    }));
+    const availabilitydays = newData;
+    console.log(data);
+    updateAvailability({
+      resource: "api/v1/bo/availability/days/update_all/",
+      values: {
+          availability_days : availabilitydays
+      },
+      meta: {
+          headers: {
+              "X-Restaurant-ID": 1,
+          },
+      },
+  });
+  }
+
   return (
-    <div className={` rounded-lg p-6 w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}>
+    <div className={`rounded-lg p-6 w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}>
       {manageWeekly && (
         <div>
           <div className="overlay" onClick={() => setManageWeekly(false)}></div>
@@ -112,53 +205,56 @@ const Availability = () => {
             </div>
             {weeklySlots.map((slot, index) => (
               <div key={index} className="flex items-center gap-2 mb-2 lt-sm:flex-wrap">
-                <div className='flex flex-col'>
-                  <label className="text-sm ">{t('settingsPage.availability.type')}</label>
+                <div className="flex flex-col">
+                  <label className="text-sm">{t('settingsPage.availability.type')}</label>
                   <input
                     type="text"
-                    value={slot.type}
-                    onChange={(e) => updateWeeklySlot(index, 'type', e.target.value)}
+                    value={slot.name}
+                    onChange={(e) => updateWeeklySlot(index, 'name', e.target.value)}
                     className={`inputs-unique lt-sm:w-full w-[10em] ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
                   />
                 </div>
                 <div>
-                  <label className="text-sm ">{t('settingsPage.availability.from')}</label>
+                  <label className="text-sm">{t('settingsPage.availability.from')}</label>
                   <input
                     type="time"
-                    value={slot.start}
-                    onChange={(e) => updateWeeklySlot(index, 'start', e.target.value)}
+                    value={slot.start_shift}
+                    onChange={(e) => updateWeeklySlot(index, 'start_shift', e.target.value)}
                     className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
                   />
                 </div>
                 <span>-</span>
                 <div>
-                  <label className="text-sm ">{t('settingsPage.availability.to')}</label>
+                  <label className="text-sm">{t('settingsPage.availability.to')}</label>
                   <input
                     type="time"
-                    value={slot.end}
-                    onChange={(e) => updateWeeklySlot(index, 'end', e.target.value)}
+                    value={slot.end_shift}
+                    onChange={(e) => updateWeeklySlot(index, 'end_shift', e.target.value)}
                     className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
                   />
                 </div>
                 <div>
-                  <span className="text-sm  w-[300px] ml-2">
+                  <span className="text-sm w-[300px] ml-2">
                     {t('settingsPage.availability.placeLimitLabel')}
                   </span>
                   <input
                     type="number"
-                    value={slot.placeLimit}
-                    onChange={(e) => updateWeeklySlot(index, 'placeLimit', parseInt(e.target.value))}
+                    value={slot.max_party_size}
+                    onChange={(e) => updateWeeklySlot(index, 'max_party_size', parseInt(e.target.value))}
                     className={`inputs-unique ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
                   />
                 </div>
-                <X size={24} className="text-redtheme cursor-pointer mt-3" onClick={() => setWeeklySlots((prev) => prev.filter((_, i) => i !== index))} />
+                <X
+                  size={24}
+                  className="text-redtheme cursor-pointer mt-3"
+                  onClick={() => setWeeklySlots((prev) => prev.filter((_, i) => i !== index))}
+                />
               </div>
             ))}
             <button onClick={addWeeklySlot} className="hover:underline flex items-center gap-2">
               <Plus size={16} />
               {t('settingsPage.availability.addAnotherSlot')}
             </button>
-            
             <button onClick={applyWeeklyChanges} className="btn-primary mt-4">
               {t('settingsPage.availability.applyToWeek')}
             </button>
@@ -166,15 +262,15 @@ const Availability = () => {
         </div>
       )}
 
-      <div className='flex justify-between mb-4 items-center'>
-        <h2 className="text-2xl font-bold text-center ">{t('settingsPage.availability.title')}</h2>
+      <div className="flex justify-between mb-4 items-center">
+        <h2 className="text-2xl font-bold text-center">{t('settingsPage.availability.title')}</h2>
         <div className="flex justify-center items-center gap-3">
-          <label className="text-sm ">{t('settingsPage.availability.puffer')}</label>
+          <label className="text-sm">{t('settingsPage.availability.puffer')}</label>
           <input
-            type="number"
+            type="string"
             className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
-            value={pufferValue}
-            onChange={(e) => setPufferValue(parseInt(e.target.value) || '')}
+            defaultValue={duration}
+            onChange={(e) => setDuration(e.target.value.trim() || '')}
           />
         </div>
       </div>
@@ -182,48 +278,63 @@ const Availability = () => {
         <button className="btn-primary">Manage the whole week</button>
       </div>
       <div className="space-y-4 mx-4">
-        {data.map((day, dayIndex) => (
+        {data.sort((a, b) => (a.id > b.id ? 1 : -1)).map((day, dayIndex) => (
           <div key={day.day} className="flex items-start">
             <div className={`flex mt-5 items-center gap-2 w-20 ${i18next.language === 'ar' && 'mt-2'}`}>
               <input
                 type="checkbox"
-                checked={day.slots.length > 0}
+                checked={!day.closed_day}
                 onChange={() => toggleAvailability(dayIndex)}
                 className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]"
               />
-              <span className="font-medium">{day.day === 'SUN'? t('settingsPage.availability.days.sunday') : day.day === 'MON' ? t('settingsPage.availability.days.monday'): day.day === 'TUE' ? t('settingsPage.availability.days.tuesday'): day.day === 'WED' ? t('settingsPage.availability.days.wednesday'): day.day === 'THU' ? t('settingsPage.availability.days.thursday') : day.day === 'FRI' ? t('settingsPage.availability.days.friday') : t('settingsPage.availability.days.saturday')}</span>
+              <span className="font-medium">
+                {day.day === 'SUN'
+                  ? t('settingsPage.availability.days.sunday')
+                  : day.day === 'MON'
+                  ? t('settingsPage.availability.days.monday')
+                  : day.day === 'TUE'
+                  ? t('settingsPage.availability.days.tuesday')
+                  : day.day === 'WED'
+                  ? t('settingsPage.availability.days.wednesday')
+                  : day.day === 'THU'
+                  ? t('settingsPage.availability.days.thursday')
+                  : day.day === 'FRI'
+                  ? t('settingsPage.availability.days.friday')
+                  : t('settingsPage.availability.days.saturday')}
+              </span>
             </div>
-            
-            <div className="flex-1 ">
-              {day.slots.length > 0 ? (
-                day.slots.map((slot, slotIndex) => (
-                  <div key={slotIndex} className="flex  items-center gap-2 mb-2">
+            <div className="flex-1">
+              {!day.closed_day ? (
+                day.availability_hours.map((slot, slotIndex) => (
+                  <div key={slotIndex} className="flex items-center gap-2 mb-2">
                     <input
                       type="text"
-                      value={slot.type}
-                      onChange={(e) => updateSlot(dayIndex, slotIndex, 'type', e.target.value)}
+                      value={slot.name}
+                      onChange={(e) => updateSlot(dayIndex, slotIndex, 'name', e.target.value)}
                       className={`inputs-unique w-[10em] ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
-                      />
+                    />
                     <input
                       type="time"
-                      value={slot.start}
-                      onChange={(e) => updateSlot(dayIndex, slotIndex, 'start', e.target.value)}
+                      value={slot.start_shift}
+                      onChange={(e) => updateSlot(dayIndex, slotIndex, 'start_shift', e.target.value)}
                       className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
-                      />
+                    />
                     <span>-</span>
                     <input
                       type="time"
-                      value={slot.end}
-                      onChange={(e) => updateSlot(dayIndex, slotIndex, 'end', e.target.value)}
+                      value={slot.end_shift}
+                      onChange={(e) => updateSlot(dayIndex, slotIndex, 'end_shift', e.target.value)}
                       className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
-                      />
-                    <span className={`text-sm  w-[300px] ml-2 `}>{t('settingsPage.availability.placeLimitLabel')}</span>
+                    />
+                    <span className={`text-sm w-[300px] ml-2`}>
+                      {t('settingsPage.availability.placeLimitLabel')}
+                    </span>
                     <input
                       type="number"
-                      value={slot.placeLimit}
-                      onChange={(e) => updateSlot(dayIndex, slotIndex, 'placeLimit', parseInt(e.target.value))}
+                      value={slot.max_party_size}
+                      onChange={(e) => updateSlot(dayIndex, slotIndex, 'max_party_size', parseInt(e.target.value))}
                       className={`inputs-unique w-[4em] ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
-                      />
+                    />
                     <button
                       onClick={() => removeSlot(dayIndex, slotIndex)}
                       className="text-redtheme hover:text-gray-600"
@@ -233,21 +344,25 @@ const Availability = () => {
                   </div>
                 ))
               ) : (
-                <div className={` mt-5 ${i18next.language === 'ar' && 'mt-2'}`}>{t('settingsPage.availability.unavailable')}</div>
+                <div className={`mt-5 ${i18next.language === 'ar' && 'mt-2'}`}>
+                  {t('settingsPage.availability.unavailable')}
+                </div>
               )}
             </div>
-            <div className={`flex mt-4 items-center ${i18next.language=== 'ar' && 'mt-[.4em]'}`}>
+            <div className={`flex mt-4 items-center ${i18next.language === 'ar' && 'mt-[.4em]'}`}>
               <button
                 onClick={() => addSlot(dayIndex)}
-                className="text-[#88AB61] hover:text-[#6A8A43] ml-2 "
+                className="text-[#88AB61] hover:text-[#6A8A43] ml-2"
               >
                 <Plus size={16} />
               </button>
-              
             </div>
-            
           </div>
         ))}
+        <div className="flex justify-center gap-2 mt-6">
+          <button onClick={handleSaveAvailability} className="btn-primary">{t('settingsPage.availability.save')}</button>
+          <button onClick={()=>{setData(fetchedData)}} className="btn-secondary">{t('settingsPage.availability.cancel')}</button>
+        </div>
       </div>
     </div>
   );

@@ -22,6 +22,8 @@ const DesignPlaces: React.FC = () => {
 
     const { mutate: mutateDeleting} = useDelete();
 
+    const { mutate: deleteTabe } =  useDelete();
+
     const { mutate } = useCreate({
         resource: "api/v1/bo/floors/", // Updated endpoint
         meta: {
@@ -72,6 +74,22 @@ const DesignPlaces: React.FC = () => {
     },
   });
 
+  const [deleteTableId, setDeleteTableId] = useState<BaseKey | undefined>();
+
+  useEffect(() => {
+    if(deleteTableId){
+        deleteTabe({
+            resource: `api/v1/bo/tables`,
+            id: deleteTableId+'/',
+            meta:{
+            headers: {
+                "X-Restaurant-ID": 1,
+            },
+            },
+        });
+        }
+    }, [deleteTableId]);
+
   console.log(data);
 
 
@@ -113,7 +131,7 @@ const DesignPlaces: React.FC = () => {
                 tables,
             },
         });
-        console.log(tables)
+        console.log(tables,'sent')
     }
 
     const [thisFloor, setThisFloor] = useState<BaseRecord | undefined>();
@@ -258,7 +276,7 @@ const DesignPlaces: React.FC = () => {
               </button>
             </div>
 
-            <DesignCanvas isLoading={isLoading} onSave={saveFloor} tables={focusedFloorTables} focusedRoofId={focusedRoof}/>
+            <DesignCanvas onDeleted={(id:BaseKey)=>{setDeleteTableId(id)}} isLoading={isLoading} onSave={saveFloor} tables={focusedFloorTables} focusedRoofId={focusedRoof}/>
         </div>
     );
 };

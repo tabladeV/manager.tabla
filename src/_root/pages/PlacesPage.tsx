@@ -73,6 +73,19 @@ const PlacePage: React.FC = () => {
   
   const currentHour = `${getHours(new Date())}:00:00`;
   const [time, setTime] = useState(currentHour);
+
+
+// Parse the time string into a Date object
+// Assuming the date is today
+const parsedDate = parse(time.slice(0,5), 'HH:mm', new Date());
+
+// Add two hours
+const newDate = addHours(parsedDate, 2);
+
+// Format the new date back into a time string
+const newTimeString = format(newDate, 'HH:mm');
+
+// console.log(newTimeString); // Output: "14:00"
   useEffect(() => {
     setTime(currentHour);
   }, [currentHour]);
@@ -116,7 +129,7 @@ const PlacePage: React.FC = () => {
       {
         field: "reservations__time__lte",
         operator: "lte",
-        value: '23:59:59',
+        value: newTimeString+':00',
       },
     ],
     meta: {
@@ -136,16 +149,16 @@ const PlacePage: React.FC = () => {
         operator: "eq",
         value: format(chosenDay, 'yyyy-MM-dd'),
       },
-      // {
-      //   field: "time",
-      //   operator: "eq",
-      //   value: time+':00',
-      // },
-      // {
-      //   field: "time__lte",
-      //   operator: "lte",
-      //   value: '23:59:59',
-      // },
+      {
+        field: "time",
+        operator: "gte",
+        value: time+':00',
+      },
+      {
+        field: "time__lte",
+        operator: "lte",
+        value: newTimeString+':00',
+      },
     ],
     meta: {
       headers: {
@@ -258,7 +271,7 @@ const PlacePage: React.FC = () => {
 
   return (
 
-    <div className='w-[86em]'>
+    <div className=''>
       <div className='flex w-full justify-between mb-2'>
         <h1 className='text-3xl font-[700]'>{t('placeManagement.title')}</h1>
         <Link to='/places/design' className='btn-primary flex gap-2 items-center lt-sm:hidden'>
@@ -303,7 +316,7 @@ const PlacePage: React.FC = () => {
               <div>
                 <select defaultValue={time} id='hourChosen' className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'} `} onChange={(e) => { setFilteringHour(e.target.value); selectedHour(e.target.value); }}>
                   {hours.map((hour) => (
-                    <option key={hour.id} selected={hour.time === time} value={hour.time}>
+                    <option key={hour.id} selected={hour.time === time.slice(0,5)} value={hour.time}>
                       {hour.time}
                     </option>
                   ))} 

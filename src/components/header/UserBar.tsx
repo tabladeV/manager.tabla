@@ -11,6 +11,9 @@ import Cookies from "js-cookie";
 import { Fullscreen,  LogOut, Minimize, Settings, User } from 'lucide-react';
 
 const UserBar = () => {
+
+  
+
   const [showLang, setShowLang] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [isLogged, setIsLogged] = useState(true);

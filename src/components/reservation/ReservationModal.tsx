@@ -365,7 +365,7 @@ const ReservationModal = (props: ReservationModalProps) => {
               id="comment"
               value={formData.comment}
               onChange={handleFormChange}
-              required
+              
             />
           </div>
           <div

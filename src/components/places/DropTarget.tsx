@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDrop } from 'react-dnd';
 import { useDateContext } from '../../context/DateContext';
-import { BaseKey, useUpdate } from '@refinedev/core';
+import { BaseKey, useCreate, useUpdate } from '@refinedev/core';
 import { Trash } from 'lucide-react';
 
 const ItemType = 'BOX';
@@ -93,6 +93,16 @@ const DropTarget: React.FC<DropTargetProps> = ({
     },
   });
 
+
+  const { mutate: mutateReservations } = useCreate({
+    resource: `api/v1/bo/tables/${id}/assign-reservation/${droppedItems[0]?.id}/`,
+    meta: {
+      headers: {
+        'X-Restaurant-ID': 1,
+      },
+    },
+  });
+
   useEffect(() => {
     if (reservedBy) {
       setDroppedItems([
@@ -126,11 +136,15 @@ const DropTarget: React.FC<DropTargetProps> = ({
         item.number_of_guests >= min
       ) {
         setDroppedItems((prevItems) => [...prevItems, item]);
-        mutate({
-          id: id + '/',
-          values: {
-            reservations: [item.id],
-          },
+        // mutate({
+        //   id: id + '/',
+        //   values: {
+        //     reservations: [item.id],
+        //   },
+        // });
+        mutateReservations({
+          values:{
+          }
         });
       }
     },

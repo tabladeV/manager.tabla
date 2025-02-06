@@ -1,6 +1,4 @@
 import { BaseKey, useCreate, useList, useUpdate } from "@refinedev/core"
-import { set } from "date-fns"
-import { is } from "date-fns/locale"
 import { useState, useCallback, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -8,7 +6,7 @@ interface User {
   id: number
   first_name: string
   last_name: string
-  role: {
+  role?: {
     id: BaseKey,
     name: string
   }
@@ -40,7 +38,6 @@ export default function Users() {
       }
     }
   })
-  console.log('roles',rolesData?.data)
 
   const{data, isLoading, error} = useList({
     resource: 'api/v1/api/v1/bo/restaurants/users/',
@@ -50,6 +47,7 @@ export default function Users() {
       }
     }
   })
+
 
   const{mutate: updateUser} = useUpdate({
     resource: `api/v1/api/v1/bo/restaurants/users`,
@@ -125,17 +123,12 @@ export default function Users() {
 
   const [roleSelected, setRoleSelected] = useState<string>()
   useEffect(() => {
-    setRoleSelected(selectedUser?.role.id.toString())
+    setRoleSelected(selectedUser?.role?.id.toString())
   }, [roleSelected])
 
-  const {mutate: updateRole} = useCreate({
-    resource: `api/v1/bo/roles/${selectedUser?.role.id}/assign-user/${selectedUser?.id}/`,
-    meta:{
-      headers: {
-        "X-Restaurant-ID": 1,
-      },
-    },
-  });
+  console.log(selectedUser?.role?.id,'newId')
+
+  const {mutate: updateRole} = useUpdate();
 
   useEffect(() => {
     setRoleSelected((document.getElementById('roleUpdate') as HTMLSelectElement)?.value || '')
@@ -146,22 +139,33 @@ export default function Users() {
 
 
     if (selectedUser) {
+      const role = selectedUser?.role?.id
+      console.log('role',role)
+      updateRole({
+        resource: `api/v1/bo/roles`,
+        id: `${role}/assign-user/${selectedUser.id}/`,
+        meta: {
+          headers: {
+            'X-Restaurant-ID': 1,
+          },
+        },
+        values: {
+          // role: role?.id,
+        },
+        
+      });
       updateUser({
-        id: '1/',
+        resource: `api/v1/api/v1/bo/restaurants/users`,
+        id: `${selectedUser.id}/`,
         values: {
           first_name: selectedUser.first_name,
           last_name: selectedUser.last_name,
           email: selectedUser.email,
         },
       });
-      updateRole({
-        values: {
-          // role: roleSelected,
-        },
-        
-      });
       // setIsUpdating(false);
       // setIsModalOpen(false);
+      
 
     }
   };
@@ -206,8 +210,13 @@ export default function Users() {
               <select
                 id="roleUpdate"
                 className={`inputs ${localStorage.getItem('darkMode')==='true' ? 'bg-darkthemeitems' : 'bg-white'}`}
-                defaultValue={roleSelected || selectedUser?.role.id} // Ensure the value is ID, not name
-                onChange={(e)=>{setRoleSelected(e.target.value)}} // Set role ID
+                defaultValue={roleSelected || selectedUser?.role?.id } // Ensure the value is ID, not name
+                onChange={(e) => {
+                  const selectedRole = rolesData?.data.find((role: any) => role.id === Number(e.target.value));
+                  if (selectedUser && selectedRole) {
+                    setSelectedUser({ ...selectedUser, role: { ...selectedUser.role, id: selectedRole.id as BaseKey, name: selectedRole.name } });
+                  }
+                }} // Set role ID
               >
                 {
                   rolesData?.data.map((role: any) => (
@@ -242,7 +251,7 @@ export default function Users() {
                 <td className="px-6 py-4">{user.first_name} {user.last_name}</td>
                 {/* <td className="px-6 py-4">{user.phone}</td> */}
                 <td className="px-6 py-4">{user.email}</td>
-                <td className="px-6 py-4">{user.role.name}</td>
+                <td className="px-6 py-4">{user.role ? user.role.name : 'no role affected'}</td>
               </tr>
             ))}
           </tbody>

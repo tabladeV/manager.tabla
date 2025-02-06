@@ -25,6 +25,7 @@ interface canvasTypes {
   tables: Table[];
   onSave: (table:Table[]) => void;
   isLoading: boolean;
+  onDeleted: (id: BaseKey) => void;
 }
 
 const DesignCanvas: React.FC <canvasTypes>= (props) => {
@@ -68,7 +69,7 @@ const DesignCanvas: React.FC <canvasTypes>= (props) => {
       height: 100,
       x: 50,
       y: 50,
-      max: Math.floor(innerWidth/220),
+      max: Math.floor(innerWidth/190),
       min: 1,
       floor: props.focusedRoofId!,
       reservations: [],
@@ -83,6 +84,7 @@ const DesignCanvas: React.FC <canvasTypes>= (props) => {
     }
     if (selectedId) {
       const newShapes = shapes?.filter((shape: BaseRecord) => shape.name !== selectedId) || [];
+      props.onDeleted(shapes?.find(shape => shape.name === selectedId)?.id as BaseKey);
       setShapes(newShapes);
       selectShape(undefined); // Deselect after deletion
     }
@@ -103,8 +105,8 @@ const DesignCanvas: React.FC <canvasTypes>= (props) => {
         <form className={`popup bg-bgdarktheme ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-textdarktheme' : 'bg-white text-black'}`} onSubmit={(e) => {
           e.preventDefault();
           const newName = (e.target as any).elements[0].value;
-          const newMax = (e.target as any).elements[1].value;
-          const newMin = (e.target as any).elements[2].value;
+          const newMax = Number((e.target as any).elements[1].value);
+          const newMin = 1;
           if (shapes.find(shape => shape.name === newName && shape.name !== name)) {
             alert('Table name already exists');
             return;
@@ -118,9 +120,7 @@ const DesignCanvas: React.FC <canvasTypes>= (props) => {
           <p>Change Table Name</p>
           <input type="text" defaultValue={shapes?.find(shape => shape.name === name)?.name || ''} className={`inputs-unique mt-2 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-textdarktheme' : 'bg-white text-black'} `} />
           <p>Change maximum capacity</p>
-          <input type="text" defaultValue={shapes?.find(shape => shape.name === name)?.max || ''} className={`inputs-unique mt-2 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-textdarktheme' : 'bg-white text-black'} `} />
-          <p>Change minimum capacity</p>
-          <input type="text" defaultValue={shapes?.find(shape => shape.name === name)?.min || ''} className={`inputs-unique mt-2 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-textdarktheme' : 'bg-white text-black'} `} />
+          <input type="number" onChange={(e)=>setShapes(shapes?.map((shape:Table) => shape.name === name ? {...shape , max : Number(e.target.value), min:1}: shape))} defaultValue={shapes?.find(shape => shape.name === name)?.max || ''} className={`inputs-unique mt-2 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-textdarktheme' : 'bg-white text-black'} `} />
           <button type="submit" className='btn-primary mt-2'>Save</button>
         </form>
       </div>

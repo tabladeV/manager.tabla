@@ -8,9 +8,23 @@ import { useTranslation } from 'react-i18next';
 import 'i18next'
 import i18next from 'i18next'
 import { useEffect } from 'react'
+import { useList } from '@refinedev/core'
 
 
 const Home = () => {
+
+  const{data, isLoading, error} = useList({
+    resource: 'api/v1/api/v1/bo/restaurants/users/1/',
+    meta: {
+      headers: {
+        'X-Restaurant-ID': 1
+      }
+    }
+  })
+
+  console.log('user',data?.data)
+
+  
 
   
   const { t } = useTranslation();
@@ -21,7 +35,7 @@ const Home = () => {
 
       <div className='mb-4 ml-4'>
         <h1>
-          {t('overview.headline') + ' Alfred'} 
+          {t('overview.headline') +' '+( data? data?.data.first_name : '')} 
           {/* Hello, Alfred */}
         </h1>
         <p className={` ${localStorage.getItem('darkMode')=== 'true'? ' text-softwhitetheme':'text-subblack'}`}>

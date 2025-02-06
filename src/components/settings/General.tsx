@@ -93,16 +93,16 @@ const General = () => {
   const [cities, setCities] = useState<string[]>([]);
   const [selectedCountry, setSelectedCountry] = useState<string>('Morocco');
 
-  useEffect(() => {
-    axios.get('https://restcountries.com/v3.1/all')
-      .then(response => {
-        const countryNames = response.data.map((country: { name: { common: string } }) => country.name.common);
-        setCountries(countryNames);
-      })
-      .catch(error => {
-        console.error('Error fetching countries:', error);
-      });
-  }, []);
+  // useEffect(() => {
+  //   axios.get('https://restcountries.com/v3.1/all')
+  //     .then(response => {
+  //       const countryNames = response.data.map((country: { name: { common: string } }) => country.name.common);
+  //       setCountries(countryNames);
+  //     })
+  //     .catch(error => {
+  //       console.error('Error fetching countries:', error);
+  //     });
+  // }, []);
 
   // useEffect(() => {
   //   if (selectedCountry) {
@@ -181,19 +181,37 @@ const General = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     // Prepare the data to be updated
     const updatedData = {
-      ...formData,
-      categories,
+      name: formData.name,
+      email: formData.email,
+      website: formData.website,
+      phone: formData.phone,
+      location: restaurant?.location || "string", // Use existing data or a placeholder
+      address: restaurant?.address || "string", // Use existing data or a placeholder
+      is_approved: restaurant?.is_approved || true, // Use existing data or a default
+      max_of_guests: restaurant?.max_of_guests || 2147483647, // Use existing data or a default
+      description: formData.description,
+      allow_reservation: restaurant?.allow_reservation || true, // Use existing data or a default
+      average_price: formData.average_price,
+      due_cancellation_period: restaurant?.due_cancellation_period || 2147483647, // Use existing data or a default
+      country: formData.country,
+      city: formData.city,
+      category: restaurant?.category || 0, // Use existing data or a default
+      manager: restaurant?.manager || 0, // Use existing data or a default
+      restaurant_type: restaurant?.restaurant_type || 0, // Use existing data or a default
+      // categories: categories.length() === 0 ? 0 : categories?.map((cat) => parseInt(cat)), // Ensure categories are numbers
+      staff: restaurant?.staff || [0], // Use existing data or a default
     };
-
+  
     // Call the update mutation
     updateRestaurant({
-      resource: `api/v1/bo/restaurants`,
+      resource: "api/v1/bo/restaurants",
       values: updatedData,
-      id: restaurantId+'/',
+      id: restaurantId + "/", // Ensure the ID is appended correctly
     });
+    window.location.reload();
   };
 
   return (

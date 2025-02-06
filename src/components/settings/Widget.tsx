@@ -11,35 +11,44 @@ interface Widget {
   restaurant: string;
   description: string;
   menu_file: string;
+  has_menu: boolean;
 }
+
+const base64ToBlob = (base64: string, mimeType: string) => {
+  const byteCharacters = atob(base64.split(',')[1]);
+  const byteNumbers = new Array(byteCharacters.length);
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+  const byteArray = new Uint8Array(byteNumbers);
+  return new Blob([byteArray], { type: mimeType });
+};
 
 export default function WidgetConfig() {
   const [restaurantId, setRestaurantId] = useState(1);
   const { t } = useTranslation();
 
-  // Fetch widget data
   const { data: widgetData, isLoading, error } = useList({
     resource: `api/v1/bo/restaurants/${restaurantId}/widget/`,
   });
 
-  // State for widget information
   const [widgetInfo, setWidgetInfo] = useState<Widget>();
   const [logo, setLogo] = useState<string | null>(null);
   const [title, setTitle] = useState('');
+  const [hasMenu, setHasMenu] = useState<boolean>();
   const [description, setDescription] = useState('');
   const [menuPdf, setMenuPdf] = useState<string | null>(null);
   const [searchTabs, setSearchTabs] = useState({
     menu: true,
   });
 
-  // Refs for file inputs
   const fileInputRef = useRef<HTMLInputElement>(null);
   const filePdfInputRef = useRef<HTMLInputElement>(null);
 
-  // Initialize widget data
   useEffect(() => {
     if (widgetData?.data) {
       const data = widgetData.data as unknown as Widget;
+      setHasMenu(data.has_menu);
       setWidgetInfo(data);
       setTitle(data.title);
       setDescription(data.description);
@@ -48,7 +57,6 @@ export default function WidgetConfig() {
     }
   }, [widgetData]);
 
-  // Handle logo upload
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -62,7 +70,6 @@ export default function WidgetConfig() {
     }
   };
 
-  // Handle menu PDF upload
   const handleMenuUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -76,7 +83,6 @@ export default function WidgetConfig() {
     }
   };
 
-  // Download menu PDF
   const downloadPdf = () => {
     if (!menuPdf) {
       alert('No menu PDF available to download.');
@@ -90,45 +96,42 @@ export default function WidgetConfig() {
     downloadLink.click();
   };
 
-  // Toggle search tabs
   const handleSearchTabChange = (tab: keyof typeof searchTabs) => {
     setSearchTabs((prev) => ({ ...prev, [tab]: !prev[tab] }));
   };
 
-  // Save widget configuration
   const { mutate: updateWidget } = useUpdate();
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!widgetInfo) return;
 
-    const updatedData = {
-      title,
-      description,
-      image: logo,
-      menu_file: menuPdf,
-      has_menu: searchTabs.menu,
-    };
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('has_menu', searchTabs.menu ? 'true' : 'false');
 
-    console.log('Updated Data:', updatedData);
+    if (logo) {
+      const blob = base64ToBlob(logo, logo.split(',')[0].split(':')[1].split(';')[0]);
+      formData.append('image', blob, 'logo.png');
+    }
 
-    // Use the `useUpdate` hook to send a PATCH request
-    updateWidget(
-      {
-        resource: `api/v1/bo/restaurants/${restaurantId}/widget_partial_update/`,
-        values: updatedData,
-      },
-      {
-        onError: (error) => {
-          console.error('Error updating widget:', error);
-          alert('Failed to save configuration. Please try again.');
-        },
-        onSuccess: () => {
-          alert('Configuration saved successfully!');
-        },
-      }
-    );
+    if (menuPdf) {
+      const blob = base64ToBlob(menuPdf, menuPdf.split(',')[0].split(':')[1].split(';')[0]);
+      formData.append('menu', blob, 'menu.pdf');
+    }
+
+    try {
+      await updateWidget({
+        id: `${restaurantId}/widget_partial_update/`,
+        resource: `api/v1/bo/restaurants`,
+        values: formData,
+      });
+      alert('Configuration saved successfully!');
+    } catch (error) {
+      console.error('Error updating widget:', error);
+      alert('Failed to save configuration. Please try again.');
+    }
   };
 
-  // Dark mode class
   const darkModeClass = localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-white' : 'bg-white text-black';
 
   if (isLoading) return <div className="text-center">Loading...</div>;
@@ -139,7 +142,6 @@ export default function WidgetConfig() {
         {t('settingsPage.widget.title')} for {widgetInfo?.restaurant}
       </h1>
 
-      {/* Logo Upload Section */}
       <div className="mb-6">
         {logo ? (
           <div className="relative w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden">
@@ -169,7 +171,6 @@ export default function WidgetConfig() {
         />
       </div>
 
-      {/* Title and Description Section */}
       <div className="space-y-4 mb-6">
         <input
           type="text"
@@ -186,7 +187,6 @@ export default function WidgetConfig() {
         />
       </div>
 
-      {/* Search Tabs Section */}
       <div className="mb-6">
         <h2 className="text-lg font-semibold mb-2">{t('settingsPage.widget.searchTabs.title')}</h2>
         <div className="flex flex-wrap gap-4">
@@ -194,22 +194,22 @@ export default function WidgetConfig() {
             <label key={key} className="flex items-center">
               <input
                 type="checkbox"
-                checked={value}
-                onChange={() => handleSearchTabChange(key as keyof typeof searchTabs)}
+                checked={hasMenu ? value : key === 'menu' && value}
+                onChange={() => setHasMenu((prev) => !prev)}
                 className="sr-only"
               />
               <span
                 className={`flex items-center justify-center w-6 h-6 border rounded-md mr-2 ${
-                  value ? 'bg-greentheme border-greentheme' : 'border-gray-300 dark:border-darkthemeitems'
+                  hasMenu ? 'bg-greentheme border-greentheme' : 'border-gray-300 dark:border-darkthemeitems'
                 }`}
               >
-                {value && <Check size={16} className="text-white" />}
+                {hasMenu && <Check size={16} className="text-white" />}
               </span>
               <span className="capitalize">{key}</span>
             </label>
           ))}
         </div>
-        {searchTabs.menu && (
+        {hasMenu && (
           <div className="flex justify-around items-center">
             <button
               onClick={() => filePdfInputRef.current?.click()}
@@ -240,7 +240,6 @@ export default function WidgetConfig() {
         )}
       </div>
 
-      {/* Save and Preview Buttons */}
       <div className="flex gap-3 space-x-4">
         <button
           onClick={handleSave}

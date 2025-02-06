@@ -453,6 +453,8 @@
             "unavailable": "Unavailable",
             "type":"Type",
             "from": "From",
+            "cancel":"Cancel",
+            "save":"Save",
             "puffer": "Reservation Duration",
             "addAnotherSlot": "Add another slot",
             "to": "To",
