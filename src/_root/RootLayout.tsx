@@ -18,9 +18,62 @@ import cancelDark from '../assets/Cancel-icon-dark.png'
 import pendingDark from '../assets/pending-icon-dark.png'
 
 import { Helmet } from "react-helmet-async";
+import { useList } from "@refinedev/core"
+import { useDateContext } from "../context/DateContext"
+import { format } from "date-fns"
 
 
 const RootLayout = () => {
+
+  const {chosenDay} = useDateContext();
+
+  const {data: reservationsActionsData, isLoading, error} = useList({
+    resource: 'api/v1/dashboard/top-actions',
+    filters: [
+      {
+        field: "start_date",
+        operator: "gte",
+        value: format(chosenDay, 'yyyy-MM-dd'),
+      },
+      {
+        field: "end_date",
+        operator: "lte",
+        value: format(chosenDay, 'yyyy-MM-dd'),
+      },
+    ],
+      meta: {
+      headers: {
+        'X-Restaurant-ID': 1,
+      },
+    },
+  });
+
+  interface ReservationAction {
+    action: string;
+    count: number;
+  }
+
+  const [actions, setActions] = useState<ReservationAction[]>([
+    {
+      action: "pending",
+      count: 0,
+    },
+    {
+      action: "confirmed",
+      count: 0,
+    },
+    {
+      action: "cancelled",
+      count: 0,
+    },
+  ]);
+
+  useEffect(() => {
+    if (reservationsActionsData?.data) {
+      setActions(reservationsActionsData.data as ReservationAction[]);
+    }
+  }, [reservationsActionsData]);
+
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -127,7 +180,7 @@ const RootLayout = () => {
                 :
                 <img src={pending} alt="pending" className="w-6 h-6" />
               }
-              <span className="text-[1.6rem] font-[600]">{10}</span>
+              <span className="text-[1.6rem] font-[600]">{actions[0].count}</span>
             </div>
             <div className="flex items-center gap-2 btn border-softgreentheme cursor-default hover:border-greentheme  text-greentheme">
               {localStorage.getItem('darkMode')==='true'?
@@ -136,7 +189,7 @@ const RootLayout = () => {
                 <img src={confirm} alt="confirm" className="w-6 h-6" />
               }
               
-              <span className="text-[1.6rem] font-[600]">{20}</span>
+              <span className="text-[1.6rem] font-[600]">{actions[1].count}</span>
             </div>
           <div className="flex items-center  gap-2 btn border-softredtheme cursor-default hover:border-redtheme  text-redtheme">
               {localStorage.getItem('darkMode')==='true'?
@@ -144,7 +197,7 @@ const RootLayout = () => {
                 :
                 <img src={cancel} alt="cancel" className="w-6 h-6" />
               }
-              <span className="text-[1.6rem] font-[600]">{2}</span>
+              <span className="text-[1.6rem] font-[600]">{actions[2].count}</span>
             </div>
           </div>
           

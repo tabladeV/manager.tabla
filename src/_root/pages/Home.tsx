@@ -7,7 +7,7 @@ import VisitorsChart from '../../components/overview/VisitorsChart'
 import { useTranslation } from 'react-i18next';
 import 'i18next'
 import i18next from 'i18next'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useList } from '@refinedev/core'
 
 
@@ -22,7 +22,12 @@ const Home = () => {
     }
   })
 
-  console.log('user',data?.data)
+  const [user, setUser] = useState<any>()
+
+  useEffect(() => {
+    setUser(data?.data)
+  }, [data])
+
 
   
 
@@ -35,7 +40,7 @@ const Home = () => {
 
       <div className='mb-4 ml-4'>
         <h1>
-          {t('overview.headline') +' '+( data? data?.data.first_name : '')} 
+          {t('overview.headline') +' '+( user? user.first_name : '')} 
           {/* Hello, Alfred */}
         </h1>
         <p className={` ${localStorage.getItem('darkMode')=== 'true'? ' text-softwhitetheme':'text-subblack'}`}>
