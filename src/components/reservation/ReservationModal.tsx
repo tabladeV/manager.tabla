@@ -5,19 +5,20 @@ import { ArrowLeft } from 'lucide-react';
 import { BaseKey, BaseRecord, useCreate, useList } from '@refinedev/core';
 
 interface Reservation extends BaseRecord {
-  id: BaseKey;
-  email: string;
-  full_name: string;
-  date: string;
-  internal_note?: string;
-  phone: string;
-  time: string;
-  source: string;
-  number_of_guests: string;
-  status: string;
-  comment?: string;
-  review?: boolean;
-}
+    id: BaseKey;
+    email: string;
+    full_name: string;
+    date: string;
+    time: string;
+    internal_note: string;
+    source: string;
+    number_of_guests: string;
+    phone: string;
+    status: string;
+    commenter?: string;
+    review?: boolean;
+  }
+  
 
 interface ReservationModalProps {
   onClick: () => void;
