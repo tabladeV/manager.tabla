@@ -9,6 +9,8 @@ interface Reservation extends BaseRecord {
   email: string;
   full_name: string;
   date: string;
+  internal_note?: string;
+  phone: string;
   time: string;
   source: string;
   number_of_guests: string;
@@ -147,6 +149,8 @@ const ReservationModal = (props: ReservationModalProps) => {
       id: Date.now().toString(),
       full_name: formData.full_name,
       email: formData.email,
+      phone: formData.phone,
+      internal_note: '',
       date: data.reserveDate || '',
       time: data.time || '',
       source: 'OTHER',
@@ -163,7 +167,7 @@ const ReservationModal = (props: ReservationModalProps) => {
         status: 'PENDING',
         source: 'BACK_OFFICE',
         tables:[],
-        commenter: reservationData.comment,
+        commenter: '',
         internal_note: reservationData.comment,
         number_of_guests: reservationData.number_of_guests,
         date: reservationData.date,
@@ -309,6 +313,7 @@ const ReservationModal = (props: ReservationModalProps) => {
           onSubmit={(event) => {
             const reservationData: Reservation = {
               id: Date.now().toString(),
+              phone: formData.phone,
               full_name: formData.full_name,
               email: formData.email,
               date: data.reserveDate || '',
@@ -316,7 +321,7 @@ const ReservationModal = (props: ReservationModalProps) => {
               source: 'OTHER',
               number_of_guests: data.guests? data.guests.toString():'',
               status: 'PENDING',
-              comment: formData.comment,
+              internal_note: formData.comment,
             };
             handleAddReservation(event, reservationData);
           }}

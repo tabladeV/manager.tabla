@@ -32,13 +32,13 @@ const RootLayout = () => {
     filters: [
       {
         field: "start_date",
-        operator: "gte",
-        value: format(chosenDay, 'yyyy-MM-dd'),
+        operator: "eq",
+        value: (format(chosenDay, 'yyyy-MM-dd')),
       },
       {
         field: "end_date",
-        operator: "lte",
-        value: format(chosenDay, 'yyyy-MM-dd'),
+        operator: "eq",
+        value: (format(chosenDay, 'yyyy-MM-dd')),
       },
     ],
       meta: {
@@ -47,6 +47,8 @@ const RootLayout = () => {
       },
     },
   });
+
+  console.log(format(chosenDay, 'yyyy-MM-dd'))
 
   interface ReservationAction {
     action: string;

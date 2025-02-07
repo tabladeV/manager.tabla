@@ -1,4 +1,4 @@
-import { BaseKey, BaseRecord, useList } from '@refinedev/core';
+import { BaseKey, BaseRecord, useList, useUpdate } from '@refinedev/core';
 import { da } from 'date-fns/locale';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
@@ -9,7 +9,8 @@ import image from '../../assets/profile.png';
 
 interface ClientData {
   id: string;
-  full_name: string;
+  first_name: string;
+  last_name: string;
   email: string;
   phone: string;
   alternatePhone?: string; // Optional property
@@ -24,23 +25,23 @@ interface ClientData {
     spendMAD: number;
   };
   organization: string;
-  notes: string;
+  internal_note: string;
 }
 
-interface Reservation extends BaseRecord {
-  id: BaseKey;
-  email: string;
-  full_name: string;
-  date: string;
-  time: string;
-  source: string;
-  number_of_guests: string;
-  status: string;
-  comment?: string;
-  review?: boolean;
-  floor_name?: string;
-  tables?: string;
-}
+// interface Reservation extends BaseRecord {
+//   id: BaseKey;
+//   email: string;
+//   full_name: string;
+//   date: string;
+//   time: string;
+//   source: string;
+//   number_of_guests: string;
+//   status: string;
+//   comment?: string;
+//   review?: boolean;
+//   floor_name?: string;
+//   tables?: string;
+// }
 
 const ClientInterface = () => {
   const { id } = useParams();
@@ -65,6 +66,18 @@ const ClientInterface = () => {
   });
   console.log(data)
 
+  const {data: userReservations , isLoading: reservationLoading, error: reservationError}= useList({
+    resource: `api/v1/bo/customers/${id}/reservations/`,
+    meta: {
+      headers: {
+        'X-Restaurant-ID': 1,
+      },
+    },
+  })
+
+  const {mutate: updateClient} = useUpdate();
+
+
   const [reservation, setReservation] = useState<BaseRecord[]>([]);
 
   const [client, setClient] = useState<BaseRecord | null>(null);
@@ -73,12 +86,13 @@ const ClientInterface = () => {
     if (data?.data) {
       setClient(data.data);
     }
-    if (reservations?.data) {
-      setReservation(reservations.data);
+    if (userReservations?.data) {
+      setReservation(userReservations.data);
     }
   }, [data, reservations]);
 
-  console.log(reservation, 'asdask');
+  console.log(reservation,'new')
+
 
 
 
@@ -86,76 +100,34 @@ const ClientInterface = () => {
 
   const { t } = useTranslation();
 
-  // const clients = [
-  //   {
-  //     id: 'janereq',
-  //     name: 'Jane Smith',
-  //     email: 'janeSmith@gmail.com',
-  //     phoneNumber: '123456789',
-  //     image: 'https://images.unsplash.com/photo-1526835746352-0b9da4054862?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  //     lifetime: {
-  //       upcoming: 3,
-  //       materialized: 1,
-  //       denied: 20,
-  //       cancelled: 4,
-  //       noShow: 2,
-  //       spendCover: 100.856,
-  //       spendMAD: 521,
-  //     },
-  //     organization: 'Organization',
-  //     notes: 'Lorem ipsum dolor sit amet...',
-  //   },
-  //   {
-  //     id: 'akans',
-  //     name: 'Emily Nord',
-  //     email: 'emilynord@gmail.com',
-  //     phoneNumber: '123456789',
-  //     image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  //     lifetime: {
-  //       upcoming: 7,
-  //       materialized: 6,
-  //       denied: 10,
-  //       cancelled: 29,
-  //       noShow: 1,
-  //       spendCover: 34.856,
-  //       spendMAD: 300,
-  //     },
-  //     organization: 'Organization',
-  //     notes: 'Lorem ipsum dolor sit amet...',
-  //   },
-  //   {
-  //     id: 'sasak',
-  //     name: 'Jake Jackson',
-  //     email: 'jakejack@gmail.com',
-  //     phoneNumber: '123456789',
-  //     image: 'https://images.unsplash.com/photo-1542727313-4f3e99aa2568?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  //     lifetime: {
-  //       upcoming: 2,
-  //       materialized: 5,
-  //       denied: 5,
-  //       cancelled: 66,
-  //       noShow: 0,
-  //       spendCover: 87.856,
-  //       spendMAD: 745,
-  //     },
-  //     organization: 'Organization',
-  //     notes: 'Lorem ipsum dolor sit amet...',
-  //   },
-  // ];
-
   
-  const reservationHistory = [
-    {
-      date: '2024-10-26',
-      time: '09:00',
-      status: 'Pending',
-      tables: 'T-1',
-      source: 'Website',
-      floor_name : 'Terrace'
+  
+  interface Reservation{
+    id: number,
+    occasion: string,
+    status: string,
+    source: string,
+    commenter: string,
+    internal_note: string,
+    number_of_guests: number,
+    date: string,
+    time: string,
+    review_link: string,
+    created_at: string,
+    edit_at: string,
+    user: null,
+    restaurant: number,
+    customer: number,
+    offer: null
+  }
+  
+  const [reservationHistory,setReservationHistory] = useState<Reservation[]>();
+
+  useEffect(()=>{
+    if(reservation){
+      setReservationHistory(reservation as Reservation[])
     }
-    
-    
-  ];
+  },[reservation])
 
   const reservationOrigin = (origin: string) => {
     if (origin === 'MARKETPLACE') {
@@ -199,6 +171,18 @@ const ClientInterface = () => {
     setClient((prev) =>
       prev ? { ...prev, [name]: value } : null
     );
+    updateClient({
+      resource: 'api/v1/bo/customers',
+      values: {
+        [name]: value,
+      },
+      id: id+'/',
+      meta: {
+        headers: {
+          'X-Restaurant-ID': 1,
+        },
+      },
+    });
   };
 
   const handleBlur = () => {
@@ -210,13 +194,13 @@ const ClientInterface = () => {
     return (
       <td className="p-2" colSpan={colspan}>
         {isEditing ? (
-          field === 'notes' ? (
+          field === 'internal_note' ? (
             <textarea
               name={field}
               value={(client && typeof client[field] === 'string') ? client[field] : ''}
               onChange={handleChange}
               onBlur={handleBlur}
-              className="inputs w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`inputs w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2':'bg-white'}`}
               rows={4}
             />
           ) : (
@@ -226,7 +210,7 @@ const ClientInterface = () => {
               value={(client && typeof client[field] === 'string') ? client[field] : ''}
               onChange={handleChange}
               onBlur={handleBlur}
-              className="inputs-unique w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`inputs-unique w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2':'bg-white'}`}
             />
           )
         ) : (
@@ -311,8 +295,12 @@ const ClientInterface = () => {
                       <table className="w-full  border-collapse">
                         <tbody>
                           <tr className="border border-gray-300">
-                            <td className="font-medium p-2 w-1/4">{t('clients.profileSection.fields.name')}</td>
-                            {renderCell('full_name')}
+                            <td className="font-medium p-2">{t('clients.profileSection.fields.firstName')}</td>
+                            {renderCell('first_name')}
+                            <td className="font-medium p-2">{t('clients.profileSection.fields.lastName')}</td>
+                            {renderCell('last_name', 3)}
+                          </tr>
+                          <tr className="border border-gray-300">
                             <td className="font-medium p-2 w-1/4 border-l border-gray-300 lt-sm:hidden">{t('clients.profileSection.fields.email')}</td>
                             <span className='lt-sm:hidden'>{renderCell('email')}</span>
                           </tr>
@@ -331,12 +319,8 @@ const ClientInterface = () => {
                             {renderCell('alternatePhone')}
                           </tr>
                           <tr className="border border-gray-300">
-                            <td className="font-medium p-2">{t('clients.profileSection.fields.organization')}</td>
-                            {renderCell('organization', 3)}
-                          </tr>
-                          <tr className="border border-gray-300">
                             <td className="font-medium p-2">{t('clients.profileSection.fields.guestNotes')}</td>
-                            {renderCell('notes', 3)}
+                            {renderCell('internal_note', 3)}
                           </tr>
                         </tbody>
                       </table>
@@ -353,8 +337,8 @@ const ClientInterface = () => {
                             <th className="font-semibold p-3 text-left border-b border-gray-200">{t('clients.reservationHistorySection.tableHeaders.date')}</th>
                             <th className="font-semibold p-3 text-left border-b border-gray-200">{t('clients.reservationHistorySection.tableHeaders.time')}</th>
                             <th className="font-semibold p-3 text-left border-b border-gray-200 flex justify-center">{t('clients.reservationHistorySection.tableHeaders.made')}</th>
-                            <th className="font-semibold p-3 text-left border-b border-gray-200">{t('clients.reservationHistorySection.tableHeaders.roof')}</th>
-                            <th className="font-semibold p-3 text-left border-b border-gray-200">{t('clients.reservationHistorySection.tableHeaders.table')}</th>
+                            <th className="font-semibold p-3 text-left border-b border-gray-200">{t('clients.reservationHistorySection.tableHeaders.comment')}</th>
+                            <th className="font-semibold p-3 text-left border-b border-gray-200">{t('clients.reservationHistorySection.tableHeaders.guests')}</th>
                             <th className="font-semibold p-3 text-left border-b border-gray-200">{t('clients.reservationHistorySection.tableHeaders.status')}</th>
                           </tr>
                         </thead>
@@ -369,15 +353,15 @@ const ClientInterface = () => {
                               <td className="p-3  flex h-full itmes-center justify-center">
                                 {reservationOrigin(res.source)}
                               </td>
-                              <td className="p-3 ">{res.floor_name}</td>
-                              <td className="p-3 ">{res.tables}</td>
+                              <td className="p-3 ">{res.commenter}</td>
+                              <td className="p-3 ">{res.number_of_guests}</td>
                               <td className="p-3 ">
                                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                  res.status === 'Confirmed' ? 'bg-softgreentheme text-greentheme' :
-                                  res.status === 'Cancelled' ? 'bg-softredtheme text-redtheme' :
+                                  res.status === 'APPROVED' ? 'bg-softgreentheme text-greentheme' :
+                                  res.status === 'CANCELED' ? 'bg-softredtheme text-redtheme' :
                                   'bg-softbluetheme text-bluetheme'
                                 }`}>
-                                  {res.status === 'Confirmed' ? t('clients.reservationHistorySection.statusLabels.confirmed') : res.status === 'Cancelled' ? t('clients.reservationHistorySection.statusLabels.cancelled') : t('clients.reservationHistorySection.statusLabels.pending')}
+                                  {res.status === 'APPROVED' ? t('clients.reservationHistorySection.statusLabels.confirmed') : res.status === 'CANCELED' ? t('clients.reservationHistorySection.statusLabels.cancelled') : t('clients.reservationHistorySection.statusLabels.pending')}
                                 </span>
                               </td>
                             </tr>

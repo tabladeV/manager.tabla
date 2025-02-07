@@ -1,4 +1,4 @@
-import { BaseKey, useCreate, useList, useUpdate } from "@refinedev/core"
+import { BaseKey, useCreate, useDelete, useList, useUpdate } from "@refinedev/core"
 import { useState, useCallback, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -83,6 +83,24 @@ export default function Users() {
     setIsModalOpen(false)
   }, [])
 
+  const [newUser, setNewUser] = useState<User>(
+    {
+      id: 0,
+      first_name: '',
+      last_name: '',
+      role: {
+        id: 0,
+        name: ''
+      },
+      phone: '',
+      email: '',
+    }
+  )
+
+  const handleInputAddChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setNewUser({ ...newUser, [e.target.id]: e.target.value })
+  }, [newUser])
+
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     if (selectedUser) {
       setSelectedUser({ ...selectedUser, [e.target.id]: e.target.value })
@@ -129,6 +147,8 @@ export default function Users() {
   console.log(selectedUser?.role?.id,'newId')
 
   const {mutate: updateRole} = useUpdate();
+  const {mutate: addUserMutate} = useCreate();
+  const {mutate: deleteUserMutate} = useDelete();
 
   useEffect(() => {
     setRoleSelected((document.getElementById('roleUpdate') as HTMLSelectElement)?.value || '')
@@ -170,20 +190,55 @@ export default function Users() {
     }
   };
 
+  const adduser = () => {
+    addUserMutate({
+      resource: `api/v1/api/v1/bo/restaurants/users/`,
+      meta:{
+        headers: {
+          "X-Restaurant-ID": 1,
+        },
+      },
+      values: {
+        first_name: newUser.first_name,
+        last_name: newUser.last_name,
+        email: newUser.email,
+        // role: newUser.role?.id,
+      },
+    });
+    closeModal();
+  }
+
+  const deleteUser = () => {
+    if (selectedUser) {
+      deleteUserMutate({
+        resource: `api/v1/api/v1/bo/restaurants/users`,
+        id: `${selectedUser.id}/`,
+        values: {
+          first_name: selectedUser.first_name,
+          last_name: selectedUser.last_name,
+          email: selectedUser.email,
+          is_active: false,
+        },
+      });
+      setIsUpdating(false);
+      setIsModalOpen(false);
+    }
+  }
+
 
 
   return (
     <div className={`w-full rounded-[10px] flex flex-col items-center p-10 ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'}`}>
       {( !isUpdating ) ? (isModalOpen && (
         <div >
-          {/* <div className="overlay" onClick={closeModal}></div>
+          <div className="overlay" onClick={closeModal}></div>
           <div className={`sidepopup lt-sm:popup lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:rounded-b-none lt-sm:w-full h-full ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'}`}>
             <h1 className="text-2xl font-bold mb-3">{selectedUser?.id ? 'Modify' : 'Add'} User</h1>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-              <input type="text" id="first_name" placeholder="first Name" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.first_name || ''} onChange={handleInputChange} required />
-              <input type="text" id="last_name" placeholder="Last Name" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.last_name || ''} onChange={handleInputChange} required />
-              <input type="email" id="email" placeholder="Email" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.email || ''} onChange={handleInputChange} required />
-                <select id="role" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} value={selectedUser?.role.name || ''} onChange={handleInputChange}>
+            <div onSubmit={handleSubmit} className="flex flex-col gap-3">
+              <input type="text" id="first_name" placeholder="first Name" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} onChange={handleInputAddChange} required />
+              <input type="text" id="last_name" placeholder="Last Name" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`}  onChange={handleInputAddChange} required />
+              <input type="email" id="email" placeholder="Email" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`}  onChange={handleInputAddChange} required />
+                <select id="role" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} onChange={handleInputAddChange}>
                 {
                   rolesData?.data.map((role:any)=>(
                     <option key={role.id} value={role.name}>{role.name}</option>
@@ -192,10 +247,10 @@ export default function Users() {
                 </select>
               <div className="flex justify-center gap-4">
                 <button type="button" className={localStorage.getItem('darkMode')==='true'?'btn text-white hover:text-redtheme border-white hover:border-redtheme':'btn'} onClick={closeModal}>Cancel</button>
-                <button type="submit" className="btn-primary">Save</button>
+                <button onClick={adduser} className="btn-primary">Save</button>
               </div>
-            </form>
-          </div> */}
+            </div>
+          </div>
         </div>
       )): isModalOpen && (
         <div >
@@ -225,6 +280,7 @@ export default function Users() {
                 }
               </select>
               <div className="flex justify-center gap-4">
+                <button onClick={deleteUser} className="btn-primary">Delete</button>
                 {/* <button type="button"  className={localStorage.getItem('darkMode')==='true'?'btn text-white hover:text-redtheme border-white hover:border-redtheme':'btn'} onClick={closeModal}>Cancel</button> */}
                 <button onClick={handleUserUpdate} className="btn-primary">Save</button>
               </div>

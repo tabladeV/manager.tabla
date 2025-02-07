@@ -89,6 +89,7 @@
       "title": "Reservations",
       "searchPlaceholder": "Search...",
       "filters": {
+        "fulfilled": "Fulfilled",
         "confirmed": "Confirmed",
         "cancelled": "Cancelled",
         "pending": "Pending",
@@ -117,7 +118,8 @@
       "statusLabels": {
         "pending": "Pending",
         "confirmed": "Confirmed",
-        "cancelled": "Cancelled"
+        "cancelled": "Cancelled",
+        "fulfilled": "Fulfilled"
       },
       "edit": {
         "title": "Edit Reservation",
@@ -126,6 +128,7 @@
         "informations": {
           "title": "Informations",
           "name": "Full Name",
+          "internalNote": "Internal Note",
           "email": "Email",
           "phone": "Phone",
           "floor": "Floor",
@@ -241,7 +244,8 @@
         "profileSection": {
             "title": "Informations",
             "fields": {
-                "name": "Name",
+                "firstName": "First Name",
+                "lastName": "Last Name",
                 "email": "Email",
                 "phoneNumber": "Phone number",
                 "alternatePhone": "Alternate phone",
@@ -258,13 +262,16 @@
                 "spend": "Spend",
                 "made": "Made From/By",
                 "roof": "Roof",
+                "guests":"Number of guests",
+                "comment":"Comment",
                 "table": "Table",
                 "status": "Status"
             },
             "statusLabels": {
                 "confirmed": "Confirmed",
                 "cancelled": "Cancelled",
-                "pending": "Pending"
+                "pending": "Pending",
+                "fulfilled": "Fulfilled"
             },
             "buttons": {
                 "edit": "Edit",

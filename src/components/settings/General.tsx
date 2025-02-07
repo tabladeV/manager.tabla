@@ -47,13 +47,7 @@ const General = () => {
     }
   }, [restaurantData]);
 
-  const { data: cityData, isLoading: isLoadingCity, error: errorCity } = useList({
-    resource: `api/v1/api/v1/bo/cities/${restaurant?.city}/`,
-  });
 
-  const { data: countryData, isLoading: isLoadingCountry, error: errorCountry } = useList({
-    resource: `api/v1/api/v1/bo/countries/${restaurant?.country}/`,
-  });
 
   const { data: allCities, isLoading: isLoadingAllCities, error: errorAllCities } = useList({
     resource: 'api/v1/api/v1/bo/cities/',
@@ -89,32 +83,7 @@ const General = () => {
     }
   }, [restaurant]);
 
-  const [countries, setCountries] = useState<string[]>([]);
-  const [cities, setCities] = useState<string[]>([]);
-  const [selectedCountry, setSelectedCountry] = useState<string>('Morocco');
 
-  // useEffect(() => {
-  //   axios.get('https://restcountries.com/v3.1/all')
-  //     .then(response => {
-  //       const countryNames = response.data.map((country: { name: { common: string } }) => country.name.common);
-  //       setCountries(countryNames);
-  //     })
-  //     .catch(error => {
-  //       console.error('Error fetching countries:', error);
-  //     });
-  // }, []);
-
-  // useEffect(() => {
-  //   if (selectedCountry) {
-  //     axios.post('https://countriesnow.space/api/v0.1/countries/cities', { country: selectedCountry })
-  //       .then(response => {
-  //         setCities(response.data.data || []);
-  //       })
-  //       .catch(error => {
-  //         console.error('Error fetching cities:', error);
-  //       });
-  //   }
-  // }, [selectedCountry]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
@@ -131,9 +100,7 @@ const General = () => {
       [id]: value
     }));
 
-    if (id === "country") {
-      setSelectedCountry(value);
-    }
+    
   };
 
   const [categories, setCategories] = useState(restaurant?.categories || ['']);
@@ -211,7 +178,7 @@ const General = () => {
       values: updatedData,
       id: restaurantId + "/", // Ensure the ID is appended correctly
     });
-    window.location.reload();
+    // window.location.reload();
   };
 
   return (
@@ -240,12 +207,12 @@ const General = () => {
           <select
             id="country"
             className={`inputs w-1/2 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
-            value={selectedCountry}
+            value={formData.country}
             onChange={handleSelectChange}
           >
             {allCountries?.data.map((country) => (
-              <option key={country.id} value={country.name}>
-                {country.name}
+              <option key={country.id} value={country.id}>
+          {country.name}
               </option>
             ))}
           </select>
@@ -255,10 +222,9 @@ const General = () => {
             value={formData.city}
             onChange={handleSelectChange}
           >
-            <option value="">{t('settingsPage.general.basicInformationForm.labels.city')}</option>
             {allCities?.data.map((city) => (
-              <option key={city.id} value={city.name}>
-                {city.name}
+              <option key={city.id} value={city.id}>
+          {city.name}
               </option>
             ))}
           </select>
@@ -290,7 +256,7 @@ const General = () => {
             onChange={handleInputChange}
           />
         </div>
-        <div className='flex flex-col gap-3'>
+        {/* <div className='flex flex-col gap-3'>
           <label>{t('settingsPage.general.basicInformationForm.labels.categories')}</label>
           {categories.map((category, index) => (
             <div key={category} className='w-full flex justify-between gap-3'>
@@ -323,7 +289,7 @@ const General = () => {
               </div>
             </div>
           }
-        </div>
+        </div> */}
         <div className='relative gap-2 flex flex-col'>
           <label>{t('settingsPage.general.basicInformationForm.labels.avgPrice')}</label>
           <input

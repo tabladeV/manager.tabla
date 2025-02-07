@@ -9,7 +9,8 @@ import { useTranslation } from 'react-i18next';
 import ReservationModal from "../../components/reservation/ReservationModal"
 import { BaseKey, BaseRecord, useCreate, useList, useUpdate } from "@refinedev/core"
 import ReservationProcess from "../../components/reservation/ReservationProcess"
-import { use } from "i18next"
+import { Send } from "lucide-react"
+
 
 interface Reservation extends BaseRecord {
   id: BaseKey;
@@ -17,8 +18,10 @@ interface Reservation extends BaseRecord {
   full_name: string;
   date: string;
   time: string;
+  internal_note: string;
   source: string;
   number_of_guests: string;
+  phone: string;
   status: string;
   commenter?: string;
   review?: boolean;
@@ -133,7 +136,10 @@ const ReservationsPage = () => {
       return 'bg-softbluetheme text-bluetheme'
     } else if (status === 'APPROVED') {
       return 'bg-softgreentheme text-greentheme'
-    } else {
+    }else if (status === 'FULFILLED') {
+      return 'bg-softpurpletheme text-purpletheme'
+    }
+     else {
       return 'bg-softredtheme text-redtheme'
     }
   }
@@ -144,8 +150,12 @@ const ReservationsPage = () => {
   const [focusedDate, setFocusedDate] = useState(false)
   const [searchResults, setSearchResults] = useState(reservations)
 
+  const [searched,setSearched]= useState(false)
+
   useEffect(()=>{
-    setSearchResults(reservations)
+    if(!searched){
+      setSearchResults(reservations)
+    }
   },[reservations])
 
   const handleDateClick = (range: { start: Date, end: Date }) => {
@@ -178,6 +188,7 @@ const ReservationsPage = () => {
     if (keyword === "") {
       setSearchResults(reservations);
     } else {
+      setSearched(true)
       const results = reservations.filter((item) =>
         item.full_name.toLowerCase().includes(keyword) ||
         item.email.toLowerCase().includes(keyword)
@@ -209,6 +220,7 @@ const ReservationsPage = () => {
           table_name: selectedClient.table_name,
           source: selectedClient.source,
           status: selectedClient.status,
+          internal_note: selectedClient.internal_note,
           date: reservationProgressData.reserveDate,
           time: reservationProgressData.time+ ':00',
           number_of_guests: reservationProgressData.guests ,
@@ -221,10 +233,12 @@ const ReservationsPage = () => {
         },
         
       });
-      window.location.reload();
       
     }
+    setShowModal(false)
   }
+
+ 
 
   useEffect(() => {
     if (selectedClient) {
@@ -292,6 +306,7 @@ const ReservationsPage = () => {
         const reservationDate = new Date(reservation.date.split('/').reverse().join('-'))
         return reservationDate >= selectedDateRange.start && reservationDate <= selectedDateRange.end
       }
+      
       return true
     }))
   }, [searchResults, focusedFilter, selectedDateRange])
@@ -343,6 +358,20 @@ const ReservationsPage = () => {
     setReservations(reservations.map(r => 
       r.id === idStatusModification ? {...r, status} : r
     ))
+
+
+    upDateReservation({
+      id: idStatusModification+'/',
+      values: {
+        status: status
+      },
+      meta: {
+        headers: {
+          "X-Restaurant-ID": 1,
+        },
+      },
+    })
+
     
   }
 
@@ -406,6 +435,28 @@ const ReservationsPage = () => {
                   <option value="BACK_OFFICE">Back Office</option>
                 </select>
               </div>
+              <div>
+                <label className="block text-sm font-medium ">{t('reservations.edit.informations.comment')}</label>
+                <input
+                  type="text"
+                  name="commenter"
+                  value={selectedClient.commenter}
+                  onChange={(e)=>setSelectedClient({...selectedClient, commenter: e.target.value})}
+                  className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
+/>
+              </div>
+              <div>
+                <label className="block text-sm font-medium ">{t('reservations.edit.informations.internalNote')}</label>
+                <input
+                  type="text"
+                  name="internal_note"
+                  value={selectedClient.internal_note}
+                  onChange={(e)=>setSelectedClient({...selectedClient, internal_note: e.target.value})}
+                  className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
+/>
+              </div>
+              
+              
               {/* <div>
                 <label className="block text-sm font-medium ">{t('reservations.edit.informations.floor')}</label>
                 <select 
@@ -433,17 +484,6 @@ const ReservationsPage = () => {
                   ))}
                 </select>
               </div>
-
-              <div>
-                <label className="block text-sm font-medium ">{t('reservations.edit.informations.comment')}</label>
-                <input
-                  type="text"
-                  name="comment"
-                  value={selectedClient.commenter}
-                  onChange={(e)=>setSelectedClient({...selectedClient, commenter: e.target.value})}
-                  className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
-/>
-              </div>
               
               <div className="">
                 <label className="block text-sm font-medium ">{t('reservations.edit.informations.status')}</label>
@@ -456,6 +496,7 @@ const ReservationsPage = () => {
                   <option value="PENDING">{t('reservations.statusLabels.pending')}</option>
                   <option value="APPROVED">{t('reservations.statusLabels.confirmed')}</option>
                   <option value="CANCELED">{t('reservations.statusLabels.cancelled')}</option>
+                  <option value="FULFILLED">{t('reservations.statusLabels.fulfilled')}</option>
                 </select>
               </div>
               <div onClick={()=>{setShowProcess(true)}} className={`btn flex justify-around cursor-pointer ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'}`}>
@@ -486,6 +527,9 @@ const ReservationsPage = () => {
           <SearchBar SearchHandler={searchFilter}/>
         </div>
         <div className="flex lt-sm:flex-wrap gap-4">
+          <button onClick={() => setFocusedFilter('FULFILLED')} className={`${localStorage.getItem('darkMode')==='true'?'text-white':''} ${focusedFilter === 'FULFILLED' ? 'btn-primary' : 'btn'}`}>
+            {t('reservations.filters.fulfilled')}
+          </button>
           <button onClick={() => setFocusedFilter('APPROVED')} className={`${localStorage.getItem('darkMode')==='true'?'text-white':''} ${focusedFilter === 'APPROVED' ? 'btn-primary' : 'btn'} `}>
             {t('reservations.filters.confirmed')}
           </button>
@@ -537,21 +581,23 @@ const ReservationsPage = () => {
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.number_of_guests}</td>
                 <td className="px-3 py-4 whitespace-nowrap " onClick={()=> showStatusModification(reservation.id)}>
                   <span className={`${statusStyle(reservation.status)} text-center py-[.1em] px-3  rounded-[10px]`}> 
-                    {reservation.status === 'APPROVED'? t('reservations.statusLabels.confirmed') : reservation.status === 'PENDING' ? t('reservations.statusLabels.pending') : t('reservations.statusLabels.cancelled')}
+                    {reservation.status === 'APPROVED'? t('reservations.statusLabels.confirmed') : reservation.status === 'PENDING' ? t('reservations.statusLabels.pending') : reservation.status === 'FULFILLED'?  t('reservations.statusLabels.fulfilled') :   t('reservations.statusLabels.cancelled')}
                   </span>
                     {showStatus && reservation.id === idStatusModification && (
-                      <div>
+                      <div className="relative">
                         <div className="overlay left-0 top-0 w-full h-full  opacity-0 " onClick={()=>{setShowStatus(false)}}></div>
-                        <ul className="fixed opacity-100 z-[300] bg-white p-2 rounded-md shadow-md">
-                          <li className="py-1 px-2 hover:bg-gray-100 cursor-pointer" onClick={()=> statusHandler('PENDING')}>{t('reservations.statusLabels.pending')}</li>
-                          <li className="py-1 px-2 hover:bg-gray-100 cursor-pointer" onClick={()=> statusHandler('CONFIRMED')}>{t('reservations.statusLabels.confirmed')}</li>
-                          <li className="py-1 px-2 hover:bg-gray-100 cursor-pointer" onClick={()=> statusHandler('CANCELED')}>{t('reservations.statusLabels.cancelled')}</li>
+                        <ul className={`absolute z-[400] p-2 rounded-md shadow-md ${localStorage.getItem('darkMode')==='true'?'text-white bg-darkthemeitems':'bg-white text-subblack'}`} >
+                          <li className={`py-1 px-2  cursor-pointer ${localStorage.getItem('darkMode')==='true'?'text-white bg-darkthemeitems':'bg-white text-subblack'}`}
+                           onClick={()=> statusHandler('PENDING')}>{t('reservations.statusLabels.pending')}</li>
+                          <li className="py-1 px-2  cursor-pointer" onClick={()=> statusHandler('APPROVED')}>{t('reservations.statusLabels.confirmed')}</li>
+                          <li className="py-1 px-2 cursor-pointer" onClick={()=> statusHandler('CANCELED')}>{t('reservations.statusLabels.cancelled')}</li>
+                          <li className="py-1 px-2 cursor-pointer" onClick={()=> statusHandler('FULFILLED')}>{t('reservations.statusLabels.fulfilled')}</li>
                         </ul>
                       </div>
                     )}
                 </td>
                 <td className=" whitespace-nowrap " >
-                  {reservation.review ? <span className=" cursor-default opacity-50" >{t('reservations.tableHeaders.reviewed')}</span> : <span className=" cursor-pointer text-greentheme ">{t('reservations.tableHeaders.sendReview')}</span>}
+                  {reservation.status !== 'FULFILLED' ? '': <span className=" cursor-pointer text-greentheme items-center flex justify-center  hover:bg-softgreentheme"><Send size={20}/></span>}
                 </td>
               </tr>
             ))}

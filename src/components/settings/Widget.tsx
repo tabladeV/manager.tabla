@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
-import { Upload, Check, X, Download } from 'lucide-react';
+import { Upload, Check, X, Download, Navigation, ScreenShareIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { BaseKey, useList, useUpdate } from '@refinedev/core';
+import { Document, Page } from "react-pdf";
+
 
 interface Widget {
   id: BaseKey;
@@ -31,6 +33,9 @@ export default function WidgetConfig() {
   const { data: widgetData, isLoading, error } = useList({
     resource: `api/v1/bo/restaurants/${restaurantId}/widget/`,
   });
+
+  console.log(widgetData);
+
 
   const [widgetInfo, setWidgetInfo] = useState<Widget>();
   const [logo, setLogo] = useState<string | null>(null);
@@ -70,16 +75,33 @@ export default function WidgetConfig() {
     }
   };
 
+
+  const [file, setFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [filePDF, setFilePDF] = useState<File | null>(null);
+  const [previewUrlPDF, setPreviewUrlPDF] = useState<string | null>(null);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const selectedFile = event.target.files[0];
+      setFile(selectedFile);
+
+      // Generate a temporary preview URL
+      const objectUrl = URL.createObjectURL(selectedFile);
+      setPreviewUrl(objectUrl);
+      setLogo(objectUrl);
+    }
+  };
+
   const handleMenuUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      if (file.type !== 'application/pdf') {
-        alert('Please upload a PDF file.');
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = (e) => setMenuPdf(e.target?.result as string);
-      reader.readAsDataURL(file);
+    if (event.target.files && event.target.files[0]) {
+      const selectedFile = event.target.files[0];
+      setFilePDF(selectedFile);
+
+      // Generate a temporary preview URL
+      const objectUrl = URL.createObjectURL(selectedFile);
+      setPreviewUrlPDF(objectUrl);
+      setMenuPdf(objectUrl);
     }
   };
 
@@ -88,13 +110,16 @@ export default function WidgetConfig() {
       alert('No menu PDF available to download.');
       return;
     }
-    const linkSource = menuPdf;
+    const linkSource = `https://api.dev.tabla.ma${menuPdf}`;
     const downloadLink = document.createElement('a');
     const fileName = 'menu.pdf';
     downloadLink.href = linkSource;
     downloadLink.download = fileName;
+    downloadLink.target = '_blank';
     downloadLink.click();
   };
+
+  
 
   const handleSearchTabChange = (tab: keyof typeof searchTabs) => {
     setSearchTabs((prev) => ({ ...prev, [tab]: !prev[tab] }));
@@ -109,14 +134,12 @@ export default function WidgetConfig() {
     formData.append('description', description);
     formData.append('has_menu', searchTabs.menu ? 'true' : 'false');
 
-    if (logo) {
-      const blob = base64ToBlob(logo, logo.split(',')[0].split(':')[1].split(';')[0]);
-      formData.append('image', blob, 'logo.png');
+    if(file){
+      formData.append('image', file);
     }
 
-    if (menuPdf) {
-      const blob = base64ToBlob(menuPdf, menuPdf.split(',')[0].split(':')[1].split(';')[0]);
-      formData.append('menu', blob, 'menu.pdf');
+    if (filePDF) {
+      formData.append('menu_file', filePDF);
     }
 
     try {
@@ -132,6 +155,8 @@ export default function WidgetConfig() {
     }
   };
 
+  const [newLogo, setNewLogo] = useState<boolean>(false);
+
   const darkModeClass = localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-white' : 'bg-white text-black';
 
   if (isLoading) return <div className="text-center">Loading...</div>;
@@ -145,9 +170,9 @@ export default function WidgetConfig() {
       <div className="mb-6">
         {logo ? (
           <div className="relative w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden">
-            <img src={logo} alt="Uploaded logo" className="w-full h-full object-contain" />
+            <img src={!newLogo ? `https://api.dev.tabla.ma${logo}` : logo} alt="Logo" className="w-full h-full object-contain" />
             <button
-              onClick={() => setLogo(null)}
+              onClick={() => {setLogo(null);setNewLogo(true)}}
               className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
             >
               <X size={16} />
@@ -165,7 +190,7 @@ export default function WidgetConfig() {
         <input
           type="file"
           ref={fileInputRef}
-          onChange={handleLogoUpload}
+          onChange={handleFileChange}
           accept="image/*"
           className="hidden"
         />
@@ -225,13 +250,14 @@ export default function WidgetConfig() {
               accept="application/pdf"
               className="hidden"
             />
+            
             {menuPdf ? (
               <div
                 className="btn-secondary flex gap-4 items-center mt-3 justify-center cursor-pointer"
                 onClick={downloadPdf}
               >
-                <p>Download Our Menu</p>
-                <Download size={20} />
+                <p>Preview your menu</p>
+                <ScreenShareIcon size={20} />
               </div>
             ) : (
               'No menu uploaded'
