@@ -179,7 +179,7 @@ const ReservationModal = (props: ReservationModalProps) => {
     });
 
     props.onClick();
-    window.location.reload();
+    // window.location.reload();
   };
 
   const [newClientData, setNewClientData] = useState({

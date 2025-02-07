@@ -102,13 +102,15 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 export default function ReservationsChart() {
   
-  const [timeRange, setTimeRange] = useState<range>({start: '2023-01-01', end: '2023-12-31'})
-  const [chartData, setChartData] = useState(generateData(timeRange.start, timeRange.end))
+  const [timeRange, setTimeRange] = useState<string>('last_year')
+  const [chartData, setChartData] = useState(
+    generateMockData(12)
+  )
   
-  useEffect(() => {
-    const data = generateData(timeRange.start, timeRange.end)
-    setChartData(data)
-  }, [timeRange])
+  // useEffect(() => {
+  //   const data = generateData(timeRange.start, timeRange.end)
+  //   setChartData(data)
+  // }, [timeRange])
   
   const { t } = useTranslation()
   
@@ -126,14 +128,35 @@ export default function ReservationsChart() {
   
 
 
-  const [chartReservationsData, setReservationsData] = useState()
+ interface ReservationChart {
+    date: string;
+    confirmed: number;
+    canceled: number
+ }
+
+  const [chartReservationsData, setReservationsData] = useState<ReservationChart[]>()
 
   useEffect(() => {
     if (data?.data) {
       const donnee = data.data as any
+      setReservationsData(donnee as ReservationChart[])
       setChartData(donnee.last_year)
     }
   }, [data])
+
+  useEffect(() => {
+    const chartData = data?.data as { last_year: ReservationChart[], last_month: ReservationChart[], last_7_days: ReservationChart[] };
+    if(chartData){
+      if (timeRange === 'last_year') {
+        setChartData(chartData.last_year)
+      } else if (timeRange === 'last_month') {
+        setChartData(chartData.last_month)
+      } else if (timeRange === 'last_7_days') {
+        setChartData(chartData.last_7_days)
+      }
+    }
+    
+  }, [timeRange, data?.data])
 
 
   
@@ -153,7 +176,7 @@ export default function ReservationsChart() {
           </div>
 
         </div>
-        {/* <Filter onClick={(range: range) => setTimeRange(range)} /> */}
+        <Filter onClick={(range: string) => setTimeRange(range)} />
       </div>
       <div className="flex items-center space-x-4 justify-center lt-sm:mt-2 sm:hidden">
           <div className="flex items-center space-x-2">

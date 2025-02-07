@@ -55,11 +55,22 @@ const HistoryList  = () => {
 
   const { t } = useTranslation()
 
-  const colors = [
-    'bg-redtheme',
-    'bg-bluetheme',
-    'bg-greentheme',
-  ]
+  const len = reviews.length
+
+  const colors: string[] = []
+
+  for (let i = 0; i < len; i++) {
+    if (i % 4 === 0) {
+      colors.push('bg-redtheme')
+    } else if (i % 4 === 1) {
+      colors.push('bg-bluetheme')
+    } else if (i % 4 === 2) {
+      colors.push('bg-greentheme')
+    }
+    else {
+      colors.push('bg-purpletheme')
+    }
+  }
 
 
 
@@ -71,13 +82,13 @@ const HistoryList  = () => {
       <div className='flex justify-between items-center p-4'>
         <h1 className='text-xl font-bold'>{t('overview.reviews.title')}</h1>
         
-        <Filter onClick={(range: string) => setTimeRange(range)} />
+        {/* <Filter onClick={(range: string) => setTimeRange(range)} /> */}
       </div>
       <div className='flex flex-col no-scrollbar overflow-y-scroll h-[330px] gap-4 p-2'>
         {reviews.map((item, index) => (
           <div key={index} className='flex justify-between items-center p-1 rounded-lg hover:bg-[#00000003] '>
           <div className='flex items-center gap-2'>
-            <div className={`w-10 h-10 ${colors[Math.floor((Math.random()*10)/4)]} flex justify-center items-center rounded-full text-white`}>{item.customer.first_name.slice(0,1)}</div>
+            <div className={`w-10 h-10 ${colors[index]} flex justify-center items-center rounded-full text-white`}>{item.customer.first_name.slice(0,1)}</div>
             <div>
               <h3 className='text-md'>{item.customer.first_name} {item.customer.last_name}</h3>
               <p className={`text-[14px] ${localStorage.getItem('darkMode')==='true'? 'text-softwhitetheme':'text-subblack'}`}>{item.description}</p>

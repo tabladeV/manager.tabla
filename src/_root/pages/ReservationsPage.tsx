@@ -136,6 +136,8 @@ const ReservationsPage = () => {
       return 'bg-softbluetheme text-bluetheme'
     } else if (status === 'APPROVED') {
       return 'bg-softgreentheme text-greentheme'
+    }else if (status === 'SEATED') {
+      return 'bg-softorangetheme text-orangetheme'
     }else if (status === 'FULFILLED') {
       return 'bg-softpurpletheme text-purpletheme'
     }
@@ -156,7 +158,7 @@ const ReservationsPage = () => {
     if(!searched){
       setSearchResults(reservations)
     }
-  },[reservations])
+  },[reservations, searched])
 
   const handleDateClick = (range: { start: Date, end: Date }) => {
     setSelectedDateRange(range)
@@ -204,6 +206,26 @@ const ReservationsPage = () => {
   const { mutate: upDateReservation } = useUpdate({
     resource: `api/v1/bo/reservations`,
   });
+
+  const [toBeReviewedRes, setToBeReviewedRes] = useState<BaseKey>()
+
+  const { mutate: createReview } = useCreate({
+      resource: `api/v1/bo/reservations/${toBeReviewedRes}/send_review_link/`,
+      meta: {
+        headers: {
+          'X-Restaurant-ID': 1,
+        },
+      },
+      mutationOptions: {
+        retry: 3,
+        onSuccess: (data) => {
+          console.log('Reservation added:', data);
+        },
+        onError: (error) => {
+          console.log('Error adding reservation:', error);
+        },
+      },
+    });
 
   
 
@@ -304,7 +326,7 @@ const ReservationsPage = () => {
       if (focusedFilter !== '' && reservation.status !== focusedFilter) return false
       if (selectedDateRange.start && selectedDateRange.end) {
         const reservationDate = new Date(reservation.date.split('/').reverse().join('-'))
-        return reservationDate >= selectedDateRange.start && reservationDate <= selectedDateRange.end
+        return reservationDate >= selectedDateRange.start && reservationDate <= new Date(selectedDateRange.end!.setHours(23, 59, 59, 999))
       }
       
       return true
@@ -374,6 +396,41 @@ const ReservationsPage = () => {
 
     
   }
+  const statusHandlerFulfilled = (id: BaseKey) => {
+    setReservations(reservations.map(r => 
+      r.id === id ? {...r, status: 'FULFILLED'} : r
+    ))
+
+    upDateReservation({
+      id: id+'/',
+      values: {
+        status: 'FULFILLED'
+      },
+      meta: {
+        headers: {
+          "X-Restaurant-ID": 1,
+        },
+      },
+    })
+  }
+
+  const sendReview = (id: BaseKey) => {
+    setReservations(reservations.filter(r => r.id !== id))
+    
+    createReview({
+      values: {
+        reservations
+      },
+      meta: {
+        headers: {
+          "X-Restaurant-ID": 1,
+        },
+      },
+    })
+    setToBeReviewedRes(id)
+    statusHandlerFulfilled(id)
+  }
+
 
   const [floorId, setFloorId] = useState<BaseKey>()
 
@@ -496,7 +553,7 @@ const ReservationsPage = () => {
                   <option value="PENDING">{t('reservations.statusLabels.pending')}</option>
                   <option value="APPROVED">{t('reservations.statusLabels.confirmed')}</option>
                   <option value="CANCELED">{t('reservations.statusLabels.cancelled')}</option>
-                  <option value="FULFILLED">{t('reservations.statusLabels.fulfilled')}</option>
+                  <option value="SEATED">{t('reservations.statusLabels.seated')}</option>
                 </select>
               </div>
               <div onClick={()=>{setShowProcess(true)}} className={`btn flex justify-around cursor-pointer ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'}`}>
@@ -530,6 +587,9 @@ const ReservationsPage = () => {
           <button onClick={() => setFocusedFilter('FULFILLED')} className={`${localStorage.getItem('darkMode')==='true'?'text-white':''} ${focusedFilter === 'FULFILLED' ? 'btn-primary' : 'btn'}`}>
             {t('reservations.filters.fulfilled')}
           </button>
+          <button onClick={() => setFocusedFilter('SEATED')} className={`${localStorage.getItem('darkMode')==='true'?'text-white':''} ${focusedFilter === 'SEATED' ? 'btn-primary' : 'btn'}`}>
+            {t('reservations.filters.seated')}
+          </button>
           <button onClick={() => setFocusedFilter('APPROVED')} className={`${localStorage.getItem('darkMode')==='true'?'text-white':''} ${focusedFilter === 'APPROVED' ? 'btn-primary' : 'btn'} `}>
             {t('reservations.filters.confirmed')}
           </button>
@@ -551,12 +611,13 @@ const ReservationsPage = () => {
         </div>
       </div>
       <div className='mt-4 lt-sm:overflow-x-scroll'>
-        <table className={`min-w-full divide-y ${localStorage.getItem('darkMode')==='true'?'divide-gray-800':'divide-gray-200'}`}>
+        <table className={`min-w-full overflow-scroll divide-y ${localStorage.getItem('darkMode')==='true'?'divide-gray-800':'divide-gray-200'}`}>
           <thead className={localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2 text-white':'bg-gray-50 text-gray-500'}>
             <tr>
               <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.id')}</th>
               <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.name')}</th>
               <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.email')}</th>
+              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.phone')}</th>
               <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.comment')}</th>
               <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.madeBy')}</th>
               <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.date')}</th>
@@ -568,10 +629,11 @@ const ReservationsPage = () => {
           </thead>
           <tbody className={ `  ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme divide-y divide-gray-800':'bg-white divide-y divide-gray-200'}`} >
             {filteredReservations.sort((a, b) => (a.id < b.id ? 1 : -1)).map(reservation => (
-              <tr key={reservation.id} className=" hover:opacity-75">
+              <tr key={reservation.id} className="opacity-80 hover:opacity-100">
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer"  onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.id}</td>
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer"  onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.full_name}</td>
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.email}</td>
+                <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.phone}</td>
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.commenter}</td>
                 <td className="px-3 py-4 flex items-center justify-center whitespace-nowrap cursor-pointer"  onClick={() => { if (reservation.id) EditClient(reservation.id); }}>
                   {reservation.tables_name}
@@ -581,23 +643,23 @@ const ReservationsPage = () => {
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.number_of_guests}</td>
                 <td className="px-3 py-4 whitespace-nowrap " onClick={()=> showStatusModification(reservation.id)}>
                   <span className={`${statusStyle(reservation.status)} text-center py-[.1em] px-3  rounded-[10px]`}> 
-                    {reservation.status === 'APPROVED'? t('reservations.statusLabels.confirmed') : reservation.status === 'PENDING' ? t('reservations.statusLabels.pending') : reservation.status === 'FULFILLED'?  t('reservations.statusLabels.fulfilled') :   t('reservations.statusLabels.cancelled')}
+                    {reservation.status === 'APPROVED'? t('reservations.statusLabels.confirmed') : reservation.status === 'PENDING' ? t('reservations.statusLabels.pending') : reservation.status === 'SEATED'?  t('reservations.statusLabels.seated') : reservation.status === 'FULFILLED' ? t('reservations.statusLabels.fulfilled') :   t('reservations.statusLabels.cancelled')}
                   </span>
-                    {showStatus && reservation.id === idStatusModification && (
+                    {showStatus && reservation.id === idStatusModification && reservation.status !== 'FULFILLED' && (
                       <div className="relative">
                         <div className="overlay left-0 top-0 w-full h-full  opacity-0 " onClick={()=>{setShowStatus(false)}}></div>
                         <ul className={`absolute z-[400] p-2 rounded-md shadow-md ${localStorage.getItem('darkMode')==='true'?'text-white bg-darkthemeitems':'bg-white text-subblack'}`} >
-                          <li className={`py-1 px-2  cursor-pointer ${localStorage.getItem('darkMode')==='true'?'text-white bg-darkthemeitems':'bg-white text-subblack'}`}
+                          <li className={`py-1 px-2 text-bluetheme  cursor-pointer `}
                            onClick={()=> statusHandler('PENDING')}>{t('reservations.statusLabels.pending')}</li>
-                          <li className="py-1 px-2  cursor-pointer" onClick={()=> statusHandler('APPROVED')}>{t('reservations.statusLabels.confirmed')}</li>
-                          <li className="py-1 px-2 cursor-pointer" onClick={()=> statusHandler('CANCELED')}>{t('reservations.statusLabels.cancelled')}</li>
-                          <li className="py-1 px-2 cursor-pointer" onClick={()=> statusHandler('FULFILLED')}>{t('reservations.statusLabels.fulfilled')}</li>
+                          <li className="py-1 px-2  text-greentheme cursor-pointer" onClick={()=> statusHandler('APPROVED')}>{t('reservations.statusLabels.confirmed')}</li>
+                          <li className="py-1 px-2 text-redtheme cursor-pointer" onClick={()=> statusHandler('CANCELED')}>{t('reservations.statusLabels.cancelled')}</li>
+                          <li className="py-1 px-2 text-orangetheme cursor-pointer" onClick={()=> statusHandler('SEATED')}>{t('reservations.statusLabels.seated')}</li>
                         </ul>
                       </div>
                     )}
                 </td>
-                <td className=" whitespace-nowrap " >
-                  {reservation.status !== 'FULFILLED' ? '': <span className=" cursor-pointer text-greentheme items-center flex justify-center  hover:bg-softgreentheme"><Send size={20}/></span>}
+                <td className=" whitespace-nowrap flex justify-center items-center " >
+                  {reservation.status !== 'SEATED' ? '': <span  onClick={()=> {sendReview(reservation.id)}} className=" cursor-pointer text-greentheme items-center flex justify-center w-7 h-7 rounded-md p-1 hover:bg-softgreentheme"><Send size={20}/></span>}
                 </td>
               </tr>
             ))}

@@ -135,20 +135,7 @@ const IntervalCalendar: React.FC<IntervalCalendarProps> = ({ onRangeSelect }) =>
         </div>
       )}
       
-      {((dateRange.start && dateRange.end ) && format(dateRange.start, 'MMM d, yyyy') === format(dateRange.end, 'MMM d, yyyy')) &&
-        <div className='mt-4 flex justify-between items-center gap-4'>
-          <p className='text-sm'>
-            Filter a specific hour
-          </p>
-          <select className={`inputs-unique text-sm p-[0em]  ${localStorage.getItem('darkMode')==='true'?'bg-black':'bg-white'}`}  onChange={(e) => setFilteringHour(e.target.value)}>
-            {hours.map((hour) => (
-              <option key={hour.id} value={hour.time} >
-                {hour.time}
-              </option>
-            ))}
-            </select> 
-        </div>
-      }
+    
     </div>
   );
 };

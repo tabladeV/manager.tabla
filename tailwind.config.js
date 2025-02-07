@@ -18,6 +18,8 @@ module.exports = {
         subblack: '#1E1E1E80',
         softredtheme: '#FF4B4B1A',
         redtheme: '#FF4B4B',
+        orangetheme: '#FFA500',
+        softorangetheme: '#FFA5001A',
         purpletheme: '#7b2cbf',
         softpurpletheme: '#7b2cbf1A',
         bluetheme: '#3F72AF',

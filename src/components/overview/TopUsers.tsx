@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis, ResponsiveContainer, Tooltip, TooltipProps } from "recharts";
 import Filter from "./Filter";
 import { useEffect, useState } from "react";
+import { BaseRecord, useList } from "@refinedev/core";
 
 // Define the interface for chart data
 interface ChartData {
@@ -41,9 +42,47 @@ const CustomTooltip: React.FC<TooltipProps<number, string>> = ({ active, payload
 };
 
 export default function TopUsers() {
+
+  const { data, isLoading, error } = useList<BaseRecord>({
+      resource: 'api/v1/bo/reservations/',
+      meta: {
+        headers: {
+          'X-Restaurant-ID': 1
+        }
+      }
+    })
+
+    const [reservations, setReservations] = useState<BaseRecord[]>([])
+    useEffect(() => {
+      if (data?.data) {
+        setReservations(data.data)
+      }
+    }, [data])
+
+
   const { t } = useTranslation();
   const [timeRange, setTimeRange] = useState<string>("");
-  const [chartData, setChartData] = useState<ChartData[]>(generateChartData());
+  const [chartData, setChartData] = useState<ChartData[]>([
+    { country: "Morocco", interactions: 0 },
+    { country: "Spain", interactions: 0 },
+    { country: "England", interactions: 0 },
+    { country: "Germany", interactions: 0 },
+    { country: "France", interactions: 0 },
+    { country: "Italy", interactions: 0 },
+  ]);
+
+  useEffect(() => {
+    if (reservations) {
+      setChartData([
+        { country: "Morocco", interactions: reservations.length },
+        { country: "Spain", interactions: 0 },
+        { country: "England", interactions: 0 },
+        { country: "Germany", interactions: 0 },
+        { country: "France", interactions: 0 },
+        { country: "Italy", interactions: 0 },
+      ])
+    }
+  }, [reservations])
 
   // Update chart data when time range changes
   useEffect(() => {
@@ -59,7 +98,7 @@ export default function TopUsers() {
     <div className={containerClass}>
       <div className="px-6 py-4 flex justify-between">
         <h2 className="text-xl font-bold mb-2">{t('overview.charts.topUsers.title')}</h2>
-        <Filter onClick={(range: string) => setTimeRange(range)} />
+        {/* <Filter onClick={(range: string) => setTimeRange(range)} /> */}
       </div>
       <div className="px-6 py-4">
         <div className="h-[300px]">

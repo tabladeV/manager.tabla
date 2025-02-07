@@ -17,6 +17,7 @@
         "headline": "Hello,",
         "subtitle": "Control your reservation, client, and more...",
         "buttons": {
+            "viewAll": "View All",
             "filter": "filter"
         },
         "reservations": {
@@ -67,7 +68,9 @@
                 "legend": {
                     "cancelled": "Cancelled",
                     "confirmed": "Confirmed",
-                    "pending": "Pending"
+                    "pending": "Pending",
+                    "seated": "Seated",
+                    "fulfilled": "Fulfilled"
                 }
             },
             "reservationsSource": {
@@ -90,6 +93,7 @@
       "searchPlaceholder": "Search...",
       "filters": {
         "fulfilled": "Fulfilled",
+        "seated": "Seated",
         "confirmed": "Confirmed",
         "cancelled": "Cancelled",
         "pending": "Pending",
@@ -119,6 +123,7 @@
         "pending": "Pending",
         "confirmed": "Confirmed",
         "cancelled": "Cancelled",
+        "seated": "Seated",
         "fulfilled": "Fulfilled"
       },
       "edit": {
@@ -271,7 +276,8 @@
                 "confirmed": "Confirmed",
                 "cancelled": "Cancelled",
                 "pending": "Pending",
-                "fulfilled": "Fulfilled"
+                "fulfilled": "Fulfilled",
+                "seated": "Seated"
             },
             "buttons": {
                 "edit": "Edit",
