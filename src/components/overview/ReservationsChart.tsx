@@ -143,9 +143,10 @@ export default function ReservationsChart() {
       setChartData(donnee.last_year)
     }
   }, [data])
+  
 
   useEffect(() => {
-    const chartData = data?.data as { last_year: ReservationChart[], last_month: ReservationChart[], last_7_days: ReservationChart[] };
+    const chartData = data?.data as unknown as { last_year: ReservationChart[], last_month: ReservationChart[], last_7_days: ReservationChart[] };
     if(chartData){
       if (timeRange === 'last_year') {
         setChartData(chartData.last_year)
