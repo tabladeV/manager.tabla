@@ -51,10 +51,18 @@ const General = () => {
 
   const { data: allCities, isLoading: isLoadingAllCities, error: errorAllCities } = useList({
     resource: 'api/v1/api/v1/bo/cities/',
+    filters: [
+      {
+        field: 'country',
+        operator: 'eq',
+        value: 2,
+      },
+    ],
   });
 
   const { data: allCountries, isLoading: isLoadingAllCountries, error: errorAllCountries } = useList({
     resource: 'api/v1/api/v1/bo/countries/',
+    
   });
 
   const [formData, setFormData] = useState({

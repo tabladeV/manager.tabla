@@ -1,4 +1,5 @@
 import { BaseKey, useCreate, useDelete, useList, useUpdate } from "@refinedev/core"
+import { Trash } from "lucide-react"
 import { useState, useCallback, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -6,11 +7,12 @@ interface User {
   id: number
   first_name: string
   last_name: string
+  password?: string
   role?: {
     id: BaseKey,
     name: string
   }
-  phone: string
+  phone?: string
   email: string
 }
 
@@ -88,10 +90,7 @@ export default function Users() {
       id: 0,
       first_name: '',
       last_name: '',
-      role: {
-        id: 0,
-        name: ''
-      },
+      password: '',
       phone: '',
       email: '',
     }
@@ -126,11 +125,7 @@ export default function Users() {
       id: 0,
       first_name: '',
       last_name: '',
-      role: {
-        id: 0,
-        name: ''
-      },
-      phone: '',
+      password: '',
       email: '',
     }
     openModal(newUser)
@@ -191,6 +186,7 @@ export default function Users() {
   };
 
   const adduser = () => {
+    console.log(newUser)
     addUserMutate({
       resource: `api/v1/api/v1/bo/restaurants/users/`,
       meta:{
@@ -202,27 +198,24 @@ export default function Users() {
         first_name: newUser.first_name,
         last_name: newUser.last_name,
         email: newUser.email,
-        // role: newUser.role?.id,
+        password: newUser.password,
       },
     });
     closeModal();
   }
 
-  const deleteUser = () => {
-    if (selectedUser) {
+  const deleteUser = (id:BaseKey) => {
+    
       deleteUserMutate({
         resource: `api/v1/api/v1/bo/restaurants/users`,
-        id: `${selectedUser.id}/`,
-        values: {
-          first_name: selectedUser.first_name,
-          last_name: selectedUser.last_name,
-          email: selectedUser.email,
-          is_active: false,
+        id: `${id}/`,
+        meta:{
+          headers: {
+            "X-Restaurant-ID": 1,
+          },
         },
       });
-      setIsUpdating(false);
-      setIsModalOpen(false);
-    }
+    
   }
 
 
@@ -238,13 +231,14 @@ export default function Users() {
               <input type="text" id="first_name" placeholder="first Name" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} onChange={handleInputAddChange} required />
               <input type="text" id="last_name" placeholder="Last Name" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`}  onChange={handleInputAddChange} required />
               <input type="email" id="email" placeholder="Email" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`}  onChange={handleInputAddChange} required />
-                <select id="role" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} onChange={handleInputAddChange}>
-                {
-                  rolesData?.data.map((role:any)=>(
-                    <option key={role.id} value={role.name}>{role.name}</option>
-                  ))
-                 }
-                </select>
+              <input type="text" id="password" placeholder="Password" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`}  onChange={handleInputAddChange} required />
+              {/* <select id="role" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`} onChange={handleInputAddChange}>
+              {
+                rolesData?.data.map((role:any)=>(
+                  <option key={role.id} value={role.name}>{role.name}</option>
+                ))
+                }
+              </select> */}
               <div className="flex justify-center gap-4">
                 <button type="button" className={localStorage.getItem('darkMode')==='true'?'btn text-white hover:text-redtheme border-white hover:border-redtheme':'btn'} onClick={closeModal}>Cancel</button>
                 <button onClick={adduser} className="btn-primary">Save</button>
@@ -280,7 +274,7 @@ export default function Users() {
                 }
               </select>
               <div className="flex justify-center gap-4">
-                <button onClick={deleteUser} className="btn-primary">Delete</button>
+                {/* <button onClick={deleteUser} className="btn-primary">Delete</button> */}
                 {/* <button type="button"  className={localStorage.getItem('darkMode')==='true'?'btn text-white hover:text-redtheme border-white hover:border-redtheme':'btn'} onClick={closeModal}>Cancel</button> */}
                 <button onClick={handleUserUpdate} className="btn-primary">Save</button>
               </div>
@@ -298,16 +292,20 @@ export default function Users() {
               {/* <th scope="col" className="px-6 py-4 font-medium ">{t('settingsPage.users.tableHeaders.phone')}</th> */}
               <th scope="col" className="px-6 py-4 font-medium ">{t('settingsPage.users.tableHeaders.email')}</th>
               <th scope="col" className="px-6 py-4 font-medium ">{t('settingsPage.users.tableHeaders.role')}</th>
+              <th scope="col" className="px-6 py-4 font-medium ">{t('settingsPage.users.tableHeaders.actions')}</th>
             </tr>
           </thead>
           <tbody className={`divide-y  border-t ${localStorage.getItem('darkMode')==='true'?'border-darkthemeitems divide-darkthemeitems':'border-gray-200'}`}>
             {users.map((user) => (
-              <tr key={user.id} className={` cursor-pointer ${localStorage.getItem('darkMode')==='true'?'hover:bg-bgdarktheme':'hover:bg-gray-50'}`} onClick={() => openModal(user)}>
-                <td className="px-6 py-4 font-medium">{user.id}</td>
-                <td className="px-6 py-4">{user.first_name} {user.last_name}</td>
+              <tr key={user.id} className={` cursor-pointer ${localStorage.getItem('darkMode')==='true'?'hover:bg-bgdarktheme':'hover:bg-gray-50'}`} >
+                <td className="px-6 py-4 font-medium" onClick={() => openModal(user)}>{user.id}</td>
+                <td className="px-6 py-4" onClick={() => openModal(user)}>{user.first_name} {user.last_name}</td>
                 {/* <td className="px-6 py-4">{user.phone}</td> */}
-                <td className="px-6 py-4">{user.email}</td>
-                <td className="px-6 py-4">{user.role ? user.role.name : 'no role affected'}</td>
+                <td className="px-6 py-4" onClick={() => openModal(user)}>{user.email}</td>
+                <td className="px-6 py-4" onClick={() => openModal(user)}>{user.role ? user.role.name : 'no role affected'}</td>
+                <td className="px-6 py-4">
+                  <button className="btn-secondary bg-softredtheme text-redtheme hover:bg-redtheme hover:text-white " onClick={() => deleteUser(user.id)}><Trash size={20}/></button>
+                </td>
               </tr>
             ))}
           </tbody>

@@ -37,11 +37,38 @@ const ReservationsPage = () => {
   }
   const [showProcess, setShowProcess] = useState(false)
   
+  const [selectedDateRange, setSelectedDateRange] = useState<{ start: Date | null, end: Date | null }>({ start: null, end: null })
+  const [focusedFilter, setFocusedFilter] = useState('')
+
+  const [searchKeyWord, setSearchKeyWord] = useState('')  
+
 
   const { t } = useTranslation();
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const { data, isLoading, error } = useList<Reservation>({
     resource: "api/v1/bo/reservations/",
+    filters: [
+      {
+        field: "status",
+        operator: "eq",
+        value: focusedFilter,
+      },
+      {
+        field: "date_",
+        operator: "gte",
+        value:selectedDateRange.start? format(selectedDateRange.start, 'dd/MM/yyyy'):'',
+      },
+      {
+        field: "date_",
+        operator: "lte",
+        value: selectedDateRange.end ? format(selectedDateRange.end, 'dd/MM/yyyy'): '',
+      },
+      {
+        field: "search",
+        operator: "eq",
+        value: searchKeyWord,
+      }
+    ],
     meta: {
       headers: {
         "X-Restaurant-ID": 1,
@@ -147,10 +174,9 @@ const ReservationsPage = () => {
   }
 
   const [selectingDay, setSelectingDay] = useState("")
-  const [selectedDateRange, setSelectedDateRange] = useState<{ start: Date | null, end: Date | null }>({ start: null, end: null })
-  const [focusedFilter, setFocusedFilter] = useState('')
   const [focusedDate, setFocusedDate] = useState(false)
   const [searchResults, setSearchResults] = useState(reservations)
+
 
   const [searched,setSearched]= useState(false)
 
@@ -186,17 +212,19 @@ const ReservationsPage = () => {
 
   const searchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
     const keyword = e.target.value.toLowerCase();
+
+    setSearchKeyWord(keyword)
     
-    if (keyword === "") {
-      setSearchResults(reservations);
-    } else {
-      setSearched(true)
-      const results = reservations.filter((item) =>
-        item.full_name.toLowerCase().includes(keyword) ||
-        item.email.toLowerCase().includes(keyword)
-      );
-      setSearchResults(results);
-    }
+    // if (keyword === "") {
+    //   setSearchResults(reservations);
+    // } else {
+    //   setSearched(true)
+    //   const results = reservations.filter((item) =>
+    //     item.full_name.toLowerCase().includes(keyword) ||
+    //     item.email.toLowerCase().includes(keyword)
+    //   );
+    //   setSearchResults(results);
+    // }
   };
 
   const [showModal, setShowModal] = useState(false)
@@ -320,18 +348,18 @@ const ReservationsPage = () => {
     setFilteredReservations(reservations)
   },[reservations])
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    setFilteredReservations(searchResults.filter(reservation => {
-      if (focusedFilter !== '' && reservation.status !== focusedFilter) return false
-      if (selectedDateRange.start && selectedDateRange.end) {
-        const reservationDate = new Date(reservation.date.split('/').reverse().join('-'))
-        return reservationDate >= selectedDateRange.start && reservationDate <= new Date(selectedDateRange.end!.setHours(23, 59, 59, 999))
-      }
+  //   setFilteredReservations(searchResults.filter(reservation => {
+      // if (focusedFilter !== '' && reservation.status !== focusedFilter) return false
+  //     if (selectedDateRange.start && selectedDateRange.end) {
+  //       const reservationDate = new Date(reservation.date.split('/').reverse().join('-'))
+  //       return reservationDate >= selectedDateRange.start && reservationDate <= new Date(selectedDateRange.end!.setHours(23, 59, 59, 999))
+  //     }
       
-      return true
-    }))
-  }, [searchResults, focusedFilter, selectedDateRange])
+  //     return true
+  //   }))
+  // }, [searchResults, focusedFilter, selectedDateRange])
 
 
   const reservationOrigin = (origin: string) => {
@@ -610,8 +638,8 @@ const ReservationsPage = () => {
           </button>
         </div>
       </div>
-      <div className='mt-4 lt-sm:overflow-x-scroll'>
-        <table className={`min-w-full overflow-scroll divide-y ${localStorage.getItem('darkMode')==='true'?'divide-gray-800':'divide-gray-200'}`}>
+      <div className='mt-4  lt-sm:overflow-x-scroll'>
+        <table className={` divide-y ${localStorage.getItem('darkMode')==='true'?'divide-gray-800':'divide-gray-200'}`}>
           <thead className={localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2 text-white':'bg-gray-50 text-gray-500'}>
             <tr>
               <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.id')}</th>
@@ -624,7 +652,7 @@ const ReservationsPage = () => {
               <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.time')}</th>
               <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.guests')}</th>
               <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.status')}</th>
-              <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.review')}</th>
+              <th className="w-4 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.review')}</th>
             </tr>
           </thead>
           <tbody className={ `  ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme divide-y divide-gray-800':'bg-white divide-y divide-gray-200'}`} >
@@ -634,7 +662,9 @@ const ReservationsPage = () => {
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer"  onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.full_name}</td>
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.email}</td>
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.phone}</td>
-                <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.commenter}</td>
+                <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>
+                  {reservation.commenter && reservation.commenter.length > 15 ? `${reservation.commenter.substring(0, 15)}...` : reservation.commenter}
+                </td>
                 <td className="px-3 py-4 flex items-center justify-center whitespace-nowrap cursor-pointer"  onClick={() => { if (reservation.id) EditClient(reservation.id); }}>
                   {reservation.tables_name}
                 </td>

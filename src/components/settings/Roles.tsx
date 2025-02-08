@@ -159,7 +159,7 @@ const Roles = () => {
             setAffectedPermissions([]);
             setAvailablePermissions(permissions);
 
-            window.location.reload();
+            // window.location.reload();
         } else {
             alert("Please provide a role name and assign at least one permission.");
         }

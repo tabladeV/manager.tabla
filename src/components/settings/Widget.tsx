@@ -54,6 +54,7 @@ export default function WidgetConfig() {
     if (widgetData?.data) {
       const data = widgetData.data as unknown as Widget;
       setHasMenu(data.has_menu);
+      setSearchTabs((prev) => ({ ...prev, menu: data.has_menu }));
       setWidgetInfo(data);
       setTitle(data.title);
       setDescription(data.description);
@@ -93,6 +94,8 @@ export default function WidgetConfig() {
     }
   };
 
+  const [uploadedPdf, setUploadedPdf] = useState<boolean>(false);
+
   const handleMenuUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const selectedFile = event.target.files[0];
@@ -102,21 +105,18 @@ export default function WidgetConfig() {
       const objectUrl = URL.createObjectURL(selectedFile);
       setPreviewUrlPDF(objectUrl);
       setMenuPdf(objectUrl);
+      setUploadedPdf(true);
+      console.log('uploadedPdf', uploadedPdf);
     }
   };
 
-  const downloadPdf = () => {
+  const openPdfInNewTab = () => {
     if (!menuPdf) {
-      alert('No menu PDF available to download.');
+      alert('No menu PDF available to open.');
       return;
     }
-    const linkSource = `https://api.dev.tabla.ma${menuPdf}`;
-    const downloadLink = document.createElement('a');
-    const fileName = 'menu.pdf';
-    downloadLink.href = linkSource;
-    downloadLink.download = fileName;
-    downloadLink.target = '_blank';
-    downloadLink.click();
+    const linkSource = !uploadedPdf ? `https://api.dev.tabla.ma${menuPdf}` : menuPdf;
+    window.open(linkSource, '_blank');
   };
 
   
@@ -132,14 +132,16 @@ export default function WidgetConfig() {
     const formData = new FormData();
     formData.append('title', title);
     formData.append('description', description);
-    formData.append('has_menu', searchTabs.menu ? 'true' : 'false');
+    formData.append('has_menu', searchTabs.menu.toString());
 
     if(file){
       formData.append('image', file);
     }
 
-    if (filePDF) {
+    if (filePDF && searchTabs.menu) {
       formData.append('menu_file', filePDF);
+    }else {
+      formData.append('menu_file', '');
     }
 
     try {
@@ -234,7 +236,7 @@ export default function WidgetConfig() {
             </label>
           ))}
         </div>
-        {hasMenu && (
+        {(hasMenu && searchTabs.menu) && (
           <div className="flex justify-around items-center">
             <button
               onClick={() => filePdfInputRef.current?.click()}
@@ -254,7 +256,7 @@ export default function WidgetConfig() {
             {menuPdf ? (
               <div
                 className="btn-secondary flex gap-4 items-center mt-3 justify-center cursor-pointer"
-                onClick={downloadPdf}
+                onClick={openPdfInNewTab}
               >
                 <p>Preview your menu</p>
                 <ScreenShareIcon size={20} />

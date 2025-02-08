@@ -9,7 +9,7 @@ import { BaseKey, BaseRecord, useList } from "@refinedev/core"
 interface Review {
     id: BaseKey
     food_rating: string
-    value_for_money_rating: string
+    value_for_money: string
     service_rating: string
     ambience_rating: string
     created_at: string
@@ -38,7 +38,6 @@ const Reviews = () => {
             }
         }
     })
-    console.log('data',data?.data)
 
     
 
@@ -52,10 +51,9 @@ const Reviews = () => {
       }
     }, [data])
     
-    console.log('sada',reviews)
 
     const avg = (a: number, b: number, c: number,d :number) => {
-        return ((a + b + c) / 3).toFixed(2)
+        return ((a + b + c + d) / 4).toFixed(2)
     }
 
     const [focusedFilter, setFocusedFilter] = useState('')
@@ -68,7 +66,6 @@ const Reviews = () => {
     const [selectedClient, setSelectedClient] = useState<BaseKey>(0)
     const [selectedReview, setSelectedReview] = useState<Review>()
 
-    console.log('selectedClient',selectedClient)
 
 
     useEffect(() => {
@@ -185,14 +182,14 @@ const Reviews = () => {
                     </div>
                     <div className="flex mt-4 gap-4">
                         <div className="font-[600]">{t('reviews.view.valueForMoney')}:</div>
-                        {stars(Number(selectedReview.value_for_money_rating))}
-                        <span>{`(${selectedReview.value_for_money_rating})`}</span>
+                        {stars(Number(selectedReview.value_for_money))}
+                        <span>{`(${selectedReview.value_for_money})`}</span>
                     </div>
 
                     <div className="flex mt-4 gap-4">
                         <div className="font-[600]">{t('reviews.view.total')}:</div>
-                        {stars((Number(selectedReview.ambience_rating) + Number(selectedReview.service_rating) + Number(selectedReview.food_rating)) / 3)}
-                        <span>{`(${((Number(selectedReview.ambience_rating) + Number(selectedReview.service_rating) + Number(selectedReview.food_rating)) / 3).toFixed(2)})`}</span>
+                        {stars((Number(selectedReview.ambience_rating) + Number(selectedReview.service_rating) + Number(selectedReview.food_rating) + Number(selectedReview.value_for_money)) / 4)}
+                        <span>{`(${((Number(selectedReview.ambience_rating) + Number(selectedReview.service_rating) + Number(selectedReview.food_rating) + Number(selectedReview.value_for_money)) / 4).toFixed(2)})`}</span>
                     </div>
                     </>
                     )}
@@ -246,9 +243,9 @@ const Reviews = () => {
                     <td className="px-6 py-4 whitespace-nowrap cursor-pointer"  onClick={()=>(setSelectedClient(review.id))} >{review.food_rating}</td>
                     <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={()=>(setSelectedClient(review.id))} >{review.service_rating}</td>
                     <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={()=>(setSelectedClient(review.id))} >{review.ambience_rating}</td>
-                    <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={()=>(setSelectedClient(review.id))} >{review.value_for_money_rating}</td>
+                    <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={()=>(setSelectedClient(review.id))} >{review.value_for_money}</td>
                     <td className="px-6 py-4 whitespace-nowrap " onClick={()=>(setSelectedClient(review.id))}>
-                    {avg(Number(review.food_rating), Number(review.service_rating), Number(review.ambience_rating), Number(review.value_for_money_rating))}
+                    {avg(Number(review.food_rating), Number(review.service_rating), Number(review.ambience_rating), Number(review.value_for_money))}
                     </td>
                 </tr>
                 ))}

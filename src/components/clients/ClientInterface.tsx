@@ -297,27 +297,29 @@ const ClientInterface = () => {
                           <tr className="border border-gray-300">
                             <td className="font-medium p-2">{t('clients.profileSection.fields.firstName')}</td>
                             {renderCell('first_name')}
+                          </tr>
+                          <tr className="border border-gray-300">
                             <td className="font-medium p-2">{t('clients.profileSection.fields.lastName')}</td>
                             {renderCell('last_name', 3)}
                           </tr>
                           <tr className="border border-gray-300">
                             <td className="font-medium p-2 w-1/4 border-l border-gray-300 lt-sm:hidden">{t('clients.profileSection.fields.email')}</td>
-                            <span className='lt-sm:hidden'>{renderCell('email')}</span>
-                          </tr>
-                          <tr className='sm:hidden border border-gray-300'>
-                            <td className="font-medium p-2 w-1/4 border-l border-gray-300">{t('clients.profileSection.fields.email')}</td>
                             {renderCell('email')}
                           </tr>
+                          {/* <tr className='sm:hidden border border-gray-300'>
+                            <td className="font-medium p-2 border-l border-gray-300">{t('clients.profileSection.fields.email')}</td>
+                            {renderCell('email')}
+                          </tr> */}
                           <tr className="border border-gray-300">
                             <td className="font-medium p-2">{t('clients.profileSection.fields.phoneNumber')}</td>
                             {renderCell('phone')}
-                            <td className="font-medium p-2 border-l border-gray-300 lt-sm:hidden">{t('clients.profileSection.fields.alternatePhone')}</td>
-                            <span className='lt-sm:hidden'>{renderCell('alternatePhone')}</span>
+                            {/* <td className="font-medium p-2 border-l border-gray-300 lt-sm:hidden">{t('clients.profileSection.fields.alternatePhone')}</td>
+                            <span className='lt-sm:hidden'>{renderCell('alternatePhone')}</span> */}
                           </tr>
-                          <tr className='sm:hidden border border-gray-300'>
+                          {/* <tr className='sm:hidden border border-gray-300'>
                             <td className="font-medium p-2 border-l border-gray-300">{t('clients.profileSection.fields.alternatePhone')}</td>
                             {renderCell('alternatePhone')}
-                          </tr>
+                          </tr> */}
                           <tr className="border border-gray-300">
                             <td className="font-medium p-2">{t('clients.profileSection.fields.guestNotes')}</td>
                             {renderCell('internal_note', 3)}
@@ -359,9 +361,11 @@ const ClientInterface = () => {
                                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                                   res.status === 'APPROVED' ? 'bg-softgreentheme text-greentheme' :
                                   res.status === 'CANCELED' ? 'bg-softredtheme text-redtheme' :
+                                  res.status === 'SEATED' ? 'bg-softyellowtheme text-yellowtheme' :
+                                  res.status === 'FULFILLED' ? 'bg-softpurpletheme text-purpletheme' :
                                   'bg-softbluetheme text-bluetheme'
                                 }`}>
-                                  {res.status === 'APPROVED' ? t('clients.reservationHistorySection.statusLabels.confirmed') : res.status === 'CANCELED' ? t('clients.reservationHistorySection.statusLabels.cancelled') : t('clients.reservationHistorySection.statusLabels.pending')}
+                                  {res.status === 'APPROVED' ? t('clients.reservationHistorySection.statusLabels.confirmed') : res.status === 'CANCELED' ? t('clients.reservationHistorySection.statusLabels.cancelled') : res.status === 'SEATED' ? t('clients.reservationHistorySection.statusLabels.seated') : res.status === 'FULFILLED' ? t('clients.reservationHistorySection.statusLabels.fulfilled') : t('clients.reservationHistorySection.statusLabels.pending')}
                                 </span>
                               </td>
                             </tr>

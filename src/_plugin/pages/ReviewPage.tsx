@@ -1,9 +1,29 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import logo from '../../assets/logo.png';
 import { ca } from 'date-fns/locale';
+import { useParams } from 'react-router-dom';
+import { BaseRecord, useList } from '@refinedev/core';
+import bg from '../../assets/bg-widget.png'
+
 
 const ReviewPage = () => {
   const [step, setStep] = useState(1);
+  const {restaurant} = useParams();
+
+  const { data: res, isLoading, error } = useList({
+    resource: `api/v1/bo/restaurants/${restaurant}/widget/`,
+  });
+
+  const [restaurantData, setRestaurantData] = useState<BaseRecord>()
+
+  useEffect(() => {
+    if (res?.data) {
+      setRestaurantData(res.data);
+    }
+  }, [res]);
+  console.log(restaurantData);
+
+
 
   const [brightService, setBrightService] = useState(0);
   const [brightAmbiance, setBrightAmbiance] = useState(0);
@@ -14,6 +34,8 @@ const ReviewPage = () => {
   const [reviewText, setReviewText] = useState('');
 
   const renderStars = (count: number, activeCount: number) => {
+
+    
     return Array.from({ length: 5 }, (_, i) => (
       <span key={i} className="cursor-pointer" onClick={() => setStep(i + 1)}>
         <svg
@@ -72,22 +94,27 @@ const ReviewPage = () => {
   return (
     <div className="text-center flex flex-col items-center overflow-y-scroll justify-center h-screen">
       <img
-        src="https://www.darelkaid.ma/wp-content/uploads/2023/02/Logo_Dar_El_Kaid-Transp.png"
+        src={'https://api.dev.tabla.ma'+restaurantData?.image}
         alt="logo"
         className="w-[8em]"
       />
       <img
-        src="https://www.darelkaid.ma/wp-content/uploads/2023/02/Logo_Dar_El_Kaid-Transp.png"
+        src={bg}
+        alt="logo"
+        className="z-[-10] w-[70em] left-[10em] top-[-20em] blur-md opacity-40  absolute"
+      />
+      {/* <img
+        src={'https://api.dev.tabla.ma'+restaurantData?.image}
         alt="logo"
         className="z-[-10] w-[50em] blur-md opacity-30 left-[-10em] top-[-10em] absolute"
-      />
+      /> */}
       
       <h1 className={`text-3xl font-bold mt-3 text-darkthemeitems ${step === 1 ? 'block' : 'hidden'}`}>
         Thank you for visiting us! <br />
       </h1>
 
       <p className={`w-[50%] lt-sm:w-[90%] text-subblack mt-3 ${step===1 ? 'block':'hidden'}`}>
-        Gorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dictum est a, mattis tellus. Sed dignissim.
+      Share your experience with us! We value your feedback and would love to hear about your visit. Rate your dining experience and let us know how we can continue to serve you better.
       </p>
 
       {step===1 && <form onSubmit={handleSubmit} className="flex flex-col gap-3 items-center lg:w-[40%] w-[60%]  lt-sm:w-[90%] mt-3">

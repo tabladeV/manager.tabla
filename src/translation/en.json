@@ -415,7 +415,8 @@
                 "email": "Email",
                 "phone": "Phone Number",
                 "role": "Role",
-                "status": "Status"
+                "status": "Status",
+                "actions": "Actions"
             },
             "statusLabels": {
                 "working": "At work",

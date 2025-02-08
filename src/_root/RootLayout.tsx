@@ -79,7 +79,7 @@ const RootLayout = () => {
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
-      if (event.key === 'f') {
+      if (event.ctrlKey && event.key === 'm') {
         toggleFullscreen();
       }
     };
@@ -143,7 +143,7 @@ const RootLayout = () => {
 
 
   return (
-    <div className={`flex w-max-[100vw] overflow-hidden ${(shownlang === 'ar') ? "rtl ":''} ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme text-textdarktheme':''}`}>
+    <div className={`flex  overflow-hidden ${(shownlang === 'ar') ? "rtl ":''} ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme text-textdarktheme':''}`}>
       {/* <Helmet>
         <title>Your Custom Title</title> 
       </Helmet> */}
