@@ -1,10 +1,10 @@
-import {  AuthProvider, Refine } from "@refinedev/core";
+import { Refine, Authenticated } from "@refinedev/core";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 
 
 import dataProvider from "@refinedev/simple-rest";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import routerBindings, {
   UnsavedChangesNotifier,
   DocumentTitleHandler,
@@ -52,12 +52,27 @@ import WidgetPage from "./_plugin/pages/WidgetPage";
 import DesignPlacesIndex from "./_root/pages/DesignPlacesIndex";
 import ErrorPage from "./_root/pages/ErrorPage";
 
-
+import customAxiosInstance from "./providers/axiosInstance";
+import authProvider from "./providers/authProvider"
+import { useEffect } from "react";
 
 
 function App() {
 
-  
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem("isLogedIn") === "true";
+    const refreshToken = localStorage.getItem("refresh");
+    if (isLoggedIn && refreshToken && authProvider.refresh) {
+      authProvider
+        .refresh()
+        .then(() => {
+          console.log("Token refreshed on app load");
+        })
+        .catch((error) => {
+          console.error("Token refresh on app load failed", error);
+        });
+    }
+  }, []);
   
   return (
     <PowerProvider>
@@ -68,7 +83,8 @@ function App() {
             <RefineKbarProvider>
               <DevtoolsProvider>
                 <Refine
-                  dataProvider={dataProvider("https://api.dev.tabla.ma")}
+                  authProvider={authProvider}
+                  dataProvider={dataProvider("https://api.dev.tabla.ma", customAxiosInstance)}
                   routerProvider={routerBindings}
                   options={{
                     syncWithLocation: true,
@@ -96,7 +112,13 @@ function App() {
 
 
                     {/*Private Routes */}
-                    <Route element={<RootLayout />}>
+                    <Route element={
+                        <Authenticated redirectOnFail="/sign-in">
+                          <RootLayout>
+                            <Outlet />
+                          </RootLayout>
+                        </Authenticated>
+                      }>
                         <Route index element={<Home />} />
                         <Route path='/reservations' element={<ReservationsPage />} />
                         <Route path='/places' element={<PlacesPage />} />

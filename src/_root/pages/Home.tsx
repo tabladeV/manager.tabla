@@ -15,11 +15,7 @@ const Home = () => {
 
   const{data, isLoading, error} = useList({
     resource: 'api/v1/api/v1/bo/restaurants/users/1/',
-    meta: {
-      headers: {
-        'X-Restaurant-ID': 1
-      }
-    }
+
   })
 
   const [user, setUser] = useState<any>()

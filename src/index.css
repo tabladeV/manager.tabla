@@ -27,6 +27,37 @@
     @apply border border-[#d1d2cf] text-subblack font-[500] py-2 px-4 rounded-[10px];
   }
 }
+
+.tables-cont{
+  height: calc(100% - 50px);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.bar-hide::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.bar-hide::-webkit-scrollbar-thumb {
+  background: #888; 
+  border-radius: 2px;
+}
+
+.zoom-pan-container {
+  touch-action: none;
+  overflow: hidden;
+}
+
+@media (pointer: coarse) {
+  .zoom-pan-container {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+
 .activetabb {
   background: #335a06 !important;
   color: white !important;

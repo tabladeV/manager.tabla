@@ -23,11 +23,6 @@ const Roles = () => {
 
     const { data: rolesData, isLoading: rolesLoading, error: rolesError } = useList({
         resource: "api/v1/bo/roles/",
-        meta: {
-            headers: {
-                "X-Restaurant-ID": 1,
-            },
-        },
     });
 
     console.log('rolesData', rolesData);
@@ -146,11 +141,6 @@ const Roles = () => {
                     name: newRole.name,
                     permissions: permissionsToBeSent,
                 },
-                meta: {
-                    headers: {
-                        "X-Restaurant-ID": 1,
-                    },
-                },
             });
 
             // Update local state
@@ -174,11 +164,6 @@ const Roles = () => {
                 {
                     resource: `api/v1/bo/roles`, // Correct resource for roofs
                     id: role.id+'/',
-                    meta: {
-                        headers: {
-                            "X-Restaurant-ID": 1,
-                        },
-                    },
                 },
                 {
                     onSuccess: () => {

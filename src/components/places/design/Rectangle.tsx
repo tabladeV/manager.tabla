@@ -1,15 +1,21 @@
 import React, { useRef, useEffect } from 'react';
 import { Rect, Text, Transformer } from 'react-konva';
 import Konva from 'konva';
+import { BaseKey } from '@refinedev/core';
 
 interface RectangleProps {
+  id: BaseKey | undefined;
   shapeProps: any;
   isSelected: boolean;
+  onDragStartCallback: () => void;
+  onDragEndCallback: () => void;
   onSelect: () => void;
   onChange: (newAttrs: any) => void;
 }
 
-const Rectangle: React.FC<RectangleProps> = ({ shapeProps, isSelected, onSelect, onChange }) => {
+const MIN_SIZE = 50;
+
+const Rectangle: React.FC<RectangleProps> = ({ id ,shapeProps, isSelected, onSelect, onChange, onDragStartCallback, onDragEndCallback }) => {
   // Explicitly define the types for shapeRef and trRef
   const shapeRef = useRef<Konva.Rect>(null);
   const trRef = useRef<Konva.Transformer>(null);
@@ -24,11 +30,17 @@ const Rectangle: React.FC<RectangleProps> = ({ shapeProps, isSelected, onSelect,
   return (
     <div className='shadow-lg'>
       <Rect
+        id={id}
+        onDragStart={onDragStartCallback}
         onClick={onSelect}
         onTap={onSelect}
         ref={shapeRef} // Correctly typed as Konva.Rect
         fill={localStorage.getItem('darkMode') === 'true' ? '#88AB61':'#88AB61'  }
         rounded={10}
+        shadowBlur={2}
+        opacity={0.6}
+        stroke={'grey'}
+        strokeWidth={0.5}
         {...shapeProps}
         draggable
         onDragEnd={(e) => {
@@ -36,7 +48,9 @@ const Rectangle: React.FC<RectangleProps> = ({ shapeProps, isSelected, onSelect,
             ...shapeProps,
             x: e.target.x(),
             y: e.target.y(),
+            rotation: e.target.rotation(),
           });
+          onDragEndCallback()
         }}
         onTransformEnd={(e) => {
           const node = shapeRef.current;
@@ -51,8 +65,9 @@ const Rectangle: React.FC<RectangleProps> = ({ shapeProps, isSelected, onSelect,
             ...shapeProps,
             x: node.x(),
             y: node.y(),
-            width: Math.max(5, node.width() * scaleX),
-            height: Math.max(5, node.height() * scaleY),
+            rotation: e.target.rotation(),
+            width: Math.max(MIN_SIZE, node.width() * scaleX),
+            height: Math.max(MIN_SIZE, node.height() * scaleY),
           });
         }}
       />
@@ -61,23 +76,24 @@ const Rectangle: React.FC<RectangleProps> = ({ shapeProps, isSelected, onSelect,
           ref={trRef} // Correctly typed as Konva.Transformer
           flipEnabled={false}
           boundBoxFunc={(oldBox, newBox) => {
-            if (Math.abs(newBox.width) < 5 || Math.abs(newBox.height) < 5) {
+            const scaleX = shapeRef.current?.getStage()?.scaleX() || 1;
+            const scaleY = shapeRef.current?.getStage()?.scaleY() || 1;
+            if (Math.abs(newBox.width) < MIN_SIZE * scaleX || Math.abs(newBox.height) < MIN_SIZE * scaleY) {
               return oldBox;
             }
             return newBox;
           }}
         />
       )}
-      {isSelected && (
         <Text
           x={shapeProps.x + 10}
           y={shapeProps.y - 20}
           text={shapeProps.name}
           fontSize={15}
+          listening={false}
           align="center"
           fill={localStorage.getItem('darkMode') === 'true' ? 'white':'black'  }
         />
-      )}
     </div>
   );
 };

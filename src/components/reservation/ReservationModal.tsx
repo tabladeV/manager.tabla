@@ -42,20 +42,12 @@ interface dataTypes {
 const ReservationModal = (props: ReservationModalProps) => {
   const { data: clientsData, isLoading, error } = useList({
     resource: 'api/v1/bo/customers/',
-    meta: {
-      headers: {
-        'X-Restaurant-ID': 1,
-      },
-    },
+
   });
 
   const { mutate } = useCreate({
     resource: 'api/v1/bo/reservations/',
-    meta: {
-      headers: {
-        'X-Restaurant-ID': 1,
-      },
-    },
+
     mutationOptions: {
       retry: 3,
       onSuccess: (data) => {
@@ -69,11 +61,7 @@ const ReservationModal = (props: ReservationModalProps) => {
 
   const { mutate: mutateClient } = useCreate({
     resource: 'api/v1/bo/customers/',
-    meta: {
-      headers: {
-        'X-Restaurant-ID': 1,
-      },
-    },
+
     mutationOptions: {
       retry: 3,
       onSuccess: (data) => {

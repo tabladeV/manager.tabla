@@ -53,30 +53,18 @@ const ClientInterface = () => {
 
   const {data , isLoading, error} = useList({
     resource: 'api/v1/bo/customers/'+id+'/',
-    meta: {
-      headers: {
-        'X-Restaurant-ID': 1,
-      },
-    },
+
   });
 
   const {data: reservations, isLoading: isLoadingReservations, error: errorReservations} = useList({
     resource: `api/v1/bo/reservations/${id}/`,
-    meta: {
-      headers: {
-        'X-Restaurant-ID': 1,
-      },
-    },
+
   });
   console.log(data)
 
   const {data: userReservations , isLoading: reservationLoading, error: reservationError}= useList({
     resource: `api/v1/bo/customers/${id}/reservations/`,
-    meta: {
-      headers: {
-        'X-Restaurant-ID': 1,
-      },
-    },
+
   })
 
   const {mutate: updateClient} = useUpdate();
@@ -209,11 +197,7 @@ const ClientInterface = () => {
         [name]: value,
       },
       id: id+'/',
-      meta: {
-        headers: {
-          'X-Restaurant-ID': 1,
-        },
-      },
+
     });
   };
 
