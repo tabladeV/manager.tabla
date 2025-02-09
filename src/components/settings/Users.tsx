@@ -34,30 +34,18 @@ export default function Users() {
 
   const {data:rolesData, isLoading:rolesLoading, error:rolesError} = useList({
     resource: 'api/v1/bo/roles/',
-    meta: {
-      headers: {
-        'X-Restaurant-ID': 1
-      }
-    }
+
   })
 
   const{data, isLoading, error} = useList({
     resource: 'api/v1/api/v1/bo/restaurants/users/',
-    meta: {
-      headers: {
-        'X-Restaurant-ID': 1
-      }
-    }
+
   })
 
 
   const{mutate: updateUser} = useUpdate({
     resource: `api/v1/api/v1/bo/restaurants/users`,
-    meta:{
-      headers: {
-        "X-Restaurant-ID": 1,
-      },
-    },
+
   });
 
 
@@ -159,11 +147,6 @@ export default function Users() {
       updateRole({
         resource: `api/v1/bo/roles`,
         id: `${role}/assign-user/${selectedUser.id}/`,
-        meta: {
-          headers: {
-            'X-Restaurant-ID': 1,
-          },
-        },
         values: {
           // role: role?.id,
         },
@@ -189,11 +172,6 @@ export default function Users() {
     console.log(newUser)
     addUserMutate({
       resource: `api/v1/api/v1/bo/restaurants/users/`,
-      meta:{
-        headers: {
-          "X-Restaurant-ID": 1,
-        },
-      },
       values: {
         first_name: newUser.first_name,
         last_name: newUser.last_name,
@@ -209,11 +187,6 @@ export default function Users() {
       deleteUserMutate({
         resource: `api/v1/api/v1/bo/restaurants/users`,
         id: `${id}/`,
-        meta:{
-          headers: {
-            "X-Restaurant-ID": 1,
-          },
-        },
       });
     
   }

@@ -32,11 +32,6 @@ const Reviews = () => {
 
     const {data, isLoading, error} = useList({
         resource: 'api/v1/reviews/',
-        meta: {
-            headers: {
-                'X-Restaurant-ID': 1
-            }
-        }
     })
 
     

@@ -27,14 +27,12 @@ const DesignPlaces: React.FC = () => {
   // API hooks
   const { mutate: upDateFloor } = useUpdate({
     resource: 'api/v1/bo/floors',
-    meta: { headers: { 'X-Restaurant-ID': 1 } },
+
   });
   const { mutate: mutateDeleting } = useDelete();
   const { mutate } = useCreate({
     resource: 'api/v1/bo/floors/',
-    meta: {
-      headers: { 'X-Restaurant-ID': 1 },
-    },
+
     mutationOptions: {
       retry: 3,
       onSuccess: (data) => console.log('Floor added:', data),
@@ -60,7 +58,7 @@ const DesignPlaces: React.FC = () => {
   // Query all roofs
   const { data, isLoading, error } = useList({
     resource: 'api/v1/bo/floors/',
-    meta: { headers: { 'X-Restaurant-ID': 1 } },
+
   });
 
   // Update thisFloor and focused floor tables when oneFloor is loaded
@@ -116,7 +114,7 @@ const DesignPlaces: React.FC = () => {
       {
         resource: 'api/v1/bo/floors',
         id: roofIdToDelete + '/',
-        meta: { headers: { 'X-Restaurant-ID': 1 } },
+    
       },
       {
         onSuccess: () => {

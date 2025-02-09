@@ -116,11 +116,7 @@ export default function ReservationsChart() {
   
   const { data, isLoading, error } = useList({
     resource: "api/v1/dashboard/chart",
-    meta: {
-      headers: {
-        "X-Restaurant-ID": 1,
-      },
-    },
+
     
   });
 

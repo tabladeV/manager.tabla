@@ -23,11 +23,7 @@ interface DayData {
 const Availability = () => {
   const { data: availabilityDays, isLoading, error } = useList({
     resource: `api/v1/bo/availability/days/`,
-    meta: {
-      headers: {
-        'X-Restaurant-ID': 1,
-      },
-    },
+
   });
 
   const {mutate : updateAvailability} = useCreate();
@@ -185,11 +181,6 @@ const Availability = () => {
       resource: "api/v1/bo/availability/days/update_all/",
       values: {
           availability_days : availabilitydays
-      },
-      meta: {
-          headers: {
-              "X-Restaurant-ID": 1,
-          },
       },
   });
   }

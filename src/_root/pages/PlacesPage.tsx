@@ -61,11 +61,7 @@ function isTouchDevice() {
 const PlacePage: React.FC = () => {
   const { data, isLoading, error } = useList({
     resource: "api/v1/bo/floors/",
-    meta: {
-      headers: {
-        "X-Restaurant-ID": 1,
-      },
-    },
+
   });
 
   
@@ -127,11 +123,7 @@ const PlacePage: React.FC = () => {
         value: newTimeString+':00',
       },
     ],
-    meta: {
-      headers: {
-        "X-Restaurant-ID": 1,
-      },
-    },
+
   });
 
   console.log(tablesData?.data);
@@ -155,11 +147,7 @@ const PlacePage: React.FC = () => {
         value: newTimeString+':00',
       },
     ],
-    meta: {
-      headers: {
-        "X-Restaurant-ID": 1,
-      },
-    },
+
   });
   console.log(reservationsData?.data);
 
@@ -194,149 +182,149 @@ const PlacePage: React.FC = () => {
       setFocusedRoof(data.data[0]?.id);
     }
     if (tablesData?.data) {
-      // setTables(tablesData.data as TableType[]);
-      setTables([
-        {
-            "id": 9898779385,
-            "name": "Table 1",
-            "rotation": 45,
-            "type": "RECTANGLE",
-            "width": 100,
-            "height": 100,
-            "x": -346.1650000000001,
-            "y": -11.740000000000004,
-            "max": 6,
-            "min": 1,
-            "floor": 51,
-            "current_reservations": []
-        },
-        {
-            "id": 7714577432,
-            "name": "Table 2",
-            "rotation": 0,
-            "type": "CIRCLE",
-            "width": 100,
-            "height": 100,
-            "x": -319.73375,
-            "y": 313.1012500000001,
-            "max": 6,
-            "min": 1,
-            "floor": 51,
-            "current_reservations": []
-        },
-        {
-            "id": 9341503814,
-            "name": "Table 3",
-            "rotation": 0,
-            "type": "RECTANGLE",
-            "width": 100,
-            "height": 100,
-            "x": -192.9750000000002,
-            "y": -10.327500000000033,
-            "max": 6,
-            "min": 1,
-            "floor": 51,
-            "current_reservations": []
-        },
-        {
-            "id": 6167379202,
-            "name": "Table 4",
-            "rotation": 0,
-            "type": "CIRCLE",
-            "width": 100,
-            "height": 100,
-            "x": -140.81875000000002,
-            "y": 323.5174999999999,
-            "max": 6,
-            "min": 1,
-            "floor": 51,
-            "current_reservations": []
-        },
-        {
-            "id": 1757953471,
-            "name": "Table 5",
-            "rotation": 0,
-            "type": "CIRCLE",
-            "width": 100,
-            "height": 100,
-            "x": 45.10750000000007,
-            "y": 326.79625000000016,
-            "max": 6,
-            "min": 1,
-            "floor": 51,
-            "current_reservations": []
-        },
-        {
-            "id": 4583734650,
-            "name": "Table 6",
-            "rotation": 0,
-            "type": "RECTANGLE",
-            "width": 100,
-            "height": 100,
-            "x": -62.231250000000045,
-            "y": -10.781250000000018,
-            "max": 6,
-            "min": 1,
-            "floor": 51,
-            "current_reservations": []
-        },
-        {
-            "id": 2726592543,
-            "name": "Table 7",
-            "rotation": 0,
-            "type": "RECTANGLE",
-            "width": 100,
-            "height": 100,
-            "x": 74.8175,
-            "y": -12.647500000000003,
-            "max": 6,
-            "min": 1,
-            "floor": 51,
-            "current_reservations": []
-        },
-        {
-            "id": 7292290493,
-            "name": "Table 8",
-            "rotation": 0,
-            "type": "RECTANGLE",
-            "width": 100,
-            "height": 100,
-            "x": 222.15625,
-            "y": -8.082500000000021,
-            "max": 6,
-            "min": 1,
-            "floor": 51,
-            "current_reservations": []
-        },
-        {
-            "id": 5713892052,
-            "name": "Table 9",
-            "rotation": 0,
-            "type": "RECTANGLE",
-            "width": 100,
-            "height": 100,
-            "x": 219.00375000000008,
-            "y": 137.97000000000003,
-            "max": 6,
-            "min": 1,
-            "floor": 51,
-            "current_reservations": []
-        },
-        {
-            "id": 3154993633,
-            "name": "Table 10",
-            "rotation": 0,
-            "type": "RECTANGLE",
-            "width": 100,
-            "height": 100,
-            "x": 413.93375000000003,
-            "y": 208.13375,
-            "max": 6,
-            "min": 1,
-            "floor": 51,
-            "current_reservations": []
-        }
-    ] as TableType[]);
+      setTables(tablesData.data as TableType[]);
+    //   setTables([
+    //     {
+    //         "id": 9898779385,
+    //         "name": "Table 1",
+    //         "rotation": 45,
+    //         "type": "RECTANGLE",
+    //         "width": 100,
+    //         "height": 100,
+    //         "x": -346.1650000000001,
+    //         "y": -11.740000000000004,
+    //         "max": 6,
+    //         "min": 1,
+    //         "floor": 51,
+    //         "current_reservations": []
+    //     },
+    //     {
+    //         "id": 7714577432,
+    //         "name": "Table 2",
+    //         "rotation": 0,
+    //         "type": "CIRCLE",
+    //         "width": 100,
+    //         "height": 100,
+    //         "x": -319.73375,
+    //         "y": 313.1012500000001,
+    //         "max": 6,
+    //         "min": 1,
+    //         "floor": 51,
+    //         "current_reservations": []
+    //     },
+    //     {
+    //         "id": 9341503814,
+    //         "name": "Table 3",
+    //         "rotation": 0,
+    //         "type": "RECTANGLE",
+    //         "width": 100,
+    //         "height": 100,
+    //         "x": -192.9750000000002,
+    //         "y": -10.327500000000033,
+    //         "max": 6,
+    //         "min": 1,
+    //         "floor": 51,
+    //         "current_reservations": []
+    //     },
+    //     {
+    //         "id": 6167379202,
+    //         "name": "Table 4",
+    //         "rotation": 0,
+    //         "type": "CIRCLE",
+    //         "width": 100,
+    //         "height": 100,
+    //         "x": -140.81875000000002,
+    //         "y": 323.5174999999999,
+    //         "max": 6,
+    //         "min": 1,
+    //         "floor": 51,
+    //         "current_reservations": []
+    //     },
+    //     {
+    //         "id": 1757953471,
+    //         "name": "Table 5",
+    //         "rotation": 0,
+    //         "type": "CIRCLE",
+    //         "width": 100,
+    //         "height": 100,
+    //         "x": 45.10750000000007,
+    //         "y": 326.79625000000016,
+    //         "max": 6,
+    //         "min": 1,
+    //         "floor": 51,
+    //         "current_reservations": []
+    //     },
+    //     {
+    //         "id": 4583734650,
+    //         "name": "Table 6",
+    //         "rotation": 0,
+    //         "type": "RECTANGLE",
+    //         "width": 100,
+    //         "height": 100,
+    //         "x": -62.231250000000045,
+    //         "y": -10.781250000000018,
+    //         "max": 6,
+    //         "min": 1,
+    //         "floor": 51,
+    //         "current_reservations": []
+    //     },
+    //     {
+    //         "id": 2726592543,
+    //         "name": "Table 7",
+    //         "rotation": 0,
+    //         "type": "RECTANGLE",
+    //         "width": 100,
+    //         "height": 100,
+    //         "x": 74.8175,
+    //         "y": -12.647500000000003,
+    //         "max": 6,
+    //         "min": 1,
+    //         "floor": 51,
+    //         "current_reservations": []
+    //     },
+    //     {
+    //         "id": 7292290493,
+    //         "name": "Table 8",
+    //         "rotation": 0,
+    //         "type": "RECTANGLE",
+    //         "width": 100,
+    //         "height": 100,
+    //         "x": 222.15625,
+    //         "y": -8.082500000000021,
+    //         "max": 6,
+    //         "min": 1,
+    //         "floor": 51,
+    //         "current_reservations": []
+    //     },
+    //     {
+    //         "id": 5713892052,
+    //         "name": "Table 9",
+    //         "rotation": 0,
+    //         "type": "RECTANGLE",
+    //         "width": 100,
+    //         "height": 100,
+    //         "x": 219.00375000000008,
+    //         "y": 137.97000000000003,
+    //         "max": 6,
+    //         "min": 1,
+    //         "floor": 51,
+    //         "current_reservations": []
+    //     },
+    //     {
+    //         "id": 3154993633,
+    //         "name": "Table 10",
+    //         "rotation": 0,
+    //         "type": "RECTANGLE",
+    //         "width": 100,
+    //         "height": 100,
+    //         "x": 413.93375000000003,
+    //         "y": 208.13375,
+    //         "max": 6,
+    //         "min": 1,
+    //         "floor": 51,
+    //         "current_reservations": []
+    //     }
+    // ] as TableType[]);
 
     }
   }, [data, tablesData, reservationsData]);
