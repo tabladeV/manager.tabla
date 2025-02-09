@@ -72,10 +72,12 @@ const ReservationsPage = () => {
 
   });
 
+
   const {data: floorsData, isLoading: floorLoading, error: floorError} = useList({
     resource: 'api/v1/bo/floors/',
 
   });
+  
 
   const {data: tablesData, isLoading: tableLoading, error: tableError} = useList({
     resource: 'api/v1/bo/tables/',
@@ -98,36 +100,9 @@ const ReservationsPage = () => {
     }
   }, [floorsData,tablesData]);
 
-  console.log(floors)
 
-  console.log(data)
-  const { mutate, isLoading: postLoading, error: postError } = useCreate();
 
-  // const handleCreate = () => {
     
-  //   mutate(
-  //     {
-  //       resource: "api/v1/bo/reservations", // API resource
-  //       values: {
-  //         title: "My New Post",
-  //         content: "This is the content of the new post.",
-  //       },
-  //       meta: {
-  //         headers: {
-  //           "X-Restaurant-ID": 1,
-  //         },
-  //       },
-  //     },
-  //     {
-  //       onSuccess: (data) => {
-  //         console.log("Post created successfully:", data);
-  //       },
-  //       onError: (error) => {
-  //         console.error("Error creating post:", error);
-  //       },
-  //     }
-  //   );
-  // };
   const [selectedClient, setSelectedClient] = useState<Reservation | null>(null)
 
   const [reservationProgressData, setReservationProgressData] = useState({
@@ -231,11 +206,11 @@ const ReservationsPage = () => {
       mutationOptions: {
         retry: 3,
         onSuccess: (data) => {
-          console.log('Reservation added:', data);
+          console.log('Review sent:', data);
         },
         onError: (error) => {
-          console.log('Error adding reservation:', error);
-        },
+          console.log('Error sending review:', error);
+        }
       },
     });
 
@@ -245,7 +220,6 @@ const ReservationsPage = () => {
     
     if (selectedClient) {
 
-      console.log(selectedClient)
       upDateReservation({
         id: editingClient+'/',
         values: {

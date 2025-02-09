@@ -101,7 +101,7 @@ function App() {
 
                     <Route element={<Plugins />}>
                       <Route path='/widget/r/:restaurant' element={<WidgetPage />} />
-                      <Route path='/review/r/:restaurant' element={<ReviewPage />} />
+                      <Route path='/review/r/:restaurant/:client' element={<ReviewPage />} />
                     </Route>
 
 
@@ -150,6 +150,7 @@ function App() {
                         </Route>
                     </Route>
                     <Route path='*' element={<ErrorPage />} />
+                    
 
                   </Routes>
                   

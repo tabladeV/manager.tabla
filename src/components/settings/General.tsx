@@ -304,7 +304,7 @@ const General = () => {
             type="number"
             placeholder={t('settingsPage.general.basicInformationForm.labels.avgPrice')}
             id="avgPrice"
-            value={formData.average_price}
+            defaultValue={formData.average_price}
             onChange={handleInputChange}
             className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
           />
