@@ -112,12 +112,12 @@ const PlacePage: React.FC = () => {
         value: format(chosenDay, 'yyyy-MM-dd'),
       },
       {
-        field: "reservations__time__gte",
+        field: "reservations__time_",
         operator: "gte",
         value: time,
       },
       {
-        field: "reservations__time__lte",
+        field: "reservations__time_",
         operator: "lte",
         value: newTimeString+':00',
       },
