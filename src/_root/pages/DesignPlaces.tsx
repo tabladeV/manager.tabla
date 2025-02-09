@@ -35,7 +35,7 @@ const DesignPlaces: React.FC = () => {
 
     mutationOptions: {
       retry: 3,
-      onSuccess: (data) => console.log('Floor added:', data),
+      onSuccess: (data) => refetchFloors(),
       onError: (error) => console.log('Error adding floor:', error),
     },
   });
@@ -56,7 +56,7 @@ const DesignPlaces: React.FC = () => {
   });
 
   // Query all roofs
-  const { data, isLoading, error } = useList({
+  const { data, isLoading, error, refetch: refetchFloors } = useList({
     resource: 'api/v1/bo/floors/',
 
   });
@@ -118,10 +118,7 @@ const DesignPlaces: React.FC = () => {
       },
       {
         onSuccess: () => {
-          setRoofs((prev) => prev.filter((r) => r.id !== roofIdToDelete));
-          if (focusedRoof === roofIdToDelete) {
-            setFocusedRoof(undefined);
-          }
+          refetchFloors();
           console.log('Roof deleted successfully!');
         },
         onError: (error) => {
@@ -194,7 +191,7 @@ const DesignPlaces: React.FC = () => {
           <div className="overlay" onClick={() => setShowAddPlace(false)}></div>
           <form
             className={`popup gap-5 ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}
-            onSubmit={handlePlaceAdded}
+            onSubmit={handleAddFloor}
           >
             <h1 className="text-3xl font-[700]">Add Place</h1>
             <input

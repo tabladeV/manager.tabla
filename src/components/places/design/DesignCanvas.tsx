@@ -9,10 +9,13 @@ import { Stage, Layer } from 'react-konva';
 import Rectangle from './Rectangle';
 import CircleShape from './CircleShape';
 import { useTranslation } from 'react-i18next';
-import { BaseKey, BaseRecord } from '@refinedev/core';
+import { BaseKey, BaseRecord, useList } from '@refinedev/core';
 import { generateRandomNumber } from '../../../utils/helpers';
 import Konva from 'konva';
 import ZoomControls from '../ZoomControls';
+import dataProvider from '@refinedev/simple-rest';
+import axiosInstance from '../../../providers/axiosInstance';
+import { off } from 'process';
 
 const MAX_ZOOM = 0.9; // maximum scale allowed
 const MIN_ZOOM = 0.4; // minimum scale allowed
@@ -44,6 +47,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
   const [selectedId, selectShape] = useState<BaseKey | null>(null);
   const [showTools, setShowTools] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Stage pan and zoom state
   const [stagePosition, setStagePosition] = useState({ x: 0, y: 0 });
@@ -83,71 +87,23 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
     }
   }, []);
 
-  const transitionToShape = useCallback((shape: Table) => {
-    const stage = stageRef.current;
-    if (stage) {
-      // Center the new shape in the view
-      const newPos = {
-        x:
-          containerWidth / 2 -
-          (shape.x + shape.width / 2) * stageScale,
-        y:
-          stageHeight / 2 -
-          (shape.y + shape.height / 2) * stageScale,
-      };
-      const tween = new Konva.Tween({
-        node: stage,
-        duration: 0.1,
-        x: newPos.x,
-        y: newPos.y,
-      });
-      tween.play();
-      setStagePosition(newPos);
-    }
-  }, [containerWidth, stageHeight, stageScale]);
-
-  const addShape = useCallback(
-    (type: 'RECTANGLE' | 'CIRCLE') => {
-      setShapes((prevShapes) => {
-        let counter = 1;
-        let tableName = `Table ${counter}`;
-        while (prevShapes.some((shape) => shape.name === tableName)) {
-          counter++;
-          tableName = `Table ${counter}`;
-        }
-
-        const OFFSET = 20; // Offset in pixels for new tables
-        const newX = prevShapes.length > 0
-          ? prevShapes[prevShapes.length - 1].x + OFFSET
-          : 50;
-        const newY = prevShapes.length > 0
-          ? prevShapes[prevShapes.length - 1].y + OFFSET
-          : 50;
-
-        const newShape: Table = {
-          id: generateRandomNumber(10),
-          name: tableName,
-          rotation: 0,
-          type,
-          width: 100,
-          height: 100,
-          x: newX,
-          y: newY,
-          max: Math.floor(innerWidth / 220),
-          min: 1,
-          floor: props.focusedRoofId!,
-          reservations: [],
-        };
-
-        // Trigger stage transition on the new shape
-        // Use setTimeout to ensure state update has been scheduled
-        setTimeout(() => transitionToShape(newShape), 0);
-
-        return [...prevShapes, newShape];
-      });
+  const { data: foundTables, isLoading: loadingCheckTableName, error, refetch } = useList<Table>({
+    resource: "api/v1/bo/tables/",
+    pagination: {
+      mode: "off",
     },
-    [props.focusedRoofId, transitionToShape]
-  );
+    queryOptions:{
+      enabled: false,
+    },
+    filters: [
+      {
+        field: "search",
+        operator: "null",
+        value: "",
+      }
+    ]
+  });
+
 
   const deleteShape = useCallback(() => {
     if (!confirm('Are you sure you want to delete this table?')) return;
@@ -186,15 +142,21 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
               ? 'bg-darkthemeitems text-textdarktheme'
               : 'bg-white text-black'
               }`}
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
               const newName = (e.target as any).elements[0].value;
               const newMax = (e.target as any).elements[1].value;
               const newMin = (e.target as any).elements[2].value;
+              
+              if(newName === shape.name){
+                setShowEdit(false);
+                return;
+              }
+
               if (
-                shapes.find(
+                !!shapes.find(
                   (s) => s.name === newName && s.id !== id
-                )
+                ) || await checkTableExists(newName)
               ) {
                 alert('Table name already exists');
                 return;
@@ -443,12 +405,36 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
     }
   }, [shapes, containerWidth]);
 
+
+  
+  const transitionToShape = useCallback((shape: Table) => {
+    const stage = stageRef.current;
+    if (stage) {
+      // Center the new shape in the view
+      const newPos = {
+        x:
+          containerWidth / 2 -
+          (shape.x + shape.width / 2) * stageScale,
+        y:
+          stageHeight / 2 -
+          (shape.y + shape.height / 2) * stageScale,
+      };
+      const tween = new Konva.Tween({
+        node: stage,
+        duration: 0.1,
+        x: newPos.x,
+        y: newPos.y,
+      });
+      tween.play();
+      setStagePosition(newPos);
+    }
+  }, [containerWidth, stageHeight, stageScale]);
+
   // Memoize shapes rendering to avoid recalculations
   const renderedShapes = useMemo(
     () =>
       shapes.map((shape: BaseRecord, i) => {
         const commonProps = {
-          key: shape.id,
           id: shape.id,
           shapeProps: shape,
           isSelected: shape.id === selectedId,
@@ -464,14 +450,77 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
           onDragEndCallback: () => setIsShapeDragging(false),
         };
         if (shape.type === 'RECTANGLE') {
-          return <Rectangle {...commonProps} />;
+          return <Rectangle key={shape.id} {...commonProps} />;
         }
         if (shape.type === 'CIRCLE') {
-          return <CircleShape {...commonProps} />;
+          return <CircleShape key={shape.id} {...commonProps} />;
         }
         return null;
       }),
     [shapes, selectedId]
+  );
+
+  const checkTableExists = useCallback(async (tableName: string) => {
+    try {
+      setLoading(true);
+      const { data } = await axiosInstance.get('api/v1/bo/tables/',{
+        params: {
+          search: tableName
+        }
+      })
+      setLoading(false);
+      return data.length > 0;
+    } catch (error) {
+      setLoading(false);
+      console.error(error);
+      return true;
+    }
+  }, []);
+
+
+  const addShape = useCallback(
+    async (type: 'RECTANGLE' | 'CIRCLE') => {
+      let counter = shapes.length + 1;
+      let tableName = `Table ${counter}`;
+      const existsInShapes = !!shapes.find(s => s.name === tableName );
+      let tableExists = await checkTableExists(tableName) || existsInShapes;
+      while (tableExists) {
+        counter++;
+        tableName = `Table ${counter}`;
+        const existsInShapes = !!shapes.find(s => s.name === tableName );
+        tableExists = await checkTableExists(tableName) || existsInShapes;
+      }
+      const OFFSET = 20; // Offset in pixels for new tables
+      const newX = shapes.length > 0
+        ? shapes[shapes.length - 1].x + OFFSET
+        : 50;
+      const newY = shapes.length > 0
+        ? shapes[shapes.length - 1].y + OFFSET
+        : 50;
+
+      const newShape: Table = {
+        id: generateRandomNumber(10),
+        name: tableName,
+        rotation: 0,
+        type,
+        width: 100,
+        height: 100,
+        x: newX,
+        y: newY,
+        max: Math.floor(innerWidth / 220),
+        min: 1,
+        floor: props.focusedRoofId!,
+        reservations: [],
+      };
+      setShapes((prevShapes) => {
+        // Trigger stage transition on the new shape
+        // Use setTimeout to ensure state update has been scheduled
+        setTimeout(() => transitionToShape(newShape), 0);
+
+        return [...prevShapes, newShape];
+      });
+    },
+    [props.focusedRoofId, transitionToShape, checkTableExists, shapes]
   );
 
   return (
@@ -497,10 +546,12 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
               setShowTools((prev) => !prev);
               selectShape(null);
             }}
+            disabled={loading}
             className="text-lg items-center py-2 text-greentheme font-[600] px-2 rounded-[10px] border border-transparent hover:border-softgreentheme duration-200 gap-3 flex"
           >
             <div className="text-greentheme bg-softgreentheme w-[2em] h-[2em] rounded-[10px] items-center flex justify-center">
               +
+              {loading}
             </div>
             <p>
               {t('editPlace.buttons.addTable')}{' '}
@@ -521,6 +572,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
                       : ''
                     }`}
                   onClick={() => addShape('RECTANGLE')}
+                  disabled={loading}
                 >
                   {t('editPlace.buttons.rectangleTable')}
                 </button>
@@ -530,6 +582,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
                       : ''
                     }`}
                   onClick={() => addShape('CIRCLE')}
+                  disabled={loading}
                 >
                   {t('editPlace.buttons.circleTable')}
                 </button>
@@ -543,6 +596,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
                 <button
                   onClick={deleteShape}
                   className="text-lg items-center py-2 text-redtheme font-[600] px-2 rounded-[10px] border border-transparent hover:border-softredtheme duration-200 gap-3 flex"
+                  disabled={loading}
                 >
                   <svg
                     className="text-redtheme p-2 bg-softredtheme rounded-[10px] items-center flex justify-center"
@@ -568,6 +622,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
                 <button
                   onClick={editShape}
                   className="text-lg items-center py-2 text-greentheme ml-3 font-[600] px-2 rounded-[10px] border border-transparent hover:border-softgreentheme duration-200 gap-3 flex"
+                  disabled={loading}
                 >
                   <svg
                     width="35"
