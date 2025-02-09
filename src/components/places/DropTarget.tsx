@@ -50,7 +50,7 @@ interface Reservation {
   full_name: string;
   time: string;
   date: string;
-  status: 'PENDING' | 'CONFIRMED' | 'CANCELED';
+  status: 'PENDING' | 'CONFIRMED' | 'CANCELED' | 'SEATED';
   number_of_guests: number;
   occasion?: string;
   created_at: string;
@@ -166,7 +166,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
       onMouseLeave={() => setIsClients(false)}
       ref={drop}
       key={id}
-      className={`absolute ${
+      className={`absolute text-center ${
         droppedItems.length > 0 ? 'text-white' : ''
       } rounded-[10px] flex flex-col justify-center items-center border-[2px] ${
         droppedItems.length > 0 ? 'border-redtheme' : 'border-greentheme'
@@ -178,21 +178,44 @@ const DropTarget: React.FC<DropTargetProps> = ({
           droppedItems.length > 0
             ? '#FF4B4B'
             : localStorage.getItem('darkMode') === 'true'
-            ? '#031911'
+            ? '#042117'
             : '#F6F6F6',
         left: x,
         top: y,
         borderRadius: type === 'RECTANGLE' ? '10px' : '50%',
       }}
     >
-      <h2 className="text-[14px] font-semibold">{name}</h2>
-      <p className="text-[13px] p-1 bg-[#1e1e1e10] rounded-[5px]">{max} seats</p>
+      <h6 
+        className="text-[14px] px-1 w-full text-center font-semibold"
+        style={{
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        }}
+      >
+        {name}
+      </h6>
+      <span 
+        className={`text-[12px] pa-1 rounded-full h-[20px] min-w-[20px] font-semibold ${
+          localStorage.getItem('darkMode') === 'true'
+              ? 'bg-bgdarktheme text-white'
+              : 'bg-[#F6F6F6] text-greytheme'
+        }`}
+        style={{
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        }}
+      >
+        {/* {max} {max > 1?'seats':'seat'} */}
+        {max}
+      </span>
       {isClients && (
         <div
-          className={`absolute z-[100] text-greytheme right-[-13.4em] w-[13em] p-2 rounded-[10px] font-medium ${
+          className={`absolute z-[100] text-greytheme  right-[-13em] w-[13em] p-2 rounded-[10px] font-medium ${
             localStorage.getItem('darkMode') === 'true'
               ? 'bg-bgdarktheme text-white'
-              : 'bg-white text-greytheme'
+              : 'bg-[#F6F6F6] text-greytheme'
           }`}
         >
           {name} has {droppedItems.length} client

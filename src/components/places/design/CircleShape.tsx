@@ -1,16 +1,21 @@
 import React, { useRef, useEffect } from 'react';
 import { Circle, Text, TextPath, Transformer } from 'react-konva';
 import Konva from 'konva';
-import { Tag } from 'lucide-react';
+import { BaseKey } from '@refinedev/core';
 
 interface CircleShapeProps {
+  id: BaseKey | undefined;
   shapeProps: any;
   isSelected: boolean;
+  onDragStartCallback: () => void;
+  onDragEndCallback: () => void;
   onSelect: () => void;
   onChange: (newAttrs: any) => void;
 }
 
-const CircleShape: React.FC<CircleShapeProps> = ({ shapeProps, isSelected, onSelect, onChange }) => {
+const MIN_SIZE = 50;
+ 
+const CircleShape: React.FC<CircleShapeProps> = ({ id, shapeProps, isSelected, onSelect, onChange, onDragStartCallback, onDragEndCallback }) => {
   // Explicitly define the types for shapeRef and trRef
   const shapeRef = useRef<Konva.Circle>(null);
   const trRef = useRef<Konva.Transformer>(null);
@@ -26,18 +31,26 @@ const CircleShape: React.FC<CircleShapeProps> = ({ shapeProps, isSelected, onSel
   return (
     <>
       <Circle
+        id={id}
+        onDragStart={onDragStartCallback}
         onClick={onSelect}
         onTap={onSelect}
         ref={shapeRef} // Correctly typed as Konva.Circle
         fill={localStorage.getItem('darkMode') === 'true' ? '#88AB61':'#88AB61'  }
         {...shapeProps}
         draggable
+        shadowBlur={2}
+        opacity={0.6}
+        stroke={'grey'}
+        strokeWidth={0.5}
         onDragEnd={(e) => {
             onChange({
             ...shapeProps,
             x: e.target.x(),
             y: e.target.y(),
+            rotation: e.target.rotation(),
             });
+            onDragEndCallback();
         }}
         onTransformEnd={(e) => {
           const node = shapeRef.current;
@@ -52,9 +65,10 @@ const CircleShape: React.FC<CircleShapeProps> = ({ shapeProps, isSelected, onSel
             ...shapeProps,
             x: node.x(),
             y: node.y(),
-            width: Math.max(5, node.width() * scaleX),
-            height: Math.max(5, node.height() * scaleY),
-            radius: Math.max(5, node.radius() * Math.max(scaleX, scaleY)),
+            rotation: e.target.rotation(),
+            width: Math.max(MIN_SIZE, node.width() * scaleX),
+            height: Math.max(MIN_SIZE, node.height() * scaleY),
+            radius: Math.max(MIN_SIZE, node.radius() * Math.max(scaleX, scaleY)),
           });
         }}
       />
@@ -62,8 +76,12 @@ const CircleShape: React.FC<CircleShapeProps> = ({ shapeProps, isSelected, onSel
         <Transformer
           ref={trRef} // Correctly typed as Konva.Transformer
           flipEnabled={false}
+          rotateEnabled={false}
+          enabledAnchors={['top-left', 'top-right', 'bottom-left', 'bottom-right']}
           boundBoxFunc={(oldBox, newBox) => {
-            if (Math.abs(newBox.width) < 5 || Math.abs(newBox.height) < 5) {
+            const scaleX = shapeRef.current?.getStage()?.scaleX() || 1;
+            const scaleY = shapeRef.current?.getStage()?.scaleY() || 1;
+            if (Math.abs(newBox.width) < MIN_SIZE * scaleX || Math.abs(newBox.height) < MIN_SIZE * scaleY) {
               return oldBox;
             }
             return newBox;
@@ -71,17 +89,15 @@ const CircleShape: React.FC<CircleShapeProps> = ({ shapeProps, isSelected, onSel
         />
       )}
       {/* <Tag size={20} x={shapeProps.x - 10} y={shapeProps.y - 10} fill={localStorage.getItem('darkMode') === 'true' ? 'white':'black'  } /> */}
-      {isSelected && (
       <Text
         x={shapeProps.x -24}
         y={shapeProps.y-70}
         text={shapeProps.name}
         fontSize={15}
         align="center"
-
+        listening={false}
         fill={localStorage.getItem('darkMode') === 'true' ? 'white':'black'  }
       />
-      )}
     </>
   );
 };

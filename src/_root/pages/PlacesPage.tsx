@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
@@ -15,21 +15,22 @@ import { useDateContext } from '../../context/DateContext';
 import { BaseKey, BaseRecord, useList } from '@refinedev/core';
 import {format} from 'date-fns';
 import axios from 'axios';
+import ZoomControls from '../../components/places/ZoomControls';
 
 interface Reservation {
   id: BaseKey;
   full_name: string;
   time: string;
   date: string;
-  status: "PENDING" | "APPROVED" | "CANCELED";
+  status: "PENDING" | "APPROVED" | "SEATED" | "CANCELED";
   number_of_guests: number;
   occasion?: string;
   created_at: string;
   tables: TableType[];
 }
 
-interface currentResType{
-  id:BaseKey;
+interface currentResType {
+  id: BaseKey;
   full_name: string;
   time: string;
   date: string;
@@ -42,16 +43,16 @@ interface TableType {
   id: BaseKey;
   name: string;
   type: 'CIRCLE' | 'RECTANGLE';
-  x: number;
   floor: number;
+  x: number;
   y: number;
+  rotation: number;
   height: number;
   width: number;
   max: number;
   min: number;
   current_reservations: currentResType[];
 }
-
 
 function isTouchDevice() {
   return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
@@ -71,19 +72,13 @@ const PlacePage: React.FC = () => {
   const { chosenDay } = useDateContext(); 
 
   
-  const currentHour = `${getHours(new Date())}:00:00`;
+  const currentHour = format(new Date(), 'HH:00:00');
   const [time, setTime] = useState(currentHour);
-
-
-// Parse the time string into a Date object
-// Assuming the date is today
-const parsedDate = parse(time.slice(0,5), 'HH:mm', new Date());
-
-// Add two hours
-const newDate = addHours(parsedDate, 2);
-
-// Format the new date back into a time string
-const newTimeString = format(newDate, 'HH:mm');
+  
+  // Parse the first 5 characters (e.g. "09:00")
+  const parsedDate = parse(time.slice(0,5), 'HH:mm', new Date());
+  const newDate = addHours(parsedDate, 2);
+  const newTimeString = format(newDate, 'HH:mm');
 
 // console.log(newTimeString); // Output: "14:00"
   useEffect(() => {
@@ -199,7 +194,150 @@ const newTimeString = format(newDate, 'HH:mm');
       setFocusedRoof(data.data[0]?.id);
     }
     if (tablesData?.data) {
-      setTables(tablesData.data as TableType[]);
+      // setTables(tablesData.data as TableType[]);
+      setTables([
+        {
+            "id": 9898779385,
+            "name": "Table 1",
+            "rotation": 45,
+            "type": "RECTANGLE",
+            "width": 100,
+            "height": 100,
+            "x": -346.1650000000001,
+            "y": -11.740000000000004,
+            "max": 6,
+            "min": 1,
+            "floor": 51,
+            "current_reservations": []
+        },
+        {
+            "id": 7714577432,
+            "name": "Table 2",
+            "rotation": 0,
+            "type": "CIRCLE",
+            "width": 100,
+            "height": 100,
+            "x": -319.73375,
+            "y": 313.1012500000001,
+            "max": 6,
+            "min": 1,
+            "floor": 51,
+            "current_reservations": []
+        },
+        {
+            "id": 9341503814,
+            "name": "Table 3",
+            "rotation": 0,
+            "type": "RECTANGLE",
+            "width": 100,
+            "height": 100,
+            "x": -192.9750000000002,
+            "y": -10.327500000000033,
+            "max": 6,
+            "min": 1,
+            "floor": 51,
+            "current_reservations": []
+        },
+        {
+            "id": 6167379202,
+            "name": "Table 4",
+            "rotation": 0,
+            "type": "CIRCLE",
+            "width": 100,
+            "height": 100,
+            "x": -140.81875000000002,
+            "y": 323.5174999999999,
+            "max": 6,
+            "min": 1,
+            "floor": 51,
+            "current_reservations": []
+        },
+        {
+            "id": 1757953471,
+            "name": "Table 5",
+            "rotation": 0,
+            "type": "CIRCLE",
+            "width": 100,
+            "height": 100,
+            "x": 45.10750000000007,
+            "y": 326.79625000000016,
+            "max": 6,
+            "min": 1,
+            "floor": 51,
+            "current_reservations": []
+        },
+        {
+            "id": 4583734650,
+            "name": "Table 6",
+            "rotation": 0,
+            "type": "RECTANGLE",
+            "width": 100,
+            "height": 100,
+            "x": -62.231250000000045,
+            "y": -10.781250000000018,
+            "max": 6,
+            "min": 1,
+            "floor": 51,
+            "current_reservations": []
+        },
+        {
+            "id": 2726592543,
+            "name": "Table 7",
+            "rotation": 0,
+            "type": "RECTANGLE",
+            "width": 100,
+            "height": 100,
+            "x": 74.8175,
+            "y": -12.647500000000003,
+            "max": 6,
+            "min": 1,
+            "floor": 51,
+            "current_reservations": []
+        },
+        {
+            "id": 7292290493,
+            "name": "Table 8",
+            "rotation": 0,
+            "type": "RECTANGLE",
+            "width": 100,
+            "height": 100,
+            "x": 222.15625,
+            "y": -8.082500000000021,
+            "max": 6,
+            "min": 1,
+            "floor": 51,
+            "current_reservations": []
+        },
+        {
+            "id": 5713892052,
+            "name": "Table 9",
+            "rotation": 0,
+            "type": "RECTANGLE",
+            "width": 100,
+            "height": 100,
+            "x": 219.00375000000008,
+            "y": 137.97000000000003,
+            "max": 6,
+            "min": 1,
+            "floor": 51,
+            "current_reservations": []
+        },
+        {
+            "id": 3154993633,
+            "name": "Table 10",
+            "rotation": 0,
+            "type": "RECTANGLE",
+            "width": 100,
+            "height": 100,
+            "x": 413.93375000000003,
+            "y": 208.13375,
+            "max": 6,
+            "min": 1,
+            "floor": 51,
+            "current_reservations": []
+        }
+    ] as TableType[]);
+
     }
   }, [data, tablesData, reservationsData]);
 
@@ -207,6 +345,7 @@ const newTimeString = format(newDate, 'HH:mm');
     if (focusedRoof) {
       const foundFloor = roofData.find((floor) => floor.id === focusedRoof);
       setFloorId(foundFloor?.id);
+      handleFocusAll();
     }
   }, [focusedRoof, roofData]);
 
@@ -265,9 +404,161 @@ const newTimeString = format(newDate, 'HH:mm');
     else setSearchResults(reservations.filter((item) => item.full_name.toLowerCase().includes(keyword)));
   };
   
+// ***** Zoom and Pan State and Handlers for the Tables Section *****
+  // The scale is clamped between 0.4 (max zoom out) and 0.9 (max zoom in)
+  const [scale, setScale] = useState(0.4);
+  const [translate, setTranslate] = useState({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  
+  // For mouse-based panning
+  const [isPanning, setIsPanning] = useState(false);
+  const [lastPanPosition, setLastPanPosition] = useState<{ x: number; y: number } | null>(null);
 
+  // For touch pinch-zoom
+  const [lastTouchDistance, setLastTouchDistance] = useState<number | null>(null);
+  const [lastTouchCenter, setLastTouchCenter] = useState<{ x: number; y: number } | null>(null);
+
+  // Clamp helper
+  const clampScale = (s: number) => Math.min(Math.max(s, 0.3), 0.9);
+
+  // Mouse wheel zooming (zoom around mouse pointer)
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    const container = containerRef.current;
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
+    const focalPoint = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    // Use a factor to adjust sensitivity (you can tweak 0.001)
+    const delta = -e.deltaY * 0.001;
+    const newScale = clampScale(scale + delta);
+    // Compute a factor for adjusting pan so that the focal point remains fixed
+    const scaleFactor = newScale / scale;
+    const newTranslateX = focalPoint.x - scaleFactor * (focalPoint.x - translate.x);
+    const newTranslateY = focalPoint.y - scaleFactor * (focalPoint.y - translate.y);
+    setScale(newScale);
+    setTranslate({ x: newTranslateX, y: newTranslateY });
+  };
+
+  // Mouse pan handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsPanning(true);
+    setLastPanPosition({ x: e.clientX, y: e.clientY });
+  };
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isPanning || !lastPanPosition) return;
+    const deltaX = e.clientX - lastPanPosition.x;
+    const deltaY = e.clientY - lastPanPosition.y;
+    setTranslate(prev => ({ x: prev.x + deltaX, y: prev.y + deltaY }));
+    setLastPanPosition({ x: e.clientX, y: e.clientY });
+  };
+  const handleMouseUp = () => {
+    setIsPanning(false);
+    setLastPanPosition(null);
+  };
+
+  // Touch handlers for pan and pinch zoom
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      setLastPanPosition({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+    } else if (e.touches.length === 2) {
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const dx = touch2.clientX - touch1.clientX;
+      const dy = touch2.clientY - touch1.clientY;
+      setLastTouchDistance(Math.hypot(dx, dy));
+      setLastTouchCenter({ x: (touch1.clientX + touch2.clientX) / 2, y: (touch1.clientY + touch2.clientY) / 2 });
+    }
+  };
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 1 && lastPanPosition) {
+      const touch = e.touches[0];
+      const deltaX = touch.clientX - lastPanPosition.x;
+      const deltaY = touch.clientY - lastPanPosition.y;
+      setTranslate(prev => ({ x: prev.x + deltaX, y: prev.y + deltaY }));
+      setLastPanPosition({ x: touch.clientX, y: touch.clientY });
+    } else if (e.touches.length === 2 && lastTouchDistance && lastTouchCenter) {
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const dx = touch2.clientX - touch1.clientX;
+      const dy = touch2.clientY - touch1.clientY;
+      const newDistance = Math.hypot(dx, dy);
+      const newCenter = { x: (touch1.clientX + touch2.clientX) / 2, y: (touch1.clientY + touch2.clientY) / 2 };
+      const newScale = clampScale(scale * (newDistance / lastTouchDistance));
+      // Adjust translation so that the content under the touch center remains fixed
+      const container = containerRef.current;
+      if (container) {
+        const rect = container.getBoundingClientRect();
+        const focalPoint = { x: newCenter.x - rect.left, y: newCenter.y - rect.top };
+        const scaleFactor = newScale / scale;
+        const newTranslateX = focalPoint.x - scaleFactor * (focalPoint.x - translate.x);
+        const newTranslateY = focalPoint.y - scaleFactor * (focalPoint.y - translate.y);
+        setTranslate({ x: newTranslateX, y: newTranslateY });
+      }
+      setScale(newScale);
+      setLastTouchDistance(newDistance);
+      setLastTouchCenter(newCenter);
+    }
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (e.touches.length < 2) {
+      setLastTouchDistance(null);
+      setLastTouchCenter(null);
+    }
+    if (e.touches.length === 0) {
+      setLastPanPosition(null);
+    }
+  };
+
+  // Zoom control buttons – use the container center as the focal point
+  const handleZoomIn = () => {
+    const container = containerRef.current;
+    if (!container) return;
+    const center = { x: container.clientWidth / 2, y: container.clientHeight / 2 };
+    const newScale = clampScale(scale + 0.1);
+    const scaleFactor = newScale / scale;
+    const newTranslateX = center.x - scaleFactor * (center.x - translate.x);
+    const newTranslateY = center.y - scaleFactor * (center.y - translate.y);
+    setScale(newScale);
+    setTranslate({ x: newTranslateX, y: newTranslateY });
+  };
+  const handleZoomOut = () => {
+    const container = containerRef.current;
+    if (!container) return;
+    const center = { x: container.clientWidth / 2, y: container.clientHeight / 2 };
+    const newScale = clampScale(scale - 0.1);
+    const scaleFactor = newScale / scale;
+    const newTranslateX = center.x - scaleFactor * (center.x - translate.x);
+    const newTranslateY = center.y - scaleFactor * (center.y - translate.y);
+    setScale(newScale);
+    setTranslate({ x: newTranslateX, y: newTranslateY });
+  };
+
+  // "Focus on All Tables" resets the view so that all tables on the current floor are visible.
+  // It calculates the bounding box of all tables and centers them within the container.
+  const handleFocusAll = () => {
+    const container = containerRef.current;
+    if (!container) return;
+    const containerWidth = container.clientWidth;
+    const containerHeight = container.clientHeight;
+    const floorTables = tables.filter(table => table.floor === floorId);
+    if (floorTables.length === 0) return;
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    floorTables.forEach(table => {
+      minX = Math.min(minX, table.x);
+      minY = Math.min(minY, table.y);
+      maxX = Math.max(maxX, table.x + table.width);
+      maxY = Math.max(maxY, table.y + table.height);
+    });
+    const contentWidth = maxX - minX;
+    const contentHeight = maxY - minY;
+    const newScale = clampScale(Math.min(containerWidth / contentWidth, containerHeight / contentHeight));
+    // Center the bounding box inside the container
+    const newTranslateX = (containerWidth - contentWidth * newScale) / 2 - minX * newScale;
+    const newTranslateY = (containerHeight - contentHeight * newScale) / 2 - minY * newScale;
+    setScale(newScale);
+    setTranslate({ x: newTranslateX, y: newTranslateY });
+  };
 
   return (
 
@@ -287,8 +578,9 @@ const newTimeString = format(newDate, 'HH:mm');
           <div className={`lt-sm:hidden rounded-[10px] p-[1em] ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'} `}>
             <SearchBar SearchHandler={searchFilter} />
             <div className='grid grid-flow-col gap-3 font-[500] my-3 justify-between'>
+              <button className={showOnly==='SEATED'? 'btn-primary':'btn-secondary'} onClick={()=>{setShowOnly("SEATED")}}>{t('placeManagement.filters.seated')}</button>
               <button className={showOnly==='APPROVED'? 'btn-primary':'btn-secondary'} onClick={()=>{setShowOnly("APPROVED")}}>{t('placeManagement.filters.confirmed')}</button>
-              <button className={showOnly==='CANCELED'? 'btn-primary':'btn-secondary'} onClick={()=>{setShowOnly("CANCELED")}}>{t('placeManagement.filters.canceled')}</button>
+              {/* <button className={showOnly==='CANCELED'? 'btn-primary':'btn-secondary'} onClick={()=>{setShowOnly("CANCELED")}}>{t('placeManagement.filters.canceled')}</button> */}
               <button className={showOnly==='PENDING'? 'btn-primary':'btn-secondary'} onClick={()=>{setShowOnly("PENDING")}}>{t('placeManagement.filters.pending')}</button>
             </div>
             <div className='overflow-y-auto h-[55vh] bar-hide'>
@@ -316,7 +608,7 @@ const newTimeString = format(newDate, 'HH:mm');
               <div>
                 <select defaultValue={time} id='hourChosen' className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'} `} onChange={(e) => { setFilteringHour(e.target.value); selectedHour(e.target.value); }}>
                   {hours.map((hour) => (
-                    <option key={hour.id} selected={hour.time === time.slice(0,5)} value={hour.time}>
+                    <option key={hour.id} value={hour.time}>
                       {hour.time}
                     </option>
                   ))} 
@@ -324,25 +616,49 @@ const newTimeString = format(newDate, 'HH:mm');
               </div>
             </div>
 
-            <div className='relative lt-sm:h-[55vh] lt-sm:overflow-x-auto'>
-              {tables.filter(table => table.floor === floorId).map((table) => (
-                <DropTarget 
-                  key={table.id} 
-                  id= {table.id}
-                  name={table.name}
-                  type= {table.type}
-                  floorId= {floorId}
-                  x= {table.x}
-                  y= {table.y}
-                  height= {table.height}
-                  width= {table.width}
-                  max= {table.max}
-                  min= {table.min}
-                  reservedBy= {table.current_reservations[0]}
-                  hourChosen= {filteringHour}
+            {/* Tables Container with Zoom and Pan */}
+            <div
+              className={`tables-cont relative mt-1 lt-sm:overflow-x-auto overflow-hidden rounded-xl ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-whitetheme'}`}
+              ref={containerRef}
+              onWheel={handleWheel}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              style={{ touchAction: "none" }}  // disable default gestures
+            >
+              {/* Zoom Control Buttons */}
+            <ZoomControls onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} onFocusAll={handleFocusAll}/>
+              <div
+                style={{
+                  transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`,
+                  transformOrigin: '0 0',
+                  width: '100%',
+                  height: '100%',
+                  position: 'relative'
+                }}
+              >
+                {tables.filter(table => table.floor === floorId).map((table) => (
+                  <DropTarget 
+                    key={table.id} 
+                    id={table.id}
+                    name={table.name}
+                    type={table.type}
+                    floorId={floorId}
+                    x={table.x}
+                    y={table.y}
+                    height={table.height}
+                    width={table.width}
+                    max={table.max}
+                    min={table.min}
+                    reservedBy={table.current_reservations[0]}
+                    hourChosen={filteringHour}
                   />
-                  
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </div>

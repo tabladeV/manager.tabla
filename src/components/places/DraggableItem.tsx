@@ -9,7 +9,7 @@ interface tablesType {
   name: string;
 }
 interface DraggableItemProps {
-  itemData: { id: BaseKey; full_name: string; time: string; date: string; status: "PENDING" | "APPROVED" | "CANCELED";number_of_guests: number; occasion?: string ; created_at: string; tables: tablesType[] }; 
+  itemData: { id: BaseKey; full_name: string; time: string; date: string; status: "PENDING" | "APPROVED" | "CANCELED" | "SEATED"; number_of_guests: number; occasion?: string ; created_at: string; tables: tablesType[] }; 
 }
 
 const ItemType = 'BOX';
