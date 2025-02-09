@@ -31,7 +31,7 @@ const DraggableItem = (props:DraggableItemProps) => {
       created_at: itemData.created_at,
       tables: itemData.tables
      }, // This is the data being passed
-    canDrag: itemData.status === 'APPROVED',
+    canDrag: itemData.status === 'APPROVED' && itemData.tables.length === 0,
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
