@@ -91,7 +91,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
 
 
   const { mutate: mutateReservations } = useUpdate({
-    resource: `api/v1/bo/tables/${id}/assign-reservation/${droppedItems[0]?.id}/`,
+    resource: `api/v1/bo/tables/${id}/assign-reservation`,
 
   });
 
@@ -135,7 +135,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
         //   },
         // });
         mutateReservations({
-          id: id + '/',
+          id: item.id+'/',
           values: {
             reservations: [item.id],
           },
@@ -193,7 +193,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
         className={`text-[12px] pa-1 rounded-full h-[20px] min-w-[20px] font-semibold ${
           localStorage.getItem('darkMode') === 'true'
               ? 'bg-bgdarktheme text-white'
-              : 'bg-[#F6F6F6] text-greytheme'
+              : 'bg-[#dddddd] text-greytheme'
         }`}
         style={{
           whiteSpace: 'nowrap',
