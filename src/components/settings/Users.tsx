@@ -292,7 +292,7 @@ export default function Users() {
               {/* <th scope="col" className="px-6 py-4 font-medium ">{t('settingsPage.users.tableHeaders.phone')}</th> */}
               <th scope="col" className="px-6 py-4 font-medium ">{t('settingsPage.users.tableHeaders.email')}</th>
               <th scope="col" className="px-6 py-4 font-medium ">{t('settingsPage.users.tableHeaders.role')}</th>
-              <th scope="col" className="px-6 py-4 font-medium ">{t('settingsPage.users.tableHeaders.actions')}</th>
+              <th scope="col" className="px-6 py-4 font-medium flex justify-end ">{t('settingsPage.users.tableHeaders.actions')}</th>
             </tr>
           </thead>
           <tbody className={`divide-y  border-t ${localStorage.getItem('darkMode')==='true'?'border-darkthemeitems divide-darkthemeitems':'border-gray-200'}`}>
@@ -303,8 +303,8 @@ export default function Users() {
                 {/* <td className="px-6 py-4">{user.phone}</td> */}
                 <td className="px-6 py-4" onClick={() => openModal(user)}>{user.email}</td>
                 <td className="px-6 py-4" onClick={() => openModal(user)}>{user.role ? user.role.name : 'no role affected'}</td>
-                <td className="px-6 py-4">
-                  <button className="btn-secondary bg-softredtheme text-redtheme hover:bg-redtheme hover:text-white " onClick={() => deleteUser(user.id)}><Trash size={20}/></button>
+                <td className="px-6 py-4 flex justify-end">
+                  <button className="btn-secondary bg-softredtheme text-redtheme hover:bg-redtheme hover:text-white p-2 text-right " onClick={() => deleteUser(user.id)}><Trash size={15}/></button>
                 </td>
               </tr>
             ))}

@@ -204,7 +204,7 @@ const ReservationModal = (props: ReservationModalProps) => {
         phone: newClientData.new_phone,
       },
     });
-    window.location.reload();
+    // window.location.reload();
   };
 
   return (

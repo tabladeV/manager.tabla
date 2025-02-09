@@ -2,13 +2,16 @@ import { useEffect, useState } from 'react';
 import logo from '../../assets/logo.png';
 import { ca } from 'date-fns/locale';
 import { useParams } from 'react-router-dom';
-import { BaseRecord, useList } from '@refinedev/core';
+import { BaseRecord, useCreate, useList } from '@refinedev/core';
 import bg from '../../assets/bg-widget.png'
 
 
 const ReviewPage = () => {
   const [step, setStep] = useState(1);
   const {restaurant} = useParams();
+  const {client} = useParams();
+
+  const {mutate: createReview} = useCreate();
 
   const { data: res, isLoading, error } = useList({
     resource: `api/v1/bo/restaurants/${restaurant}/widget/`,
@@ -84,6 +87,24 @@ const ReviewPage = () => {
       food: brightFood,
       valueForMoney: brightValueForMoney,
       reviewText,
+    });
+
+    console.log(reviewData);
+    createReview({
+      resource: `api/v1/reviews/`,
+      meta: {
+        headers: {
+          "X-Restaurant-ID": restaurant,
+        }
+      },
+      values: {
+        customer: client,
+        service_rating: brightService,
+        ambience_rating: brightAmbiance,
+        food_rating: brightFood,
+        value_for_money: brightValueForMoney,
+        description: reviewText,
+      },
     });
     
     

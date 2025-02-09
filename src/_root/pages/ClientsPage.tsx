@@ -200,6 +200,7 @@ const ClientsPage = () => {
               />
             ))}
           </div>
+          
           <button className={` ${selectedClient.length === 0 ?  localStorage.getItem('darkMode')==='true'?'btn hover:border-[0px] border-[0px] cursor-not-allowed bg-subblack text-softwhitetheme ':'btn hover:border-[0px] border-[0px] cursor-not-allowed bg-softgreytheme ':'btn-primary'}`} disabled={selectedClient.length===0} onClick={()=>{(setShowNotificationModal(true))}}>{t('clients.sendNotificationButton')}</button>
         </div>
         {pathname === "/clients" || pathname === "/clients/" ? (
