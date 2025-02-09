@@ -60,9 +60,10 @@ const UserBar = () => {
   };
 
   const handleLogout = () => {
-    Cookies.remove('token');
+    localStorage.removeItem("isLogedIn");
+    localStorage.removeItem("restaurant_id");
+    localStorage.removeItem("refresh");
     document.location.href = '/sign-in';
-    setIsLogged(false);
   };
 
   const [fullScreen, setFullScreen] = useState(false);
@@ -171,7 +172,7 @@ const UserBar = () => {
           <img className='h-[40px] w-[40px] rounded-[100%]' src={profilepic} alt="user"/>
           {/* <h5 className=' font-semibold lt-sm:hidden'>Alfred Distivano</h5> */}
           <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M9 1L5 5L1 1" stroke={localStorage.getItem('darkMode')==='true'?'#e1e1e1':'#1e1e1e'} stroke-opacity="0.75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9 1L5 5L1 1" stroke={localStorage.getItem('darkMode')==='true'?'#e1e1e1':'#1e1e1e'} strokeOpacity="0.75" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         {showProfile && 
           <div ref={divRef} className={`absolute mt-[9em] ml-[-4em] flex  flex-col shadow-xl shadow-[#00000005] gap-2 items-start p-2 rounded-md z-[50] ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme ':'bg-white'}`}>

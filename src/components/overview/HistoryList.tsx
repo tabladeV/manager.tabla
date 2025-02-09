@@ -33,11 +33,7 @@ const HistoryList  = () => {
 
   const {data: reviewsData, isLoading, error} = useList({
           resource: 'api/v1/reviews/',
-          meta: {
-              headers: {
-                  'X-Restaurant-ID': 1
-              }
-          }
+
       })
       console.log('data',reviewsData?.data)
   
