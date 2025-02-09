@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useDrop } from 'react-dnd';
 import { useDateContext } from '../../context/DateContext';
-import { BaseKey, useCreate, useUpdate } from '@refinedev/core';
+import { BaseKey, useCreate, useDelete, useUpdate } from '@refinedev/core';
 import { Trash } from 'lucide-react';
+import { set } from 'date-fns';
 
 const ItemType = 'BOX';
 
@@ -19,6 +20,7 @@ interface DropTargetProps {
   min: number;
   reservedBy: currentResType | null;
   hourChosen: string;
+  onUpdateReservations: () => void;
 }
 
 interface TableType {
@@ -81,20 +83,25 @@ const DropTarget: React.FC<DropTargetProps> = ({
   y,
   reservedBy,
   hourChosen,
+  onUpdateReservations
 }) => {
   const [droppedItems, setDroppedItems] = useState<DroppedItem[]>([]);
 
   const { mutate } = useUpdate({
     resource: `api/v1/bo/tables`,
-
   });
 
 
   const { mutate: mutateReservations } = useUpdate({
     resource: `api/v1/bo/tables/${id}/assign-reservation`,
-
+    mutationOptions: {
+      onSuccess: (data, variables) => {
+        onUpdateReservations();
+      },
+    },
   });
-
+  
+  const { mutate: deleteReservation } = useDelete();
   useEffect(() => {
     if (reservedBy) {
       setDroppedItems([
@@ -151,7 +158,20 @@ const DropTarget: React.FC<DropTargetProps> = ({
   const [isClients, setIsClients] = useState(false);
 
   const removeReservation = () => {
-    setDroppedItems([]);
+    deleteReservation({
+        resource: `api/v1/bo/tables/${id}/delete-reservation`,
+        id: droppedItems[0]?.id+'/',
+        values: {
+          reservations: [],
+        }
+      },
+      {
+        onSuccess: () => {
+          setDroppedItems([]);
+          onUpdateReservations();
+        },
+      }
+    );
   };
 
   return (
