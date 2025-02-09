@@ -61,11 +61,7 @@ function isTouchDevice() {
 const PlacePage: React.FC = () => {
   const { data, isLoading, error } = useList({
     resource: "api/v1/bo/floors/",
-    meta: {
-      headers: {
-        "X-Restaurant-ID": 1,
-      },
-    },
+
   });
 
   
@@ -127,11 +123,7 @@ const PlacePage: React.FC = () => {
         value: newTimeString+':00',
       },
     ],
-    meta: {
-      headers: {
-        "X-Restaurant-ID": 1,
-      },
-    },
+
   });
 
   console.log(tablesData?.data);
@@ -155,11 +147,7 @@ const PlacePage: React.FC = () => {
         value: newTimeString+':00',
       },
     ],
-    meta: {
-      headers: {
-        "X-Restaurant-ID": 1,
-      },
-    },
+
   });
   console.log(reservationsData?.data);
 

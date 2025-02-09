@@ -10,11 +10,6 @@ const DesignPlacesIndex = () => {
 
     const { mutate } = useCreate({
             resource: "api/v1/bo/floors/", // Updated endpoint
-            meta: {
-              headers: {
-                "X-Restaurant-ID": 1,
-              },
-            },
             mutationOptions: {
               retry: 3,
               onSuccess: (data) => {
@@ -42,12 +37,7 @@ const DesignPlacesIndex = () => {
 
     const [roofs, setRoofs] = useState<BaseRecord[]>([])
     const {data, isLoading, error} = useList({
-        resource: 'api/v1/bo/floors/',
-        meta: {
-          headers: {
-            'X-Restaurant-ID': 1
-          }
-        }
+        resource: 'api/v1/bo/floors/'
       })
     
 

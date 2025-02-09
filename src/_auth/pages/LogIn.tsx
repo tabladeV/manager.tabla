@@ -1,55 +1,70 @@
-import Logo from "../../components/header/Logo"
-import Cookies from "js-cookie";
+import React, { useEffect } from "react";
+import { useCreate } from "@refinedev/core";
+import { useNavigate } from "react-router-dom";
+import Logo from "../../components/header/Logo";
 
+const LogIn: React.FC = () => {
+  const navigate = useNavigate();
 
+  const { mutate: login, isLoading } = useCreate({
+    resource: "api/v1/auth/login/",
+    mutationOptions: {
+      onSuccess: (data, variables) => {
+        const refreshToken = data.data?.refresh;
+        if (refreshToken) {
+          localStorage.setItem("refresh", refreshToken);
+        }
 
-const LogIn = () => {
+        if (variables.values?.restaurant_id) {
+          localStorage.setItem("restaurant_id", variables.values.restaurant_id);
+        }
+
+        localStorage.setItem("isLogedIn", "true");
+
+        navigate("/");
+      },
+      onError: () => {
+        alert("Login failed. Please check your credentials.");
+      },
+    },
+  });
+
+  useEffect(() => {
+    if (localStorage.getItem("isLogedIn")) {
+      navigate("/");
+    }
+  }, [navigate]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const username = (e.currentTarget[0] as HTMLInputElement).value;
-    const password = (e.currentTarget[1] as HTMLInputElement).value;
-    window.location.href = "/";
-    console.log(username, password);
-    const token = btoa(`${username}:${password}`);
-    Cookies.set("token", token, { expires: 1 });
-    // Call the API to log in
-    // If successful, redirect to the main page
-    // If not, show an error message
-  }
-  if (Cookies.get("token")) {
-    window.location.href = "/";
-  }
+    const formData = new FormData(e.currentTarget);
 
-  
+    const restaurantId = formData.get("restaurant_id") as string;
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    login({ values: { restaurant_id: restaurantId, email, password } });
+  };
 
   return (
-    <div className={`flex bg-cover overflow-hidden flex-col items-center w-full h-screen justify-center bg-softgreentheme `}>
-      <Logo className="horizontal"/>
-      <h1 className="text-4xl font-bold text-center text-darkthemeitems ">
+    <div className="flex bg-cover overflow-hidden flex-col items-center w-full h-screen justify-center bg-softgreentheme">
+      <Logo className="horizontal" />
+      <h1 className="text-4xl font-bold text-center text-darkthemeitems">
         Welcome to Tabla.ma Admin
       </h1>
       <p className="text-center text-subblack">
         Log in to your account to continue
       </p>
-      <form  className="flex flex-col  gap-2 mt-8" onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Username"
-          className="inputs-unique w-[30vw]"
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          className="inputs-unique w-[30vw]"
-        />
-        <button  className="btn-primary w-[30vw]">Log In</button>
+      <form className="flex flex-col gap-2 mt-8" onSubmit={handleSubmit}>
+        <input type="text" name="restaurant_id" placeholder="Restaurant ID" className="inputs-unique w-[30vw]" />
+        <input type="text" name="email" placeholder="Email" className="inputs-unique w-[30vw]" />
+        <input type="password" name="password" placeholder="Password" className="inputs-unique w-[30vw]" />
+        <button className="btn-primary w-[30vw]" disabled={isLoading}>
+          {isLoading ? "Logging In..." : "Log In"}
+        </button>
       </form>
-      <div>
-        {/* <img src={logo} alt="logo" className="w-[60em] absolute h-[60em] blur-xl top-[-30em] z-[-10] left-[-20em] opacity-10" /> */}
-      </div>
     </div>
-  )
-}
+  );
+};
 
-export default LogIn
+export default LogIn;

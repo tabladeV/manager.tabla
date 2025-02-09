@@ -86,21 +86,13 @@ const DropTarget: React.FC<DropTargetProps> = ({
 
   const { mutate } = useUpdate({
     resource: `api/v1/bo/tables`,
-    meta: {
-      headers: {
-        'X-Restaurant-ID': 1,
-      },
-    },
+
   });
 
 
-  const { mutate: mutateReservations } = useCreate({
+  const { mutate: mutateReservations } = useUpdate({
     resource: `api/v1/bo/tables/${id}/assign-reservation/${droppedItems[0]?.id}/`,
-    meta: {
-      headers: {
-        'X-Restaurant-ID': 1,
-      },
-    },
+
   });
 
   useEffect(() => {
@@ -143,8 +135,10 @@ const DropTarget: React.FC<DropTargetProps> = ({
         //   },
         // });
         mutateReservations({
-          values:{
-          }
+          id: id + '/',
+          values: {
+            reservations: [item.id],
+          },
         });
       }
     },

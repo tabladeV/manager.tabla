@@ -45,11 +45,7 @@ export default function TopUsers() {
 
   const { data, isLoading, error } = useList<BaseRecord>({
       resource: 'api/v1/bo/reservations/',
-      meta: {
-        headers: {
-          'X-Restaurant-ID': 1
-        }
-      }
+
     })
 
     const [reservations, setReservations] = useState<BaseRecord[]>([])
