@@ -14,7 +14,7 @@ const LogIn: React.FC = () => {
         if (refreshToken) {
           localStorage.setItem("refresh", refreshToken);
         }
-
+        
         if (variables.values?.restaurant_id) {
           localStorage.setItem("restaurant_id", variables.values.restaurant_id);
         }

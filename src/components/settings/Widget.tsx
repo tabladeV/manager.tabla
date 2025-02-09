@@ -27,14 +27,15 @@ const base64ToBlob = (base64: string, mimeType: string) => {
 };
 
 export default function WidgetConfig() {
-  const [restaurantId, setRestaurantId] = useState(1);
+  // const [restaurantId, setRestaurantId] = useState(1);
+
+  const restaurantId = localStorage.getItem('restaurant_id');
   const { t } = useTranslation();
 
   const { data: widgetData, isLoading, error } = useList({
     resource: `api/v1/bo/restaurants/${restaurantId}/widget/`,
   });
 
-  console.log(widgetData);
 
 
   const [widgetInfo, setWidgetInfo] = useState<Widget>();
