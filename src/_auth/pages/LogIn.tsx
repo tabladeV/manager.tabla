@@ -6,6 +6,12 @@ import Logo from "../../components/header/Logo";
 const LogIn: React.FC = () => {
   const navigate = useNavigate();
 
+  function handleRestaurantId(variables: any) {
+    if (variables.values?.restaurant_id) {
+        localStorage.setItem("restaurant_id", variables.values.restaurant_id);
+    }
+  }
+
   const { mutate: login, isLoading } = useCreate({
     resource: "api/v1/auth/login/",
     mutationOptions: {
@@ -14,10 +20,8 @@ const LogIn: React.FC = () => {
         if (refreshToken) {
           localStorage.setItem("refresh", refreshToken);
         }
-        
-        if (variables.values?.restaurant_id) {
-          localStorage.setItem("restaurant_id", variables.values.restaurant_id);
-        }
+
+        handleRestaurantId(variables);
 
         localStorage.setItem("isLogedIn", "true");
 

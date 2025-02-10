@@ -114,10 +114,8 @@ function App() {
 
                     {/*Private Routes */}
                     <Route element={
-                        <Authenticated redirectOnFail="/sign-in">
-                          <RootLayout>
-                            <Outlet />
-                          </RootLayout>
+                        <Authenticated key="*" redirectOnFail="/sign-in">
+                          <RootLayout/>
                         </Authenticated>
                       }>
                         <Route index element={<Home />} />

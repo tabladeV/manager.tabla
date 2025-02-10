@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
@@ -16,6 +16,7 @@ import { BaseKey, BaseRecord, useList } from '@refinedev/core';
 import {format} from 'date-fns';
 import axios from 'axios';
 import ZoomControls from '../../components/places/ZoomControls';
+import { use } from 'i18next';
 
 interface Reservation {
   id: BaseKey;
@@ -68,7 +69,7 @@ const PlacePage: React.FC = () => {
   const { chosenDay } = useDateContext(); 
 
   
-  const currentHour = format(new Date(), 'HH:00:00');
+  const currentHour = format(new Date(), 'HH:00');
   const [time, setTime] = useState(currentHour);
   
   // Parse the first 5 characters (e.g. "09:00")
@@ -80,12 +81,10 @@ const PlacePage: React.FC = () => {
   useEffect(() => {
     setTime(currentHour);
   }, [currentHour]);
-
-  console.log(time.slice(0,5), 'currentHour');
   const [chosenHour, setChosenHour] = useState(currentHour);
 
   function selectedHour(hour: string) {
-    setTime(`${hour}:00`);
+    setTime(`${hour}`);
   }
 
   useEffect(() => {
@@ -94,7 +93,7 @@ const PlacePage: React.FC = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const newCurrentHour = `${getHours(new Date())}:00:00`;
+      const newCurrentHour = `${getHours(new Date())}:00`;
       setChosenHour(newCurrentHour);
     }, 1000);
 
@@ -104,7 +103,7 @@ const PlacePage: React.FC = () => {
 
 
 
-  const { data: tablesData, isLoading: isLoadingTables, error: errorTables } = useList({
+  const { data: tablesData, isLoading: isLoadingTables, error: errorTables, refetch: refreshTables } = useList({
     resource: "api/v1/bo/tables/tables_reservations/",
     filters: [
       {
@@ -113,43 +112,40 @@ const PlacePage: React.FC = () => {
         value: format(chosenDay, 'yyyy-MM-dd'),
       },
       {
-        field: "reservations__time__gte",
+        field: "reservations__time_",
         operator: "gte",
         value: time,
       },
       {
-        field: "reservations__time__lte",
+        field: "reservations__time_",
         operator: "lte",
         value: newTimeString+':00',
       },
     ],
 
   });
-
-  console.log(tablesData?.data);
   
-  const { data: reservationsData, isLoading: isLoadingReservations, error: errorReservations } = useList<Reservation>({
+  const { data: reservationsData, isLoading: isLoadingReservations, error: errorReservations, refetch: refetshReservations } = useList<Reservation>({
     resource: "api/v1/bo/reservations/",
     filters: [
       {
         field: "date",
-        operator: "eq",
+        operator: "null",
         value: format(chosenDay, 'yyyy-MM-dd'),
       },
       {
-        field: "time",
+        field: "time_",
         operator: "gte",
-        value: time+':00',
+        value: time,
       },
       {
-        field: "time__lte",
+        field: "time_",
         operator: "lte",
-        value: newTimeString+':00',
+        value: newTimeString,
       },
     ],
 
   });
-  console.log(reservationsData?.data);
 
   
 
@@ -158,10 +154,6 @@ const PlacePage: React.FC = () => {
   // const TimeUpdate = (time:string) =>{
   //   settime(`${time}:00`);
   // }
-
-  console.log(time);
-
-  
   
   const [roofData, setRoofData] = useState<BaseRecord[]>([]);
   const [reservations, setReservations] = useState<Reservation[]>([]);
@@ -170,162 +162,18 @@ const PlacePage: React.FC = () => {
   const [floorId, setFloorId] = useState<BaseKey | undefined>(0);
   const { t } = useTranslation();
 
-  console.log(tablesData?.data);
-
 
   useEffect(() => {
     if (reservationsData?.data) {
-      setReservations(reservationsData.data);
+      setReservations([...reservationsData.data]);
     }
     if (data?.data) {
       setRoofData(data.data);
       setFocusedRoof(data.data[0]?.id);
+      handleFocusAll();
     }
     if (tablesData?.data) {
-      setTables(tablesData.data as TableType[]);
-    //   setTables([
-    //     {
-    //         "id": 9898779385,
-    //         "name": "Table 1",
-    //         "rotation": 45,
-    //         "type": "RECTANGLE",
-    //         "width": 100,
-    //         "height": 100,
-    //         "x": -346.1650000000001,
-    //         "y": -11.740000000000004,
-    //         "max": 6,
-    //         "min": 1,
-    //         "floor": 51,
-    //         "current_reservations": []
-    //     },
-    //     {
-    //         "id": 7714577432,
-    //         "name": "Table 2",
-    //         "rotation": 0,
-    //         "type": "CIRCLE",
-    //         "width": 100,
-    //         "height": 100,
-    //         "x": -319.73375,
-    //         "y": 313.1012500000001,
-    //         "max": 6,
-    //         "min": 1,
-    //         "floor": 51,
-    //         "current_reservations": []
-    //     },
-    //     {
-    //         "id": 9341503814,
-    //         "name": "Table 3",
-    //         "rotation": 0,
-    //         "type": "RECTANGLE",
-    //         "width": 100,
-    //         "height": 100,
-    //         "x": -192.9750000000002,
-    //         "y": -10.327500000000033,
-    //         "max": 6,
-    //         "min": 1,
-    //         "floor": 51,
-    //         "current_reservations": []
-    //     },
-    //     {
-    //         "id": 6167379202,
-    //         "name": "Table 4",
-    //         "rotation": 0,
-    //         "type": "CIRCLE",
-    //         "width": 100,
-    //         "height": 100,
-    //         "x": -140.81875000000002,
-    //         "y": 323.5174999999999,
-    //         "max": 6,
-    //         "min": 1,
-    //         "floor": 51,
-    //         "current_reservations": []
-    //     },
-    //     {
-    //         "id": 1757953471,
-    //         "name": "Table 5",
-    //         "rotation": 0,
-    //         "type": "CIRCLE",
-    //         "width": 100,
-    //         "height": 100,
-    //         "x": 45.10750000000007,
-    //         "y": 326.79625000000016,
-    //         "max": 6,
-    //         "min": 1,
-    //         "floor": 51,
-    //         "current_reservations": []
-    //     },
-    //     {
-    //         "id": 4583734650,
-    //         "name": "Table 6",
-    //         "rotation": 0,
-    //         "type": "RECTANGLE",
-    //         "width": 100,
-    //         "height": 100,
-    //         "x": -62.231250000000045,
-    //         "y": -10.781250000000018,
-    //         "max": 6,
-    //         "min": 1,
-    //         "floor": 51,
-    //         "current_reservations": []
-    //     },
-    //     {
-    //         "id": 2726592543,
-    //         "name": "Table 7",
-    //         "rotation": 0,
-    //         "type": "RECTANGLE",
-    //         "width": 100,
-    //         "height": 100,
-    //         "x": 74.8175,
-    //         "y": -12.647500000000003,
-    //         "max": 6,
-    //         "min": 1,
-    //         "floor": 51,
-    //         "current_reservations": []
-    //     },
-    //     {
-    //         "id": 7292290493,
-    //         "name": "Table 8",
-    //         "rotation": 0,
-    //         "type": "RECTANGLE",
-    //         "width": 100,
-    //         "height": 100,
-    //         "x": 222.15625,
-    //         "y": -8.082500000000021,
-    //         "max": 6,
-    //         "min": 1,
-    //         "floor": 51,
-    //         "current_reservations": []
-    //     },
-    //     {
-    //         "id": 5713892052,
-    //         "name": "Table 9",
-    //         "rotation": 0,
-    //         "type": "RECTANGLE",
-    //         "width": 100,
-    //         "height": 100,
-    //         "x": 219.00375000000008,
-    //         "y": 137.97000000000003,
-    //         "max": 6,
-    //         "min": 1,
-    //         "floor": 51,
-    //         "current_reservations": []
-    //     },
-    //     {
-    //         "id": 3154993633,
-    //         "name": "Table 10",
-    //         "rotation": 0,
-    //         "type": "RECTANGLE",
-    //         "width": 100,
-    //         "height": 100,
-    //         "x": 413.93375000000003,
-    //         "y": 208.13375,
-    //         "max": 6,
-    //         "min": 1,
-    //         "floor": 51,
-    //         "current_reservations": []
-    //     }
-    // ] as TableType[]);
-
+      setTables([...tablesData.data] as TableType[]);
     }
   }, [data, tablesData, reservationsData]);
 
@@ -347,7 +195,7 @@ const PlacePage: React.FC = () => {
   //   { id: 6, name: 'Alfred Zack', time: '12:00 PM', date: '26 jan 2025', guests: 4, occasion: 'Birthday', tableNumber: 7 },
   // ];
 
-  const getCurrentHour = () => getHours(new Date());
+  const getCurrentHour = () => getHours(new Date()).toString().replace(':00','');
 
   const hours = [
     { id: 1, time: '00:00' },
@@ -392,6 +240,11 @@ const PlacePage: React.FC = () => {
     else setSearchResults(reservations.filter((item) => item.full_name.toLowerCase().includes(keyword)));
   };
   
+  const filteredReservations = useMemo(() => {
+    return searchResults.filter((item) => item.status === showOnly)
+  },[showOnly, searchResults, reservations]);
+
+
 // ***** Zoom and Pan State and Handlers for the Tables Section *****
   // The scale is clamped between 0.4 (max zoom out) and 0.9 (max zoom in)
   const [scale, setScale] = useState(0.4);
@@ -572,7 +425,7 @@ const PlacePage: React.FC = () => {
               <button className={showOnly==='PENDING'? 'btn-primary':'btn-secondary'} onClick={()=>{setShowOnly("PENDING")}}>{t('placeManagement.filters.pending')}</button>
             </div>
             <div className='overflow-y-auto h-[55vh] bar-hide'>
-              {searchResults.filter(item => item.status === showOnly).map((item) => (
+              {filteredReservations.map((item) => (
                 <DraggableItem itemData={item} key={item.id} />
               ))}
 
@@ -594,7 +447,7 @@ const PlacePage: React.FC = () => {
                 ))}
               </div>
               <div>
-                <select defaultValue={time} id='hourChosen' className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'} `} onChange={(e) => { setFilteringHour(e.target.value); selectedHour(e.target.value); }}>
+                <select value={time} id='hourChosen' className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'} `} onChange={(e) => { setFilteringHour(e.target.value); selectedHour(e.target.value); }}>
                   {hours.map((hour) => (
                     <option key={hour.id} value={hour.time}>
                       {hour.time}
@@ -644,6 +497,10 @@ const PlacePage: React.FC = () => {
                     min={table.min}
                     reservedBy={table.current_reservations[0]}
                     hourChosen={filteringHour}
+                    onUpdateReservations={() => {
+                      refreshTables();
+                      refetshReservations();
+                    }}
                   />
                 ))}
               </div>
