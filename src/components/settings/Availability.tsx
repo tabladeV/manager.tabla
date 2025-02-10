@@ -21,6 +21,7 @@ interface DayData {
 }
 
 const Availability = () => {
+  const [restaurantId, setRestaurantId] = useState<string>(localStorage.getItem('restaurant_id') || '0');
   const { data: availabilityDays, isLoading, error } = useList({
     resource: `api/v1/bo/availability/days/`,
 
@@ -29,7 +30,7 @@ const Availability = () => {
   const {mutate : updateAvailability} = useCreate();
 
   const { data: restaurantData, isLoading: restaurantLoading, error: restaurantError } = useList({
-    resource: `api/v1/bo/restaurants/1/current`,
+    resource: `api/v1/bo/restaurants/${restaurantId}/current/`,
   });
 
 
@@ -154,16 +155,17 @@ const Availability = () => {
   const [pufferValue, setPufferValue] = useState<number | ''>('');
 
   const {mutate : updateDuration } = useUpdate()
-  const [restaurantId, setRestaurantId] = useState<string>(localStorage.getItem('restaurantId') || '0');
 
   const handleSaveAvailability = () => {
+
+    const restaurantId = localStorage.getItem('restaurantId') || '0';
 
     updateDuration({
       resource: "api/v1/bo/restaurants",
       values: {
         reservation_max_duration: duration,
       },
-      id: 1 + "/", // Ensure the ID is appended correctly
+      id: restaurantId + "/", // Ensure the ID is appended correctly
     });
 
     const newData = data.map((day) => ({

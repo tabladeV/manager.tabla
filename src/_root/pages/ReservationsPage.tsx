@@ -291,7 +291,7 @@ const ReservationsPage = () => {
   const upDateHandler = () => {
     
     if (selectedClient) {
-      if(!hasTable){
+      // if(!hasTable){
         upDateReservation({
           id: editingClient+'/',
           values: {
@@ -303,7 +303,7 @@ const ReservationsPage = () => {
             internal_note: selectedClient.internal_note,
             date: reservationProgressData.reserveDate,
             time: reservationProgressData.time+ ':00',
-            tables: [] ,
+            tables: [Number(selectedClient.tableSet)] ,
             number_of_guests: reservationProgressData.guests ,
             commenter: selectedClient.commenter,
           },
@@ -314,30 +314,30 @@ const ReservationsPage = () => {
           },
         })
 
-      }else{
+      // }else{
       
-        upDateReservation({
-          id: editingClient+'/',
-          values: {
-            full_name: selectedClient.full_name,
-            email: selectedClient.email,
-            table_name: selectedClient.table_name,
-            source: selectedClient.source,
-            status: 'SEATED',
-            internal_note: selectedClient.internal_note,
-            date: reservationProgressData.reserveDate,
-            time: reservationProgressData.time+ ':00',
-            tables: [Number(selectedClient.tableSet) ] ,
-            number_of_guests: reservationProgressData.guests ,
-            commenter: selectedClient.commenter,
-          },
-          meta: {
-            headers: {
-              "X-Restaurant-ID": 1,
-            },
-          },
-        })
-      }
+      //   upDateReservation({
+      //     id: editingClient+'/',
+      //     values: {
+      //       full_name: selectedClient.full_name,
+      //       email: selectedClient.email,
+      //       table_name: selectedClient.table_name,
+      //       source: selectedClient.source,
+      //       status: selectedClient.status,
+      //       internal_note: selectedClient.internal_note,
+      //       date: reservationProgressData.reserveDate,
+      //       time: reservationProgressData.time+ ':00',
+      //       tables: [Number(selectedClient.tableSet) ] ,
+      //       number_of_guests: reservationProgressData.guests ,
+      //       commenter: selectedClient.commenter,
+      //     },
+      //     meta: {
+      //       headers: {
+      //         "X-Restaurant-ID": 1,
+      //       },
+      //     },
+      //   })
+      // }
     }
     setShowModal(false)
   }
@@ -636,7 +636,7 @@ const ReservationsPage = () => {
                   <option value="PENDING">{t('reservations.statusLabels.pending')}</option>
                   <option value="APPROVED">{t('reservations.statusLabels.confirmed')}</option>
                   <option value="CANCELED">{t('reservations.statusLabels.cancelled')}</option>
-                  {/* <option value="SEATED">{t('reservations.statusLabels.seated')}</option> */}
+                  <option value="SEATED">{t('reservations.statusLabels.seated')}</option>
                   <option value="NO_SHOW">{t('reservations.statusLabels.noShow')}</option>
                 </select>
               </div>
@@ -743,7 +743,7 @@ const ReservationsPage = () => {
                           <li className="py-1 px-2  text-greentheme cursor-pointer" onClick={()=> statusHandler('APPROVED')}>{t('reservations.statusLabels.confirmed')}</li>
                           <li className="py-1 px-2 text-redtheme cursor-pointer" onClick={()=> statusHandler('CANCELED')}>{t('reservations.statusLabels.cancelled')}</li>
                           <li className="py-1 px-2 text-blushtheme cursor-pointer" onClick={()=> statusHandler('NO_SHOW')}>{t('reservations.statusLabels.noShow')}</li>
-                          {/* <li className="py-1 px-2 text-orangetheme cursor-pointer" onClick={()=> statusHandler('SEATED')}>{t('reservations.statusLabels.seated')}</li> */}
+                          <li className="py-1 px-2 text-orangetheme cursor-pointer" onClick={()=> statusHandler('SEATED')}>{t('reservations.statusLabels.seated')}</li>
                         </ul>
                       </div>
                     )}

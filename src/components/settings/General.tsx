@@ -37,7 +37,7 @@ const General = () => {
   const [restaurantId, setRestaurantId] = useState(localStorage.getItem('restaurant_id'));
 
   const { data: restaurantData, isLoading, error } = useList({
-    resource: `api/v1/bo/restaurants/1/current`,
+    resource: `api/v1/bo/restaurants/${restaurantId}/current/`,
   });
 
   const [restaurant, setRestaurant] = useState<Restaurant>();
@@ -167,11 +167,11 @@ const General = () => {
       location: restaurant?.location || "string", // Use existing data or a placeholder
       address: restaurant?.address || "string", // Use existing data or a placeholder
       is_approved: restaurant?.is_approved || true, // Use existing data or a default
-      max_of_guests: restaurant?.max_of_guests || 2147483647, // Use existing data or a default
+      // max_of_guests: restaurant?.max_of_guests || 2147483647, // Use existing data or a default
       description: formData.description,
       allow_reservation: restaurant?.allow_reservation || true, // Use existing data or a default
       average_price: formData.average_price,
-      due_cancellation_period: restaurant?.due_cancellation_period || 2147483647, // Use existing data or a default
+      // due_cancellation_period: restaurant?.due_cancellation_period || 2147483647, // Use existing data or a default
       country: formData.country,
       city: formData.city,
       category: restaurant?.category || 0, // Use existing data or a default
