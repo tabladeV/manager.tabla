@@ -95,6 +95,8 @@ const RootLayout = () => {
     };
   }, []);
 
+  localStorage.setItem('preferredLanguage', 'en');
+
   window.onload = function () {
     const savedLanguage = localStorage.getItem('preferredLanguage');
     const darkMode = localStorage.getItem('darkMode');
