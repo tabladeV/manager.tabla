@@ -55,6 +55,7 @@ import ErrorPage from "./_root/pages/ErrorPage";
 import customAxiosInstance from "./providers/axiosInstance";
 import authProvider from "./providers/authProvider"
 import { useEffect } from "react";
+import ReviewWidget from "./components/settings/ReviewWidget";
 
 
 function App() {
@@ -143,12 +144,13 @@ function App() {
                           <Route path="/settings/features" element={<Features />} />
                           <Route path="/settings/users" element={<Users />} />
                           <Route path="/settings/billing" element={<Billing />} />
-                          <Route path="/settings/widget" element={<Widget />} />
+                          <Route path="/settings/widget/reservation" element={<Widget />} />
                           <Route path="/settings/permissions" element={<Permissions />} />
                           <Route path="/settings/services" element={<Services />} />
                           <Route path="/settings/roles" element={<Roles />} />
                           <Route path="/settings/menu" element={<Menu />} />
                           <Route path="/settings/photos" element={<Photos />} />
+                          <Route path="/settings/widget/review" element={<ReviewWidget />} />
                         </Route>
                     </Route>
                     <Route path='*' element={<ErrorPage />} />

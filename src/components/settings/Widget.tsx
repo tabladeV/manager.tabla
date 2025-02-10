@@ -167,7 +167,7 @@ export default function WidgetConfig() {
   return (
     <div className={`w-full mx-auto p-6 rounded-[10px] ${darkModeClass}`}>
       <h1 className="text-2xl font-bold text-center mb-6">
-        {t('settingsPage.widget.title')} for {widgetInfo?.restaurant}
+        {t('settingsPage.widget.title')} for <span className='italic font-[600]'>{widgetInfo?.restaurant}</span>
       </h1>
 
       <div className="mb-6">

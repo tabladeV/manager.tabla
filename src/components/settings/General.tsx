@@ -33,7 +33,8 @@ interface Restaurant {
 }
 
 const General = () => {
-  const [restaurantId, setRestaurantId] = useState(1);
+
+  const [restaurantId, setRestaurantId] = useState(localStorage.getItem('restaurant_id'));
 
   const { data: restaurantData, isLoading, error } = useList({
     resource: `api/v1/bo/restaurants/1/current`,

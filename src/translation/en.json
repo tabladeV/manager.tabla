@@ -46,6 +46,7 @@
             "status": {
                 "confirmed": "Confirmed",
                 "cancelled": "Cancelled",
+                "noShow": "No show",
                 "pending": "Pending"
             }
         },
@@ -68,6 +69,7 @@
                 "legend": {
                     "cancelled": "Cancelled",
                     "confirmed": "Confirmed",
+                    "noShow": "No show",
                     "pending": "Pending",
                     "seated": "Seated",
                     "fulfilled": "Fulfilled"
@@ -96,6 +98,7 @@
         "seated": "Seated",
         "confirmed": "Confirmed",
         "cancelled": "Cancelled",
+        "noShow": "No show",
         "pending": "Pending",
         "all": "All",
         "date": "Date"
@@ -121,6 +124,7 @@
       },
       "statusLabels": {
         "pending": "Pending",
+        "noShow": "No show",
         "confirmed": "Confirmed",
         "cancelled": "Cancelled",
         "seated": "Seated",
@@ -159,6 +163,7 @@
             "confirmed": "Confirmed",
             "canceled": "Canceled",
             "seated": "Seated",
+            "noShow": "No show",
             "pending": "Pending"
         },
         "tabs": {
@@ -277,6 +282,7 @@
                 "confirmed": "Confirmed",
                 "cancelled": "Cancelled",
                 "pending": "Pending",
+                "noShow": "No show",
                 "fulfilled": "Fulfilled",
                 "seated": "Seated"
             },
@@ -325,13 +331,14 @@
             "general": "General",
             "availability": "Availability",
             "tags": "Tags",
+            "reviewWidget": "Review Widget",
             "menu": "Menu",
             "photos": "Photos",
             "messaging": "Messaging",
             "features": "Features",
             "users": "Users",
             "billing": "Billing",
-            "widget": "Widget",
+            "widget": "Reservation Widget",
             "roles": "Roles",
             "permissions": "Permissions",
             "services": "Services"
@@ -358,6 +365,20 @@
                     "save": "Save",
                     "addcategory": "Add Category"
                 }
+            }
+        },
+        "reviewWidget":{
+            "title": "Review Widget",
+            "labels": {
+                "title": "Title",
+                "description": "Description",
+                "status": "Status",
+                "active": "Active",
+                "inactive": "Inactive"
+            },
+            "buttons": {
+                "save": "Save",
+                "preview": "Preview"
             }
         },
         "widget": {

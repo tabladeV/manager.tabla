@@ -25,7 +25,8 @@ const SettingsPage = () => {
           
           <Link to='/settings/users' className={`hover:underline ${pathname === '/settings/users' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.users')}</Link>
           {/* <Link to='/settings/billing' className={`hover:underline ${pathname === '/settings/billing' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.billing')}</Link> */}
-          <Link to='/settings/widget' className={`hover:underline ${pathname === '/settings/widget' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.widget')}</Link>
+          <Link to='/settings/widget/reservation' className={`hover:underline ${pathname === '/settings/widget/reservation' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.widget')}</Link>
+          <Link to='/settings/widget/review' className={`hover:underline ${pathname === '/settings/widget/review' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.reviewWidget')}</Link>
           {/* <Link to='/settings/permissions' className={`hover:underline ${pathname === '/settings/permissions' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.permissions')}</Link> */}
           <Link to='/settings/roles' className={`hover:underline ${pathname === '/settings/roles' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.roles')}</Link>
           {/* <Link to='/settings/services' className={`hover:underline ${pathname === '/settings/services' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.services')}</Link> */}

@@ -154,6 +154,7 @@ const Availability = () => {
   const [pufferValue, setPufferValue] = useState<number | ''>('');
 
   const {mutate : updateDuration } = useUpdate()
+  const [restaurantId, setRestaurantId] = useState<string>(localStorage.getItem('restaurantId') || '0');
 
   const handleSaveAvailability = () => {
 

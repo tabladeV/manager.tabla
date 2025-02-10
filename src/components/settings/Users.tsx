@@ -183,12 +183,12 @@ export default function Users() {
   }
 
   const deleteUser = (id:BaseKey) => {
-    
+    if(window.confirm('Are you sure you want to delete this user?')){
       deleteUserMutate({
         resource: `api/v1/api/v1/bo/restaurants/users`,
         id: `${id}/`,
       });
-    
+    }
   }
 
 

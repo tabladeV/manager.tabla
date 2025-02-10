@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom'
 import { usePowerContext } from '../../context/PowerContext';
+import { BaseKey, BaseRecord, useList, useUpdate } from '@refinedev/core';
 
 interface NavigationMenuProps {
     stateOfSideBar: boolean;
@@ -10,8 +11,44 @@ interface NavigationMenuProps {
 
 const NavigationMenu = (props:NavigationMenuProps) => {
 
+  const {mutate: widgetActivation} = useUpdate({
+    resource: `api/v1/bo/restaurants`,
+  });
+  
+  const id = localStorage.getItem('restaurant_id')
+  interface Widget extends BaseRecord{
+    id: BaseKey,
+    title: string,
+    description: string,
+    restaurant: string,
+    image: string,
+    menu_file: string,
+    has_menu: boolean,
+    is_widget_activated: boolean,
+    disabled_title: string,
+    disabled_description: string
+  }
+  const {data , isLoading,error} = useList<{data:Widget}>({
+    resource: `api/v1/bo/restaurants/${id}/widget/`
+  })
+
+  const [widgetData,setWidgetData ] =useState<Widget>()
+
   const { power, setPower } = usePowerContext(); // Get the global date from context
 
+  useEffect(()=>{
+    if(data?.data){
+      setWidgetData(data.data as unknown as Widget)
+    }
+  },[data])
+
+  useEffect(()=>{
+    if(widgetData){
+      setPower(widgetData.is_widget_activated)
+    }
+  },[widgetData])
+
+  console.log(widgetData)
 
     const normalMenuClass = 'flex items-center my-1 hover:bg-[#88AB6115] text-[#1E1E1E75] transition duration-150  rounded-[10px] px-[1em]  h-[3em]  gap-[1em]';
     const darkMenuClass = 'flex items-center my-1 hover:bg-[#88AB6115] text-whitetheme transition duration-150  rounded-[10px] px-[1em]  h-[3em]  gap-[1em]';
@@ -22,6 +59,24 @@ const NavigationMenu = (props:NavigationMenuProps) => {
     const [showSubMenuPlaces, setShowSubMenuPlaces] = useState(false);
 
     const stateOfSideBar = props.stateOfSideBar;
+
+
+    const updateActivation = () => {
+      const formData = new FormData();
+      const activated = widgetData?.is_widget_activated ? false : true
+      formData.append('is_widget_activated', activated.toString())
+      widgetActivation({
+        id: `${id}/widget_partial_update/`,
+        values: formData,
+        
+      })
+      if (widgetData) {
+        setWidgetData({
+          ...widgetData,
+          is_widget_activated: !widgetData.is_widget_activated,
+        });
+      }
+    }
 
    
 
@@ -190,11 +245,11 @@ const {t}=  useTranslation();
         
         </button>
         </div> */}
-        <div className={`mt-4 cursor-pointer ${!power && 'hover:bg-softredtheme'} ${normalMenuClass }`} onClick={()=>{setPower(!power)}}>
+        <div className={`mt-4 cursor-pointer ${!widgetData?.is_widget_activated && 'hover:bg-softredtheme'} ${normalMenuClass }`} onClick={updateActivation}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path fillRule="evenodd" clipRule="evenodd" d="M13.5 3C13.5 2.60218 13.342 2.22064 13.0607 1.93934C12.7794 1.65804 12.3978 1.5 12 1.5C11.6022 1.5 11.2206 1.65804 10.9393 1.93934C10.658 2.22064 10.5 2.60218 10.5 3V13C10.5 13.3978 10.658 13.7794 10.9393 14.0607C11.2206 14.342 11.6022 14.5 12 14.5C12.3978 14.5 12.7794 14.342 13.0607 14.0607C13.342 13.7794 13.5 13.3978 13.5 13V3ZM7.854 5.75C8.01815 5.64094 8.15922 5.50061 8.26914 5.33703C8.37906 5.17345 8.45568 4.98982 8.49464 4.79663C8.53359 4.60344 8.53411 4.40447 8.49617 4.21107C8.45823 4.01768 8.38257 3.83365 8.2735 3.6695C8.16444 3.50535 8.02411 3.36428 7.86053 3.25436C7.69695 3.14444 7.51333 3.06782 7.32013 3.02886C7.12694 2.98991 6.92797 2.98939 6.73457 3.02733C6.54118 3.06527 6.35715 3.14094 6.193 3.25C4.74899 4.20748 3.56462 5.50773 2.74569 7.03459C1.92677 8.56145 1.4988 10.2674 1.5 12C1.5 17.799 6.201 22.5 12 22.5C17.799 22.5 22.5 17.799 22.5 12C22.5 8.346 20.633 5.13 17.807 3.25C17.4755 3.02987 17.0701 2.95045 16.68 3.02922C16.2899 3.10798 15.9471 3.33848 15.727 3.67C15.5069 4.00152 15.4275 4.40691 15.5062 4.79698C15.585 5.18706 15.8155 5.52987 16.147 5.75C17.4896 6.64064 18.5097 7.93996 19.0563 9.45556C19.6028 10.9712 19.6468 12.6225 19.1817 14.165C18.7165 15.7076 17.767 17.0594 16.4738 18.0202C15.1805 18.981 13.6122 19.4999 12.001 19.4999C10.3899 19.4999 8.82153 18.981 7.52825 18.0202C6.23496 17.0594 5.28546 15.7076 4.82034 14.165C4.35521 12.6225 4.39919 10.9712 4.94575 9.45556C5.49231 7.93996 6.51141 6.64064 7.854 5.75Z" fill={power?'#88AB61':'#FF4B4B'}/>
           </svg>
-          <h2 className={`font-[500] ${power? 'text-greentheme':'text-redtheme'} text-[17px] ${stateOfSideBar? 'block':'hidden'}`}>{t('extra.title')} {power? (t('extra.activated')) :(t('extra.disactivated'))}</h2>
+          <h2 className={`font-[500] ${widgetData?.is_widget_activated? 'text-greentheme':'text-redtheme'} text-[17px] ${stateOfSideBar? 'block':'hidden'}`}>{t('extra.title')} {widgetData?.is_widget_activated? (t('extra.activated')) :(t('extra.disactivated'))}</h2>
   
         </div>
     </div>
