@@ -64,12 +64,12 @@ const ReservationsPage = () => {
       {
         field: "date_",
         operator: "gte",
-        value:selectedDateRange.start? format(selectedDateRange.start, 'dd/MM/yyyy'):'',
+        value:selectedDateRange.start? format(selectedDateRange.start, 'yyyy-MM-dd'):'',
       },
       {
         field: "date_",
         operator: "lte",
-        value: selectedDateRange.end ? format(selectedDateRange.end, 'dd/MM/yyyy'): '',
+        value: selectedDateRange.end ? format(selectedDateRange.end, 'yyyy-MM-dd'): '',
       },
       {
         field: "search",
@@ -303,7 +303,7 @@ const ReservationsPage = () => {
             internal_note: selectedClient.internal_note,
             date: reservationProgressData.reserveDate,
             time: reservationProgressData.time+ ':00',
-            tables: [Number(selectedClient.tableSet)] ,
+            tables: selectedClient.tableSet ? [Number(selectedClient.tableSet)] : [] ,
             number_of_guests: reservationProgressData.guests ,
             commenter: selectedClient.commenter,
           },
@@ -526,8 +526,8 @@ const ReservationsPage = () => {
       {showModal && selectedClient && (
         <div>
           <div className="overlay" onClick={() => setShowModal(false)}></div>
-          <div className={`sidepopup w-[45%] overflow-y-auto lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:overflow-y-auto h-full ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'} `}>
-            <h1 className="text-2xl font-[600] mb-4">{t('reservations.edit.title')} by <span className="font-[800]">{selectedClient.full_name} </span><span className="text-sm font-[500] text-subblack">{`(Reservation id: ${selectedClient.id})`}</span></h1>
+          <div className={`sidepopup w-[45%] overflow-y-auto lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:overflow-y-auto h-full ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme text-white':'bg-white'} `}>
+            <h1 className="text-2xl font-[600] mb-4">{t('reservations.edit.title')} by <span className={`font-[800] `}>{selectedClient.full_name} </span><span className={`text-sm font-[400] ${localStorage.getItem('darkMode') === 'true' ? 'text-[#e1e1e1]':'text-subblack'}`}>{`(Reservation id: ${selectedClient.id})`}</span></h1>
             <div className="space-y-2">
               {/* <div>
                 <label className="block text-sm font-medium ">{t('reservations.edit.informations.name')}</label>
@@ -630,7 +630,7 @@ const ReservationsPage = () => {
                 <select
                   name="status"
                   value={selectedClient.status}
-                  onChange={(e)=>setSelectedClient({...selectedClient, status: e.target.value})}
+                  onChange={(e)=>{setSelectedClient({...selectedClient, status: e.target.value});statusHandler(e.target.value)}}
                   className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
 >
                   <option value="PENDING">{t('reservations.statusLabels.pending')}</option>

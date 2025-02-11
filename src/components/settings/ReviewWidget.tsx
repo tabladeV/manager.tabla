@@ -33,12 +33,16 @@ const ReviewWidget = () => {
             setReviewSettings(reviewData.data as unknown as ReviewSettings);
         }
     }, [reviewData]);
+    const [logo, setLogo] = useState<string | null>(null);
 
     useEffect(() => {
         if(reviewSettings) {
             setTitle(reviewSettings.title);
             setDescription(reviewSettings.description);
             setLogo(reviewSettings.logo);
+            if(reviewSettings.logo) {
+                setNewLogo(false);
+            }
         }
     }, [reviewSettings]);
 
@@ -48,7 +52,6 @@ const ReviewWidget = () => {
     
     const [file, setFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-    const [logo, setLogo] = useState<string | null>(null);
     const [newLogo, setNewLogo] = useState<boolean>(false);
     
     

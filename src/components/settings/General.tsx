@@ -299,7 +299,7 @@ const General = () => {
             </div>
           }
         </div> */}
-        <div className='relative gap-2 flex flex-col'>
+        {/* <div className='relative gap-2 flex flex-col'>
           <label>{t('settingsPage.general.basicInformationForm.labels.avgPrice')}</label>
           <input
             type="number"
@@ -310,7 +310,7 @@ const General = () => {
             className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
           />
           <div className="text-sm absolute mt-[3.2em] right-10">{t('settingsPage.general.basicInformationForm.labels.currency')}</div>
-        </div>
+        </div> */}
         <div className="flex w-full justify-center gap-4">
           <button type="reset" className={`btn ${localStorage.getItem('darkMode') === 'true' ? 'border-white text-white hover:border-redtheme hover:text-redtheme' : ''}`}>{t('settingsPage.general.basicInformationForm.buttons.cancel')}</button>
           <button type="submit" className="btn-primary">{t('settingsPage.general.basicInformationForm.buttons.save')}</button>

@@ -317,7 +317,7 @@ const WidgetPage = () => {
             <h1 className='text-2xl font-bold text-center mt-3'>
               {widgetInfo?.disabled_title}
             </h1>
-            <p className='text-subblack mt-3'>
+            <p className={` mt-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#e1e1e1]':'text-subblack'}`}>
               {widgetInfo?.disabled_description}
             </p>
           </div>
