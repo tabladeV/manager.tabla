@@ -211,6 +211,8 @@
             "addReservation": "Add Reservation",
             "navigate": "Navigate to Agenda",
             "addNewClient": "Add new client",
+            "selectAClient": "Select a client",
+            "newClient": "Affect a reservation to a new client",
             "addClient": "Add Client"
         },
         "meals": {
@@ -221,10 +223,15 @@
         "people": "People",
         "placeHolders":{
             "name": "Name",
+            "search": "Search for a client",
             "intern":"Internal Comment",
             "extern":"External Comment",
             "searchClient"  : "Search Client",
             "email": "Email",
+            "guests": "number of guests",
+            "firstname": "First Name",
+            "lastname": "Last Name",
+            "internalNote": "Internal Note",
             "phone": "Phone Number"
         }
     },

@@ -87,7 +87,9 @@ const HistoryList  = () => {
             <div className={`w-10 h-10 ${colors[index]} flex justify-center items-center rounded-full text-white`}>{item.customer.first_name.slice(0,1)}</div>
             <div>
               <h3 className='text-md'>{item.customer.first_name} {item.customer.last_name}</h3>
-              <p className={`text-[14px] ${localStorage.getItem('darkMode')==='true'? 'text-softwhitetheme':'text-subblack'}`}>{item.description}</p>
+              <p className={`text-[14px] ${localStorage.getItem('darkMode')==='true'? 'text-softwhitetheme':'text-subblack'}`}>
+                {item.description.length > 30 ? `${item.description.substring(0, 30)}...` : item.description}
+              </p>
             </div>
           </div>
           <div className="flex flex-col items-end">

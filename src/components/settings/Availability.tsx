@@ -50,11 +50,11 @@ const Availability = () => {
 
   const initialData: DayData[] = [
     { id: 1, day: 'SUN', closed_day: true, availability_hours: [] },
-    { id: 2, day: 'MON', closed_day: false, availability_hours: [] },
-    { id: 3, day: 'TUE', closed_day: false, availability_hours: [{ name: 'Lunch', start_shift: '09:00', end_shift: '12:00', max_party_size: 15 }] },
-    { id: 4, day: 'WED', closed_day: false, availability_hours: [{ name: 'Lunch', start_shift: '09:00', end_shift: '12:00', max_party_size: 15 }] },
-    { id: 5, day: 'THU', closed_day: false, availability_hours: [{ name: 'Lunch', start_shift: '09:00', end_shift: '12:00', max_party_size: 15 }] },
-    { id: 6, day: 'FRI', closed_day: false, availability_hours: [{ name: 'Lunch', start_shift: '09:00', end_shift: '12:00', max_party_size: 15 }] },
+    { id: 2, day: 'MON', closed_day: true, availability_hours: [] },
+    { id: 3, day: 'TUE', closed_day: true, availability_hours: [] },
+    { id: 4, day: 'WED', closed_day: true, availability_hours: [] },
+    { id: 5, day: 'THU', closed_day: true, availability_hours: [] },
+    { id: 6, day: 'FRI', closed_day: true, availability_hours: [] },
     { id: 7, day: 'SAT', closed_day: true, availability_hours: [] },
   ];
 
@@ -87,7 +87,7 @@ const Availability = () => {
     if (newData[index].closed_day) newData[index].availability_hours = [];
     else
       newData[index].availability_hours = [
-        { name: 'Lunch', start_shift: '09:00', end_shift: '12:00', max_party_size: 15 },
+        
       ];
     setData(newData);
   };
@@ -347,6 +347,7 @@ const Availability = () => {
               <button
                 onClick={() => addSlot(dayIndex)}
                 className="text-[#88AB61] hover:text-[#6A8A43] ml-2"
+                
               >
                 <Plus size={16} />
               </button>

@@ -14,7 +14,8 @@ const ReviewPage = () => {
   const {mutate: createReview} = useCreate();
 
   const { data: res, isLoading, error } = useList({
-    resource: `api/v1/bo/restaurants/${restaurant}/widget/`,
+    resource: `api/v1/reviews/widget`,
+    
   });
 
   const [restaurantData, setRestaurantData] = useState<BaseRecord>()
@@ -24,7 +25,7 @@ const ReviewPage = () => {
       setRestaurantData(res.data);
     }
   }, [res]);
-  console.log(restaurantData);
+  console.log(restaurantData,'sacasc');
 
 
 
@@ -144,7 +145,7 @@ const ReviewPage = () => {
       </button>
       <div className={`text-center flex p-5 flex-col items-center rounded-xl lt-sm:h-screen justify-center h-fit md:w-[70vw] ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-textdarktheme' : 'bg-softgreytheme text-blacktheme'}  `}>
         <img
-          src={'https://api.dev.tabla.ma'+restaurantData?.image}
+          src={'https://api.dev.tabla.ma'+restaurantData?.logo}
           alt="logo"
           className="w-[8em]"
         />
@@ -160,11 +161,11 @@ const ReviewPage = () => {
         /> */}
         
         <h1 className={`text-3xl font-bold mt-3  ${step === 1 ? 'block' : 'hidden'} ${localStorage.getItem('darkMode') === 'true' ? 'text-textdarktheme' : 'text-blacktheme'}`}>
-          Thank you for visiting us! <br />
+          {restaurantData?.title} <br />
         </h1>
 
-        <p className={`w-[50%] lt-sm:w-[90%] text-subblack mt-3 ${step===1 ? 'block':'hidden'} ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffff90]' : 'text-blacktheme'}`}>
-        Share your experience with us! We value your feedback and would love to hear about your visit. Rate your dining experience and let us know how we can continue to serve you better.
+        <p className={`w-[50%] lt-sm:w-[90%]  mt-3 ${step===1 ? 'block':'hidden'} ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffff95]' : 'text-blacktheme'}`}>
+          {restaurantData?.description}
         </p>
 
         {step===1 && <form onSubmit={handleSubmit} className="flex flex-col gap-3 items-center lg:w-[40%] w-[60%]  lt-sm:w-[90%] mt-3">
