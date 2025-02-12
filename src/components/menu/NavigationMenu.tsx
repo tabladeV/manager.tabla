@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom'
 import { usePowerContext } from '../../context/PowerContext';
+import { CanAccess } from '@refinedev/core';
 
 interface NavigationMenuProps {
     stateOfSideBar: boolean;
@@ -41,14 +42,16 @@ const {t}=  useTranslation();
         </Link>
 
 
-        <Link to='/reservations' className={`${pathname === '/reservations' ? navigatedMenuClass : normalMenuClass }`}>
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M10.8333 12.5V15.8333H13.3333V17.5H6.66667V15.8333H9.16667V12.5H3.33333C3.11232 12.5 2.90036 12.4122 2.74408 12.2559C2.5878 12.0996 2.5 11.8877 2.5 11.6667V3.33333C2.5 3.11232 2.5878 2.90036 2.74408 2.74408C2.90036 2.5878 3.11232 2.5 3.33333 2.5H16.6667C16.8877 2.5 17.0996 2.5878 17.2559 2.74408C17.4122 2.90036 17.5 3.11232 17.5 3.33333V11.6667C17.5 11.8877 17.4122 12.0996 17.2559 12.2559C17.0996 12.4122 16.8877 12.5 16.6667 12.5H10.8333ZM6.66667 6.66667V8.33333H13.3333V6.66667H6.66667Z" fill={pathname === '/reservations' || localStorage.getItem('darkMode')==='true' ? 'white':'#1e1e1e'} fillOpacity={pathname === '/reservations'? '1':'0.75'}/>
-          </svg>
+        <CanAccess action="view" resource="reservation">
+          <Link to='/reservations' className={`${pathname === '/reservations' ? navigatedMenuClass : normalMenuClass}`}>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10.8333 12.5V15.8333H13.3333V17.5H6.66667V15.8333H9.16667V12.5H3.33333C3.11232 12.5 2.90036 12.4122 2.74408 12.2559C2.5878 12.0996 2.5 11.8877 2.5 11.6667V3.33333C2.5 3.11232 2.5878 2.90036 2.74408 2.74408C2.90036 2.5878 3.11232 2.5 3.33333 2.5H16.6667C16.8877 2.5 17.0996 2.5878 17.2559 2.74408C17.4122 2.90036 17.5 3.11232 17.5 3.33333V11.6667C17.5 11.8877 17.4122 12.0996 17.2559 12.2559C17.0996 12.4122 16.8877 12.5 16.6667 12.5H10.8333ZM6.66667 6.66667V8.33333H13.3333V6.66667H6.66667Z" fill={pathname === '/reservations' || localStorage.getItem('darkMode') === 'true' ? 'white' : '#1e1e1e'} fillOpacity={pathname === '/reservations' ? '1' : '0.75'} />
+            </svg>
 
 
-          <h2 className={`font-[500] text-[17px] ${localStorage.getItem('darkMode')==='true'?'text-textdarktheme':'' } ${stateOfSideBar? 'block':'hidden'}`}>{t('reservations.title')}</h2>
-        </Link>
+            <h2 className={`font-[500] text-[17px] ${localStorage.getItem('darkMode') === 'true' ? 'text-textdarktheme' : ''} ${stateOfSideBar ? 'block' : 'hidden'}`}>{t('reservations.title')}</h2>
+          </Link>
+        </CanAccess>
 
 
         <Link to='/places' onClick={()=>{setShowSubMenuPlaces(true)}} className={`${pathname.includes('/places') || (pathname === '/places/design') ? navigatedMenuClass : normalMenuClass  }`}>

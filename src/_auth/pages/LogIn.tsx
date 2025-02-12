@@ -21,6 +21,10 @@ const LogIn: React.FC = () => {
           localStorage.setItem("refresh", refreshToken);
         }
 
+        if (data?.data.user.permissions) {
+          localStorage.setItem("permissions", JSON.stringify(data?.data.user.permissions));
+        }
+
         handleRestaurantId(variables);
 
         localStorage.setItem("isLogedIn", "true");
@@ -47,7 +51,7 @@ const LogIn: React.FC = () => {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    login({ values: { restaurant_id: restaurantId, email, password } });
+    login({ values: { restaurant_id: Number(restaurantId), email, password } });
   };
 
   return (

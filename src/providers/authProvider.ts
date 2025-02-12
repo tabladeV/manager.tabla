@@ -40,6 +40,12 @@ const authProvider: ExtendedAuthProvider = {
             if (response.data.token) {
                 localStorage.setItem("isLogedIn", "true");
                 localStorage.setItem("refresh", response.data.refresh);
+
+                // Save permissions if returned by the login endpoint:
+                if (response.data.users.permissions) {
+                    localStorage.setItem("permissions", JSON.stringify(response.data.users.permissions));
+                }
+
                 // Start the refresh timer after a successful login.
                 startRefreshTimer(authProvider);
                 return Promise.resolve({ success: true });
@@ -55,6 +61,8 @@ const authProvider: ExtendedAuthProvider = {
         localStorage.removeItem("isLogedIn");
         localStorage.removeItem("refresh");
         localStorage.removeItem("restaurant_id");
+        localStorage.removeItem("permissions");
+
         if (refreshInterval) {
             clearInterval(refreshInterval);
             refreshInterval = null;
@@ -63,18 +71,26 @@ const authProvider: ExtendedAuthProvider = {
     },
 
     check: async () => {
-        return localStorage.getItem("isLogedIn")
-            ? Promise.resolve({ authenticated: true })
-            : Promise.reject({ authenticated: false });
+        return localStorage.getItem("isLogedIn") === "true"
+        ? Promise.resolve({ authenticated: true })
+        : Promise.reject({
+            authenticated: false,
+            error: { message: "Not authenticated", name: "Unauthorized" },
+            logout: true,
+            redirectTo: "/login",
+          });
     },
 
-    getPermissions: async () => Promise.resolve(),
+    getPermissions: async () => {
+        const stored = localStorage.getItem("permissions");
+        return stored ? Promise.resolve(JSON.parse(stored)) : Promise.resolve([]);
+    },
 
     getIdentity: async () => {
         const token = localStorage.getItem("token");
         if (!token) return Promise.reject();
         try {
-            const response = await axiosInstance.get("/auth/me");
+            const response = await axiosInstance.get("/api/v1/bo/restaurants/users/me/");
             return Promise.resolve(response.data);
         } catch (error) {
             return Promise.reject();

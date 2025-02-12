@@ -1,4 +1,4 @@
-import { Refine, Authenticated } from "@refinedev/core";
+import { Refine, Authenticated, CanAccess } from "@refinedev/core";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 
@@ -54,6 +54,7 @@ import ErrorPage from "./_root/pages/ErrorPage";
 
 import customAxiosInstance from "./providers/axiosInstance";
 import authProvider from "./providers/authProvider"
+import accessControlProvider from "./providers/accessControl"
 import { useEffect } from "react";
 
 
@@ -86,6 +87,7 @@ function App() {
                   authProvider={authProvider}
                   dataProvider={dataProvider("https://api.dev.tabla.ma", customAxiosInstance)}
                   routerProvider={routerBindings}
+                  accessControlProvider={accessControlProvider}
                   options={{
                     syncWithLocation: true,
                     warnWhenUnsavedChanges: true,
@@ -117,8 +119,9 @@ function App() {
                           <RootLayout/>
                         </Authenticated>
                       }>
+                        
                         <Route index element={<Home />} />
-                        <Route path='/reservations' element={<ReservationsPage />} />
+                        <Route path='/reservations' element={<CanAccess resource="reservation" action="view" fallback={'You dont have access to this page'}><ReservationsPage /></CanAccess>} />
                         <Route path='/places' element={<PlacesPage />} />
                         <Route path='/places/design' element={<DesignPlacesIndex />} >
                           <Route path='/places/design/:roofId' element={<DesignPlaces />} />
