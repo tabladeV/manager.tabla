@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, X, Copy } from 'lucide-react';
+import { Plus, X, Copy, Check, CheckSquare, Square } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import i18next from 'i18next';
-import { BaseKey, BaseRecord, useCreate, useList, useUpdate } from '@refinedev/core';
+import { BaseKey, BaseRecord, CanAccess, useCreate, useList, useUpdate } from '@refinedev/core';
 import { id } from 'date-fns/locale';
 import { set } from 'date-fns';
 
@@ -27,24 +27,24 @@ const Availability = () => {
 
   });
 
-  const {mutate : updateAvailability} = useCreate();
+  const { mutate: updateAvailability } = useCreate();
 
   const { data: restaurantData, isLoading: restaurantLoading, error: restaurantError } = useList({
     resource: `api/v1/bo/restaurants/${restaurantId}/current/`,
   });
 
 
-  
+
 
 
   const [duration, setDuration] = useState<string>('');
 
   useEffect(() => {
-    if(restaurantData?.data){
+    if (restaurantData?.data) {
       setDuration((restaurantData.data as BaseRecord).reservation_max_duration as string);
     }
   }, [restaurantData]);
-  
+
   const [selectedArea, setSelectedArea] = useState('Restaurant');
   const areas = ['Restaurant', 'Table 01', 'Table 02'];
 
@@ -60,7 +60,7 @@ const Availability = () => {
 
   const [data, setData] = useState<DayData[]>(initialData);
 
-  const [fetchedData,setFetchedData] = useState<DayData[]>(initialData)
+  const [fetchedData, setFetchedData] = useState<DayData[]>(initialData)
 
   useEffect(() => {
     if (availabilityDays?.data) {
@@ -154,7 +154,7 @@ const Availability = () => {
 
   const [pufferValue, setPufferValue] = useState<number | ''>('');
 
-  const {mutate : updateDuration } = useUpdate()
+  const { mutate: updateDuration } = useUpdate()
 
   const handleSaveAvailability = () => {
 
@@ -183,9 +183,9 @@ const Availability = () => {
     updateAvailability({
       resource: "api/v1/bo/availability/days/update_all/",
       values: {
-          availability_days : availabilitydays
+        availability_days: availabilitydays
       },
-  });
+    });
   }
 
   return (
@@ -260,81 +260,134 @@ const Availability = () => {
         <h2 className="text-2xl font-bold text-center">{t('settingsPage.availability.title')}</h2>
         <div className="flex justify-center items-center gap-3">
           <label className="text-sm">{t('settingsPage.availability.puffer')}</label>
-          <input
-            type="string"
-            className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
-            defaultValue={duration}
-            onChange={(e) => setDuration(e.target.value.trim() || '')}
-          />
+          <CanAccess resource='availabilityday' action='change' fallback={duration}>
+            <input
+              type="string"
+              className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+              defaultValue={duration}
+              onChange={(e) => setDuration(e.target.value.trim() || '')}
+            />
+          </CanAccess>
         </div>
       </div>
-      <div className="flex justify-center gap-2 mb-6" onClick={() => setManageWeekly(true)}>
-        <button className="btn-primary">Manage the whole week</button>
-      </div>
+      <CanAccess resource='availabilityday' action='change'>
+        <div className="flex justify-center gap-2 mb-6" onClick={() => setManageWeekly(true)}>
+          <button className="btn-primary">Manage the whole week</button>
+        </div>
+      </CanAccess>
       <div className="space-y-4 mx-4">
         {data.sort((a, b) => (a.id > b.id ? 1 : -1)).map((day, dayIndex) => (
           <div key={day.day} className="flex items-start">
             <div className={`flex mt-5 items-center gap-2 w-20 ${i18next.language === 'ar' && 'mt-2'}`}>
-              <input
-                type="checkbox"
-                checked={!day.closed_day}
-                onChange={() => toggleAvailability(dayIndex)}
-                className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]"
-              />
+
+              <CanAccess resource='availabilityday' action='change' fallback={!day.closed_day ? <CheckSquare size={20} className="text-[#88AB61]" /> : <Square size={20} className="text-[#88AB61]" />}>
+                <input
+                  type="checkbox"
+                  checked={!day.closed_day}
+                  onChange={() => toggleAvailability(dayIndex)}
+                  className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]"
+                />
+              </CanAccess>
               <span className="font-medium">
                 {day.day === 'SUN'
                   ? t('settingsPage.availability.days.sunday')
                   : day.day === 'MON'
-                  ? t('settingsPage.availability.days.monday')
-                  : day.day === 'TUE'
-                  ? t('settingsPage.availability.days.tuesday')
-                  : day.day === 'WED'
-                  ? t('settingsPage.availability.days.wednesday')
-                  : day.day === 'THU'
-                  ? t('settingsPage.availability.days.thursday')
-                  : day.day === 'FRI'
-                  ? t('settingsPage.availability.days.friday')
-                  : t('settingsPage.availability.days.saturday')}
+                    ? t('settingsPage.availability.days.monday')
+                    : day.day === 'TUE'
+                      ? t('settingsPage.availability.days.tuesday')
+                      : day.day === 'WED'
+                        ? t('settingsPage.availability.days.wednesday')
+                        : day.day === 'THU'
+                          ? t('settingsPage.availability.days.thursday')
+                          : day.day === 'FRI'
+                            ? t('settingsPage.availability.days.friday')
+                            : t('settingsPage.availability.days.saturday')}
               </span>
             </div>
             <div className="flex-1">
               {!day.closed_day ? (
                 day.availability_hours.map((slot, slotIndex) => (
                   <div key={slotIndex} className="flex items-center gap-2 mb-2">
+                    <CanAccess resource='availabilityhour' action='change' fallback={
+                      <input
+                        type="text"
+                        value={slot.name}
+                        disabled={true}
+                        readOnly={true}
+                        className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                      />
+                    } >
                     <input
                       type="text"
                       value={slot.name}
                       onChange={(e) => updateSlot(dayIndex, slotIndex, 'name', e.target.value)}
                       className={`inputs-unique w-[10em] ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
                     />
+                    </CanAccess>
+                    
+                    <CanAccess resource='availabilityhour' action='change' fallback={
+                      <input
+                        type="time"
+                        value={slot.start_shift}
+                        disabled={true}
+                        readOnly={true}
+                        className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                      />
+                    } >
                     <input
                       type="time"
                       value={slot.start_shift}
                       onChange={(e) => updateSlot(dayIndex, slotIndex, 'start_shift', e.target.value)}
                       className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
                     />
+                    </CanAccess>
                     <span>-</span>
-                    <input
-                      type="time"
-                      value={slot.end_shift}
-                      onChange={(e) => updateSlot(dayIndex, slotIndex, 'end_shift', e.target.value)}
-                      className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
-                    />
+
+                    <CanAccess resource='availabilityhour' action='change' fallback={
+                      <input
+                        type="time"
+                        value={slot.end_shift}
+                        disabled={true}
+                        readOnly={true}
+                        className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                      />
+                    } >
+                      <input
+                        type="time"
+                        value={slot.end_shift}
+                        onChange={(e) => updateSlot(dayIndex, slotIndex, 'end_shift', e.target.value)}
+                        className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                      />
+                    </CanAccess>
                     <span className={`text-sm w-[300px] ml-2`}>
                       {t('settingsPage.availability.placeLimitLabel')}
                     </span>
-                    <input
-                      type="number"
-                      value={slot.max_party_size}
-                      onChange={(e) => updateSlot(dayIndex, slotIndex, 'max_party_size', parseInt(e.target.value))}
-                      className={`inputs-unique w-[4em] ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
-                    />
-                    <button
-                      onClick={() => removeSlot(dayIndex, slotIndex)}
-                      className="text-redtheme hover:text-gray-600"
-                    >
-                      <X size={16} />
-                    </button>
+                    <CanAccess resource='availabilityhour' action='change' fallback={
+                      <input
+                        disabled={true}
+                        readOnly={true}
+                        value={slot.max_party_size}
+                        className={`inputs-unique w-[4em] ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                      />
+                    } >
+                      <input
+                        type="number"
+                        disabled={true}
+                        readOnly={true}
+                        value={slot.max_party_size}
+                        onChange={(e) => updateSlot(dayIndex, slotIndex, 'max_party_size', parseInt(e.target.value))}
+                        className={`inputs-unique w-[4em] ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                      />
+                    </CanAccess>
+                    <CanAccess resource='availabilityhour' action='remove'>
+                      <button
+                        onClick={() => removeSlot(dayIndex, slotIndex)}
+                        className="text-redtheme hover:text-gray-600"
+                      >
+                        <X size={16} />
+                      </button>
+                    </CanAccess>
+
                   </div>
                 ))
               ) : (
@@ -344,20 +397,23 @@ const Availability = () => {
               )}
             </div>
             <div className={`flex mt-4 items-center ${i18next.language === 'ar' && 'mt-[.4em]'}`}>
-              <button
-                onClick={() => addSlot(dayIndex)}
-                className="text-[#88AB61] hover:text-[#6A8A43] ml-2"
-                
-              >
-                <Plus size={16} />
-              </button>
+              <CanAccess resource='availabilityhour' action='add'>
+                <button
+                  onClick={() => addSlot(dayIndex)}
+                  className="text-[#88AB61] hover:text-[#6A8A43] ml-2"
+                >
+                  <Plus size={16} />
+                </button>
+              </CanAccess>
             </div>
           </div>
         ))}
-        <div className="flex justify-center gap-2 mt-6">
-          <button onClick={handleSaveAvailability} className="btn-primary">{t('settingsPage.availability.save')}</button>
-          <button onClick={()=>{setData(fetchedData)}} className="btn-secondary">{t('settingsPage.availability.cancel')}</button>
-        </div>
+        <CanAccess resource='availabilityday' action='change'>
+          <div className="flex justify-center gap-2 mt-6">
+            <button onClick={handleSaveAvailability} className="btn-primary">{t('settingsPage.availability.save')}</button>
+            <button onClick={() => { setData(fetchedData) }} className="btn-secondary">{t('settingsPage.availability.cancel')}</button>
+          </div>
+        </CanAccess>
       </div>
     </div>
   );

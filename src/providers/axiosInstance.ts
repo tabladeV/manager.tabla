@@ -1,4 +1,3 @@
-// src/providers/axiosInstance.ts
 import axios from "axios";
 
 const axiosInstance = axios.create({
@@ -23,11 +22,12 @@ axiosInstance.interceptors.response.use(
   (error) => {
     const status = error.response?.status;
     if (status === 401 || status === 411 || status === 403) {
-      // Remove auth flag if the response indicates an unauthorized status.
       localStorage.removeItem("isLogedIn");
       localStorage.removeItem("restaurant_id");
       localStorage.removeItem("refresh");
-      // Optionally, redirect the user to the login page.
+      localStorage.removeItem("permissions");
+      localStorage.removeItem("is_manager");
+    
       window.location.href = "/sign-in";
     }
     return Promise.reject(error);

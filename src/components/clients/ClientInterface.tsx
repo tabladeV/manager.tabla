@@ -1,4 +1,4 @@
-import { BaseKey, BaseRecord, useDelete, useList, useUpdate } from '@refinedev/core';
+import { BaseKey, BaseRecord, CanAccess, useCan, useDelete, useList, useUpdate } from '@refinedev/core';
 import { da } from 'date-fns/locale';
 import i18next from 'i18next';
 import { useEffect, useRef, useState } from 'react';
@@ -232,8 +232,13 @@ const ClientInterface = () => {
     }
   }
 
+  const { data: customerChange } = useCan({
+    resource: 'customer',
+    action: 'change',
+  });
+
   const renderCell = (field: keyof ClientData, colspan?: number) => {
-    const isEditing = editingField === field;
+    const isEditing = customerChange?.can ? editingField === field : false;
     return (
       <td className="p-2" colSpan={colspan}>
         {isEditing ? (
@@ -283,7 +288,9 @@ const ClientInterface = () => {
               <h1>{client.full_name}</h1>
               <h4 className={` text-[18px] font-[500] ${localStorage.getItem('darkMode')==='true'?'text-softwhitetheme':'text-subblack'}`}>{client.email}</h4>
               <h4 className={` text-[18px] font-[500] ${localStorage.getItem('darkMode')==='true'?'text-softwhitetheme':'text-subblack'}`}>{client.phone}</h4>
-              <button onClick={deleteClient} className='btn-primary mt-2 bg-softredtheme text-redtheme hover:bg-redtheme hover:text-white flex items-center gap-3'><Trash size={14}/> Delete client</button>
+              <CanAccess resource="customer" action="delete">
+                <button onClick={deleteClient} className='btn-primary mt-2 bg-softredtheme text-redtheme hover:bg-redtheme hover:text-white flex items-center gap-3'><Trash size={14}/> Delete client</button>
+              </CanAccess>
             </div>
             <div className={`w-full p-3 gap-3 ${localStorage.getItem('darkMode')==='true'?'text-[#e1e1e160 ]':' text-subblack '} rounded-[10px]`}>
               {/* <h5 className="ml-2  font-[600] text-[16px] mb-2">{t('clients.lifetimeInfo.title')}</h5>
