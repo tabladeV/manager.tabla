@@ -90,7 +90,7 @@ const ReservationProcess: React.FC<ReservationProcessProps> = (props) => {
             <div className="text-[20px] text-left mx-[30px] mt-[1em] mb-[.5em] font-bold">
               {selectedDate && format(selectedDate, 'dd MMMM yyyy')} <span className="font-semibold">has been selected</span>
             </div>
-            <OurCalendar onClick={handleDateClick} />
+            <OurCalendar forbidden={true} onClick={handleDateClick} />
           </div>
         )}
 

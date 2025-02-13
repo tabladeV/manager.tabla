@@ -1,12 +1,13 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { addHours, format, startOfHour, isBefore, setMinutes, endOfDay, set } from "date-fns"
-import { Link } from "react-router-dom"
+import { addHours, format,  isBefore, setMinutes, endOfDay,  startOfDay, getHours } from "date-fns"
 import { useTranslation } from "react-i18next"
 import i18next from "i18next"
 import ReservationModal from "../../components/reservation/ReservationModal"
-import { BaseKey, BaseRecord } from "@refinedev/core"
+import { BaseKey, BaseRecord, useList } from "@refinedev/core"
+import { useDateContext } from "../../context/DateContext"
+import ReservationForGrid from "../../components/reservation/ReservationForGrid"
 
 const halfHours = ['00', '30']
 
@@ -25,7 +26,7 @@ interface Reservation extends BaseRecord {
 
 // Sample reservations object
 const sampleReservations: Record<string, { name: string; people: number }[]> = {
-  "16:00": [{ name: "James George", people: 4 }, { name: "John Doe", people: 2 }],
+  "16:00": [{ name: "James George", people: 4 }, { name: "John Doe", people: 2 }, { name: "John Doe", people: 2 }, { name: "John Doe", people: 2 }],
   "18:30": [{ name: "Alice Smith", people: 2 }],
   "20:00": [{ name: "Bob Johnson", people: 3 }],
   "20:30": [{ name: "Alex Geul", people: 1 }, { name: "Jane Doe", people: 2 }],
@@ -33,6 +34,46 @@ const sampleReservations: Record<string, { name: string; people: number }[]> = {
 
 const GridPage = () => {
   const { t } = useTranslation()
+
+const { chosenDay } = useDateContext();
+
+  const {data: reservationsData, isLoading, error} = useList({
+    resource: 'api/v1/dashboard/reservations/grid',
+    filters:[
+      {
+        field: 'start_date',
+        operator: 'eq',
+        value: format(chosenDay, 'yyyy-MM-dd')
+      },
+      {
+        field: 'end_date',
+        operator: 'eq',
+        value: format(endOfDay(chosenDay), 'yyyy-MM-dd')
+      },
+      {
+        field: 'start_time',
+        operator: 'eq',
+        value: '00:00'
+      },
+      {
+        field: 'end_time',
+        operator: 'eq',
+        value: '23:30'
+      },
+    ]
+  });
+
+  const [gridReservations, setGridReservations] = useState<Reservation[]>()
+
+  useEffect(()=>{
+    if(reservationsData?.data){
+      setGridReservations(reservationsData.data as unknown as Reservation[])
+    }
+  },[reservationsData])
+
+  console.log(reservationsData,'test')
+
+
 
   const [visibleHours, setVisibleHours] = useState<Date[]>([])
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -43,12 +84,12 @@ const GridPage = () => {
   
 
   useEffect(() => {
-    const now = startOfHour(new Date())
-    const midnight = endOfDay(now)
+    const now = startOfDay(new Date())
+    const midnight = addHours(now, 24)
     const allHours: Date[] = []
     let currentHour = now
 
-    while (isBefore(currentHour, midnight) || format(currentHour, 'HH:mm') === '00:00') {
+    while (isBefore(currentHour, midnight) ) {
       allHours.push(currentHour)
       currentHour = addHours(currentHour, 1)
     }
@@ -92,11 +133,26 @@ const GridPage = () => {
 
   const [addingReservation, setAddingReservation] = useState('')
 
+  const [selectedTime, setSelectedTime] = useState({
+    time: addingReservation,
+    date: format(chosenDay, 'yyyy-MM-dd')
+  })
+
+  useEffect(() => {
+    setSelectedTime({
+      time: addingReservation,
+      date: format(chosenDay, 'yyyy-MM-dd')
+    })
+  }, [addingReservation, chosenDay])
+
+
   function addReservation(time: string) {
     console.log('Add reservation at', time)
     setFocusedAddReservation(true)
     setAddingReservation(time)
   }
+
+  const today = new Date()
 
   
 
@@ -136,19 +192,15 @@ const GridPage = () => {
     <div className="flex  flex-col">
       {
         focusedAddReservation &&
-        <ReservationModal onClick={()=>{setFocusedAddReservation(false)}} onSubmit={(data: Reservation) => {
-          setReservations(prevReservations => ({
-            ...prevReservations,
-            [data.time]: [...(prevReservations[data.time] || []), data]
-          }))
-        }}/>
+
+        <ReservationForGrid timeAndDate={selectedTime} onClick={()=>{setFocusedAddReservation(false)}}/>
       }
       <div className="flex mb-4 justify-between items-center">
         <h1 className="">{t('grid.title')}</h1>
         {/* <Link to="/agenda" className={`btn sm:hidden ${localStorage.getItem('darkMode')==='true'? 'text-white':''} `}>{t('grid.buttons.navigate')}  {'>'}</Link> */}
       </div>
       <div
-        className={`overflow-x-scroll  ${localStorage.getItem('darkMode')==='true'?'border-darkthemeitems':'border-softgreytheme'} ltr mx-auto cursor-grab max-w-fit w-full  no-scrollbar ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-textdarktheme' : 'bg-white text-blacktheme'}`}
+        className={`overflow-x-scroll w-[90vw] ${localStorage.getItem('darkMode')==='true'?'border-darkthemeitems':'border-softgreytheme'} ltr mx-auto cursor-grab max-w-fit w-full  no-scrollbar ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-textdarktheme' : 'bg-white text-blacktheme'}`}
         ref={scrollRef}
         onMouseDown={handleMouseDown}
         onMouseLeave={handleMouseLeave}
@@ -172,7 +224,7 @@ const GridPage = () => {
             {visibleHours.map((hour) => {
               const slotTime = setMinutes(hour, parseInt(minutes))
               const timeKey = format(slotTime, 'HH:mm')
-              const reservation = sampleReservations[timeKey]
+              const reservation = gridReservations ? (gridReservations as unknown as Record<string, Reservation[]>)[timeKey] : undefined
 
               return (
                 <div key={`${hour.toISOString()}-${minutes}`} className={`w-40 border-b shrink-0 flex flex-col  items-center p-1 justify-center gap-2 border-l relative  ${localStorage.getItem('darkMode')==='true'?'border-darkthemeitems':'border-softgreytheme'}`}>
@@ -188,12 +240,12 @@ const GridPage = () => {
 
                         {['00', '30'].reduce((count, min) => {
                           const timeKey = format(setMinutes(hour, parseInt(min)), 'HH:mm');
-                          return count + (reservations[timeKey] ? reservations[timeKey].length : 0);
+                          return count + (sampleReservations[timeKey] ? sampleReservations[timeKey].length : 0);
                         }, 0)}
                       </div>
                     </div>
                   )}
-                  <div className="flex h-[10em] flex-col p-1 gap-1 justify-start items-center">
+                  <div className="flex overflow-y-scroll no-scrollbar h-[10em] flex-col p-1 gap-1 justify-start items-center">
                     {reservation ? (
                       reservation.map((r) => (
                         <div key={r.name} className={` w-full text-center   p-2 rounded-lg ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'border-[1px] border-solid border-subblack'} ${i18next.language === 'ar' && 'rtl'}`}>
@@ -204,7 +256,14 @@ const GridPage = () => {
                     ) : null}
                     
                   </div>
-                    <button className="btn-primary text-[.8rem] text-center bottom-0" onClick={() => addReservation(format(hour, 'HH') + ':' + minutes)}>{t('grid.buttons.addReservation')}</button>
+                    
+                    <button 
+                     disabled={(format(today,'yyyy-MM-dd') === format(chosenDay,'yyyy-MM-dd') ? Number(timeKey.slice(0,2)) < Number(getHours(today)) : today > addHours(chosenDay, 24))}
+                     className={`btn-primary text-[.8rem] text-center bottom-0 duration-150 transition ${(format(today,'yyyy-MM-dd') === format(chosenDay,'yyyy-MM-dd') ? Number(timeKey.slice(0,2)) < Number(getHours(today)) : today > addHours(chosenDay, 24))  ? 'opacity-40':''} `} 
+                     onClick={() => addReservation(format(hour, 'HH') + ':' + minutes)}
+                    >
+                      {t('grid.buttons.addReservation')}
+                     </button>
                 </div>
               )
             })}

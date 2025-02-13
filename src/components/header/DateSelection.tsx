@@ -32,7 +32,7 @@ const DateSelection = () => {
     const displayDay = chosenDay ? format(chosenDay, "dd/MM/yyyy") : "Today";
 
     return (
-        <div className="mx-3">
+        <div className="">
             {/* Calendar Popup */}
             {isCalendar && (
                 <div>
@@ -56,7 +56,7 @@ const DateSelection = () => {
                 {/* Current Day / Calendar Button */}
                 <button
                     onClick={() => setIsCalendar(true)}
-                    className={`py-1 rounded-[10px] md:w-[15em] px-3 w-[7em] lt-sm:p-0  ${localStorage.getItem('darkMode')=== 'true'? 'hover:bg-bgdarktheme':'hover:bg-softgreytheme'}`}
+                    className={`py-1 rounded-[10px] md:w-[10em] px-3 w-[7em] lt-sm:p-0  ${localStorage.getItem('darkMode')=== 'true'? 'hover:bg-bgdarktheme':'hover:bg-softgreytheme'}`}
                 >
                     {displayDay === format(startOfToday(), "dd/MM/yyyy") ? t('header.date.today') : (displayDay === format(addDays(startOfToday(), 1), "dd/MM/yyyy") ? t('header.date.tomorrow') : (displayDay === format(addDays(startOfToday(), -1), "dd/MM/yyyy") ? t('header.date.yesterday') : displayDay))}
                 </button>

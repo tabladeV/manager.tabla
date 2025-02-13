@@ -22,6 +22,8 @@ module.exports = {
         softorangetheme: '#FFA5001A',
         purpletheme: '#7b2cbf',
         softpurpletheme: '#7b2cbf1A',
+        blushtheme: '#b75d69',
+        softblushtheme: '#b75d691A',
         bluetheme: '#3F72AF',
         softbluetheme: '#3F72AF1A',
         yellowtheme: '#F09300',

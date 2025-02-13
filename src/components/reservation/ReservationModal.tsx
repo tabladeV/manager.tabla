@@ -23,6 +23,10 @@ interface Reservation extends BaseRecord {
 interface ReservationModalProps {
   onClick: () => void;
   onSubmit: (data: Reservation) => void;
+  timeAndDate?: {
+    date: string;
+    time: string;
+  }
 }
 
 interface Client extends BaseRecord {

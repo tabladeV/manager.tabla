@@ -31,6 +31,7 @@ const OurCalendar = (props) => {
     setCurrentMonth(format(firstDayNextMonth, 'MMM-yyyy'));
   }
 
+
   function selectingDate(day) {
     setSelectedDay(day);
     if (props.onClick) {
@@ -65,6 +66,7 @@ const OurCalendar = (props) => {
               <button
                 type="button"
                 onClick={() => selectingDate(day)}
+                disabled={props.forbidden && day < today}
                 className={classNames(
                   isEqual(day, selectedDay) && 'text-white',
                   !isEqual(day, selectedDay) && isToday(day) && 'text-[#70ae29] font-bold',
@@ -72,12 +74,12 @@ const OurCalendar = (props) => {
                   !isEqual(day, selectedDay) && !isToday(day) && !isSameMonth(day, firstDayCurrentMonth) && 'text-gray-400',
                   isEqual(day, selectedDay) && isToday(day) && 'bg-greentheme font-bold',
                   isEqual(day, selectedDay) && !isToday(day) && 'bg-gray-900',
-                  !isEqual(day, selectedDay) && 'hover:bg-gray-200',
+                  !isEqual(day, selectedDay) && 'hover:bg-softgreentheme',
                   (isEqual(day, selectedDay) || isToday(day)) && 'font-semibold',
                   'mx-auto flex h-8 w-8 items-center justify-center rounded-full'
                 )}
               >
-                <time dateTime={format(day, 'yyyy-MM-dd')}>
+                <time dateTime={format(day, 'yyyy-MM-dd')} className={((props.forbidden && day < today )? 'opacity-20':'')}>
                   {format(day, 'd')}
                 </time>
               </button>

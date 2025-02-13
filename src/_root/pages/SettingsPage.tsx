@@ -70,16 +70,8 @@ const SettingsPage = () => {
           </Link>
 
           {/* Widget - not restricted */}
-          <Link
-            to="/settings/widget"
-            className={`${
-              pathname === "/settings/widget"
-                ? navigatedMenuClass
-                : normalMenuClass
-            }`}
-          >
-            {t("settingsPage.menuItems.widget")}
-          </Link>
+          <Link to='/settings/widget/reservation' className={`hover:underline ${pathname === '/settings/widget/reservation' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.widget')}</Link>
+          <Link to='/settings/widget/review' className={`hover:underline ${pathname === '/settings/widget/review' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.reviewWidget')}</Link>
 
           {/* Roles - check for view_role */}
           <CanAccess
@@ -97,11 +89,16 @@ const SettingsPage = () => {
               {t("settingsPage.menuItems.roles")}
             </Link>
           </CanAccess>
+          {/* to be restored after */}
+          {/* <Link to='/settings/tags' className={`hover:underline ${pathname === '/settings/tags' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.tags')}</Link>
+          <Link to='/settings/menu' className={`hover:underline ${pathname === '/settings/menu' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.menu')}</Link>
+          <Link to='/settings/photos' className={`hover:underline ${pathname === '/settings/photos' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.photos')}</Link>
+          <Link to='/settings/messaging' className={`hover:underline ${pathname === '/settings/messaging' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.messaging')}</Link>
+          <Link to='/settings/features' className={`hover:underline ${pathname === '/settings/features' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.features')}</Link> */}
+          {/* <Link to='/settings/billing' className={`hover:underline ${pathname === '/settings/billing' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.billing')}</Link> */}
 
-          {/* 
-            Other links such as tags, menu, photos, messaging, features, billing,
-            permissions, and services are commented out until their permissions are defined.
-          */}
+          {/* <Link to='/settings/permissions' className={`hover:underline ${pathname === '/settings/permissions' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.permissions')}</Link> */}
+          {/* <Link to='/settings/services' className={`hover:underline ${pathname === '/settings/services' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.services')}</Link> */}
         </div>
         <div className={`w-full overflow-y-scroll ${pathname === '/settings' ? 'lt-sm:hidden': ''}`}>
           <Outlet />

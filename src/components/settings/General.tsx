@@ -33,10 +33,11 @@ interface Restaurant {
 }
 
 const General = () => {
-  const [restaurantId, setRestaurantId] = useState(1);
+
+  const [restaurantId, setRestaurantId] = useState(localStorage.getItem('restaurant_id'));
 
   const { data: restaurantData, isLoading, error } = useList({
-    resource: `api/v1/bo/restaurants/1/current`,
+    resource: `api/v1/bo/restaurants/${restaurantId}/current/`,
   });
 
   const [restaurant, setRestaurant] = useState<Restaurant>();
@@ -166,11 +167,11 @@ const General = () => {
       location: restaurant?.location || "string", // Use existing data or a placeholder
       address: restaurant?.address || "string", // Use existing data or a placeholder
       is_approved: restaurant?.is_approved || true, // Use existing data or a default
-      max_of_guests: restaurant?.max_of_guests || 2147483647, // Use existing data or a default
+      // max_of_guests: restaurant?.max_of_guests || 2147483647, // Use existing data or a default
       description: formData.description,
       allow_reservation: restaurant?.allow_reservation || true, // Use existing data or a default
       average_price: formData.average_price,
-      due_cancellation_period: restaurant?.due_cancellation_period || 2147483647, // Use existing data or a default
+      // due_cancellation_period: restaurant?.due_cancellation_period || 2147483647, // Use existing data or a default
       country: formData.country,
       city: formData.city,
       category: restaurant?.category || 0, // Use existing data or a default
@@ -298,7 +299,7 @@ const General = () => {
             </div>
           }
         </div> */}
-        <div className='relative gap-2 flex flex-col'>
+        {/* <div className='relative gap-2 flex flex-col'>
           <label>{t('settingsPage.general.basicInformationForm.labels.avgPrice')}</label>
           <input
             type="number"
@@ -309,7 +310,7 @@ const General = () => {
             className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
           />
           <div className="text-sm absolute mt-[3.2em] right-10">{t('settingsPage.general.basicInformationForm.labels.currency')}</div>
-        </div>
+        </div> */}
         <div className="flex w-full justify-center gap-4">
           <button type="reset" className={`btn ${localStorage.getItem('darkMode') === 'true' ? 'border-white text-white hover:border-redtheme hover:text-redtheme' : ''}`}>{t('settingsPage.general.basicInformationForm.buttons.cancel')}</button>
           <button type="submit" className="btn-primary">{t('settingsPage.general.basicInformationForm.buttons.save')}</button>

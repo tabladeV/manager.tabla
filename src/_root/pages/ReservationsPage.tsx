@@ -12,6 +12,10 @@ import ReservationProcess from "../../components/reservation/ReservationProcess"
 import { Send } from "lucide-react"
 
 
+interface receivedTables {
+  id: number,
+  name: string
+}
 interface Reservation extends BaseRecord {
   id: BaseKey;
   email: string;
@@ -21,7 +25,9 @@ interface Reservation extends BaseRecord {
   internal_note: string;
   source: string;
   number_of_guests: string;
+  tableSet? : number;
   phone: string;
+  tables?: receivedTables[];
   status: string;
   commenter?: string;
   review?: boolean;
@@ -46,6 +52,8 @@ const ReservationsPage = () => {
 
   const { t } = useTranslation();
   const [reservations, setReservations] = useState<Reservation[]>([]);
+
+  
   const { data, isLoading, error } = useList<Reservation>({
     resource: "api/v1/bo/reservations/",
     filters: [
@@ -57,12 +65,12 @@ const ReservationsPage = () => {
       {
         field: "date_",
         operator: "gte",
-        value:selectedDateRange.start? format(selectedDateRange.start, 'dd/MM/yyyy'):'',
+        value:selectedDateRange.start? format(selectedDateRange.start, 'yyyy-MM-dd'):'',
       },
       {
         field: "date_",
         operator: "lte",
-        value: selectedDateRange.end ? format(selectedDateRange.end, 'dd/MM/yyyy'): '',
+        value: selectedDateRange.end ? format(selectedDateRange.end, 'yyyy-MM-dd'): '',
       },
       {
         field: "search",
@@ -83,13 +91,21 @@ const ReservationsPage = () => {
 
   const {data: floorsData, isLoading: floorLoading, error: floorError} = useList({
     resource: 'api/v1/bo/floors/',
-
+    meta: {
+      headers: {
+        'X-Restaurant-ID': 1,
+      },
+    },
   });
   
 
   const {data: tablesData, isLoading: tableLoading, error: tableError} = useList({
     resource: 'api/v1/bo/tables/',
-
+    meta: {
+      headers: {
+        'X-Restaurant-ID': 1,
+      },
+    },
   });
 
   const [tables, setTables] = useState<BaseRecord[]>([]);
@@ -119,12 +135,23 @@ const ReservationsPage = () => {
     guests: selectedClient?.guests
   })
 
+  const [hasTable,setHasTable] = useState(false)
 
   
   useEffect(() => {
     console.log('this one')
     if (data?.data) {
       setReservations(data.data as Reservation[]);
+      data.data.map((reserve) => {
+        if (reserve.tables && reserve.tables.length > 0) {
+          reserve.tableSet = reserve.tables[0].id ;
+          setHasTable(true)
+        }else{
+          reserve.tableSet = 0 ;
+          setHasTable(false)
+
+        }
+      });
     }
   }, []);
 
@@ -139,6 +166,8 @@ const ReservationsPage = () => {
       return 'bg-softorangetheme text-orangetheme'
     }else if (status === 'FULFILLED') {
       return 'bg-softpurpletheme text-purpletheme'
+    }else if(status === 'NO_SHOW'){
+      return 'bg-softblushtheme text-blushtheme'
     }
      else {
       return 'bg-softredtheme text-redtheme'
@@ -151,6 +180,41 @@ const ReservationsPage = () => {
 
 
   const [searched,setSearched]= useState(false)
+
+  const {data : availableTablesData , isLoading: tablesLoading , error:tablesError} = useList({
+    resource: "api/v1/bo/tables/available_tables/",
+    filters:[
+      {
+        field: "date",
+        operator: "eq",
+        value: reservationProgressData.reserveDate
+      },
+      {
+        field: "time",
+        operator: "eq",
+        value: reservationProgressData.time+ ':00'
+      }
+      
+    ]
+  })
+
+  interface Table {
+    id: BaseKey,
+    floor_name: string,
+    name: string,
+    max: number,
+    min: number,
+    rotation: number,
+    floor: number,
+  }
+
+  const [availableTables, setAvailableTables] = useState<Table[]>()
+
+  useEffect(()=>{
+    if(availableTablesData?.data){
+      setAvailableTables(availableTablesData.data as Table[])
+    }
+  },[availableTablesData])
 
   useEffect(()=>{
     if(!searched){
@@ -211,7 +275,11 @@ const ReservationsPage = () => {
 
   const { mutate: createReview } = useCreate({
       resource: `api/v1/bo/reservations/${toBeReviewedRes}/send_review_link/`,
-
+      meta: {
+        headers: {
+          'X-Restaurant-ID': 1,
+        },
+      },
       mutationOptions: {
         retry: 3,
         onSuccess: (data) => {
@@ -228,24 +296,53 @@ const ReservationsPage = () => {
   const upDateHandler = () => {
     
     if (selectedClient) {
+      // if(!hasTable){
+        upDateReservation({
+          id: editingClient+'/',
+          values: {
+            full_name: selectedClient.full_name,
+            email: selectedClient.email,
+            table_name: selectedClient.table_name,
+            source: selectedClient.source,
+            status: selectedClient.status,
+            internal_note: selectedClient.internal_note,
+            date: reservationProgressData.reserveDate,
+            time: reservationProgressData.time+ ':00',
+            tables: selectedClient.tableSet ? [Number(selectedClient.tableSet)] : [] ,
+            number_of_guests: reservationProgressData.guests ,
+            commenter: selectedClient.commenter,
+          },
+          meta: {
+            headers: {
+              "X-Restaurant-ID": 1,
+            },
+          },
+        })
 
-      upDateReservation({
-        id: editingClient+'/',
-        values: {
-          full_name: selectedClient.full_name,
-          email: selectedClient.email,
-          table_name: selectedClient.table_name,
-          source: selectedClient.source,
-          status: selectedClient.status,
-          internal_note: selectedClient.internal_note,
-          date: reservationProgressData.reserveDate,
-          time: reservationProgressData.time+ ':00',
-          number_of_guests: reservationProgressData.guests ,
-          commenter: selectedClient.commenter,
-        }
-        
-      });
+      // }else{
       
+      //   upDateReservation({
+      //     id: editingClient+'/',
+      //     values: {
+      //       full_name: selectedClient.full_name,
+      //       email: selectedClient.email,
+      //       table_name: selectedClient.table_name,
+      //       source: selectedClient.source,
+      //       status: selectedClient.status,
+      //       internal_note: selectedClient.internal_note,
+      //       date: reservationProgressData.reserveDate,
+      //       time: reservationProgressData.time+ ':00',
+      //       tables: [Number(selectedClient.tableSet) ] ,
+      //       number_of_guests: reservationProgressData.guests ,
+      //       commenter: selectedClient.commenter,
+      //     },
+      //     meta: {
+      //       headers: {
+      //         "X-Restaurant-ID": 1,
+      //       },
+      //     },
+      //   })
+      // }
     }
     setShowModal(false)
   }
@@ -351,7 +448,7 @@ const ReservationsPage = () => {
       return (
         <div className={`flex p-1 rounded-md  items-center ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path fillRule="evenodd" clipRule="evenodd" d="M2.879 3.879C2 4.757 2 6.172 2 9V15C2 17.828 2 19.243 2.879 20.121C3.757 21 5.172 21 8 21H16C18.828 21 20.243 21 21.121 20.121C22 19.243 22 17.828 22 15V9C22 6.172 22 4.757 21.121 3.879C20.243 3 18.828 3 16 3H8C5.172 3 3.757 3 2.879 3.879ZM16 8C16.2652 8 16.5196 8.10536 16.7071 8.29289C16.8946 8.48043 17 8.73478 17 9V17C17 17.2652 16.8946 17.5196 16.7071 17.7071C16.5196 17.8946 16.2652 18 16 18C15.7348 18 15.4804 17.8946 15.2929 17.7071C15.1054 17.5196 15 17.2652 15 17V9C15 8.73478 15.1054 8.48043 15.2929 8.29289C15.4804 8.10536 15.7348 8 16 8ZM9 11C9 10.7348 8.89464 10.4804 8.70711 10.2929C8.51957 10.1054 8.26522 10 8 10C7.73478 10 7.48043 10.1054 7.29289 10.2929C7.10536 10.4804 7 10.7348 7 11V17C7 17.2652 7.10536 17.5196 7.29289 17.7071C7.48043 17.8946 7.73478 18 8 18C8.26522 18 8.51957 17.8946 8.70711 17.7071C8.89464 17.5196 9 17.2652 9 17V11ZM13 13C13 12.7348 12.8946 12.4804 12.7071 12.2929C12.5196 12.1054 12.2652 12 12 12C11.7348 12 11.4804 12.1054 11.2929 12.2929C11.1054 12.4804 11 12.7348 11 13V17C11 17.2652 11.1054 17.5196 11.2929 17.7071C11.4804 17.8946 11.7348 18 12 18C12.2652 18 12.5196 17.8946 12.7071 17.7071C12.8946 17.5196 13 17.2652 13 17V13Z"  fill={localStorage.getItem('darkMode')==='true'?'#fff':'#1e1e1e90'}/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M2.879 3.879C2 4.757 2 6.172 2 9V15C2 17.828 2 19.243 2.879 20.121C3.757 21 5.172 21 8 21H16C18.828 21 20.243 21 21.121 20.121C22 19.243 22 17.828 22 15V9C22 6.172 22 4.757 21.121 3.879C20.243 3 18.828 3 16 3H8C5.172 3 3.757 3 2.879 3.879ZM16 8C16.2652 8 16.5196 8.10536 16.7071 8.29289C16.8946 8.48043 17 8.73478 17 9V17C17 17.2652 16.8946 17.5196 16.7071 17.7071C16.5196 17.8946 16.2652 18 16 18C15.7348 18 15.4804 17.8946 15.2929 17.7071C15.1054 17.5196 15 17.2652 15 17V9C15 8.73478 15.1054 8.48043 15.2929 8.29289C15.4804 8.10536 15.7348 8 16 8ZM9 11C9 10.7348 8.89464 10.4804 8.70711 10.2929C8.51957 10.1054 8.26522 10 8 10C7.73478 10 7.48043 10.1054 7.29289 10.2929C7.10536 10.4804 7 10.7348 7 11V17C7 17.2652 7.10536 17.5196 7.29289 17.7071C7.48043 17.8946 7.73478 18 8 18C8.26522 18 8.51957 17.8946 8.70711 17.7071C8.89464 17.5196 9 17.2652 9 17V11ZM13 13C13 12.7348 12.8946 12.4804 12.7071 12.2929C12.5196 12.1054 12.2652 12 12 12C11.7348 12 11.4804 12.1054 11.2929 12.2929C11.1054 12.4804 11 12.7348 11 13V17C11 17.2652 11.1054 17.5196 11.2929 17.7071C11.4804 17.8946 11.7348 18 12 18C12.2652 18 12.5196 17.8946 12.7071 17.7071C12.8946 17.5196 13 17.2652 13 17V13Z"  fill={localStorage.getItem('darkMode')==='true'?'#fff':'#1e1e1e90'}/>
           </svg>
         </div>
       )
@@ -384,6 +481,11 @@ const ReservationsPage = () => {
       values: {
         status: status
       },
+      meta: {
+        headers: {
+          "X-Restaurant-ID": 1,
+        },
+      },
     })
 
     
@@ -398,6 +500,11 @@ const ReservationsPage = () => {
       values: {
         status: 'FULFILLED'
       },
+      meta: {
+        headers: {
+          "X-Restaurant-ID": 1,
+        },
+      },
     })
   }
 
@@ -408,7 +515,11 @@ const ReservationsPage = () => {
       values: {
         reservations
       },
-
+      meta: {
+        headers: {
+          "X-Restaurant-ID": 1,
+        },
+      },
     })
     setToBeReviewedRes(id)
     statusHandlerFulfilled(id)
@@ -420,15 +531,15 @@ const ReservationsPage = () => {
   const [showAddReservation, setShowAddReservation] = useState(false)
 
   return (
-    <div>
+    <div className="relative">
       {showProcess && <div className=''><ReservationProcess onClick={()=>{setShowProcess(false)}} getDateTime={(data:dataTypes)=>{setReservationProgressData(data)}}/></div>}
 
       {showAddReservation && <ReservationModal  onClick={()=>{setShowAddReservation(false)}}  onSubmit={(data: Reservation)=>{setReservations([...reservations, data])}} />} 
       {showModal && selectedClient && (
         <div>
           <div className="overlay" onClick={() => setShowModal(false)}></div>
-          <div className={`sidepopup w-[45%] overflow-y-auto lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:overflow-y-auto h-full ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'} `}>
-            <h1 className="text-2xl font-[600] mb-4">{t('reservations.edit.title')} by <span className="font-[800]">{selectedClient.full_name} </span><span className="text-sm font-[500] text-subblack">{`(Reservation id: ${selectedClient.id})`}</span></h1>
+          <div className={`sidepopup w-[45%] overflow-y-auto lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:overflow-y-auto h-full ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme text-white':'bg-white'} `}>
+            <h1 className="text-2xl font-[600] mb-4">{t('reservations.edit.title')} by <span className={`font-[800] `}>{selectedClient.full_name} </span><span className={`text-sm font-[400] ${localStorage.getItem('darkMode') === 'true' ? 'text-[#e1e1e1]':'text-subblack'}`}>{`(Reservation id: ${selectedClient.id})`}</span></h1>
             <div className="space-y-2">
               {/* <div>
                 <label className="block text-sm font-medium ">{t('reservations.edit.informations.name')}</label>
@@ -515,12 +626,13 @@ const ReservationsPage = () => {
                 <label className="block text-sm font-medium ">{t('reservations.edit.informations.table')}</label>
                 <select 
                   name="table"
-                  value={selectedClient.table_name}
-                  onChange={(e)=>setSelectedClient({...selectedClient, table_name: e.target.value})}
+                  defaultValue={selectedClient.tables && selectedClient.tables.length > 0 && selectedClient.tables[0].id ? selectedClient.tables[0].id : 0}
+                  onChange={(e)=>{(Number(e.target.value) !== 0 || e.target.value) ? setHasTable(true) : setHasTable(false);setSelectedClient({...selectedClient, tableSet: Number(e.target.value)})}}
                   className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
 >
-                  {tables.map((table) => (
-                    <option key={table.id} value={table.name}>{table.name}</option>
+                    <option value={0} >No table</option>
+                  {availableTables?.map((table) => (
+                    <option key={table.id} value={table.id}>{table.name} {`(${table.floor_name})`}</option>
                   ))}
                 </select>
               </div>
@@ -530,13 +642,14 @@ const ReservationsPage = () => {
                 <select
                   name="status"
                   value={selectedClient.status}
-                  onChange={(e)=>setSelectedClient({...selectedClient, status: e.target.value})}
+                  onChange={(e)=>{setSelectedClient({...selectedClient, status: e.target.value});statusHandler(e.target.value)}}
                   className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
 >
                   <option value="PENDING">{t('reservations.statusLabels.pending')}</option>
                   <option value="APPROVED">{t('reservations.statusLabels.confirmed')}</option>
                   <option value="CANCELED">{t('reservations.statusLabels.cancelled')}</option>
                   <option value="SEATED">{t('reservations.statusLabels.seated')}</option>
+                  <option value="NO_SHOW">{t('reservations.statusLabels.noShow')}</option>
                 </select>
               </div>
               <div onClick={()=>{setShowProcess(true)}} className={`btn flex justify-around cursor-pointer ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'}`}>
@@ -584,6 +697,9 @@ const ReservationsPage = () => {
           <button onClick={() => setFocusedFilter('PENDING')} className={`${localStorage.getItem('darkMode')==='true'?'text-white':''} ${focusedFilter === 'PENDING' ? 'btn-primary' : 'btn'}`}>
             {t('reservations.filters.pending')}
           </button>
+          <button onClick={() => setFocusedFilter('NO_SHOW')} className={`${localStorage.getItem('darkMode')==='true'?'text-white':''} ${focusedFilter === 'NO_SHOW' ? 'btn-primary' : 'btn'}`}>
+            {t('reservations.filters.noShow')}
+          </button>
           <button 
             className={`gap-2 flex items-center ${localStorage.getItem('darkMode')==='true'?' text-whitetheme':''} ${selectingDay === '' ? 'btn' : 'btn-primary'}`} 
             onClick={() => setFocusedDate(true)}
@@ -596,7 +712,7 @@ const ReservationsPage = () => {
         </div>
       </div>
       <div className='mt-4  lt-sm:overflow-x-scroll'>
-        <table className={` divide-y ${localStorage.getItem('darkMode')==='true'?'divide-gray-800':'divide-gray-200'}`}>
+        <table className={` max-w-full overflow-scroll divide-y ${localStorage.getItem('darkMode')==='true'?'divide-gray-800':'divide-gray-200'}`}>
           <thead className={localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2 text-white':'bg-gray-50 text-gray-500'}>
             <tr>
               <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.id')}</th>
@@ -623,14 +739,14 @@ const ReservationsPage = () => {
                   {reservation.commenter && reservation.commenter.length > 15 ? `${reservation.commenter.substring(0, 15)}...` : reservation.commenter}
                 </td>
                 <td className="px-3 py-4 flex items-center justify-center whitespace-nowrap cursor-pointer"  onClick={() => { if (reservation.id) EditClient(reservation.id); }}>
-                  {reservation.tables_name}
+                  {(reservation.tables && reservation.tables.length > 0) ? reservation.tables[0].name : ''}
                 </td>
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer"  onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.date }</td>
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.time.slice(0,5)}</td>
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.number_of_guests}</td>
                 <td className="px-3 py-4 whitespace-nowrap " onClick={()=> showStatusModification(reservation.id)}>
                   <span className={`${statusStyle(reservation.status)} text-center py-[.1em] px-3  rounded-[10px]`}> 
-                    {reservation.status === 'APPROVED'? t('reservations.statusLabels.confirmed') : reservation.status === 'PENDING' ? t('reservations.statusLabels.pending') : reservation.status === 'SEATED'?  t('reservations.statusLabels.seated') : reservation.status === 'FULFILLED' ? t('reservations.statusLabels.fulfilled') :   t('reservations.statusLabels.cancelled')}
+                    {reservation.status === 'APPROVED'? t('reservations.statusLabels.confirmed') : reservation.status === 'PENDING' ? t('reservations.statusLabels.pending') : reservation.status === 'SEATED'?  t('reservations.statusLabels.seated') : reservation.status === 'FULFILLED' ? t('reservations.statusLabels.fulfilled') : reservation.status === 'NO_SHOW' ? t('reservations.statusLabels.noShow') :   t('reservations.statusLabels.cancelled')}
                   </span>
                     {showStatus && reservation.id === idStatusModification && reservation.status !== 'FULFILLED' && (
                       <div className="relative">
@@ -640,6 +756,7 @@ const ReservationsPage = () => {
                            onClick={()=> statusHandler('PENDING')}>{t('reservations.statusLabels.pending')}</li>
                           <li className="py-1 px-2  text-greentheme cursor-pointer" onClick={()=> statusHandler('APPROVED')}>{t('reservations.statusLabels.confirmed')}</li>
                           <li className="py-1 px-2 text-redtheme cursor-pointer" onClick={()=> statusHandler('CANCELED')}>{t('reservations.statusLabels.cancelled')}</li>
+                          <li className="py-1 px-2 text-blushtheme cursor-pointer" onClick={()=> statusHandler('NO_SHOW')}>{t('reservations.statusLabels.noShow')}</li>
                           <li className="py-1 px-2 text-orangetheme cursor-pointer" onClick={()=> statusHandler('SEATED')}>{t('reservations.statusLabels.seated')}</li>
                         </ul>
                       </div>

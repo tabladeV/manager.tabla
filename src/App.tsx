@@ -52,6 +52,7 @@ import customAxiosInstance from "./providers/axiosInstance";
 import authProvider from "./providers/authProvider";
 import accessControlProvider from "./providers/accessControl";
 import { useEffect } from "react";
+import ReviewWidget from "./components/settings/ReviewWidget";
 
 function App() {
 
@@ -181,6 +182,7 @@ function App() {
 
                       {/* Payment - not restricted */}
                       <Route path="/payment" element={<PaymentPage />} />
+
 
                       {/* Reviews */}
                       <Route

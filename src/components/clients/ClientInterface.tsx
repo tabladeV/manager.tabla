@@ -206,27 +206,30 @@ const ClientInterface = () => {
   };
 
   const deleteClient = () => {
-    deleteClientMutation(
-      {
-          resource: `api/v1/bo/customers`, 
-          id: id+'/',
-          meta: {
-              headers: {
-                  "X-Restaurant-ID": 1,
-              },
-          },
-      },
-      {
-          onSuccess: () => {
-              
-              navigate('/clients');
-          },
-          onError: (error) => {
-              console.error("Error deleting the client:", error);
-              alert("Failed to delete the client. Please try again.");
-          },
-      }
-    );
+
+    if(window.confirm('Are you sure you want to delete this client?')) {
+      deleteClientMutation(
+        {
+            resource: `api/v1/bo/customers`, 
+            id: id+'/',
+            meta: {
+                headers: {
+                    "X-Restaurant-ID": 1,
+                },
+            },
+        },
+        {
+            onSuccess: () => {
+                
+                navigate('/clients');
+            },
+            onError: (error) => {
+                console.error("Error deleting the client:", error);
+                alert("Failed to delete the client. Please try again.");
+            },
+        }
+      );
+    }
   }
 
   const { data: customerChange } = useCan({
