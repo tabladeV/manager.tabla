@@ -2,12 +2,9 @@ import { ArrowLeft, ArrowRight, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import SearchBar from "../header/SearchBar";
-<<<<<<< HEAD
-import { BaseKey, useList, useCreate, useDelete } from "@refinedev/core";
-import Pagination from "../reservation/Pagination";
-=======
+
 import { BaseKey, useList, useCreate, useDelete, CanAccess } from "@refinedev/core";
->>>>>>> 3ee0cbd45e7dda45772bc84b765fe9163d82a391
+import Pagination from "../reservation/Pagination";
 
 interface PermissionType {
     id: number;
