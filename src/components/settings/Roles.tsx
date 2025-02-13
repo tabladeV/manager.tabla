@@ -2,8 +2,12 @@ import { ArrowLeft, ArrowRight, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import SearchBar from "../header/SearchBar";
+<<<<<<< HEAD
 import { BaseKey, useList, useCreate, useDelete } from "@refinedev/core";
 import Pagination from "../reservation/Pagination";
+=======
+import { BaseKey, useList, useCreate, useDelete, CanAccess } from "@refinedev/core";
+>>>>>>> 3ee0cbd45e7dda45772bc84b765fe9163d82a391
 
 interface PermissionType {
     id: number;
@@ -193,16 +197,17 @@ const Roles = () => {
 
             <div className="mt-4">
                 <label className="text-[17px]">{t("settingsPage.roles.labels.roleName")}</label>
-                <input
-                    type="text"
-                    id="roleName"
-                    value={roleName}
-                    onChange={(e) => setRoleName(e.target.value)}
-                    placeholder={t("settingsPage.roles.labels.roleName")}
-                    className={`inputs ${
-                        localStorage.getItem("darkMode") === "true" ? "bg-darkthemeitems" : "bg-white"
-                    }`}
-                />
+                <CanAccess resource="role" action="create">
+                    <input
+                        type="text"
+                        id="roleName"
+                        value={roleName}
+                        onChange={(e) => setRoleName(e.target.value)}
+                        placeholder={t("settingsPage.roles.labels.roleName")}
+                        className={`inputs ${localStorage.getItem("darkMode") === "true" ? "bg-darkthemeitems" : "bg-white"
+                            }`}
+                    />
+                </CanAccess>
 
                 <div className="mt-5 gap-4 flex justify-between w-full">
                     {/* Available Permissions */}
@@ -229,6 +234,7 @@ const Roles = () => {
                     </div>
 
                     {/* Move Buttons */}
+                    <CanAccess resource="role" action="create">
                     <div className="flex flex-col gap-3 mt-10">
                         <button
                             className={`btn-primary flex justify-center px-2 ${
@@ -263,7 +269,6 @@ const Roles = () => {
                             <ArrowLeft size={20}/> All 
                         </button>
                     </div>
-
                     {/* Affected Permissions */}
                     <div className="flex w-full flex-col">
                         <label className="text-[17px]">{t("settingsPage.roles.labels.permissionsaffected")}</label>
@@ -286,12 +291,17 @@ const Roles = () => {
                             ))}
                         </div>
                     </div>
+                    </CanAccess>
+
                 </div>
 
                 {/* Save Role Button */}
+                
+                <CanAccess resource="role" action="create">
                 <button className="btn-primary mt-4" onClick={saveRole}>
                     {t("settingsPage.roles.buttons.saveRole")}
                 </button>
+                </CanAccess>
 
                 {/* Display Saved Roles */}
                 <div className="mt-6">
@@ -308,11 +318,13 @@ const Roles = () => {
                                 <div key={index} className="mb-3 border-b-2 pb-2">
                                     <div className="flex justify-between items-center">
                                         <h4 className="font-bold">{role.name}</h4>
+                                        <CanAccess resource="role" action="delete">
                                         <Trash
                                             size={30}
                                             className="cursor-pointer text-redtheme bg-softredtheme p-2 rounded-md"
                                             onClick={() => handleDeleteRole(role)}
                                         />
+                                        </CanAccess>
                                     </div>
                                     <ul className="list-disc ml-5">
                                         {role.permissions.map((perm, idx) => (
