@@ -41,7 +41,10 @@ const authProvider: ExtendedAuthProvider = {
                 localStorage.setItem("isLogedIn", "true");
                 localStorage.setItem("refresh", response.data.refresh);
 
-                // Save permissions if returned by the login endpoint:
+                if (response?.data.user.is_manager) {
+                    localStorage.setItem("is_manager", "true");
+                  }
+
                 if (response.data.users.permissions) {
                     localStorage.setItem("permissions", JSON.stringify(response.data.users.permissions));
                 }
@@ -62,6 +65,7 @@ const authProvider: ExtendedAuthProvider = {
         localStorage.removeItem("refresh");
         localStorage.removeItem("restaurant_id");
         localStorage.removeItem("permissions");
+        localStorage.removeItem("is_manager");
 
         if (refreshInterval) {
             clearInterval(refreshInterval);

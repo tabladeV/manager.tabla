@@ -5,6 +5,13 @@ const accessControlProvider: AccessControlProvider = {
   can: async ({ resource, action, params }: CanParams): Promise<CanReturnType> => {
     // Retrieve the permissions array from storage
     const stored = localStorage.getItem("permissions");
+    // Check if the user is a manager (managers have all permissions)
+    const isManager = localStorage.getItem("is_manager")? true : false;
+    
+    if (isManager) {
+      return { can: true };
+    }
+    
     if (!stored) {
       return { can: false };
     }

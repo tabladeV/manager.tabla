@@ -24,6 +24,10 @@ const LogIn: React.FC = () => {
         if (data?.data.user.permissions) {
           localStorage.setItem("permissions", JSON.stringify(data?.data.user.permissions));
         }
+        
+        if (data?.data.user.is_manager) {
+          localStorage.setItem("is_manager", "true");
+        }
 
         handleRestaurantId(variables);
 
