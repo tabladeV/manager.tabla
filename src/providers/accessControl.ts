@@ -9,7 +9,7 @@ const accessControlProvider: AccessControlProvider = {
     const isManager = localStorage.getItem("is_manager")? true : false;
     
     if (isManager) {
-      // return { can: true };
+      return { can: true };
     }
     
     if (!stored) {
