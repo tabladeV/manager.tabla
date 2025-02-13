@@ -13,7 +13,7 @@ const Profile = () => {
 
   const {mutate: newPassword} = useCreate({
     resource: 'api/v1/auth/password/change/',
-
+    
     mutationOptions: {
       retry: 3,
       onSuccess: (data) => {

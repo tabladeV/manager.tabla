@@ -240,7 +240,8 @@ const { chosenDay } = useDateContext();
 
                         {['00', '30'].reduce((count, min) => {
                           const timeKey = format(setMinutes(hour, parseInt(min)), 'HH:mm');
-                          return count + (sampleReservations[timeKey] ? sampleReservations[timeKey].length : 0);
+                          if(!gridReservations) return count;
+                          return count + ((gridReservations as unknown as Record<string, Reservation[]>)[timeKey] ? (gridReservations as unknown as Record<string, Reservation[]>)[timeKey].length : 0);
                         }, 0)}
                       </div>
                     </div>

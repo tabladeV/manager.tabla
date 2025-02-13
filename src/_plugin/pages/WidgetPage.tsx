@@ -105,7 +105,7 @@ const WidgetPage = () => {
             lastname: e.target.lastname.value,
             email: e.target.email.value,
             phone: e.target.phone.value,
-            message: e.target.message.value
+            message: e.target.req.value
         };
         setUserInformation(updatedUserInformation);
         if (e.target.firstname.value !== '' && e.target.lastname.value !== '' && e.target.email.value !== '' && e.target.phone.value !== '') {
@@ -247,7 +247,9 @@ const WidgetPage = () => {
               <input id='lastname' type="text" placeholder='Last Name' className={`inputs-unique w-[30em] ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2':''}`}/>
               <input id='email' type="text" placeholder='Email' className={`inputs-unique w-[30em] ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2':''}`}/>
               <input id='phone' type="text" placeholder='Phone' className={`inputs-unique w-[30em] ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2':''}`}/>
-              <textarea id='message'  placeholder='Special Request' className={`inputs-unique w-[30em] ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2':''}`}/>
+              <textarea id='allergies'  placeholder='Allergies' className={`inputs-unique w-[30em] ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2':''}`}/>
+              <textarea id='req'  placeholder='Special Request' className={`inputs-unique w-[30em] ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2':''}`}/>
+              
               <div className='flex w-[30em] gap-3 mt-1'>
                 <button onClick={()=>{setStep(1)}} className={`btn w-full mt-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-white hover:text-white':''}`}>
                   Back

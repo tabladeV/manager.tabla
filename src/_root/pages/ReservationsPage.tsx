@@ -10,6 +10,7 @@ import ReservationModal from "../../components/reservation/ReservationModal"
 import { BaseKey, BaseRecord, useCreate, useList, useUpdate } from "@refinedev/core"
 import ReservationProcess from "../../components/reservation/ReservationProcess"
 import { Send } from "lucide-react"
+import Pagination from "../../components/reservation/Pagination"
 
 
 interface receivedTables {
@@ -572,6 +573,7 @@ const ReservationsPage = () => {
                   <option value="MARKETPLACE">Market Place</option>
                   <option value="WEBSITE">Website</option>
                   <option value="BACK_OFFICE">Back Office</option>
+                  <option value="WALK_IN">Walk In</option>
                 </select>
               </div>
               <div>
@@ -755,6 +757,7 @@ const ReservationsPage = () => {
             ))}
           </tbody>
         </table>
+        <Pagination />
       </div>
       {focusedDate && (
         <div>

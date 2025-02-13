@@ -61,10 +61,11 @@ export default function ReservationSource() {
   const [chartData, setChartData] = useState<ReservationAction[]>([]);
   useEffect(() => {
     setChartData([
-      { action: "Market Place", count: reservations.find(a => a.source === "MARKETPLACE")?.count || 0, fill: "#6411ad" },
-      { action: "Back Office", count: reservations.find(a => a.source === "BACK_OFFICE")?.count || 0, fill: "#9e0059" },
-      { action: "Third Party", count: reservations.find(a => a.source === "THIRD_PARTY")?.count || 0, fill: "#fb8500" },
-      {action : "Widget", count: reservations.find(a => a.source === "WIDGET")?.count || 0, fill: "#0d00a4"},
+      { action: "Market Place", count: reservations.find(a => a.source === "MARKETPLACE")?.count || 0, fill: "#3F72AF" },
+      { action: "Back Office", count: reservations.find(a => a.source === "BACK_OFFICE")?.count || 0, fill: "#88AB61" },
+      { action: "Third Party", count: reservations.find(a => a.source === "THIRD_PARTY")?.count || 0, fill: "#FFA500" },
+      {action : "Widget", count: reservations.find(a => a.source === "WIDGET")?.count || 0, fill: "#7b2cbf"},
+      {action : "Walk In", count: reservations.find(a => a.source === "WALK_IN")?.count || 0, fill: "#b75d69"}
     ])
 }, [reservations])
 
@@ -178,20 +179,24 @@ export default function ReservationSource() {
       </div>
       <div className="flex flex-wrap justify-center gap-5 mb-2"> 
         <div className="flex gap-3 items-center">
-            <div className="h-3 w-3 rounded-full bg-[#6411ad]"></div>
+            <div className="h-3 w-3 rounded-full bg-bluetheme"></div>
             <span className={`text-sm ${localStorage.getItem('darkMode')=== 'true'? 'text-gray-200':'text-gray-600'}`}>{t('overview.charts.reservationsSource.legend.MarketPlace')}</span>
         </div>
         <div className="flex gap-3 items-center">
-            <div className="h-3 w-3 rounded-full bg-[#9e0059]"></div>
+            <div className="h-3 w-3 rounded-full bg-greentheme"></div>
             <span className={`text-sm ${localStorage.getItem('darkMode')=== 'true'? 'text-gray-200':'text-gray-600'}`}>{t('overview.charts.reservationsSource.legend.BackOffice')}</span>
         </div>
         <div className="flex gap-3 items-center">
-            <div className="h-3 w-3 rounded-full bg-[#fb8500]"></div>
+            <div className="h-3 w-3 rounded-full bg-orangetheme"></div>
             <span className={`text-sm ${localStorage.getItem('darkMode')=== 'true'? 'text-gray-200':'text-gray-600'}`}>{t('overview.charts.reservationsSource.legend.ThirdParty')}</span>
         </div>
         <div className="flex gap-3 items-center">
-            <div className="h-3 w-3 rounded-full bg-[#0d00a4]"></div>
+            <div className="h-3 w-3 rounded-full bg-purpletheme"></div>
             <span className={`text-sm ${localStorage.getItem('darkMode')=== 'true'? 'text-gray-200':'text-gray-600'}`}>{t('overview.charts.reservationsSource.legend.Widget')}</span>
+        </div>
+        <div className="flex gap-3 items-center">
+            <div className="h-3 w-3 rounded-full bg-blushtheme"></div>
+            <span className={`text-sm ${localStorage.getItem('darkMode')=== 'true'? 'text-gray-200':'text-gray-600'}`}>{t('overview.charts.reservationsSource.legend.WalkIn')}</span>
         </div>
       </div>
       {showDay &&

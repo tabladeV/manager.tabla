@@ -158,7 +158,7 @@ const Availability = () => {
 
   const handleSaveAvailability = () => {
 
-    const restaurantId = localStorage.getItem('restaurantId') || '0';
+    const restaurantId = localStorage.getItem('restaurant_id');
 
     updateDuration({
       resource: "api/v1/bo/restaurants",

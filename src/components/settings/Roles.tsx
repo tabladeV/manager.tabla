@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import SearchBar from "../header/SearchBar";
 import { BaseKey, useList, useCreate, useDelete } from "@refinedev/core";
+import Pagination from "../reservation/Pagination";
 
 interface PermissionType {
     id: number;
@@ -230,7 +231,7 @@ const Roles = () => {
                     {/* Move Buttons */}
                     <div className="flex flex-col gap-3 mt-10">
                         <button
-                            className={`btn-primary px-2 ${
+                            className={`btn-primary flex justify-center px-2 ${
                                 localStorage.getItem("darkMode") === "true" ? "bg-darkthemeitems" : ""
                             }`}
                             onClick={moveRight}
@@ -238,12 +239,28 @@ const Roles = () => {
                             <ArrowRight size={20} />
                         </button>
                         <button
-                            className={`btn-primary px-2 ${
+                            className={`btn-primary flex items-center px-2 ${
+                                localStorage.getItem("darkMode") === "true" ? "bg-darkthemeitems" : ""
+                            }`}
+                            onClick={()=>{setAffectedPermissions((prev) => [...prev, ...availablePermissions]);setAvailablePermissions([])}}
+                        >
+                            All <ArrowRight size={20}/>
+                        </button>
+                        <button
+                            className={`btn-primary flex justify-center px-2 ${
                                 localStorage.getItem("darkMode") === "true" ? "bg-darkthemeitems" : ""
                             }`}
                             onClick={moveLeft}
                         >
                             <ArrowLeft size={20} />
+                        </button>
+                        <button
+                            className={`btn-primary flex items-center px-2 ${
+                                localStorage.getItem("darkMode") === "true" ? "bg-darkthemeitems" : ""
+                            }`}
+                            onClick={()=>{setAvailablePermissions((prev) => [...prev, ...affectedPermissions]); setAffectedPermissions([])}}
+                        >
+                            <ArrowLeft size={20}/> All 
                         </button>
                     </div>
 
@@ -305,6 +322,7 @@ const Roles = () => {
                                 </div>
                             ))
                         )}
+                        {savedRoles.length > 0 && <Pagination />}
                     </div>
                 </div>
             </div>

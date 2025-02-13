@@ -13,17 +13,17 @@ import { useList } from '@refinedev/core'
 
 const Home = () => {
 
-  const{data, isLoading, error} = useList({
-    resource: 'api/v1/api/v1/bo/restaurants/users/1/',
+  // const{data, isLoading, error} = useList({
+  //   resource: 'api/v1/api/v1/bo/restaurants/users/me/',
+  // })
 
-  })
+  // const [user, setUser] = useState<any>()
 
-  const [user, setUser] = useState<any>()
+  // useEffect(() => {
+  //   setUser(data?.data)
+  // }, [data])
 
-  useEffect(() => {
-    setUser(data?.data)
-  }, [data])
-
+  // console.log(user,'user')
 
   
 
@@ -36,8 +36,7 @@ const Home = () => {
 
       <div className='mb-4 ml-4'>
         <h1>
-          {t('overview.headline') +' '+( user? user.first_name : '')} 
-          {/* Hello, Alfred */}
+          {t('overview.headline') +''}
         </h1>
         <p className={` ${localStorage.getItem('darkMode')=== 'true'? ' text-softwhitetheme':'text-subblack'}`}>
           {t('overview.subtitle')}

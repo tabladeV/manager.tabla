@@ -5,6 +5,7 @@ import { format } from "date-fns"
 import IntervalCalendar from "../../components/Calendar/IntervalCalendar"
 import { parseArgs } from "util"
 import { BaseKey, BaseRecord, useList } from "@refinedev/core"
+import Pagination from "../../components/reservation/Pagination"
 
 interface Review {
     id: BaseKey
@@ -246,6 +247,7 @@ const Reviews = () => {
                 ))}
             </tbody>
         </table>
+        <Pagination />
       </div>
       {focusedDate && (
         <div>

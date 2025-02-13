@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ReservationProcess from './ReservationProcess';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, User } from 'lucide-react';
 import { BaseKey, BaseRecord, useCreate, useList } from '@refinedev/core';
 
 interface Reservation extends BaseRecord {
@@ -43,9 +43,21 @@ interface dataTypes {
   guests: number;
 }
 
+
 const ReservationModal = (props: ReservationModalProps) => {
+
+  const restaurantId = localStorage.getItem('restaurant_id');
+
+  const [searchKeyword, setSearchKeyword] = useState('');
   const { data: clientsData, isLoading, error } = useList({
     resource: 'api/v1/bo/customers/',
+    filters: [
+      {
+        field: 'search',
+        operator: 'eq',
+        value: searchKeyword,
+      },
+    ],
 
   });
 
@@ -91,6 +103,7 @@ const ReservationModal = (props: ReservationModalProps) => {
     id: 0,
     full_name: '',
     email: '',
+    source: '',
     phone: '',
     comment: '',
   });
@@ -111,19 +124,20 @@ const ReservationModal = (props: ReservationModalProps) => {
 
   const searchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
     const keyword = e.target.value.toLowerCase();
-    if (!keyword) {
-      setSearchResults(clients);
-    } else {
-      setInputName(e.target.value);
-      const results = clients.filter((client) =>
-        client.full_name.toLowerCase().includes(keyword)
-      );
-      setSearchResults(results);
-    }
+    setSearchKeyword(keyword);
+    // if (!keyword) {
+    //   setSearchResults(clients);
+    // } else {
+    //   setInputName(e.target.value);
+    //   const results = clients.filter((client) =>
+    //     client.full_name.toLowerCase().includes(keyword)
+    //   );
+    //   setSearchResults(results);
+    // }
   };
 
   const handleSelectClient = (client: Client) => {
-    setFormData({ ...client, id: 0, comment: '' });
+    setFormData({ ...client, id: 0, comment: '', source: '' });
     setInputName(client.full_name);
     setSelectedClient(client);
     setFocusedClient(false);
@@ -146,7 +160,7 @@ const ReservationModal = (props: ReservationModalProps) => {
       internal_note: '',
       date: data.reserveDate || '',
       time: data.time || '',
-      source: 'OTHER',
+      source: formData.source || 'BACK_OFFICE',
       number_of_guests: data.guests ? data.guests.toString() : '' ,
       status: 'PENDING',
       comment: formData.comment,
@@ -158,7 +172,7 @@ const ReservationModal = (props: ReservationModalProps) => {
       values: {
         occasion: 'none',
         status: 'PENDING',
-        source: 'BACK_OFFICE',
+        source: reservationData.source,
         tables:[],
         commenter: '',
         internal_note: reservationData.comment,
@@ -198,6 +212,66 @@ const ReservationModal = (props: ReservationModalProps) => {
     });
     // window.location.reload();
   };
+   const { mutate: newCustomerReservation } = useCreate({
+          resource: 'api/v1/bo/reservations/with_customer/',
+      
+          mutationOptions: {
+            retry: 3,
+            onSuccess: (data) => {
+              console.log('Reservation added:', data);
+            },
+            onError: (error) => {
+              console.log('Error adding reservation:', error);
+            },
+          },
+      });
+
+      const [newCustomerData, setNewCustomerData] = useState({
+          first_name: '',
+          last_name: '',
+          email: '',
+          phone: '',
+          source: '',
+          note: '',
+      });
+  
+
+   const handleNewReservationNewCustomer = () => {
+
+          const reservationData = {
+              first_name: newCustomerData.first_name,
+              last_name: newCustomerData.last_name,
+              number_of_guests: data.guests ? data.guests.toString() : '' ,
+              date: data.reserveDate || '',
+              time: data.time || '',
+              email: newCustomerData.email,
+              source: newCustomerData.source,
+              phone: newCustomerData.phone,
+              internal_note: newCustomerData.note,
+          }
+          console.log('Reservation Data:', reservationData);
+  
+          newCustomerReservation({
+              values: {
+                occasion: 'none',
+                status: 'PENDING',
+                source: reservationData.source,
+                commenter: '',
+                internal_note: reservationData.internal_note,
+                number_of_guests: data.guests ? data.guests.toString() : '' ,
+                date: data.reserveDate || '',
+                time: data.time || '',
+                restaurant: restaurantId,
+                customer: {
+                    first_name: reservationData.first_name,
+                    last_name: reservationData.last_name,
+                    email: reservationData.email,
+                    phone: reservationData.phone,
+                },
+              },
+              
+          });
+      }
 
   return (
     <div>
@@ -226,74 +300,60 @@ const ReservationModal = (props: ReservationModalProps) => {
             id="name"
             required
           />
-          {focusedClient && (
+          {(
             !newClient ? (
               <div
-                className={`absolute mt-[7em] flex flex-col gap-3 w-[36vw] p-2 shadow-md rounded-md lt-sm:w-[87vw] ${
-                  localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'
+                className={`absolute mt-[7em] flex flex-col gap-3 w-[36vw] p-2  rounded-md lt-sm:w-[87vw] ${
+                  localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-[#e1e1e150]'
                 }`}
               >
                 <div
-                  className="btn-secondary cursor-pointer"
+                  className="btn-secondary flex gap-2 items-center cursor-pointer"
                   onClick={() => setNewClient(!newClient)}
                 >
-                  {t('grid.buttons.addNewClient')}
+
+                  <User size={20}/>
+                  {t('grid.buttons.newClient')}
                 </div>
-                <div className="flex flex-col h-[10em] overflow-y-auto gap-3">
+                <div className="flex flex-col h-[60vh] overflow-y-auto no-scrollbar gap-3">
                   {searchResults.map((client) => (
                     <div
                       key={client.id}
-                      className={`flex btn cursor-pointer flex-row gap-2 ${
+                      className={`flex btn cursor-pointer flex-col items-start gap-0 ${
                         localStorage.getItem('darkMode') === 'true' ? 'text-white' : 'bg-white'
                       }`}
                       onClick={() => handleSelectClient(client)}
                     >
                       <p>{client.full_name}</p>
+                      <p className='font-[400] text-[.8rem]'>{client.email} | {client.phone}</p>
                     </div>
                   ))}
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col gap-3">
-                <input
-                  onChange={handleNewClientChange}
-                  type="text"
-                  placeholder="First Name"
-                  id="new_first_name"
-                  className={`inputs-unique ${
-                    localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'
-                  }`}
-                />
-                <input
-                  onChange={handleNewClientChange}
-                  type="text"
-                  placeholder="Last Name"
-                  id="new_last_name"
-                  className={`inputs-unique ${
-                    localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'
-                  }`}
-                />
-                <input
-                  onChange={handleNewClientChange}
-                  type="text"
-                  placeholder="Phone Number"
-                  id="new_phone"
-                  className={`inputs-unique ${
-                    localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'
-                  }`}
-                />
-                <input
-                  onChange={handleNewClientChange}
-                  type="text"
-                  placeholder="Email"
-                  id="new_email"
-                  className={`inputs-unique ${
-                    localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'
-                  }`}
-                />
-                <button onClick={handleNewClient} className="btn-primary" type="submit">
-                  Save client
-                </button>
+              <div>
+                <div className='mt-6 flex flex-col gap-4'>
+                    <input type='text' name='first_name' placeholder={t('grid.placeHolders.firstname')} className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white'  onChange={(e) => setNewCustomerData({...newCustomerData, first_name: e.target.value})} required/>
+                    <input type='text' name='last_name' placeholder={t('grid.placeHolders.lastname')} className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white'  onChange={(e) => setNewCustomerData({...newCustomerData, last_name: e.target.value})} required/>
+                    <input type='email' name='email' placeholder={t('grid.placeHolders.email')} className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' onChange={(e) => setNewCustomerData({...newCustomerData, email: e.target.value})} required/>
+                    <input type='tel' name='phone' placeholder={t('grid.placeHolders.phone')} className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' onChange={(e) => setNewCustomerData({...newCustomerData, phone: e.target.value})} required/>
+                    <input type="text" name='note' placeholder={t('grid.placeHolders.internalNote')} className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' onChange={(e) => setNewCustomerData({...newCustomerData, note: e.target.value})} />
+                    <select name='source' className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' onChange={(e) => setNewCustomerData({...newCustomerData, source: e.target.value})} required>
+                      <option value='BACK_OFFICE'>Back Office</option>
+                      <option value='WALK_IN'>Walk In</option>
+                    </select>
+                    <div
+                      onClick={() => setShowProcess(true)}
+                      className={`btn flex justify-around cursor-pointer ${
+                        localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'
+                      }`}
+                    >
+                      {data.reserveDate === '' ? <div>Date</div> : <span>{data.reserveDate}</span>}
+                      {data.time === '' ? <div>Time</div> : <span>{data.time}</span>}
+                      {data.guests === 0 ? <div>Guests</div> : <span>{data.guests}</span>}
+                    </div>
+                    <button onClick={handleNewReservationNewCustomer} className='w-full py-2 bg-greentheme text-white rounded-lg hover:opacity-90 transition-opacity mt-3'>{t('reservations.buttons.addReservation')}</button>
+                </div>
               </div>
             )
           )}
@@ -311,7 +371,7 @@ const ReservationModal = (props: ReservationModalProps) => {
               email: formData.email,
               date: data.reserveDate || '',
               time: data.time || '',
-              source: 'OTHER',
+              source: formData.source || 'OTHER',
               number_of_guests: data.guests? data.guests.toString():'',
               status: 'PENDING',
               internal_note: formData.comment,
@@ -365,6 +425,10 @@ const ReservationModal = (props: ReservationModalProps) => {
               onChange={handleFormChange}
               
             />
+            <select name='source' className='inputs-unique' onChange={(e) => setFormData((prev) => ({ ...prev, source: e.target.value }))} required>
+              <option value='BACK_OFFICE'>Back Office</option>
+              <option value='WALK_IN'>Walk In</option>
+            </select>
           </div>
           <div
             onClick={() => setShowProcess(true)}

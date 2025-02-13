@@ -15,6 +15,8 @@ interface ReservationType {
 
 const ReservationForGrid = (props:ReservationType) => {
 
+    const restaurantId = localStorage.getItem('restaurant_id');
+
     const [searchInput, setSearchInput] = useState<string>('');
 
     const searchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,10 +62,61 @@ const ReservationForGrid = (props:ReservationType) => {
         },
     });
 
+    const { mutate: newCustomerReservation } = useCreate({
+        resource: 'api/v1/bo/reservations/with_customer/',
+    
+        mutationOptions: {
+          retry: 3,
+          onSuccess: (data) => {
+            console.log('Reservation added:', data);
+
+            props.onClick
+          },
+          onError: (error) => {
+            console.log('Error adding reservation:', error);
+          },
+        },
+    });
+
     
 
     const [selectedClient, setSelectedClient] = useState<BaseRecord>();
     const [chosenClient, setChosenClient] = useState<BaseRecord|null>();
+
+    const handleNewReservationNewCustomer = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const reservationData = {
+            first_name: formData.get('first_name'),
+            last_name: formData.get('last_name'),
+            source: formData.get('source'),
+            email: formData.get('email'),
+            phone: formData.get('phone'),
+            guests: formData.get('guests'),
+            internal_note: formData.get('note'),
+        }
+
+        newCustomerReservation({
+            values: {
+              occasion: 'none',
+              status: 'PENDING',
+              source: reservationData.source,
+              commenter: '',
+              internal_note: reservationData.internal_note,
+              number_of_guests: reservationData.guests,
+              date: props.timeAndDate?.date,
+              time: `${props.timeAndDate?.time}:00`,
+              restaurant: restaurantId,
+              customer: {
+                  first_name: reservationData.first_name,
+                  last_name: reservationData.last_name,
+                  email: reservationData.email,
+                  phone: reservationData.phone,
+              },
+            },
+            
+        });
+    }
     
     const handleNewReservation = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -71,6 +124,7 @@ const ReservationForGrid = (props:ReservationType) => {
         const reservationData = {
             first_name: formData.get('first_name'),
             last_name: formData.get('last_name'),
+            source: formData.get('source'),
             email: formData.get('email'),
             phone: formData.get('phone'),
             guests: formData.get('guests'),
@@ -81,14 +135,14 @@ const ReservationForGrid = (props:ReservationType) => {
             values: {
               occasion: 'none',
               status: 'PENDING',
-              source: 'BACK_OFFICE',
+              source: reservationData.source,
               tables:[],
               commenter: '',
               internal_note: reservationData.internal_note,
               number_of_guests: reservationData.guests,
               date: props.timeAndDate?.date,
               time: `${props.timeAndDate?.time}:00`,
-              restaurant: 1,
+              restaurant: restaurantId,
               customer: chosenClient?.id,
             },
             
@@ -123,8 +177,8 @@ const [choosingClient, setChoosingClient] = useState<boolean>(true);
                                     }`}
                                 onClick={() => {setChosenClient(client);setChoosingClient(false);setNewClient(false)}}
                             >
-                                <p className='font-[700]'>{client.full_name}</p>
-                                <p className='text-[.7rem]'>{client.email}</p>
+                                <p className='font-[600]'>{client.full_name}</p>
+                                <p className='font-[400] text-[.8rem]'>{client.email} | {client.phone}</p>
                             </div>
                         ))}
                     </div>
@@ -134,13 +188,17 @@ const [choosingClient, setChoosingClient] = useState<boolean>(true);
                     <div>
                         <h1 className='text-2xl font-bold text-left mt-6'>{t('reservations.buttons.addReservation')} </h1>
                         <span className='italic font-[400] text-sm '> on {props.timeAndDate?.date} at {props.timeAndDate?.time } </span> 
-                        <form className='mt-6 flex flex-col gap-4' onSubmit={handleNewReservation}>
+                        <form className='mt-6 flex flex-col gap-4' onSubmit={handleNewReservationNewCustomer}>
                             <input type='text' name='first_name' placeholder={t('grid.placeHolders.firstname')} className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' required/>
                             <input type='text' name='last_name' placeholder={t('grid.placeHolders.lastname')} className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' required/>
                             <input type='email' name='email' placeholder={t('grid.placeHolders.email')} className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' required/>
                             <input type='tel' name='phone' placeholder={t('grid.placeHolders.phone')} className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' required/>
                             <input type="number" name='guests' placeholder={t('grid.placeHolders.guests')} className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' required/>
                             <input type="text" name='note' placeholder={t('grid.placeHolders.internalNote')} className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white'/>
+                            <select name="source" className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' required>
+                                <option value="BACK_OFFICE">Back Office</option>
+                                <option value="WALK_IN">Walk In</option>
+                            </select>
                             <button className='w-full py-2 bg-greentheme text-white rounded-lg hover:opacity-90 transition-opacity mt-3'>{t('reservations.buttons.addReservation')}</button>
                         </form>
                     </div>
@@ -151,6 +209,10 @@ const [choosingClient, setChoosingClient] = useState<boolean>(true);
                         <form className='mt-6 flex flex-col gap-4' onSubmit={handleNewReservation}>
                             <input type="number" name='guests' placeholder={t('grid.placeHolders.guests')} className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' required/>
                             <input type="text" name='note' placeholder={t('grid.placeHolders.internalNote')} className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white'/>
+                            <select name="source" className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' required>
+                                <option value="BACK_OFFICE">Back Office</option>
+                                <option value="WALK_IN">Walk In</option>
+                            </select>
                             <button className='w-full py-2 bg-greentheme text-white rounded-lg hover:opacity-90 transition-opacity mt-3'>{t('reservations.buttons.addReservation')}</button>
                         </form>
                     </div>
