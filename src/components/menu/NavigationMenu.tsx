@@ -81,7 +81,7 @@ const {t}=  useTranslation();
         }
         
 
-        
+        <CanAccess action="view" resource="reservation">
         <Link to='/agenda/grid' className={ `${(pathname === '/agenda' || pathname ===  '/agenda/grid') ? navigatedMenuClass : normalMenuClass }`}>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M6.45832 2.08334C6.45832 1.91758 6.39247 1.7586 6.27526 1.64139C6.15805 1.52418 5.99908 1.45834 5.83332 1.45834C5.66756 1.45834 5.50858 1.52418 5.39137 1.64139C5.27416 1.7586 5.20832 1.91758 5.20832 2.08334V3.4C4.00832 3.49584 3.22165 3.73084 2.64332 4.31C2.06415 4.88834 1.82915 5.67584 1.73248 6.875H18.2675C18.1708 5.675 17.9358 4.88834 17.3566 4.31C16.7783 3.73084 15.9908 3.49584 14.7916 3.39917V2.08334C14.7916 1.91758 14.7258 1.7586 14.6086 1.64139C14.4914 1.52418 14.3324 1.45834 14.1666 1.45834C14.0009 1.45834 13.8419 1.52418 13.7247 1.64139C13.6075 1.7586 13.5416 1.91758 13.5416 2.08334V3.34417C12.9875 3.33334 12.3658 3.33334 11.6666 3.33334H8.33332C7.63415 3.33334 7.01248 3.33334 6.45832 3.34417V2.08334Z" fill={(pathname === '/agenda' || pathname ===  '/agenda/grid')|| localStorage.getItem('darkMode')=== 'true' ? 'white':'#1e1e1e'} fillOpacity={(pathname === '/agenda' || pathname ===  '/agenda/grid')? '1':'0.75'}/>
@@ -91,6 +91,7 @@ const {t}=  useTranslation();
 
           <h2 className={`font-[500] text-[17px] ${localStorage.getItem('darkMode')==='true'?'text-textdarktheme':'' } ${stateOfSideBar? 'block':'hidden'}`}>{t('grid.title')}</h2>
         </Link>
+        </CanAccess>
 
         {/* {(pathname === '/agenda' || pathname === '/agenda/grid') && 
           <div className='flex lt-sm:hidden flex-col gap-1'>
@@ -124,6 +125,7 @@ const {t}=  useTranslation();
         </Link> */}
 
 
+        <CanAccess action="view" resource="customer">
         <Link to='/clients' className={`${pathname.includes('clients') ? navigatedMenuClass : normalMenuClass }`}>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g clipPath="url(#clip0_8_101)">
@@ -140,12 +142,10 @@ const {t}=  useTranslation();
               </clipPath>
               </defs>
           </svg>
-
-
-
-
           <h2 className={`font-[500] text-[17px] ${localStorage.getItem('darkMode')==='true'?'text-textdarktheme':'' } ${stateOfSideBar? 'block':'hidden'}`}>{t('clients.title')}</h2>
         </Link>
+        </CanAccess>
+        <CanAccess action="view" resource="review">
         <Link to='/reviews' className={`${pathname.includes('reviews') ? navigatedMenuClass : normalMenuClass } `}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2ZM6 14V11.53L12.88 4.65C13.08 4.45 13.39 4.45 13.59 4.65L15.36 6.42C15.56 6.62 15.56 6.93 15.36 7.13L8.47 14H6ZM17 14H10.5L12.5 12H17C17.55 12 18 12.45 18 13C18 13.55 17.55 14 17 14Z" fill={pathname === '/reviews' || localStorage.getItem('darkMode')=== 'true' ? 'white':'#1e1e1e'} fillOpacity={pathname === '/reviews'? '1':'0.75'}/>
@@ -154,6 +154,7 @@ const {t}=  useTranslation();
 
           <h2 className={`font-[500] text-[17px] ${localStorage.getItem('darkMode')==='true'?'text-textdarktheme':'' } ${stateOfSideBar? 'block':'hidden'}`}>{t('reviews.title')}</h2>
         </Link>
+        </CanAccess>
       </div>
       <div className='lt-sm:hidden'>
       <Link to='/support' className={`${pathname === '/support' ? navigatedMenuClass : normalMenuClass }`}>

@@ -7,7 +7,7 @@ import 'i18next'
 
 import { useTranslation } from 'react-i18next';
 import ReservationModal from "../../components/reservation/ReservationModal"
-import { BaseKey, BaseRecord, useCreate, useList, useUpdate } from "@refinedev/core"
+import { BaseKey, BaseRecord, CanAccess, useCan, useCreate, useList, useUpdate } from "@refinedev/core"
 import ReservationProcess from "../../components/reservation/ReservationProcess"
 import { Send } from "lucide-react"
 
@@ -29,6 +29,7 @@ interface Reservation extends BaseRecord {
 
 const ReservationsPage = () => {
 
+  const {data: changeRes} = useCan({resource: 'reservation', action: 'change'})
 
   interface dataTypes {
     reserveDate: string,
@@ -69,8 +70,15 @@ const ReservationsPage = () => {
         value: searchKeyWord,
       }
     ],
-
-  });
+    queryOptions: {
+      onSuccess: (data) => {
+        setReservations(data.data as Reservation[]);
+      },
+      onError: (error) => {
+        console.log('Error fetching data:', error);
+      }
+    }
+});
 
 
   const {data: floorsData, isLoading: floorLoading, error: floorError} = useList({
@@ -114,10 +122,11 @@ const ReservationsPage = () => {
 
   
   useEffect(() => {
+    console.log('this one')
     if (data?.data) {
       setReservations(data.data as Reservation[]);
     }
-  }, [data]);
+  }, []);
 
   
 
@@ -254,6 +263,10 @@ const ReservationsPage = () => {
   }, [selectedClient])
 
   const EditClient = (id: BaseKey | undefined) => {
+
+    if(!changeRes?.can)
+      return;
+
     setEditingClient(id);
     if (!id) return;
     const client = reservations.find(r => r.id === id);
@@ -353,6 +366,9 @@ const ReservationsPage = () => {
 
   const [idStatusModification, setIdStatusModification] = useState<BaseKey>('');
   const showStatusModification = (id: BaseKey | undefined) => {
+    if(!changeRes?.can)
+      return;
+    
     if (!id) return;
     setIdStatusModification(id);
     setShowStatus(!showStatus);
@@ -542,9 +558,11 @@ const ReservationsPage = () => {
       )}
       <div className='flex justify-between mb-2'>
         <h1 className={`text-3xl text-blacktheme  font-[700] ${localStorage.getItem('darkMode')==='true'?' text-whitetheme':' text-blacktheme'}`}>{t('reservations.title')}</h1>
-        <button className='btn-primary' onClick={()=>{setShowAddReservation(true)}}>
-          {t('reservations.buttons.addReservation')}
-        </button>
+        <CanAccess action="add" resource="reservation">
+          <button className='btn-primary' onClick={()=>{setShowAddReservation(true)}}>
+            {t('reservations.buttons.addReservation')}
+          </button>
+        </CanAccess>
       </div>
       <div className="flex lt-sm:flex-col lt-sm:gap-2 justify-between">
         <div className="">

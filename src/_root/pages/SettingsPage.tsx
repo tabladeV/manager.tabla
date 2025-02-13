@@ -45,7 +45,6 @@ const SettingsPage = () => {
           <CanAccess
             resource="availabilityday"
             action="view"
-            fallback={<span>{t("settingsPage.menuItems.availability")}</span>}
           >
             <Link
               to="/settings/availability"
@@ -86,7 +85,6 @@ const SettingsPage = () => {
           <CanAccess
             resource="role"
             action="view"
-            fallback={<span>{t("settingsPage.menuItems.roles")}</span>}
           >
             <Link
               to="/settings/roles"

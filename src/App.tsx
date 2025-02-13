@@ -212,7 +212,15 @@ function App() {
                           </CanAccess>
                         }
                       >
-                        <Route path="/clients/:id" element={<ClientInterface />} />
+                        <Route path="/clients/:id" element={
+                          <CanAccess
+                            resource="customer"
+                            action="view"
+                            fallback="You don't have access to clients"
+                          >
+                            <ClientInterface />
+                          </CanAccess>
+                          } />
                       </Route>
 
                       {/* Support - not restricted */}
