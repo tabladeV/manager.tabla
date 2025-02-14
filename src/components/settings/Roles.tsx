@@ -21,10 +21,39 @@ interface RoleType {
 const Roles = () => {
     const { data: permissionsData, isLoading, error } = useList({
         resource: "api/v1/bo/permissions",
+        
+        queryOptions:{
+            onSuccess(data){
+                setPermissions(data.data as PermissionType[]);
+                setAvailablePermissions(data.data as PermissionType[]);
+            }
+        }
     });
+
+    const [size, setSize] = useState<number>(10)
+    const [count, setCount] = useState<number>()
+    const [page, setPage] = useState<number>(1)
 
     const { data: rolesData, isLoading: rolesLoading, error: rolesError } = useList({
         resource: "api/v1/bo/roles/",
+        filters: [
+            {
+              field: "page_size",
+              operator: "eq",
+              value: size
+            },
+            {
+              field: "page",
+              operator: "eq",
+              value: page
+            },
+          ],
+          queryOptions:{
+            onSuccess(data) {
+                setRoles(data.data.results as RoleType[]);
+                setCount(data.data.count as number)
+            },
+          }
     });
 
     console.log('rolesData', rolesData);
@@ -49,18 +78,7 @@ const Roles = () => {
     const [roleName, setRoleName] = useState("");
     const [savedRoles, setSavedRoles] = useState<RoleType[]>([]);
 
-    useEffect(() => {
-        if (rolesData?.data) {
-            setRoles(rolesData.data as RoleType[]);
-        }
-    }, [rolesData]);
 
-    useEffect(() => {
-        if (permissionsData?.data) {
-            setPermissions(permissionsData.data as PermissionType[]);
-            setAvailablePermissions(permissionsData.data as PermissionType[]);
-        }
-    }, [permissionsData]);
 
     useEffect(() => {
         if (roles) {
@@ -331,7 +349,10 @@ const Roles = () => {
                                 </div>
                             ))
                         )}
-                        {savedRoles.length > 0 && <Pagination />}
+                        {savedRoles.length > 0 && 
+                            <Pagination setPage={(page:number)=>{setPage(page)}} size={size} count={count} />
+
+                        }
                     </div>
                 </div>
             </div>

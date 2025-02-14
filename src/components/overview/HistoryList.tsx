@@ -1,5 +1,4 @@
 import { useTranslation } from "react-i18next"
-import Filter from "./Filter"
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { ArrowRight } from "lucide-react"
@@ -29,10 +28,21 @@ interface Review {
 
 const HistoryList  = () => {
 
-  const [timeRange, setTimeRange] = useState<string>('last_7_days');
 
   const {data: reviewsData, isLoading, error} = useList({
           resource: 'api/v1/reviews/',
+          filters:[
+            {
+              field: "page",
+              operator: "eq",
+              value: 1,
+            },
+            {
+              field: "page_size",
+              operator: "eq",
+              value: 10,
+            },
+          ]
 
       })
       console.log('data',reviewsData?.data)
@@ -44,7 +54,7 @@ const HistoryList  = () => {
       
       useEffect(() => {
         if (reviewsData?.data) {
-          setReviews(reviewsData.data as Review[])
+          setReviews(reviewsData.data.results as Review[])
         }
       }, [reviewsData])
       

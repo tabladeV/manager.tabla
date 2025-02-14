@@ -34,11 +34,35 @@ export default function Users() {
 
   const {data:rolesData, isLoading:rolesLoading, error:rolesError} = useList({
     resource: 'api/v1/bo/roles/',
+    filters: [
+      {
+        field: "page_size",
+        operator: "eq",
+        value: 20
+      },
+      {
+        field: "page",
+        operator: "eq",
+        value: 1
+      }
+    ],
 
   })
 
   const{data, isLoading, error} = useList({
     resource: 'api/v1/api/v1/bo/restaurants/users/',
+    filters: [
+      {
+        field: "page_size",
+        operator: "eq",
+        value: 10
+      },
+      {
+        field: "page",
+        operator: "eq",
+        value: 1
+      }
+    ],
 
   })
 
@@ -50,13 +74,12 @@ export default function Users() {
 
 
 
-  console.log('users',data?.data)
 
 
   const [users, setUsers] = useState<User[]>(initialUsers)
   useEffect(() => {
     if (data?.data) {
-      setUsers(data.data as User[])
+      setUsers(data.data.results as User[])
     }
   }, [data])
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -234,14 +257,14 @@ export default function Users() {
                 className={`inputs ${localStorage.getItem('darkMode')==='true' ? 'bg-darkthemeitems' : 'bg-white'}`}
                 defaultValue={roleSelected || selectedUser?.role?.id } // Ensure the value is ID, not name
                 onChange={(e) => {
-                  const selectedRole = rolesData?.data.find((role: any) => role.id === Number(e.target.value));
+                  const selectedRole = rolesData?.data.results.find((role: any) => role.id === Number(e.target.value));
                   if (selectedUser && selectedRole) {
                     setSelectedUser({ ...selectedUser, role: { ...selectedUser.role, id: selectedRole.id as BaseKey, name: selectedRole.name } });
                   }
                 }} // Set role ID
               >
                 {
-                  rolesData?.data.map((role: any) => (
+                  rolesData?.data.results.map((role: any) => (
                     <option key={role.id} value={role.id}>{role.name}</option>
                   ))
                 }

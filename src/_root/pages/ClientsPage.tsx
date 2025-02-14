@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import AccessToClient from "../../components/clients/AccessToClient";
 import SearchBar from "../../components/header/SearchBar";
 import { Outlet, useLocation, useParams } from "react-router-dom";
@@ -27,17 +27,36 @@ interface ClientData {
 
 const ClientsPage = () => {
 
+  const [pageSize,setPageSize ] =useState(3);
+  const [page, setPage] = useState(1);
+
   const {data , isLoading, error} = useList({
     resource: 'api/v1/bo/customers/',
+    filters: [
+      {
+        field: "page",
+        operator: "eq",
+        value: page,
+      },
+      {
+        field: "page_size",
+        operator: "eq",
+        value: pageSize,
+      },
+    ],
 
   });
 
 
   const [clients, setClients] = useState<BaseRecord[]>([]);
   
+
+  const [visibleClients, setVisibleClients] = useState(clients);
+  const observerRef = useRef(null);
+
   useEffect(() => {
     if (data?.data) {
-      setClients(data.data);
+      setClients(data.data.results as unknown as BaseRecord[]);
     }
     
   }, [data]);
@@ -141,7 +160,34 @@ const ClientsPage = () => {
 
   useEffect(() => {
     console.log(selectedClient);
-  }, [selectedClient]);
+  }, [selectedClient]); 
+
+  
+  
+  // Pagination
+
+  // Load More Function
+  const loadMore = useCallback(() => {
+    setPageSize((prevPageSize) => prevPageSize + 4);
+  }, []);
+
+  // Intersection Observer to detect when the trigger is visible
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMore();
+        }
+      },
+      { threshold: 1 }
+    );
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [loadMore]);
 
   return (
     <div className="h-full">
@@ -195,6 +241,8 @@ const ClientsPage = () => {
                 id={client.id}
               />
             ))}
+            <div ref={observerRef} className="h-10 bg-transparent" />
+
           </div>
           
           <button className={` ${selectedClient.length === 0 ?  localStorage.getItem('darkMode')==='true'?'btn hover:border-[0px] border-[0px] cursor-not-allowed bg-subblack text-softwhitetheme ':'btn hover:border-[0px] border-[0px] cursor-not-allowed bg-softgreytheme ':'btn-primary'}`} disabled={selectedClient.length===0} onClick={()=>{(setShowNotificationModal(true))}}>{t('clients.sendNotificationButton')}</button>

@@ -31,21 +31,63 @@ interface Review {
 
 const Reviews = () => {
 
+    const [page, setPage] = useState(1)
+    const [count, setCount] = useState(0)
+    const [size, setSize] = useState(10)
+
+    const [reviews, setReviews] = useState<Review[]>([])
+    const [searchKeyword , setSearchKeyword] = useState('')
+
+
+    const searchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+      const keyword = e.target.value.toLowerCase();
+      setSearchKeyword(keyword)
+    };
+
+
     const {data, isLoading, error} = useList({
         resource: 'api/v1/reviews/',
+        filters:[
+          {
+            field: "customer",
+            operator: "eq",
+            value: searchKeyword
+          },
+          {
+            field: "page",
+            operator: "eq",
+            value: page,
+          },
+          {
+            field: "page_size",
+            operator: "eq",
+            value: size,
+          },
+          {
+            field: "ordering",
+            operator: "eq",
+            value: "id",
+          }
+        ],
+        queryOptions: {
+          onSuccess: (data) => {
+            setReviews(data.data.results as Review[]);
+            setCount(data.data.count as number)
+            console.log('Data fetched successfully:', data);
+          },
+          onError: (error) => {
+            console.log('Error fetching data:', error);
+          }
+        }
     })
+
 
     
 
     const {t}= useTranslation()
 
-    const [reviews, setReviews] = useState<Review[]>([])
     
-    useEffect(() => {
-      if (data?.data) {
-        setReviews(data.data as Review[])
-      }
-    }, [data])
     
 
     const avg = (a: number, b: number, c: number,d :number) => {
@@ -89,20 +131,8 @@ const Reviews = () => {
         }
       }, [selectedDateRange])
 
-      const searchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
 
-        const keyword = e.target.value.toLowerCase();
-        if(keyword === '') {
-            setSearchResults(reviews as Review[])
-        }
-        else {
-          const results = (reviews as Review[]).filter((item: Review) =>
-            item.customer.first_name.toLowerCase().includes(keyword) ||
-            item.customer.last_name.toLowerCase().includes(keyword)
-          );
-          setSearchResults(results);
-        }
-      };
+      
 
     const setDefaultFilter = () => {
         setFocusedFilter('')
@@ -117,7 +147,7 @@ const Reviews = () => {
         if (searchResults.length === 0) {
           setSearchResults(reviews as Review[])
         }
-      }, [reviews])
+      }, [reviews ])
 
     filteredReviews = searchResults?.filter((reservation: Review) => {
         if (focusedFilter !== '') return false
@@ -229,7 +259,7 @@ const Reviews = () => {
                 </tr>
               </thead>
               <tbody className={localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2 text-white':'bg-gray-50 text-gray-500'}>
-                {filteredReviews.map(review => (
+                {reviews.map(review => (
                 <tr key={review.id} className=" hover:opacity-75">
                     <td className="px-6 py-4 whitespace-nowrap cursor-pointer"  onClick={()=>(setSelectedClient(review.id))} >{review.id}</td>
                     <td className="px-6 py-4 whitespace-nowrap cursor-pointer"  onClick={()=>(setSelectedClient(review.id))} >{review.customer.first_name} {review.customer.last_name}</td>
@@ -247,7 +277,7 @@ const Reviews = () => {
                 ))}
             </tbody>
         </table>
-        <Pagination />
+        <Pagination setPage={(page:number)=>{setPage(page)}} size={size} count={count} />
       </div>
       {focusedDate && (
         <div>

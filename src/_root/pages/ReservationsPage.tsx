@@ -53,11 +53,24 @@ const ReservationsPage = () => {
 
   const { t } = useTranslation();
   const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [count, setCount] = useState(0)
+  const [page,setPage] = useState(1)
+  
 
   
-  const { data, isLoading, error } = useList<Reservation>({
+  const { data, isLoading, error } = useList<BaseRecord>({
     resource: "api/v1/bo/reservations/",
     filters: [
+      {
+        field: "page",
+        operator: "eq",
+        value: page,
+      },
+      {
+        field: "page_size",
+        operator: "eq",
+        value: 20,
+      },
       {
         field: "status",
         operator: "eq",
@@ -77,17 +90,25 @@ const ReservationsPage = () => {
         field: "search",
         operator: "eq",
         value: searchKeyWord,
+      },
+      {
+        field: "ordering",
+        operator: "eq",
+        value: "id",
       }
     ],
     queryOptions: {
       onSuccess: (data) => {
-        setReservations(data.data as Reservation[]);
+        setReservations(data.data.results as Reservation[]);
+        setCount(data.data.count)
       },
       onError: (error) => {
         console.log('Error fetching data:', error);
       }
     }
 });
+
+console.log(count,'test')
 
 
   const {data: floorsData, isLoading: floorLoading, error: floorError} = useList({
@@ -189,6 +210,11 @@ const ReservationsPage = () => {
         field: "date",
         operator: "eq",
         value: reservationProgressData.reserveDate
+      },
+      {
+        field: "number_of_guests",
+        operator: "eq",
+        value: reservationProgressData.guests
       },
       {
         field: "time",
@@ -771,7 +797,7 @@ const ReservationsPage = () => {
             ))}
           </tbody>
         </table>
-        <Pagination />
+        <Pagination setPage={(page:number)=>{setPage(page)}} size={20} count={count} />
       </div>
       {focusedDate && (
         <div>

@@ -45,13 +45,25 @@ export default function TopUsers() {
 
   const { data, isLoading, error } = useList<BaseRecord>({
       resource: 'api/v1/bo/reservations/',
+      filters: [
+        {
+          field: "page",
+          operator: "eq",
+          value: 1,
+        },
+        {
+          field: "page_size",
+          operator: "eq",
+          value: 400,
+        }
+      ]
 
     })
 
     const [reservations, setReservations] = useState<BaseRecord[]>([])
     useEffect(() => {
       if (data?.data) {
-        setReservations(data.data)
+        setReservations(data.data.results as unknown as BaseRecord[])
       }
     }, [data])
 
