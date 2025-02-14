@@ -262,7 +262,8 @@ function App() {
                         <Route path="/settings/features" element={<Features />} />
                         <Route path="/settings/users" element={<Users />} />
                         <Route path="/settings/billing" element={<Billing />} />
-                        <Route path="/settings/widget" element={<Widget />} />
+                        <Route path="/settings/widget/reservation" element={<Widget />} />
+                        <Route path="/settings/widget/review" element={<ReviewWidget />} />
                         <Route path="/settings/permissions" element={<Permissions />} />
                         <Route path="/settings/services" element={<Services />} />
                         <Route path="/settings/roles" element={
