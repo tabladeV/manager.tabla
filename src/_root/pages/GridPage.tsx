@@ -5,7 +5,7 @@ import { addHours, format,  isBefore, setMinutes, endOfDay,  startOfDay, getHour
 import { useTranslation } from "react-i18next"
 import i18next from "i18next"
 import ReservationModal from "../../components/reservation/ReservationModal"
-import { BaseKey, BaseRecord, useList } from "@refinedev/core"
+import { BaseKey, BaseRecord, CanAccess, useList } from "@refinedev/core"
 import { useDateContext } from "../../context/DateContext"
 import ReservationForGrid from "../../components/reservation/ReservationForGrid"
 
@@ -257,14 +257,15 @@ const { chosenDay } = useDateContext();
                     ) : null}
                     
                   </div>
-                    
-                    <button 
-                     disabled={(format(today,'yyyy-MM-dd') === format(chosenDay,'yyyy-MM-dd') ? Number(timeKey.slice(0,2)) < Number(getHours(today)) : today > addHours(chosenDay, 24))}
-                     className={`btn-primary text-[.8rem] text-center bottom-0 duration-150 transition ${(format(today,'yyyy-MM-dd') === format(chosenDay,'yyyy-MM-dd') ? Number(timeKey.slice(0,2)) < Number(getHours(today)) : today > addHours(chosenDay, 24))  ? 'opacity-40':''} `} 
-                     onClick={() => addReservation(format(hour, 'HH') + ':' + minutes)}
+                    <CanAccess resource="reservation" action="add">
+                    <button
+                      disabled={(format(today, 'yyyy-MM-dd') === format(chosenDay, 'yyyy-MM-dd') ? Number(timeKey.slice(0, 2)) < Number(getHours(today)) : today > addHours(chosenDay, 24))}
+                      className={`btn-primary text-[.8rem] text-center bottom-0 duration-150 transition ${(format(today, 'yyyy-MM-dd') === format(chosenDay, 'yyyy-MM-dd') ? Number(timeKey.slice(0, 2)) < Number(getHours(today)) : today > addHours(chosenDay, 24)) ? 'opacity-40' : ''} `}
+                      onClick={() => addReservation(format(hour, 'HH') + ':' + minutes)}
                     >
                       {t('grid.buttons.addReservation')}
-                     </button>
+                    </button>
+                    </CanAccess>
                 </div>
               )
             })}
