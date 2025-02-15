@@ -116,9 +116,9 @@ const ReservationModal = (props: ReservationModalProps) => {
   const { t } = useTranslation();
 
   useEffect(() => {
-    if (clientsData?.data) {
-      setClients(clientsData.data as Client[]);
-      setSearchResults(clientsData.data as Client[]);
+    if (clientsData?.results) {
+      setClients(clientsData.results as Client[]);
+      setSearchResults(clientsData.results as Client[]);
     }
   }, [clientsData]);
 

@@ -1,8 +1,12 @@
 import axios from "axios";
 
+axios.defaults.withCredentials = true
+
 const axiosInstance = axios.create({
   baseURL: "https://api.dev.tabla.ma", // Your API base URL
+  withCredentials: true
 });
+
 
 // Request interceptor to add the restaurant header from localStorage.
 axiosInstance.interceptors.request.use(
