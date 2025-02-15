@@ -49,6 +49,15 @@ const General = () => {
   }, [restaurantData]);
 
 
+  interface CitiesType {
+        
+    results: BaseRecord[]
+    count: number
+    
+  }
+
+  const [citiesAPIInfo, setCitiesAPIInfo] =useState<CitiesType>()
+
 
   const { data: allCities, isLoading: isLoadingAllCities, error: errorAllCities } = useList({
     resource: 'api/v1/api/v1/bo/cities/',
@@ -69,7 +78,21 @@ const General = () => {
         value: 2,
       },
     ],
+    queryOptions:{
+      onSuccess(data){
+        setCitiesAPIInfo(data.data as unknown as CitiesType)
+      }
+    }
   });
+
+  interface CountriesType {
+        
+    results: BaseRecord[]
+    count: number
+    
+  }
+
+  const [countriesAPIInfo, setCountriesAPIInfo] =useState<CountriesType>()
 
   const { data: allCountries, isLoading: isLoadingAllCountries, error: errorAllCountries } = useList({
     resource: 'api/v1/api/v1/bo/countries/',
@@ -85,6 +108,11 @@ const General = () => {
         value: 1
       }
     ],
+    queryOptions:{
+      onSuccess(data){
+        setCountriesAPIInfo(data.data as unknown as CountriesType)
+      }
+    }
     
   });
 
@@ -241,7 +269,7 @@ const General = () => {
             value={formData.country}
             onChange={handleSelectChange}
           >
-            {allCountries?.data.results.map((country:any) => (
+            {countriesAPIInfo?.results.map((country:any) => (
               <option key={country.id} value={country.id}>
           {country.name}
               </option>
@@ -253,7 +281,7 @@ const General = () => {
             value={formData.city}
             onChange={handleSelectChange}
           >
-            {allCities?.data.results.map((city:any) => (
+            {citiesAPIInfo?.results.map((city:any) => (
               <option key={city.id} value={city.id}>
           {city.name}
               </option>

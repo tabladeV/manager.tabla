@@ -30,6 +30,15 @@ const ClientsPage = () => {
   const [pageSize,setPageSize ] =useState(3);
   const [page, setPage] = useState(1);
 
+  interface ClientsType {
+    
+    results: BaseRecord[]
+    count: number
+    
+  }
+
+  const [clientsAPIInfo, setClientsAPIInfo] =useState<ClientsType>()
+
   const {data , isLoading, error} = useList({
     resource: 'api/v1/bo/customers/',
     filters: [
@@ -44,6 +53,11 @@ const ClientsPage = () => {
         value: pageSize,
       },
     ],
+    queryOptions:{
+      onSuccess(data){
+        setClientsAPIInfo(data.data as unknown as ClientsType)
+      }
+    }
 
   });
 
@@ -55,11 +69,11 @@ const ClientsPage = () => {
   const observerRef = useRef(null);
 
   useEffect(() => {
-    if (data?.data) {
-      setClients(data.data.results as unknown as BaseRecord[]);
+    if (clientsAPIInfo) {
+      setClients(clientsAPIInfo.results as BaseRecord[]);
     }
     
-  }, [data]);
+  }, [clientsAPIInfo]);
   
   console.log(data);
   const {t} = useTranslation();

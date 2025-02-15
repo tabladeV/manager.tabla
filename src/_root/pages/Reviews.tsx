@@ -45,6 +45,15 @@ const Reviews = () => {
       setSearchKeyword(keyword)
     };
 
+    interface ReviewsType {
+        
+      results: BaseRecord[]
+      count: number
+      
+    }
+
+    const [reviewsAPIInfo, setReviewsAPIInfo] =useState<ReviewsType>()
+
 
     const {data, isLoading, error} = useList({
         resource: 'api/v1/reviews/',
@@ -72,15 +81,20 @@ const Reviews = () => {
         ],
         queryOptions: {
           onSuccess: (data) => {
-            setReviews(data.data.results as Review[]);
-            setCount(data.data.count as number)
-            console.log('Data fetched successfully:', data);
+            setReviewsAPIInfo(data.data as unknown as ReviewsType);
           },
           onError: (error) => {
             console.log('Error fetching data:', error);
           }
         }
     })
+
+    useEffect(() => {
+        if (reviewsAPIInfo) {
+          setReviews(reviewsAPIInfo.results as Review[])
+          setCount(reviewsAPIInfo.count)
+        }
+      }, [reviewsAPIInfo])
 
 
     

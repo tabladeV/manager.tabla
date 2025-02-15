@@ -55,10 +55,19 @@ const ReservationsPage = () => {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [count, setCount] = useState(0)
   const [page,setPage] = useState(1)
+
+
+  interface ReservationType {
+    
+    results: BaseRecord[]
+    count: number
+    
+  }
   
+  const [reservationAPIInfo, setReservationAPIInfo] =useState<ReservationType>()
 
   
-  const { data, isLoading, error } = useList<BaseRecord>({
+  const { data, isLoading, error } = useList({
     resource: "api/v1/bo/reservations/",
     filters: [
       {
@@ -99,14 +108,20 @@ const ReservationsPage = () => {
     ],
     queryOptions: {
       onSuccess: (data) => {
-        setReservations(data.data.results as Reservation[]);
-        setCount(data.data.count)
+        setReservationAPIInfo(data.data as unknown as ReservationType);
       },
       onError: (error) => {
         console.log('Error fetching data:', error);
       }
     }
 });
+
+useEffect(() => {
+  if (reservationAPIInfo) {
+    setReservations(reservationAPIInfo.results as Reservation[]);
+    setCount(reservationAPIInfo.count)
+  }
+}, [reservationAPIInfo]);
 
 console.log(count,'test')
 

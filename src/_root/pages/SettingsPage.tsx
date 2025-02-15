@@ -70,8 +70,8 @@ const SettingsPage = () => {
           </Link>
 
           {/* Widget - not restricted */}
-          <Link to='/settings/widget/reservation' className={`hover:underline ${pathname === '/settings/widget/reservation' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.widget')}</Link>
-          <Link to='/settings/widget/review' className={`hover:underline ${pathname === '/settings/widget/review' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.reviewWidget')}</Link>
+          <Link to='/settings/widget/reservation' className={`hover:underline ${pathname === '/settings/widget/reservation' ?navigatedMenuClass: normalMenuClass}`}>{t('settingsPage.menuItems.widget')}</Link>
+          <Link to='/settings/widget/review' className={`hover:underline ${pathname === '/settings/widget/review' ?navigatedMenuClass: normalMenuClass}`}>{t('settingsPage.menuItems.reviewWidget')}</Link>
 
           {/* Roles - check for view_role */}
           <CanAccess

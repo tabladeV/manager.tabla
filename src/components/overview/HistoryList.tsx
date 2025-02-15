@@ -28,6 +28,15 @@ interface Review {
 
 const HistoryList  = () => {
 
+  interface ReviewsType {
+    
+    results: Review[]
+    count: number
+    
+  }
+  
+  const [reviewsAPIInfo, setReviewsAPIInfo] =useState<ReviewsType>()
+
 
   const {data: reviewsData, isLoading, error} = useList({
           resource: 'api/v1/reviews/',
@@ -42,7 +51,12 @@ const HistoryList  = () => {
               operator: "eq",
               value: 10,
             },
-          ]
+          ],
+          queryOptions:{
+            onSuccess(data){
+              setReviewsAPIInfo(data.data as unknown as ReviewsType)
+            }
+          }
 
       })
       console.log('data',reviewsData?.data)
@@ -53,10 +67,10 @@ const HistoryList  = () => {
       const [reviews, setReviews] = useState<Review[]>([])
       
       useEffect(() => {
-        if (reviewsData?.data) {
-          setReviews(reviewsData.data.results as Review[])
+        if (reviewsAPIInfo) {
+          setReviews(reviewsAPIInfo.results as Review[])
         }
-      }, [reviewsData])
+      }, [reviewsAPIInfo])
       
 
   const { t } = useTranslation()

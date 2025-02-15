@@ -1,4 +1,4 @@
-import { BaseKey, useCreate, useDelete, useList, useUpdate } from "@refinedev/core"
+import { BaseKey, BaseRecord, useCreate, useDelete, useList, useUpdate } from "@refinedev/core"
 import { Trash } from "lucide-react"
 import { useState, useCallback, useEffect } from "react"
 import { useTranslation } from "react-i18next"
@@ -32,6 +32,15 @@ const initialUsers: User[] = [
 
 export default function Users() {
 
+  interface RolesType {
+    
+    results: BaseRecord[]
+    count: number
+    
+  }
+
+  const [rolesAPIInfo, setRolesAPIInfo] =useState<RolesType>()
+
   const {data:rolesData, isLoading:rolesLoading, error:rolesError} = useList({
     resource: 'api/v1/bo/roles/',
     filters: [
@@ -46,8 +55,22 @@ export default function Users() {
         value: 1
       }
     ],
+    queryOptions:{
+      onSuccess(data){
+        setRolesAPIInfo(data.data as unknown as RolesType)
+      }
+    }
 
   })
+
+  interface UsersType {
+    
+    results: User[]
+    count: number
+    
+  }
+
+  const [usersAPIInfo, setUsersAPIInfo] =useState<UsersType>()
 
   const{data, isLoading, error} = useList({
     resource: 'api/v1/api/v1/bo/restaurants/users/',
@@ -63,6 +86,11 @@ export default function Users() {
         value: 1
       }
     ],
+    queryOptions:{
+      onSuccess(data){
+        setUsersAPIInfo(data.data as unknown as UsersType)
+      }
+    }
 
   })
 
@@ -78,10 +106,10 @@ export default function Users() {
 
   const [users, setUsers] = useState<User[]>(initialUsers)
   useEffect(() => {
-    if (data?.data) {
-      setUsers(data.data.results as User[])
+    if (usersAPIInfo) {
+      setUsers(usersAPIInfo.results as User[])
     }
-  }, [data])
+  }, [usersAPIInfo])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
 
@@ -257,14 +285,14 @@ export default function Users() {
                 className={`inputs ${localStorage.getItem('darkMode')==='true' ? 'bg-darkthemeitems' : 'bg-white'}`}
                 defaultValue={roleSelected || selectedUser?.role?.id } // Ensure the value is ID, not name
                 onChange={(e) => {
-                  const selectedRole = rolesData?.data.results.find((role: any) => role.id === Number(e.target.value));
+                  const selectedRole = rolesAPIInfo?.results.find((role: any) => role.id === Number(e.target.value));
                   if (selectedUser && selectedRole) {
                     setSelectedUser({ ...selectedUser, role: { ...selectedUser.role, id: selectedRole.id as BaseKey, name: selectedRole.name } });
                   }
                 }} // Set role ID
               >
                 {
-                  rolesData?.data.results.map((role: any) => (
+                  rolesAPIInfo?.results.map((role: any) => (
                     <option key={role.id} value={role.id}>{role.name}</option>
                   ))
                 }
