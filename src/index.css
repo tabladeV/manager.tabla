@@ -2,7 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+:root{
+  --toastify-color-success: #688F3D !important;
+  --toastify-color-error: #FF4B4B !important;
+  --toastify-color-warning: #FFA500 !important;
+  --toastify-color-info: #3F72AF !important;
+  --toastify-color-success: #688F3D !important;
 
+  --toastify-icon-color-info: var(--toastify-color-info) !important;
+  --toastify-icon-color-success: var(--toastify-color-success) !important;
+  --toastify-icon-color-warning: var(--toastify-color-warning) !important;
+  --toastify-icon-color-error: var(--toastify-color-error) !important;
+
+  --toastify-color-progress-info: var(--toastify-color-info) !important;
+  --toastify-color-progress-success: var(--toastify-color-success) !important;
+  --toastify-color-progress-warning: var(--toastify-color-warning) !important;
+  --toastify-color-progress-error: var(--toastify-color-error) !important;
+}
 
 @layer components {
   .btn {
