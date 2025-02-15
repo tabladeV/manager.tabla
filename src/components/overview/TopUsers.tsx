@@ -43,7 +43,16 @@ const CustomTooltip: React.FC<TooltipProps<number, string>> = ({ active, payload
 
 export default function TopUsers() {
 
-  const { data, isLoading, error } = useList<BaseRecord>({
+  interface ReservationType {
+    
+    results: BaseRecord[]
+    count: number
+    
+  }
+
+  const [reservationAPIInfo, setReservationAPIInfo] =useState<ReservationType>() 
+
+  const { data, isLoading, error } = useList({
       resource: 'api/v1/bo/reservations/',
       filters: [
         {
@@ -56,16 +65,21 @@ export default function TopUsers() {
           operator: "eq",
           value: 400,
         }
-      ]
+      ],
+      queryOptions:{
+        onSuccess(data){
+          setReservationAPIInfo(data.data as unknown as ReservationType)
+        }
+      }
 
     })
 
     const [reservations, setReservations] = useState<BaseRecord[]>([])
     useEffect(() => {
-      if (data?.data) {
-        setReservations(data.data.results as unknown as BaseRecord[])
+      if (reservationAPIInfo) {
+        setReservations(reservationAPIInfo.results as BaseRecord[]);
       }
-    }, [data])
+    }, [reservationAPIInfo])
 
 
   const { t } = useTranslation();

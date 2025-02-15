@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import SearchBar from "../header/SearchBar";
 
-import { BaseKey, useList, useCreate, useDelete, CanAccess } from "@refinedev/core";
+import { BaseKey, useList, useCreate, useDelete, CanAccess, BaseRecord } from "@refinedev/core";
 import Pagination from "../reservation/Pagination";
 
 interface PermissionType {
@@ -29,12 +29,20 @@ const Roles = () => {
             }
         }
     });
+    interface RolesType {
+        
+        results: BaseRecord[]
+        count: number
+        
+      }
+
+      const [rolesAPIInfo, setRolesAPIInfo] =useState<RolesType>()
 
     const [size, setSize] = useState<number>(10)
-    const [count, setCount] = useState<number>()
+    const [count, setCount] = useState<number>(0)
     const [page, setPage] = useState<number>(1)
 
-    const { data: rolesData, isLoading: rolesLoading, error: rolesError } = useList({
+    const { data: rolesData, isLoading: rolesLoading, error: rolesError } = useList<RolesType>({
         resource: "api/v1/bo/roles/",
         filters: [
             {
@@ -50,11 +58,17 @@ const Roles = () => {
           ],
           queryOptions:{
             onSuccess(data) {
-                setRoles(data.data.results as RoleType[]);
-                setCount(data.data.count as number)
+                setRolesAPIInfo(data.data as unknown as  RolesType);
             },
           }
     });
+
+    useEffect(() => {
+        if (rolesAPIInfo) {
+            setRoles(rolesAPIInfo.results as RoleType[]);
+            setCount(rolesAPIInfo.count);
+        }
+    }, [rolesAPIInfo]);
 
     console.log('rolesData', rolesData);
 
