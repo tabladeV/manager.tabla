@@ -48,8 +48,6 @@ const NavigationMenu = (props:NavigationMenuProps) => {
     }
   },[widgetData])
 
-  console.log(widgetData)
-
     const normalMenuClass = 'flex items-center my-1 hover:bg-[#88AB6115] text-[#1E1E1E75] transition duration-150  rounded-[10px] px-[1em]  h-[3em]  gap-[1em]';
     const darkMenuClass = 'flex items-center my-1 hover:bg-[#88AB6115] text-whitetheme transition duration-150  rounded-[10px] px-[1em]  h-[3em]  gap-[1em]';
     const navigatedMenuClass = 'flex items-center my-1 bg-greentheme text-white hover:bg-[#88AB61] transition duration-150  rounded-[10px] px-[1em] h-[3em]  gap-[1em]';
@@ -107,7 +105,7 @@ const {t}=  useTranslation();
           </Link>
         </CanAccess>
 
-
+        <CanAccess resource='floor' action='view'>
         <Link to='/places' onClick={()=>{setShowSubMenuPlaces(true)}} className={`${pathname.includes('/places') || (pathname === '/places/design') ? navigatedMenuClass : normalMenuClass  }`}>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M9.99998 1.66667C6.49998 1.66667 3.33331 4.35001 3.33331 8.50001C3.33331 11.15 5.37498 14.2667 9.44998 17.8583C9.76665 18.1333 10.2416 18.1333 10.5583 17.8583C14.625 14.2667 16.6666 11.15 16.6666 8.50001C16.6666 4.35001 13.5 1.66667 9.99998 1.66667ZM9.99998 10C9.08331 10 8.33331 9.25001 8.33331 8.33334C8.33331 7.41667 9.08331 6.66667 9.99998 6.66667C10.9166 6.66667 11.6666 7.41667 11.6666 8.33334C11.6666 9.25001 10.9166 10 9.99998 10Z" fill={(pathname.includes('/places')) || localStorage.getItem('darkMode') === 'true' ? 'white':'#1e1e1e'} fillOpacity={(pathname === '/places') || (pathname === '/places/design') ? '1':'0.75'}/>
@@ -115,8 +113,10 @@ const {t}=  useTranslation();
 
           <h2 className={`font-[500] text-[17px] ${localStorage.getItem('darkMode')==='true'?'text-textdarktheme':'' } ${stateOfSideBar? 'block':'hidden'}`}>{t('placeManagement.title')}</h2>
         </Link>
+        </CanAccess>
         {(pathname.includes('/places')) && 
         <div className='flex lt-sm:hidden items-left flex-col gap-1'>
+          <CanAccess resource='floor' action='view'>
           <Link to='/places' className={`hover:bg-[#88AB6115] items-center flex text-[#1E1E1E75] transition duration-150 h-[3em] rounded-[10px] px-[1em] py-[.6em]  gap-[1em] ${pathname==='/places' ? 'text-greentheme':''}`}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M3 19C2.45 19 1.97933 18.8043 1.588 18.413C1.19667 18.0217 1.00067 17.5507 1 17V7C1 6.45 1.196 5.97933 1.588 5.588C1.98 5.19667 2.45067 5.00067 3 5H13C13.55 5 14.021 5.196 14.413 5.588C14.805 5.98 15.0007 6.45067 15 7V17C15 17.55 14.8043 18.021 14.413 18.413C14.0217 18.805 13.5507 19.0007 13 19H3ZM3 17H13V7H3V17ZM17 19V5H19V19H17ZM21 19V5H23V19H21Z" fill={(pathname === '/places') || localStorage.getItem('darkMode')=== 'true' ? '#88AB61':'#1e1e1e'} fillOpacity={(pathname === '/places') ? '1':'0.3'}/>
@@ -124,6 +124,8 @@ const {t}=  useTranslation();
 
             <h2 className={`font-[500] text-[17px] ${localStorage.getItem('darkMode')==='true'?'text-textdarktheme':'' } ${stateOfSideBar? 'block':'hidden'}`}>{t('overview.title')}</h2>
           </Link>
+          </CanAccess>
+          <CanAccess resource='floor' action='view'>
           <Link to='/places/design' className={`hover:bg-[#88AB6115] items-center flex  text-[#1E1E1E75] transition duration-150  rounded-[10px] px-[1em] py-[.6em] h-[3em] gap-[1em] ${pathname.includes('/places/design') ? 'text-greentheme ':''}`}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M3.00014 17.25V21H6.75014L17.8101 9.93001L14.0601 6.18001L3.00014 17.25ZM22.6101 18.36L18.3601 22.61L13.1601 17.41L14.9301 15.64L15.9301 16.64L18.4001 14.16L19.8201 15.58L18.3601 17L19.4201 18L20.8401 16.6L22.6101 18.36ZM6.61014 10.83L1.39014 5.64001L5.64014 1.39001L7.40014 3.16001L4.93014 5.64001L6.00014 6.70001L8.46014 4.22001L9.88014 5.64001L8.46014 7.05001L9.46014 8.05001L6.61014 10.83ZM20.7101 7.00001C21.1001 6.61001 21.1001 6.00001 20.7101 5.59001L18.3701 3.29001C18.0001 2.90001 17.3501 2.90001 16.9601 3.29001L15.1201 5.12001L18.8701 8.87001L20.7101 7.00001Z" fill={ pathname.includes('/places/design') || localStorage.getItem('darkMode') === 'true' ? '#88AB61':'#1e1e1e'} fillOpacity={pathname.includes('/places/design')? '1':'0.3'}/>
@@ -131,6 +133,7 @@ const {t}=  useTranslation();
 
             <h2 className={`font-[500] text-[17px] ${localStorage.getItem('darkMode')==='true'?'text-textdarktheme':'' } ${stateOfSideBar? 'block':'hidden'}`}>{t('editPlace.title')}</h2>
           </Link>
+          </CanAccess>
         </div>
         }
         

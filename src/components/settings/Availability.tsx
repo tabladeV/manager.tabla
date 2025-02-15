@@ -372,8 +372,6 @@ const Availability = () => {
                     } >
                       <input
                         type="number"
-                        disabled={true}
-                        readOnly={true}
                         value={slot.max_party_size}
                         onChange={(e) => updateSlot(dayIndex, slotIndex, 'max_party_size', parseInt(e.target.value))}
                         className={`inputs-unique w-[4em] ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}

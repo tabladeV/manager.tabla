@@ -53,6 +53,10 @@ import authProvider from "./providers/authProvider";
 import accessControlProvider from "./providers/accessControl";
 import { useEffect } from "react";
 import ReviewWidget from "./components/settings/ReviewWidget";
+import { ToastContainer } from "react-toastify";
+
+import "react-toastify/dist/ReactToastify.css";
+import { notificationProvider } from "./providers/notificationProvider";
 
 function App() {
 
@@ -83,6 +87,7 @@ function App() {
                   dataProvider={dataProvider("https://api.dev.tabla.ma", customAxiosInstance)}
                   routerProvider={routerBindings}
                   accessControlProvider={accessControlProvider}
+                  notificationProvider={notificationProvider}
                   options={{
                     syncWithLocation: true,
                     warnWhenUnsavedChanges: true,
@@ -91,6 +96,14 @@ function App() {
                   }}
                 >
                   <Routes>
+                    <Route
+                      element={
+                        <div>
+                          <Outlet />
+                          <ToastContainer stacked/>
+                        </div>
+                      }
+                    >
                     {/* Public Routes */}
                     <Route element={<Plugins />}>
                       <Route path="/widget/r/:restaurant" element={<WidgetPage />} />
@@ -280,6 +293,7 @@ function App() {
                       </Route>
                     </Route>
                     <Route path="*" element={<ErrorPage />} />
+                    </Route>
                   </Routes>
                   <RefineKbar />
                   <UnsavedChangesNotifier />
