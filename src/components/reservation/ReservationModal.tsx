@@ -49,15 +49,42 @@ const ReservationModal = (props: ReservationModalProps) => {
   const restaurantId = localStorage.getItem('restaurant_id');
 
   const [searchKeyword, setSearchKeyword] = useState('');
+
+  interface ClientForApi {
+    results: Client[];
+    count: number;
+  }
+  const [clientsForAPI, setClientsForAPI] = useState<ClientForApi>()
+
+  const [count,setCount] = useState(0);
+
   const { data: clientsData, isLoading, error } = useList({
     resource: 'api/v1/bo/customers/',
     filters: [
+      {
+        field: 'page',
+        operator: 'eq',
+        value: 1
+      },
+      {
+        field: 'page_size',
+        operator: 'eq',
+        value: 100
+      },
       {
         field: 'search',
         operator: 'eq',
         value: searchKeyword,
       },
     ],
+    queryOptions: {
+      onSuccess: (data) => {
+        setClientsForAPI(data.data as unknown as ClientForApi);
+      },
+      onError: (error) => {
+        console.log('Error:', error);
+      },
+    },
 
   });
 
@@ -116,11 +143,12 @@ const ReservationModal = (props: ReservationModalProps) => {
   const { t } = useTranslation();
 
   useEffect(() => {
-    if (clientsData?.results) {
-      setClients(clientsData.results as Client[]);
-      setSearchResults(clientsData.results as Client[]);
+    if (clientsForAPI) {
+      setClients(clientsForAPI.results as Client[]);
+      setSearchResults(clientsForAPI.results as Client[]);
+      setCount(clientsForAPI.count);
     }
-  }, [clientsData]);
+  }, [clientsForAPI]);
 
   const searchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
     const keyword = e.target.value.toLowerCase();
