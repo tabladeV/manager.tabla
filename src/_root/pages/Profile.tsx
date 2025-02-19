@@ -15,7 +15,6 @@ const Profile = () => {
     resource: 'api/v1/auth/password/change/',
     
     mutationOptions: {
-      retry: 3,
       onSuccess: (data) => {
         setSuccessMessage('You have changed your password Successfuly')
         console.log('Reservation added:', data);
@@ -23,7 +22,7 @@ const Profile = () => {
       },
       onError: (error) => {
         setErrorMessage(error.message)
-        console.log('Error adding reservation:', error);
+        console.log('Error in changing the password:', error.message);
       },
     },
 });
