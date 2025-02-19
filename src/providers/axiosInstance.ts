@@ -3,7 +3,7 @@ import axios from "axios";
 axios.defaults.withCredentials = true
 
 const axiosInstance = axios.create({
-  baseURL: "https://api.dev.tabla.ma", // Your API base URL
+  baseURL: process.env.API_HOST, // Your API base URL
   withCredentials: true
 });
 
@@ -31,7 +31,7 @@ axiosInstance.interceptors.response.use(
       localStorage.removeItem("refresh");
       localStorage.removeItem("permissions");
       localStorage.removeItem("is_manager");
-    
+
       window.location.href = "/sign-in";
     }
     return Promise.reject(error);

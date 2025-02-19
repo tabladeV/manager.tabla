@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import { MessageCircleWarningIcon } from 'lucide-react';
-import { useCreate } from '@refinedev/core';
-
+import { useCreate,useCustom } from '@refinedev/core';
+;
 const Profile = () => {
   const [error, setError] = useState('')
   const oldPswrdRef = useRef<HTMLInputElement>(null);
@@ -10,7 +10,11 @@ const Profile = () => {
 
   const [errorMessage,setErrorMessage] = useState<string>('')
   const [successMessage,setSuccessMessage] = useState<string>('')
-
+  const {data, isLoading} = useCustom({
+    url: '/api/v1/bo/restaurants/users/me/',
+    method: "get",
+  },
+   )
   const {mutate: newPassword} = useCreate({
     resource: 'api/v1/auth/password/change/',
     
@@ -56,7 +60,7 @@ const Profile = () => {
   const handleChange = () => {
     if (error) setError('');
   }
-
+  console.log(data)
   return (
     <div className='h-full w-full'>
       <h1>Profile</h1>
