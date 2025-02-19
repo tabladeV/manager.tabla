@@ -70,7 +70,7 @@ function App() {
           console.log("Token refreshed on app load");
         })
         .catch((error) => {
-          console.error("Token refresh on app load failed ", error);
+          console.error("Token refresh on app load failed", error);
         });
     }
   }, []);
