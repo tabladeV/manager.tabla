@@ -103,7 +103,7 @@ const ReservationsPage = () => {
       {
         field: "ordering",
         operator: "eq",
-        value: "id",
+        value: "-id",
       }
     ],
     queryOptions: {
@@ -177,9 +177,9 @@ console.log(count,'test')
   
   useEffect(() => {
     console.log('this one')
-    if (data?.data) {
-      setReservations(data.data as Reservation[]);
-      data.data.map((reserve) => {
+    if (reservationAPIInfo) {
+      setReservations(reservationAPIInfo.results as Reservation[]);
+      reservationAPIInfo.results.map((reserve) => {
         if (reserve.tables && reserve.tables.length > 0) {
           reserve.tableSet = reserve.tables[0].id ;
           setHasTable(true)
