@@ -276,6 +276,7 @@
         "reservationHistorySection": {
             "title": "Reservation History",
             "tableHeaders": {
+                "id": "ID",
                 "date": "Date",
                 "time": "Time",
                 "spend": "Spend",
