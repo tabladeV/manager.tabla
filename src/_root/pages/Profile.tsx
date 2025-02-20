@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
-import { MessageCircleWarningIcon } from 'lucide-react';
-import { useCreate,useCustom } from '@refinedev/core';
-;
+import { Eye, EyeOff, MessageCircleWarningIcon } from 'lucide-react';
+import { useCreate } from '@refinedev/core';
+
 const Profile = () => {
   const [error, setError] = useState('')
   const oldPswrdRef = useRef<HTMLInputElement>(null);
@@ -10,11 +10,7 @@ const Profile = () => {
 
   const [errorMessage,setErrorMessage] = useState<string>('')
   const [successMessage,setSuccessMessage] = useState<string>('')
-  const {data, isLoading} = useCustom({
-    url: '/api/v1/bo/restaurants/users/me/',
-    method: "get",
-  },
-   )
+
   const {mutate: newPassword} = useCreate({
     resource: 'api/v1/auth/password/change/',
     
@@ -44,6 +40,27 @@ const Profile = () => {
       setError('Passwords do not match');
       return;
     }
+    if (newPswrd.length < 8) {
+      setError('Password must be at least 8 characters');
+      return;
+    }
+    if(newPswrd === oldPswrd){
+      setError('New password must be different from old password')
+      return;
+    }
+    if(newPswrd.includes(' ')){
+      setError('Password cannot contain spaces')
+      return;
+    }
+    if(newPswrd.includes('password')){
+      setError('Password cannot contain the word "password"')
+      return;
+    }
+    if(!(newPswrd.includes('%')|| newPswrd.includes('&')|| newPswrd.includes('#')|| newPswrd.includes('@')|| newPswrd.includes('!'))){
+      setError('Password must contain at least one special character')
+      return;
+    }
+
 
     console.log(oldPswrd, newPswrd, confirmPswrd);
     newPassword({
@@ -55,11 +72,15 @@ const Profile = () => {
     })
   }
 
+  const [eyeOldPswrd, setEyeOldPswrd] = useState(false);  
+  const [eyeNewPswrd, setEyeNewPswrd] = useState(false);
+  const [eyeConfirmPswrd, setEyeConfirmPswrd] = useState(false);
+
 
   const handleChange = () => {
     if (error) setError('');
   }
-  console.log(data)
+
   return (
     <div className='h-full w-full'>
       <h1>Profile</h1>
@@ -67,11 +88,20 @@ const Profile = () => {
         <div className={`flex flex-col mx-auto h-fit items-start rounded-xl gap-2 lg:w-[30vw] shadow-xl shadow-[#00000008] p-5 ${localStorage.getItem('darkMode') === 'true' ? 'dark:bg-bgdarktheme' : 'bg-white'}`}>
           <h2 className="text-[1.6rem] font-[700]">Change your password</h2>
           <p className={`text-sm mb-4 mt-[-.5em]  ${localStorage.getItem('darkMode')==='true' ? 'text-softwhitetheme': 'text-subblack'} `}>You can change your password here</p>
-          <input type="password" ref={oldPswrdRef} placeholder="Old password" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':''}`} onChange={handleChange}/>
-          <input type="password" ref={newPswrdRef} placeholder="New password" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':''}`} onChange={handleChange}/>
-          <input type="password" ref={confirmPswrdRef} placeholder="Confirm new password" className={`inputs ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':''}`} onChange={handleChange}/>
+          <div className={`inputs flex justify-between ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':''}`}>
+            <input type={eyeOldPswrd ? 'text' : 'password'}  ref={oldPswrdRef} placeholder="Old password"  onChange={handleChange} className='w-full focus:border-0 focus:ring-0 focus:outline-none'/>
+            <button onClick={() => setEyeOldPswrd(!eyeOldPswrd)} className='text-[#00000080] hover:text-[#000000] transition-colors'> {eyeOldPswrd ? <EyeOff size={20}/> : <Eye size={20}/>} </button>
+          </div>  
+          <div className={`inputs flex justify-between ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':''}`}>
+            <input type={eyeNewPswrd ? 'text' : 'password'}  ref={newPswrdRef} placeholder="New password"  onChange={handleChange} className='w-full focus:border-0 focus:ring-0 focus:outline-none'/>
+            <button onClick={() => setEyeNewPswrd(!eyeNewPswrd)} className='text-[#00000080] hover:text-[#000000] transition-colors'> {eyeNewPswrd ? <EyeOff size={20}/> : <Eye size={20}/>} </button>
+          </div>
+          <div className={`inputs flex justify-between ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':''}`}>
+            <input type={eyeConfirmPswrd ? 'text' : 'password'}  ref={confirmPswrdRef} placeholder="Confirm new password"  onChange={handleChange} className='w-full focus:border-0 focus:ring-0 focus:outline-none'/>
+            <button onClick={() => setEyeConfirmPswrd(!eyeConfirmPswrd)} className='text-[#00000080] hover:text-[#000000] transition-colors'> {eyeConfirmPswrd ? <EyeOff size={20}/> : <Eye size={20}/>} </button>
+          </div>
           {error !=='' && <p className='text-redtheme text-sm flex gap-1 items-center'> <MessageCircleWarningIcon size={14}/> {error} {errorMessage}</p>}
-          <button className="btn-primary mt-3" onClick={handlePasswordChange}>  Change password</button>
+          <button className="btn-primary mt-3" onClick={handlePasswordChange}>Change password</button>
         </div>
       </div>
     </div>

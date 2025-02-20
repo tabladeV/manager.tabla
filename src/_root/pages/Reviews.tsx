@@ -53,15 +53,27 @@ const Reviews = () => {
     }
 
     const [reviewsAPIInfo, setReviewsAPIInfo] =useState<ReviewsType>()
+    const [selectedDateRange, setSelectedDateRange] = useState<{ start: Date | null, end: Date | null }>({ start: null, end: null })
 
+console.log(selectedDateRange)
 
     const {data, isLoading, error} = useList({
         resource: 'api/v1/reviews/',
         filters:[
           {
-            field: "customer",
+            field: "search",
             operator: "eq",
             value: searchKeyword
+          },
+          {
+            field: "created_at_",
+            operator: "gte",
+            value: selectedDateRange.start?  format(selectedDateRange.start, 'yyyy-MM-dd'):''
+          },
+          {
+            field: "created_at_",
+            operator: "lte",
+            value: selectedDateRange.end ? format(selectedDateRange.end, 'yyyy-MM-dd'):''
           },
           {
             field: "page",
@@ -112,7 +124,6 @@ const Reviews = () => {
     const [selectingDay, setSelectingDay] = useState('')
     const [focusedDate, setFocusedDate] = useState(false)
     const [searchResults, setSearchResults] = useState<Review[]>([])
-    const [selectedDateRange, setSelectedDateRange] = useState<{ start: Date | null, end: Date | null }>({ start: null, end: null })
     const [focusReview, setFocusReview] = useState(false)
     const [showModal, setShowModal] = useState(false)
     const [selectedClient, setSelectedClient] = useState<BaseKey>(0)

@@ -149,6 +149,15 @@ const ClientInterface = () => {
         </div>
       )
     }
+    if(origin === 'WALK_IN'){
+      return (
+        <div className={`flex p-1 rounded-md  items-center ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14.12 10H19V8.20001H15.38L13.38 4.87001C13.08 4.37001 12.54 4.03001 11.92 4.03001C11.74 4.03001 11.58 4.06001 11.42 4.11001L6 5.80001V11H7.8V7.33001L9.91 6.67001L6 22H7.8L10.67 13.89L13 17V22H14.8V15.59L12.31 11.05L13.04 8.18001M14 3.80001C15 3.80001 15.8 3.00001 15.8 2.00001C15.8 1.00001 15 0.200012 14 0.200012C13 0.200012 12.2 1.00001 12.2 2.00001C12.2 3.00001 13 3.80001 14 3.80001Z" fill={localStorage.getItem('darkMode')==='true'?'#fff':'#1e1e1e90'}/>
+          </svg>
+        </div>
+      )
+    }
     if (origin === 'WIDGET') {
       return (
         <div className={`flex p-1 rounded-md  items-center ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}>
@@ -388,6 +397,7 @@ const ClientInterface = () => {
                       <table className={`w-full  border-collapse shadow-sm ${i18next.language === 'ar' && 'text-right'}`}>
                         <thead>
                           <tr className={`${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme text-gray-300':'bg-gray-50 text-gray-700'}`}>
+                            <th className="font-semibold p-3 text-left border-b border-gray-200">{t('clients.reservationHistorySection.tableHeaders.id')}</th>
                             <th className="font-semibold p-3 text-left border-b border-gray-200">{t('clients.reservationHistorySection.tableHeaders.date')}</th>
                             <th className="font-semibold p-3 text-left border-b border-gray-200">{t('clients.reservationHistorySection.tableHeaders.time')}</th>
                             <th className="font-semibold p-3 text-left border-b border-gray-200 flex justify-center">{t('clients.reservationHistorySection.tableHeaders.made')}</th>
@@ -402,6 +412,7 @@ const ClientInterface = () => {
                               key={index} 
                               // className={`${ localStorage.getItem('darkMode')==='true'? (res.id % 2 === 0 ? 'bg-bgdarktheme2 border-b border-gray-800 hover:bg-black' : 'bg-bgdarktheme border-b hover:bg-black border-gray-800') :(reservation.id % 2 === 0 ? 'bg-white hover:bg-gray-100' : 'bg-gray-50 hover:bg-gray-100')}  transition-colors duration-150 ease-in-out`}
                             >
+                              <td className="p-3 ">{res.id}</td>
                               <td className="p-3 ">{res.date}</td>
                               <td className="p-3 ">{res.time}</td>
                               <td className="p-3  flex h-full itmes-center justify-center">
