@@ -16,6 +16,7 @@ import ZoomControls from '../ZoomControls';
 import dataProvider from '@refinedev/simple-rest';
 import axiosInstance from '../../../providers/axiosInstance';
 import { off } from 'process';
+import BaseBtn from '../../common/BaseBtn';
 
 const MAX_ZOOM = 0.9; // maximum scale allowed
 const MIN_ZOOM = 0.4; // minimum scale allowed
@@ -47,7 +48,9 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
   const [selectedId, selectShape] = useState<BaseKey | null>(null);
   const [showTools, setShowTools] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
+  const [showAdd, setShowAdd] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [loadingAddShape, setLoadingAddShape] = useState(false);
 
   // Stage pan and zoom state
   const [stagePosition, setStagePosition] = useState({ x: 0, y: 0 });
@@ -199,6 +202,67 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
             />
             <button type="submit" className="btn-primary mt-2">
               Save
+            </button>
+          </form>
+        </div>
+      );
+    },
+    [shapes]
+  );
+
+  // Extracted changing name component to memoize its internals
+  const AddTable = useCallback(
+    () => {
+      return (
+        <div>
+          <form
+            className={`popup bg-bgdarktheme ${localStorage.getItem('darkMode') === 'true'
+              ? 'bg-darkthemeitems text-textdarktheme'
+              : 'bg-white text-black'
+              }`}
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const newName = (e.target as any).elements[0].value;
+              const newMax = (e.target as any).elements[1].value;
+              const newMin = (e.target as any).elements[2].value;
+
+              if (!!shapes.find((s) => s.name === newName ) || await checkTableExists(newName)) {
+                alert('Table name already exists');
+                return;
+              }
+              addShape(showAdd === 'RECTANGLE'?'RECTANGLE':'CIRCLE', newName, newMax, newMin);
+              setShowAdd(null);
+            }}
+          >
+            <h1>Add <span className='capitalize'>{showAdd === 'RECTANGLE'?'Rectangle':'circle'}</span> Table</h1>
+            <p>Table Name</p>
+            <input
+              type="text"
+              className={`inputs-unique mt-2 ${localStorage.getItem('darkMode') === 'true'
+                ? 'bg-darkthemeitems text-textdarktheme'
+                : 'bg-white text-black'
+                }`}
+            />
+            <p>Maximum capacity</p>
+            <input
+              type="text"
+              defaultValue={6}
+              className={`inputs-unique mt-2 ${localStorage.getItem('darkMode') === 'true'
+                ? 'bg-darkthemeitems text-textdarktheme'
+                : 'bg-white text-black'
+                }`}
+            />
+            <p>Minimum capacity</p>
+            <input
+              type="text"
+              defaultValue={1}
+              className={`inputs-unique mt-2 ${localStorage.getItem('darkMode') === 'true'
+                ? 'bg-darkthemeitems text-textdarktheme'
+                : 'bg-white text-black'
+                }`}
+            />
+            <button type="submit" className="btn-primary mt-2">
+              Add
             </button>
           </form>
         </div>
@@ -479,17 +543,31 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
 
 
   const addShape = useCallback(
-    async (type: 'RECTANGLE' | 'CIRCLE') => {
-      let counter = shapes.length + 1;
-      let tableName = `Table ${counter}`;
-      const existsInShapes = !!shapes.find(s => s.name === tableName );
-      let tableExists = await checkTableExists(tableName) || existsInShapes;
-      while (tableExists) {
-        counter++;
+    async (type: 'RECTANGLE' | 'CIRCLE', name = '', max=null, min=null) => {
+      setLoadingAddShape(true);
+      let counter= null;
+      let tableName = '';
+      let existsInShapes= null;
+      let tableExists= null;
+      if(!name) {
+        counter = shapes.length + 1;
         tableName = `Table ${counter}`;
-        const existsInShapes = !!shapes.find(s => s.name === tableName );
-        tableExists = await checkTableExists(tableName) || existsInShapes;
+        existsInShapes = !!shapes.find(s => s.name === tableName as string );
+        tableExists = await checkTableExists(tableName as string) || existsInShapes;
+        while (tableExists && counter < 10) {
+          counter++;
+          tableName = `Table ${counter}`;
+          existsInShapes = !!shapes.find(s => s.name === tableName as string );
+          tableExists = await checkTableExists(tableName as string) || existsInShapes;
+        }
+  
+        if(tableExists){
+          setShowAdd(type);
+          setLoadingAddShape(false);
+          return;
+        } 
       }
+
       const OFFSET = 20; // Offset in pixels for new tables
       const newX = shapes.length > 0
         ? shapes[shapes.length - 1].x + OFFSET
@@ -500,15 +578,15 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
 
       const newShape: Table = {
         id: generateRandomNumber(10),
-        name: tableName,
+        name: name || tableName,
         rotation: 0,
         type,
         width: 100,
         height: 100,
         x: newX,
         y: newY,
-        max: Math.floor(innerWidth / 220),
-        min: 1,
+        max: max || Math.floor(innerWidth / 220),
+        min: min || 1,
         floor: props.focusedRoofId!,
         reservations: [],
       };
@@ -519,6 +597,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
 
         return [...prevShapes, newShape];
       });
+      setLoadingAddShape(false);
     },
     [props.focusedRoofId, transitionToShape, checkTableExists, shapes]
   );
@@ -532,6 +611,15 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
             onClick={() => setShowEdit(false)}
           ></div>
           {selectedId && <ChangingName id={selectedId as number} />}
+        </div>
+      )}
+      {showAdd && (
+        <div>
+          <div
+            className={`overlay  opacity-15 z-[200] ${localStorage.getItem('darkMode') === 'true'?'bg-black':'bg-white'}`}
+            onClick={() => setShowAdd(null)}
+          ></div>
+          <AddTable />
         </div>
       )}
       <div className="flex justify-between gap-5 my-4">
@@ -566,26 +654,30 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
           >
             {showTools && (
               <>
-                <button
+                <BaseBtn variant='outlined'
                   className={`btn ${localStorage.getItem('darkMode') === 'true'
                       ? 'text-white'
                       : ''
                     }`}
                   onClick={() => addShape('RECTANGLE')}
-                  disabled={loading}
+                  disabled={loading || loadingAddShape}
+                  loading={loadingAddShape}
                 >
+                  
                   {t('editPlace.buttons.rectangleTable')}
-                </button>
-                <button
+                </BaseBtn>
+                <BaseBtn variant='outlined'
                   className={`btn ${localStorage.getItem('darkMode') === 'true'
                       ? 'text-white'
                       : ''
                     }`}
                   onClick={() => addShape('CIRCLE')}
-                  disabled={loading}
+                  disabled={loading || loadingAddShape}
+                  loading={loadingAddShape}
                 >
+                  
                   {t('editPlace.buttons.circleTable')}
-                </button>
+                </BaseBtn>
               </>
             )}
           </div>
