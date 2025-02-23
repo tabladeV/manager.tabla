@@ -103,7 +103,7 @@ const ReservationsPage = () => {
       {
         field: "ordering",
         operator: "eq",
-        value: "id",
+        value: "-id",
       }
     ],
     queryOptions: {
@@ -177,9 +177,9 @@ console.log(count,'test')
   
   useEffect(() => {
     console.log('this one')
-    if (data?.data) {
-      setReservations(data.data as Reservation[]);
-      data.data.map((reserve) => {
+    if (reservationAPIInfo) {
+      setReservations(reservationAPIInfo.results as Reservation[]);
+      reservationAPIInfo.results.map((reserve) => {
         if (reserve.tables && reserve.tables.length > 0) {
           reserve.tableSet = reserve.tables[0].id ;
           setHasTable(true)
@@ -669,11 +669,12 @@ console.log(count,'test')
                 <label className="block text-sm font-medium ">{t('reservations.edit.informations.table')}</label>
                 <select 
                   name="table"
-                  defaultValue={selectedClient.tables && selectedClient.tables.length > 0 && selectedClient.tables[0].id ? selectedClient.tables[0].id : 0}
+                  defaultValue={(selectedClient && selectedClient.tables && selectedClient.tables.length >0 && selectedClient.tables[0].id ) ? selectedClient.tables[0].id : 0}
                   onChange={(e)=>{(Number(e.target.value) !== 0 || e.target.value) ? setHasTable(true) : setHasTable(false);setSelectedClient({...selectedClient, tableSet: Number(e.target.value)})}}
                   className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
 >
-                    <option value={0} >No table</option>
+                    <option key={0} value={0} >No table</option>
+                    {(selectedClient && selectedClient.tables && selectedClient.tables.length > 0 && selectedClient.tables[0].id)  ? <option key={selectedClient.tables[0].id} value={selectedClient.tables[0].id}>{selectedClient.tables[0].name} {`(${selectedClient.floor_name})`}</option>:null}
                   {availableTables?.map((table) => (
                     <option key={table.id} value={table.id}>{table.name} {`(${table.floor_name})`}</option>
                   ))}

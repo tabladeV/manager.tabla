@@ -60,18 +60,18 @@ const General = () => {
 
 
   const { data: allCities, isLoading: isLoadingAllCities, error: errorAllCities } = useList({
-    resource: 'api/v1/api/v1/bo/cities/',
+    resource: 'api/v1/bo/cities/',
     filters: [
-      {
-        field: "page_size",
-        operator: "eq",
-        value: 100
-      },
-      {
-        field: "page",
-        operator: "eq",
-        value: 1
-      },
+      // {
+      //   field: "page_size",
+      //   operator: "eq",
+      //   value: 100
+      // },
+      // {
+      //   field: "page",
+      //   operator: "eq",
+      //   value: 1
+      // },
       {
         field: 'country',
         operator: 'eq',
@@ -95,19 +95,19 @@ const General = () => {
   const [countriesAPIInfo, setCountriesAPIInfo] =useState<CountriesType>()
 
   const { data: allCountries, isLoading: isLoadingAllCountries, error: errorAllCountries } = useList({
-    resource: 'api/v1/api/v1/bo/countries/',
-    filters: [
-      {
-        field: "page_size",
-        operator: "eq",
-        value: 100
-      },
-      {
-        field: "page",
-        operator: "eq",
-        value: 1
-      }
-    ],
+    resource: 'api/v1/bo/countries/',
+    // filters: [
+    //   {
+    //     field: "page_size",
+    //     operator: "eq",
+    //     value: 100
+    //   },
+    //   {
+    //     field: "page",
+    //     operator: "eq",
+    //     value: 1
+    //   }
+    // ],
     queryOptions:{
       onSuccess(data){
         setCountriesAPIInfo(data.data as unknown as CountriesType)
@@ -263,13 +263,13 @@ const General = () => {
           />
         </div>
         <div className="flex flex-row gap-3">
-          <select
+        <select
             id="country"
             className={`inputs w-1/2 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
             value={formData.country}
             onChange={handleSelectChange}
           >
-            {countriesAPIInfo?.results.map((country:any) => (
+            {allCountries?.data?.map((country:any) => (
               <option key={country.id} value={country.id}>
           {country.name}
               </option>
@@ -281,7 +281,7 @@ const General = () => {
             value={formData.city}
             onChange={handleSelectChange}
           >
-            {citiesAPIInfo?.results.map((city:any) => (
+            {allCities?.data?.map((city:any) => (
               <option key={city.id} value={city.id}>
           {city.name}
               </option>

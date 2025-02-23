@@ -24,6 +24,15 @@ const ReservationForGrid = (props:ReservationType) => {
         setSearchInput(keyword);
     };
 
+    interface ClientForApi {
+        results: BaseRecord[];
+        count: number;
+      }
+      const [clientsForAPI, setClientsForAPI] = useState<ClientForApi>()
+    
+      const [count,setCount] = useState(0);
+    
+
     const { data: clientsData, isLoading, error } = useList({
         resource: 'api/v1/bo/customers/',
         filters: [
@@ -32,17 +41,37 @@ const ReservationForGrid = (props:ReservationType) => {
                 operator: 'eq',
                 value: searchInput,
             },
+            {
+                field: 'page',
+                operator: 'eq',
+                value: 1,
+            },
+            {
+                field: 'page_size',
+                operator: 'eq',
+                value: 100,
+            }
         ],
+        queryOptions: {
+        onSuccess: (data) => {
+            setClientsForAPI(data.data as unknown as ClientForApi);
+        },
+        onError: (error) => {
+            console.log('Error:', error);
+        },
+        },
+      
     
     });
 
     const [customers, setCustomers] = useState<BaseRecord[]>([]);
 
     useEffect(() => {
-        if (clientsData?.data) {
-            setCustomers(clientsData.data);
+        if (clientsForAPI) {
+            setCustomers(clientsForAPI.results);
+            setCount(clientsForAPI.count);
         }
-    }, [clientsData]);
+    }, [clientsForAPI]);
 
 
 

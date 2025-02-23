@@ -14,6 +14,13 @@ import SearchBar from '../../components/header/SearchBar';
 import ZoomControls from '../../components/places/ZoomControls';
 import Pagination from '../../components/reservation/Pagination';
 
+interface ReservationType {
+    
+  results: Reservation[]
+  count: number
+  
+}
+
 interface Reservation {
   id: BaseKey;
   full_name: string;
@@ -97,7 +104,7 @@ const PlacePage: React.FC = () => {
   });
 
   const [page, setPage] = useState(1);
-  const { data: reservationsData, isLoading: isLoadingReservations, error: errorReservations, refetch: refetchReservations } = useList<Reservation>({
+  const { data: reservationsData, isLoading: isLoadingReservations, error: errorReservations, refetch: refetchReservations } = useList({
     resource: "api/v1/bo/reservations/",
     filters: [
       { field: "page", operator: "eq", value: page },
@@ -113,18 +120,21 @@ const PlacePage: React.FC = () => {
   const [tables, setTables] = useState<TableType[]>([]);
   const [focusedRoof, setFocusedRoof] = useState<BaseKey | undefined>(undefined);
   const [floorId, setFloorId] = useState<BaseKey | undefined>(0);
+  const [reservationAPIInfo, setReservationAPIInfo] =useState<ReservationType>()
 
   // When fetched data changes, update local state
   useEffect(() => {
-    if (reservationsData?.results) {
-      setReservations(reservationsData.results);
+    setReservations(reservationAPIInfo?.results as Reservation[] || [])
+  },[reservationAPIInfo])
+  useEffect(() => {
+    if (reservationsData?.data) {
+      setReservationAPIInfo(reservationsData.data as unknown as ReservationType);
     }
     if (data?.data) {
       setRoofData(data.data);
       if (!focusedRoof) {
         setFocusedRoof(data.data[0]?.id);
       }
-      handleFocusAll(); // Ensure focus updates when floor data loads
     }
     if (tablesData?.data) {
       setTables(tablesData.data as TableType[]);
@@ -140,6 +150,11 @@ const PlacePage: React.FC = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusedRoof, roofData]);
+
+
+  useEffect(()=>{
+    handleFocusAll();
+  },[floorId])
 
   // Reservation search and filtering
   const [searchResults, setSearchResults] = useState<Reservation[]>(reservations);

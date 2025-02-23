@@ -200,7 +200,7 @@ const { chosenDay } = useDateContext();
         {/* <Link to="/agenda" className={`btn sm:hidden ${localStorage.getItem('darkMode')==='true'? 'text-white':''} `}>{t('grid.buttons.navigate')}  {'>'}</Link> */}
       </div>
       <div
-        className={`overflow-x-scroll w-[90vw] ${localStorage.getItem('darkMode')==='true'?'border-darkthemeitems':'border-softgreytheme'} ltr mx-auto cursor-grab max-w-fit w-full  no-scrollbar ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-textdarktheme' : 'bg-white text-blacktheme'}`}
+        className={`overflow-x-scroll w-[90vw] ${localStorage.getItem('darkMode')==='true'?'border-darkthemeitems':'border-softgreytheme'} ltr mx-auto cursor-grab no-scrollbar ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-textdarktheme' : 'bg-white text-blacktheme'}`}
         ref={scrollRef}
         onMouseDown={handleMouseDown}
         onMouseLeave={handleMouseLeave}
