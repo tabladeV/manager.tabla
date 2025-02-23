@@ -104,7 +104,7 @@ const HistoryList  = () => {
         
         {/* <Filter onClick={(range: string) => setTimeRange(range)} /> */}
       </div>
-      <div className='flex flex-col no-scrollbar overflow-y-scroll h-[330px] gap-4 p-2'>
+      <div className='cursor-default flex flex-col no-scrollbar overflow-y-scroll h-[330px] gap-4 p-2'>
         {reviews.map((item, index) => (
           <div key={index} className='flex justify-between items-center p-1 rounded-lg hover:bg-[#00000003] '>
           <div className='flex items-center gap-2'>
