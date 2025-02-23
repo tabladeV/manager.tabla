@@ -9,7 +9,7 @@ import bg from '../../assets/bg-widget.png'
 const ReviewPage = () => {
   const [step, setStep] = useState(1);
   const { restaurant } = useParams();
-  const { client } = useParams();
+  const { token } = useParams();
 
   const { mutate: createReview } = useCreate();
 
@@ -93,14 +93,8 @@ const ReviewPage = () => {
 
     console.log(reviewData);
     createReview({
-      resource: `api/v1/reviews/`,
-      meta: {
-        headers: {
-          "X-Restaurant-ID": restaurant,
-        }
-      },
+      resource: `api/v1/bo/reservations/review/${token}`,
       values: {
-        customer: client,
         service_rating: brightService,
         ambience_rating: brightAmbiance,
         food_rating: brightFood,
