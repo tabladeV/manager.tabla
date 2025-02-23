@@ -1,9 +1,9 @@
 import axios from "axios";
 
 axios.defaults.withCredentials = true
-const API_HOST = process.env.API_HOST ? process.env.API_HOST : "https://api.dev.tabla.ma"
+const VITE_API_HOST = import.meta.env.VITE_API_HOST ? import.meta.env.VITE_API_HOST : "https://api.dev.tabla.ma"
 const axiosInstance = axios.create({
-  baseURL: API_HOST, // Your API base URL
+  baseURL: VITE_API_HOST, // Your API base URL
   withCredentials: true
 });
 
