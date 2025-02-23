@@ -57,7 +57,7 @@ import { ToastContainer } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
 import { notificationProvider } from "./providers/notificationProvider";
-const API_HOST = process.env.API_HOST ? process.env.API_HOST : "https://api.dev.tabla.ma"
+const API_HOST = import.meta.env.API_HOST ? import.meta.env.API_HOST : "https://api.dev.tabla.ma"
 function App() {
 
   useEffect(() => {
