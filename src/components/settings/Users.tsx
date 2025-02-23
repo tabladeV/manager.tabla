@@ -73,7 +73,7 @@ export default function Users() {
   const [usersAPIInfo, setUsersAPIInfo] =useState<UsersType>()
 
   const{data, isLoading, error} = useList({
-    resource: 'api/v1/api/v1/bo/restaurants/users/',
+    resource: 'api/v1/bo/restaurants/users/',
     filters: [
       {
         field: "page_size",

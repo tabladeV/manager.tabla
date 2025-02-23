@@ -203,6 +203,50 @@ const ClientsPage = () => {
     return () => observer.disconnect();
   }, [loadMore]);
 
+  const [searchTemplate, setSearchTemplate] = useState(false);
+
+  const [templateSearch, setTemplateSearch] = useState('');
+
+  const [templates, setTemplates] = useState([
+    {
+      id: 1,
+      name:'Ramadan',
+    },
+    {
+      id: 2,
+      name:'Chrismas',
+    },
+    {
+      id: 3,
+      name:'New Year',
+    },
+    {
+      id: 4,
+      name:'Eid',
+    },
+    {
+      id: 5,
+      name:'New Menu',
+    },
+    {
+      id: 6,
+      name:'Valentine',
+    },
+    {
+      id: 7,
+      name:'Birthday',
+    },
+    {
+      id: 8,
+      name:'Anniversary',
+    },
+    {
+      id: 9,
+      name:'Promotion',
+    }
+  ]);
+
+
   return (
     <div className="h-full">
       {showNotificationModal && (
@@ -211,8 +255,24 @@ const ClientsPage = () => {
           <div className={`sidepopup h-full lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'}`}>
             <h2 className="mb-5">Send a notification</h2>
             <form className="flex flex-col gap-2">
+              <input type="text" placeholder="Template"  className={`inputs-unique ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2':'bg-white'}`} onChange={(e)=>{setSearchTemplate(true);setTemplateSearch(e.target.value)}} value={templateSearch} />
+              {searchTemplate && 
+                <div className={`flex w-[37vw] max-h-[50vh] overflow-y-auto mt-[3em] flex-col gap-2 absolute z-10 p-2 rounded-[10px] ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2':'bg-white'}`}>
+                  {templates.filter((template)=>template.name.toLowerCase().includes(templateSearch.toLowerCase())).map((template)=>(
+                    <div
+                    key={template.id}
+                    className={`flex flex-col  btn cursor-pointer ${
+                        localStorage.getItem('darkMode') === 'true' ? 'text-white bg-darkthemeitems' : 'bg-white'
+                        }`}
+                    onClick={() => {setTemplateSearch(template.name);setSearchTemplate(false)}}
+                >
+                  <p>{template.name}</p>
+                </div>
+                  ))}
+                </div>
+
+              }
               <input type="text" placeholder="Subject" className={`inputs-unique ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2':'bg-white'}`} />
-              <input type="text" placeholder="Offer" className={`inputs-unique ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2':'bg-white'}`} />
               <textarea
                 placeholder="Type your message here"
                 className={`inputs-unique h-[10em] sm:h-[20em] ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2 focus:border-none':'bg-white'}`} 
