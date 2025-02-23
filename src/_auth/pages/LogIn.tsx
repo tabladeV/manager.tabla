@@ -1,19 +1,27 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useCreate } from "@refinedev/core";
 import { useNavigate } from "react-router-dom";
 import Logo from "../../components/header/Logo";
+import Alert from "../../components/common/Alert";
+import BaseInput from "../../components/common/BaseInput";
+import BaseBtn from "../../components/common/BaseBtn";
 
 const LogIn: React.FC = () => {
   const navigate = useNavigate();
-
+  const [restaurantId, setRestaurantId] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   function handleRestaurantId(variables: any) {
     if (variables.values?.restaurant_id) {
         localStorage.setItem("restaurant_id", variables.values.restaurant_id);
     }
   }
 
-  const { mutate: login, isLoading } = useCreate({
+  const { mutate: login, isLoading, error } = useCreate({
     resource: "api/v1/auth/login/",
+    errorNotification() {
+      return false;
+    },
     mutationOptions: {
       onSuccess: (data, variables) => {
         const refreshToken = data.data?.refresh;
@@ -34,10 +42,7 @@ const LogIn: React.FC = () => {
         localStorage.setItem("isLogedIn", "true");
 
         navigate("/");
-      },
-      onError: () => {
-        alert("Login failed. Please check your credentials.");
-      },
+      }
     },
   });
 
@@ -47,14 +52,14 @@ const LogIn: React.FC = () => {
     }
   }, [navigate]);
 
+  const isValid = useCallback(()=>{
+    return !!restaurantId && !!email && !!password
+  },[restaurantId, email, password])
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-
-    const restaurantId = formData.get("restaurant_id") as string;
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-
+    if(!isValid())
+      return;
     login({ values: { restaurant_id: Number(restaurantId), email, password } });
   };
 
@@ -68,12 +73,31 @@ const LogIn: React.FC = () => {
         Log in to your account to continue
       </p>
       <form className="flex flex-col gap-2 mt-8" onSubmit={handleSubmit}>
-        <input type="text" name="restaurant_id" placeholder="Restaurant ID" className="inputs-unique w-[30vw]" />
-        <input type="text" name="email" placeholder="Email" className="inputs-unique w-[30vw]" />
-        <input type="password" name="password" placeholder="Password" className="inputs-unique w-[30vw]" />
-        <button className="btn-primary w-[30vw]" disabled={isLoading}>
-          {isLoading ? "Logging In..." : "Log In"}
-        </button>
+        {
+          !!error?.response?.data && <Alert type="error">
+            {error.response.data.non_field_errors || ''}
+            {error.response.data.restaurant_id && <ul className="list-disc mt-4">
+              <strong>
+              Restaurant ID
+              </strong>
+              {error.response.data.restaurant_id.map((msg: string) => (<li>{msg}</li>))}
+            </ul>}
+            {error.response.data.email && <ul className="list-disc mt-4">
+              <strong>Email</strong>
+              {error.response.data.email.map((msg: string) => (<li>{msg}</li>))}
+            </ul>}
+            {error.response.data.password && <ul className="list-disc mt-4">
+              <strong>Password</strong>
+              {error.response.data.password.map((msg: string) => (<li>{msg}</li>))}
+            </ul>}
+          </Alert>
+        }
+        <input value={restaurantId} type="text" name="restaurant_id" placeholder="Restaurant ID" className="inputs-unique w-[30vw]" onChange={(e)=>setRestaurantId(e.target.value)} />
+        <input value={email} type="text" name="email" placeholder="Email" className="inputs-unique w-[30vw]" onChange={(e)=>setEmail(e.target.value)} />
+        <input value={password} type="password" name="password" placeholder="Password" className="inputs-unique w-[30vw]" onChange={(e)=>setPassword(e.target.value)} />
+        <BaseBtn variant="primary" disabled={!isValid()} loading={isLoading} onClick={() => handleSubmit}>
+          Login
+        </BaseBtn>
       </form>
     </div>
   );
