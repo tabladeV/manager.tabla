@@ -236,10 +236,10 @@ const WidgetPage = () => {
 
 
 
-          <div className='btn-secondary flex gap-4 items-center mt-3 justify-center cursor-pointer'>
+          {widgetInfo?.menu_file && <div className='btn-secondary flex gap-4 items-center mt-3 justify-center cursor-pointer'>
             <p className='' onClick={openPdfInNewTab}>Preview our menu </p>
             <ScreenShareIcon size={20} />
-          </div>
+          </div>}
 
         </div>}
         {

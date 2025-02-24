@@ -276,7 +276,8 @@ const ClientsPage = () => {
             <div className="flex flex-col  gap-2">
               <div className="p-2 rounded-[10px] cursor-default">
                 <p className="text-greentheme font-[600] mb-2">Send to</p>
-                <div className="flex gap-2 flex-wrap">{selectedClient.slice(0,4).map((client)=>(
+                <div className="flex gap-2 flex-wrap">
+                  {selectedClient.slice(0,4).map((client)=>(
                   <div key={client.id} className={`flex items-center gap-2 ${localStorage.getItem('darkMode')==='true'?'text-white':''}`}>
                     <p className={`text-sm btn ${localStorage.getItem('darkMode')==='true'?'text-white':''}`}>
                       {client.full_name}
@@ -288,7 +289,7 @@ const ClientsPage = () => {
               </div>
               <input type="text" placeholder="Template"  className={`inputs-unique ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2':'bg-white'}`} onChange={(e)=>{setSearchTemplate(true);setTemplateSearch(e.target.value)}} value={templateSearch} onFocus={()=>{setSearchTemplate(true)}}/>
               {searchTemplate && 
-                <div className={`flex max-h-[25vh] overflow-y-auto  flex-col gap-2 mb-2 px-4 rounded-[10px] ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2':'bg-white'}`}>
+                <div className={`flex max-h-[25vh] overflow-y-auto  flex-col gap-2 p-4 rounded-[10px] ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2':'bg-white'}`}>
                   {templates?.filter((template)=>template.name.toLowerCase().includes(templateSearch.toLowerCase())).map((template)=>(
                     <div
                     key={template.id}
