@@ -23,7 +23,11 @@ const Home = () => {
   //   setUser(data?.data)
   // }, [data])
 
-  // console.log(user,'user')
+  // useEffect(() => {
+  //   if(user){
+  //     console.log(user, 'user')
+  //   }
+  // }, [user])
 
   
 
