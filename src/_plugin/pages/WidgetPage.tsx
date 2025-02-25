@@ -12,13 +12,14 @@ import { table } from 'console';
 import bg from '../../assets/bg-widget.png'
 
 import pdf from '../../assets/Regression logistique.pdf'
-import { format } from 'date-fns';
+import { format, set } from 'date-fns';
 
 
 
 const WidgetPage = () => {
   const { restaurant } = useParams();
 
+  const [restaurantID, setRestaurantID] = useState<BaseKey>();
   const { data: widgetData, isLoading, error } = useOne({
     resource: `api/v1/bo/subdomains/public/cutomer/reservations`,
     id: ''
@@ -33,6 +34,7 @@ const WidgetPage = () => {
     console.log(' widgetData ', widgetData)
     if (widgetData) {
       setWidgetInfo(widgetData.data);
+      setRestaurantID(widgetData.data.restaurant);
     }
   }, [widgetData]);
 
@@ -63,6 +65,8 @@ const WidgetPage = () => {
     date?: string;
     source?: string;
     status?: string;
+    allergies: string,
+    preferences: string,
     time: string;
     number_of_guests: number;
     commenter?: string;
@@ -145,11 +149,13 @@ const WidgetPage = () => {
         phone: userInfromation.phone
       },
       review_link: "",
-      restaurant: Number(restaurant),
+      restaurant: restaurantID as number,
       internal_note: "",
       occasion: 'none',
       source: 'WIDGET',
       status: 'PENDING',
+      allergies: "string",
+      preferences: "string",
       commenter: userInfromation.message,
       date: format(data.reserveDate, 'yyyy-MM-dd'),
       time: data.time + ':00',
@@ -158,12 +164,7 @@ const WidgetPage = () => {
 
     console.log(allInformations, 'test');
     createReservation({
-      resource: `api/v1/bo/restaurants/${restaurant}/widget_create_reservation/`,
-      meta: {
-        headers: {
-          "id ": 1,
-        },
-      },
+      resource: `api/v1/bo/subdomains/public/cutomer/reservations/`,
       values: {
         allInformations
       },
@@ -235,10 +236,10 @@ const WidgetPage = () => {
 
 
 
-          <div className='btn-secondary flex gap-4 items-center mt-3 justify-center cursor-pointer'>
+          {widgetInfo?.menu_file && <div className='btn-secondary flex gap-4 items-center mt-3 justify-center cursor-pointer'>
             <p className='' onClick={openPdfInNewTab}>Preview our menu </p>
             <ScreenShareIcon size={20} />
-          </div>
+          </div>}
 
         </div>}
         {

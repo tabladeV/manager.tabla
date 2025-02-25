@@ -89,16 +89,22 @@ const Profile = () => {
           <h2 className="text-[1.6rem] font-[700]">Change your password</h2>
           <p className={`text-sm mb-4 mt-[-.5em]  ${localStorage.getItem('darkMode')==='true' ? 'text-softwhitetheme': 'text-subblack'} `}>You can change your password here</p>
           <div className={`inputs flex justify-between ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':''}`}>
-            <input type={eyeOldPswrd ? 'text' : 'password'}  ref={oldPswrdRef} placeholder="Old password"  onChange={handleChange} className='w-full focus:border-0 focus:ring-0 focus:outline-none'/>
-            <button onClick={() => setEyeOldPswrd(!eyeOldPswrd)} className='text-[#00000080] hover:text-[#000000] transition-colors'> {eyeOldPswrd ? <EyeOff size={20}/> : <Eye size={20}/>} </button>
+            <input type={eyeOldPswrd ? 'text' : 'password'}  ref={oldPswrdRef} placeholder="Old password"  onChange={handleChange} className='w-full focus:border-0 focus:ring-0 focus:outline-none bg-transparent'/>
+            <button onClick={() => setEyeOldPswrd(!eyeOldPswrd)} className={ ` transition-colors ${localStorage.getItem('darkMode')==='true'?'text-white':'text-[#00000080] hover:text-[#000000]'}`}>
+              {eyeOldPswrd ? <EyeOff size={20}/> : <Eye size={20}/>} 
+          </button>
           </div>  
           <div className={`inputs flex justify-between ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':''}`}>
-            <input type={eyeNewPswrd ? 'text' : 'password'}  ref={newPswrdRef} placeholder="New password"  onChange={handleChange} className='w-full focus:border-0 focus:ring-0 focus:outline-none'/>
-            <button onClick={() => setEyeNewPswrd(!eyeNewPswrd)} className='text-[#00000080] hover:text-[#000000] transition-colors'> {eyeNewPswrd ? <EyeOff size={20}/> : <Eye size={20}/>} </button>
+            <input type={eyeNewPswrd ? 'text' : 'password'}  ref={newPswrdRef} placeholder="New password"  onChange={handleChange} className='w-full focus:border-0 focus:ring-0 focus:outline-none bg-transparent'/>
+            <button onClick={() => setEyeNewPswrd(!eyeNewPswrd)} className={ ` transition-colors ${localStorage.getItem('darkMode')==='true'?'text-white':'text-[#00000080] hover:text-[#000000]'}`}>
+              {eyeNewPswrd ? <EyeOff size={20}/> : <Eye size={20}/>} 
+            </button>
           </div>
           <div className={`inputs flex justify-between ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':''}`}>
-            <input type={eyeConfirmPswrd ? 'text' : 'password'}  ref={confirmPswrdRef} placeholder="Confirm new password"  onChange={handleChange} className='w-full focus:border-0 focus:ring-0 focus:outline-none'/>
-            <button onClick={() => setEyeConfirmPswrd(!eyeConfirmPswrd)} className='text-[#00000080] hover:text-[#000000] transition-colors'> {eyeConfirmPswrd ? <EyeOff size={20}/> : <Eye size={20}/>} </button>
+            <input type={eyeConfirmPswrd ? 'text' : 'password'}  ref={confirmPswrdRef} placeholder="Confirm new password"  onChange={handleChange} className='w-full focus:border-0 focus:ring-0 focus:outline-none bg-transparent'/>
+            <button onClick={() => setEyeConfirmPswrd(!eyeConfirmPswrd)} className={ ` transition-colors ${localStorage.getItem('darkMode')==='true'?'text-white':'text-[#00000080] hover:text-[#000000]'}`}>
+              {eyeConfirmPswrd ? <EyeOff size={20}/> : <Eye size={20}/>} 
+            </button>
           </div>
           {error !=='' && <p className='text-redtheme text-sm flex gap-1 items-center'> <MessageCircleWarningIcon size={14}/> {error} {errorMessage}</p>}
           <button className="btn-primary mt-3" onClick={handlePasswordChange}>Change password</button>

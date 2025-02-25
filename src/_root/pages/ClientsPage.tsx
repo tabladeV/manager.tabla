@@ -3,7 +3,7 @@ import AccessToClient from "../../components/clients/AccessToClient";
 import SearchBar from "../../components/header/SearchBar";
 import { Outlet, useLocation, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { BaseKey, BaseRecord, useList } from "@refinedev/core";
+import { BaseKey, BaseRecord, useCreate, useList } from "@refinedev/core";
 import { use } from "i18next";
 
 import image from '../../assets/profile.png';
@@ -39,6 +39,19 @@ const ClientsPage = () => {
 
   const [clientsAPIInfo, setClientsAPIInfo] =useState<ClientsType>()
 
+  const [templates, setTemplates] = useState<BaseRecord[]>();
+
+  const {data: templateData, isLoading: templateIsLoading, error: templateError} = useList({
+    resource: 'api/v1/bo/notifications/templates/',
+    queryOptions:{
+      onSuccess(data){
+        setTemplates(data.data as unknown as BaseRecord[])
+      }
+    }
+  });
+
+
+
   const {data , isLoading, error} = useList({
     resource: 'api/v1/bo/customers/',
     filters: [
@@ -61,6 +74,20 @@ const ClientsPage = () => {
 
   });
 
+
+  const {mutate: sendNotification} = useCreate(
+    {
+      resource: 'api/v1/bo/notifications/',
+      mutationOptions:{
+        onSuccess: (data) => {
+          console.log('Notification sent:', data);
+        },
+        onError: (error) => {
+          console.log('Error in sending notification:', error.message);
+        },
+      },
+    }
+  )
 
   const [clients, setClients] = useState<BaseRecord[]>([]);
   
@@ -207,44 +234,36 @@ const ClientsPage = () => {
 
   const [templateSearch, setTemplateSearch] = useState('');
 
-  const [templates, setTemplates] = useState([
-    {
-      id: 1,
-      name:'Ramadan',
-    },
-    {
-      id: 2,
-      name:'Chrismas',
-    },
-    {
-      id: 3,
-      name:'New Year',
-    },
-    {
-      id: 4,
-      name:'Eid',
-    },
-    {
-      id: 5,
-      name:'New Menu',
-    },
-    {
-      id: 6,
-      name:'Valentine',
-    },
-    {
-      id: 7,
-      name:'Birthday',
-    },
-    {
-      id: 8,
-      name:'Anniversary',
-    },
-    {
-      id: 9,
-      name:'Promotion',
-    }
-  ]);
+  interface NotificationType {
+    clients: BaseRecord[];
+    template: number | undefined;
+    restaurant: number | null;
+    subject: string;
+    message: string;
+  }
+
+  const [notificationInfo, setNotificationInfo] = useState<NotificationType>({
+    clients: [],
+    template: undefined,
+    restaurant: null,
+    subject: '',
+    message: '',
+  });
+
+  
+
+  const sendNotificationHandler = () => {
+    console.log(selectedClient.map(client => client.id),'CLIENTS');
+    sendNotification({
+      values: {
+      customers: selectedClient.map(client => client.id),
+      template: notificationInfo.template,
+      restaurant: Number(localStorage.getItem('restaurant_id')),
+      subject: notificationInfo.subject,
+      message: notificationInfo.message,
+      },
+    });
+  }
 
 
   return (
@@ -252,33 +271,55 @@ const ClientsPage = () => {
       {showNotificationModal && (
         <div>
           <div className="overlay" onClick={()=>{setShowNotificationModal(false)}}></div>
-          <div className={`sidepopup h-full lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'}`}>
-            <h2 className="mb-5">Send a notification</h2>
-            <form className="flex flex-col gap-2">
-              <input type="text" placeholder="Template"  className={`inputs-unique ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2':'bg-white'}`} onChange={(e)=>{setSearchTemplate(true);setTemplateSearch(e.target.value)}} value={templateSearch} />
+          <div className={`sidepopup h-full lt-sm:w-full overflow-y-auto lt-sm:h-[70vh] lt-sm:bottom-0 ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'}`}>
+            <h2 className="">Send a notification</h2>
+            <div className="flex flex-col  gap-2">
+              <div className="p-2 rounded-[10px] cursor-default">
+                <p className="text-greentheme font-[600] mb-2">Send to</p>
+                <div className="flex gap-2 flex-wrap">
+                  {selectedClient.slice(0,4).map((client)=>(
+                  <div key={client.id} className={`flex items-center gap-2 ${localStorage.getItem('darkMode')==='true'?'text-white':''}`}>
+                    <p className={`text-sm btn ${localStorage.getItem('darkMode')==='true'?'text-white':''}`}>
+                      {client.full_name}
+                    </p>
+                  </div>
+                ))}
+                {selectedClient.length>4 && <p className={`text-sm btn ${localStorage.getItem('darkMode')==='true'?'text-white':''}`}>and {selectedClient.length-4} more</p>}
+                </div>
+              </div>
+              <input type="text" placeholder="Template"  className={`inputs-unique ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2':'bg-white'}`} onChange={(e)=>{setSearchTemplate(true);setTemplateSearch(e.target.value)}} value={templateSearch} onFocus={()=>{setSearchTemplate(true)}}/>
               {searchTemplate && 
-                <div className={`flex w-[37vw] max-h-[50vh] overflow-y-auto mt-[3em] flex-col gap-2 absolute z-10 p-2 rounded-[10px] ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2':'bg-white'}`}>
-                  {templates.filter((template)=>template.name.toLowerCase().includes(templateSearch.toLowerCase())).map((template)=>(
+                <div className={`flex max-h-[25vh] overflow-y-auto  flex-col gap-2 p-4 rounded-[10px] ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2':'bg-white'}`}>
+                  {templates?.filter((template)=>template.name.toLowerCase().includes(templateSearch.toLowerCase())).map((template)=>(
                     <div
                     key={template.id}
                     className={`flex flex-col  btn cursor-pointer ${
                         localStorage.getItem('darkMode') === 'true' ? 'text-white bg-darkthemeitems' : 'bg-white'
                         }`}
-                    onClick={() => {setTemplateSearch(template.name);setSearchTemplate(false)}}
+                    onClick={() => {setTemplateSearch(template.name);setSearchTemplate(false);setNotificationInfo((prevNotificationInfo) => { return {...prevNotificationInfo, template: Number(template.id)}})}}
                 >
+
                   <p>{template.name}</p>
                 </div>
                   ))}
                 </div>
 
               }
-              <input type="text" placeholder="Subject" className={`inputs-unique ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2':'bg-white'}`} />
+              
+              <input type="text" placeholder="Subject" className={`inputs-unique ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2':'bg-white'}`} onChange={(e) => {setNotificationInfo((prevNotificationInfo) => { return {...prevNotificationInfo, subject: e.target.value}})}}/>
               <textarea
                 placeholder="Type your message here"
-                className={`inputs-unique h-[10em] sm:h-[20em] ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2 focus:border-none':'bg-white'}`} 
+                rows={5}
+                onChange={(e) => {setNotificationInfo((prevNotificationInfo) => { return {...prevNotificationInfo, message: e.target.value}})}}
+                className={`inputs-unique  ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2 focus:border-none':'bg-white'}`} 
               ></textarea>
-              <button className="btn-primary" type="submit">Send</button>
-            </form>
+              <button 
+                className="btn-primary" 
+                onClick={sendNotificationHandler}
+              >
+                Send
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -135,7 +135,11 @@ export default function WidgetConfig() {
     const formData = new FormData();
     formData.append('title', title);
     formData.append('description', description);
-    formData.append('has_menu', searchTabs.menu.toString());
+    if(hasMenu){
+      formData.append('has_menu', 'true');
+    }else{
+      formData.append('has_menu', 'false');
+    }
     formData.append('disabled_title', disabledTitle);
     formData.append('disabled_description', disabledDescription);
 
@@ -242,7 +246,7 @@ export default function WidgetConfig() {
                   </label>
                 ))}
               </div>
-              {(hasMenu && searchTabs.menu) && (
+              {(hasMenu) && (
                 <div className="flex justify-around items-center">
                   <button
                     onClick={() => filePdfInputRef.current?.click()}
