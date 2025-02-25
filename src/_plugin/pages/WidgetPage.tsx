@@ -166,7 +166,7 @@ const WidgetPage = () => {
     createReservation({
       resource: `api/v1/bo/subdomains/public/cutomer/reservations/`,
       values: {
-        allInformations
+        ...allInformations
       },
     });
     setStep(5);
