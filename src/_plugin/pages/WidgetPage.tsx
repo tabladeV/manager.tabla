@@ -25,6 +25,38 @@ const WidgetPage = () => {
     id: ''
   });
 
+  const [occasions, setOccasions] = useState<BaseRecord[]>();
+  
+  // interface OccasionType {
+  //   results: BaseRecord[];
+  // }
+
+  // const [occasionApiData, setOccasionApiData] = useState<OccasionType>();
+
+
+
+  // const { data: occasionData, isLoading: occasionLoading, error: occasionError } = useList({
+  //   resource: `api/v1/bo/occasions/`,
+  //   filters: [
+  //     {
+  //       field: "page",
+  //       operator: "eq",
+  //       value: 1,
+  //     },
+  //     {
+  //       field: "page_size",
+  //       operator: "eq",
+  //       value: 20,
+  //     },
+  //   ], 
+  //   queryOptions: {
+  //     onSuccess: (data) => {
+  //       setOccasionApiData(data.data as unknown as OccasionType);
+  //       setOccasions(occasionApiData?.results);
+  //     }
+  //   }
+  // });
+
   const { mutate: createReservation } = useCreate()
 
   const [widgetInfo, setWidgetInfo] = useState<BaseRecord>();
@@ -99,8 +131,10 @@ const WidgetPage = () => {
     lastname: '',
     email: '',
     phone: '',
-    message: ''
-
+    // message: '',
+    preferences: '',
+    allergies: '',
+    occasion: ''
   });
 
 
@@ -111,7 +145,10 @@ const WidgetPage = () => {
       lastname: e.target.lastname.value,
       email: e.target.email.value,
       phone: e.target.phone.value,
-      message: e.target.req.value
+      // message: e.target.req.value,
+      preferences: e.target.preferences.value,
+      allergies: e.target.allergies.value,
+      occasion: e.target.occasion.value
     };
     setUserInformation(updatedUserInformation);
     if (e.target.firstname.value !== '' && e.target.lastname.value !== '' && e.target.email.value !== '' && e.target.phone.value !== '') {
@@ -140,6 +177,8 @@ const WidgetPage = () => {
     }
   }, [isWidgetActivated]);
 
+  const [serverError, setServerError] = useState<string>();
+
   const handleConfirmation = () => {
     setAllInformations({
       customer: {
@@ -151,12 +190,12 @@ const WidgetPage = () => {
       review_link: "",
       restaurant: restaurantID as number,
       internal_note: "",
-      occasion: 'none',
+      occasion: userInfromation.occasion,
       source: 'WIDGET',
       status: 'PENDING',
       allergies: "string",
       preferences: "string",
-      commenter: userInfromation.message,
+      // commenter: userInfromation.message,
       date: format(data.reserveDate, 'yyyy-MM-dd'),
       time: data.time + ':00',
       number_of_guests: data.guests
@@ -166,11 +205,37 @@ const WidgetPage = () => {
     createReservation({
       resource: `api/v1/bo/subdomains/public/cutomer/reservations/`,
       values: {
-        allInformations
+        customer: {
+          email: userInfromation.email,
+          first_name: userInfromation.firstname,
+          last_name: userInfromation.lastname,
+          phone: userInfromation.phone
+        },
+        review_link: "",
+        restaurant: restaurantID as number,
+        internal_note: "",
+        occasion: userInfromation.occasion,
+        source: 'WIDGET',
+        status: 'PENDING',
+        allergies: userInfromation.allergies,
+        preferences: userInfromation.preferences,
+        commenter: userInfromation.preferences,
+        date: format(data.reserveDate, 'yyyy-MM-dd'),
+        time: data.time + ':00',
+        number_of_guests: data.guests
+      }
+    }, {
+      onSuccess: () => {
+        setStep(5);
+
       },
+      onError: () => {
+        setServerError('Something went wrong');
+      }
     });
-    setStep(5);
   }
+
+  
   console.log(allInformations);
 
   console.log(widgetInfo)
@@ -189,7 +254,7 @@ const WidgetPage = () => {
       localStorage.setItem('darkMode', newMode.toString());
       return newMode;
     });
-    window.location.reload();
+    // window.location.reload();
   };
   return (
     <div className={`h-screen  flex flex-col items-center ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2 text-textdarktheme' : 'bg-softgreytheme text-blacktheme'}   lt-sm:w-full `}>
@@ -251,7 +316,15 @@ const WidgetPage = () => {
               <input id='email' type="text" placeholder='Email' className={`inputs-unique w-[30em] ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2' : ''}`} />
               <input id='phone' type="text" placeholder='Phone' className={`inputs-unique w-[30em] ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2' : ''}`} />
               <textarea id='allergies' placeholder='Allergies' className={`inputs-unique w-[30em] ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2' : ''}`} />
-              <textarea id='req' placeholder='Special Request' className={`inputs-unique w-[30em] ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2' : ''}`} />
+              <textarea id='preferences' placeholder='Preferences' className={`inputs-unique w-[30em] ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2' : ''}`} />
+              <select id='occasion' className={`inputs-unique w-[30em] ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2' : ''}`}>
+                <option value="birthday">Birthday</option>
+                <option value="romantic">Romantic Diner</option>
+                <option value="business">Business</option>
+                <option value="corporate">Corporate Diner</option>
+                <option value="first time">First Time Visiting</option>
+                <option value="other">Other</option>
+              </select>
 
               <div className='flex w-[30em] gap-3 mt-1'>
                 <button onClick={() => { setStep(1) }} className={`btn w-full mt-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-white hover:text-white' : ''}`}>
@@ -305,6 +378,7 @@ const WidgetPage = () => {
           step === 4 &&
           <div className='flex flex-col items-center gap-3'>
             <button onClick={handleConfirmation} className='btn-primary mt-3'>Confirm your reservation</button>
+            <p className='text-sm text-center text-redtheme'>{serverError}</p>
           </div>
         }
         {

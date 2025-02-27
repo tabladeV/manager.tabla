@@ -27,7 +27,7 @@ interface ClientData {
 
 const ClientsPage = () => {
 
-  const [pageSize,setPageSize ] =useState(3);
+  const [pageSize,setPageSize ] =useState(5);
   const [page, setPage] = useState(1);
 
   interface ClientsType {
@@ -182,6 +182,7 @@ const ClientsPage = () => {
     setSelectedClient((prevSelectedClients) => {
       // Check if the client is already selected
       const isAlreadySelected = prevSelectedClients.some((client) => client.id === id);
+      
   
       // If already selected, filter it out; otherwise, add the client to the selection
       if (isAlreadySelected) {

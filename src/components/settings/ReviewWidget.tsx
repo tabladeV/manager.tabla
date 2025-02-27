@@ -74,7 +74,7 @@ const ReviewWidget = () => {
 
     try {
       await updateWidget({
-        id: restaurantId ? restaurantId : 0,
+        id: '',
         resource: `api/v1/reviews/widget`,
         values: newFormData,
       });

@@ -280,7 +280,6 @@ const ReviewPage = () => {
             onChange={(e) => setReviewText(e.target.value)}
             className={`p-3 rounded-md shadow-2xl shadow-[#88AB6120] w-full lt-sm:w-[90%] h-[6em] inputs-unique ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
             placeholder="Write your review here"
-            required
           />
 
           <button type="submit" className="btn-primary mt-3">

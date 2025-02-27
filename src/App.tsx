@@ -59,6 +59,11 @@ import "react-toastify/dist/ReactToastify.css";
 import { notificationProvider } from "./providers/notificationProvider";
 const API_HOST = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL : "https://api.dev.tabla.ma";
 function App() {
+  
+  useEffect(() => {
+    document.title = "Tabla | Management";
+  }, []);
+
   const subdomain = getSubdomain();
   const isManager = subdomain === "manager"
   useEffect(() => {
