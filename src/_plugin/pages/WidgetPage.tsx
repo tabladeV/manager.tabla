@@ -228,6 +228,7 @@ const WidgetPage = () => {
       onSuccess: () => {
         setStep(5);
 
+
       },
       onError: () => {
         setServerError('Something went wrong');
