@@ -33,6 +33,13 @@ const sampleReservations: Record<string, { name: string; people: number }[]> = {
 }
 
 const GridPage = () => {
+
+
+  
+  useEffect(() => {
+    document.title = 'Booking Grid | Tabla'
+  }, [])
+
   const { t } = useTranslation()
 
 const { chosenDay } = useDateContext();

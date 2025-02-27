@@ -36,6 +36,10 @@ interface Reservation extends BaseRecord {
 
 const ReservationsPage = () => {
 
+  useEffect(() => {
+    document.title = 'Reservations | Tabla'
+  }, [])
+
   const {data: changeRes} = useCan({resource: 'reservation', action: 'change'})
 
   interface dataTypes {
@@ -205,6 +209,8 @@ console.log(count,'test')
       return 'bg-softpurpletheme text-purpletheme'
     }else if(status === 'NO_SHOW'){
       return 'bg-softblushtheme text-blushtheme'
+    }else if(status === 'RESCHEDULED'){
+      return 'bg-softbrowntheme text-browntheme'
     }
      else {
       return 'bg-softredtheme text-redtheme'
@@ -710,6 +716,7 @@ console.log(count,'test')
                   <option value="CANCELED">{t('reservations.statusLabels.cancelled')}</option>
                   <option value="SEATED">{t('reservations.statusLabels.seated')}</option>
                   <option value="NO_SHOW">{t('reservations.statusLabels.noShow')}</option>
+                  <option value="RESCHEDULED">{t('reservations.statusLabels.rescheduled')}</option>
                 </select>
               </div>
               <div onClick={()=>{setShowProcess(true)}} className={`btn flex justify-around cursor-pointer ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'}`}>
@@ -760,6 +767,9 @@ console.log(count,'test')
           <button onClick={() => setFocusedFilter('NO_SHOW')} className={`${localStorage.getItem('darkMode')==='true'?'text-white':''} ${focusedFilter === 'NO_SHOW' ? 'btn-primary' : 'btn'}`}>
             {t('reservations.filters.noShow')}
           </button>
+          <button onClick={() => setFocusedFilter('RESCHEDULED')} className={`${localStorage.getItem('darkMode')==='true'?'text-white':''} ${focusedFilter === 'RESCHEDULED' ? 'btn-primary' : 'btn'}`}>
+            {t('reservations.filters.rescheduled')}
+          </button>
           <button 
             className={`gap-2 flex items-center ${localStorage.getItem('darkMode')==='true'?' text-whitetheme':''} ${selectingDay === '' ? 'btn' : 'btn-primary'}`} 
             onClick={() => setFocusedDate(true)}
@@ -806,7 +816,7 @@ console.log(count,'test')
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.number_of_guests}</td>
                 <td className="px-3 py-4 whitespace-nowrap " onClick={()=> showStatusModification(reservation.id)}>
                   <span className={`${statusStyle(reservation.status)} text-center py-[.1em] px-3  rounded-[10px]`}> 
-                    {reservation.status === 'APPROVED'? t('reservations.statusLabels.confirmed') : reservation.status === 'PENDING' ? t('reservations.statusLabels.pending') : reservation.status === 'SEATED'?  t('reservations.statusLabels.seated') : reservation.status === 'FULFILLED' ? t('reservations.statusLabels.fulfilled') : reservation.status === 'NO_SHOW' ? t('reservations.statusLabels.noShow') :   t('reservations.statusLabels.cancelled')}
+                    {reservation.status === 'APPROVED'? t('reservations.statusLabels.confirmed') : reservation.status === 'PENDING' ? t('reservations.statusLabels.pending') : reservation.status === 'SEATED'?  t('reservations.statusLabels.seated') : reservation.status === 'FULFILLED' ? t('reservations.statusLabels.fulfilled') : reservation.status === 'NO_SHOW' ? t('reservations.statusLabels.noShow')  : reservation.status === 'RESCHEDULED' ?  t('reservations.statusLabels.rescheduled') :  t('reservations.statusLabels.cancelled')}
                   </span>
                     {showStatus && reservation.id === idStatusModification && reservation.status !== 'FULFILLED' && (
                       <div className="relative">
@@ -817,6 +827,7 @@ console.log(count,'test')
                           <li className="py-1 px-2  text-greentheme cursor-pointer" onClick={()=> statusHandler('APPROVED')}>{t('reservations.statusLabels.confirmed')}</li>
                           <li className="py-1 px-2 text-redtheme cursor-pointer" onClick={()=> statusHandler('CANCELED')}>{t('reservations.statusLabels.cancelled')}</li>
                           <li className="py-1 px-2 text-blushtheme cursor-pointer" onClick={()=> statusHandler('NO_SHOW')}>{t('reservations.statusLabels.noShow')}</li>
+                          <li className="py-1 px-2 text-browntheme cursor-pointer" onClick={()=> statusHandler('RESCHEDULED')}>{t('reservations.statusLabels.rescheduled')}</li>
                           <li className="py-1 px-2 text-orangetheme cursor-pointer" onClick={()=> statusHandler('SEATED')}>{t('reservations.statusLabels.seated')}</li>
                         </ul>
                       </div>

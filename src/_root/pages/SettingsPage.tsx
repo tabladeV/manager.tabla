@@ -1,8 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { CanAccess } from "@refinedev/core";
+import { useEffect } from "react";
 
 const SettingsPage = () => {
+  
+    useEffect(() => {
+      document.title = 'Settings | Tabla'
+    }, [])
   const { t } = useTranslation();
   const { pathname } = useLocation();
 

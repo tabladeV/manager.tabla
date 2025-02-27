@@ -31,11 +31,21 @@ interface Review {
 
 const Reviews = () => {
 
+
+  useEffect(() => {
+    document.title = 'Reviews | Tabla'
+  }, [])
+
     const [page, setPage] = useState(1)
     const [count, setCount] = useState(0)
     const [size, setSize] = useState(10)
 
     const [reviews, setReviews] = useState<Review[]>([])
+
+    useEffect(() => {
+      console.log(reviews,'reviews')
+    }
+    , [reviews])
     const [searchKeyword , setSearchKeyword] = useState('')
 
 

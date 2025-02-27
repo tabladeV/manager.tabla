@@ -175,6 +175,11 @@ const ClientInterface = () => {
     )
   }
 
+  
+  useEffect(() => {
+    document.title = client?.full_name+ (isProfile ? ' - Profile': ' - Booking History') || 'Client';
+  }, [client, isProfile]);
+
   const [editingField, setEditingField] = useState<keyof ClientData | null>(null);
 
   // useEffect(() => {

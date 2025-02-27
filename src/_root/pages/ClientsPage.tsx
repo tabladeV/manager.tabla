@@ -26,6 +26,10 @@ interface ClientData {
 }
 
 const ClientsPage = () => {
+  
+  useEffect(() => {
+    document.title = 'Clients | Tabla'
+  }, [])
 
   const [pageSize,setPageSize ] =useState(5);
   const [page, setPage] = useState(1);

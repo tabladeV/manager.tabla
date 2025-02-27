@@ -12,6 +12,10 @@ import { useList } from '@refinedev/core'
 
 
 const Home = () => {
+  
+  useEffect(() => {
+    document.title = 'Tabla Back Office'
+  }, [])
 
   const{data, isLoading, error} = useList({
     resource: 'api/v1/bo/restaurants/users/me/',

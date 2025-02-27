@@ -33,6 +33,10 @@ interface Restaurant {
 }
 
 const General = () => {
+  
+  useEffect(() => {
+    document.title = 'General Settings | Tabla'
+  }, [])
 
   const [restaurantId, setRestaurantId] = useState(localStorage.getItem('restaurant_id'));
 

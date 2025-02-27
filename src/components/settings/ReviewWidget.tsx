@@ -5,6 +5,12 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 const ReviewWidget = () => {
+
+  
+  useEffect(() => {
+    document.title = 'Review Widget Settings | Tabla'
+  }, [])
+
   const restaurantId = localStorage.getItem('restaurant_id');
 
   const { data: reviewData, isLoading, error } = useList({
