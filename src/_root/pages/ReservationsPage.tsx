@@ -11,6 +11,9 @@ import { BaseKey, BaseRecord, CanAccess, useCan, useCreate, useList, useUpdate }
 import ReservationProcess from "../../components/reservation/ReservationProcess"
 import { Send } from "lucide-react"
 import Pagination from "../../components/reservation/Pagination"
+import ExportModal from "../../components/common/ExportModal"
+import useExportConfig from "../../components/common/config/exportConfig"
+import useAdvancedExportConfig from "../../components/common/config/advancedExportConfig"
 
 
 interface receivedTables {
@@ -195,7 +198,9 @@ console.log(count,'test')
       });
     }
   }, []);
-
+  const [showExportModal, setShowExportModal] = useState(false);
+  const { reservations: reservationsExportConfig } = useExportConfig();
+  // const { reservations: reservationsExportConfig } = useAdvancedExportConfig();
   
 
   function statusStyle(status: string) {
@@ -580,6 +585,17 @@ console.log(count,'test')
 
   return (
     <div className="relative">
+      {showExportModal && (
+        <ExportModal
+          columns={reservationsExportConfig.columns}
+          customFields={reservationsExportConfig.customFields}
+          onExport={(format, selectedColumns) => {
+            console.log(format, selectedColumns)
+            setShowExportModal(false);
+          }}
+          onClose={() => setShowExportModal(false)}
+        />
+      )}
       {showProcess && <div className=''><ReservationProcess onClick={()=>{setShowProcess(false)}} getDateTime={(data:dataTypes)=>{setReservationProgressData(data)}}/></div>}
 
       {showAddReservation && <ReservationModal  onClick={()=>{setShowAddReservation(false)}}  onSubmit={(data: Reservation)=>{setReservations([...reservations, data])}} />} 
@@ -736,13 +752,19 @@ console.log(count,'test')
           </div>
         </div>
       )}
-      <div className='flex justify-between mb-2'>
+      <div className='flex justify-between mb-4'>
         <h1 className={`text-3xl text-blacktheme  font-[700] ${localStorage.getItem('darkMode')==='true'?' text-whitetheme':' text-blacktheme'}`}>{t('reservations.title')}</h1>
+        <div className="flex gap-4">
         <CanAccess action="add" resource="reservation">
           <button className='btn-primary' onClick={()=>{setShowAddReservation(true)}}>
             {t('reservations.buttons.addReservation')}
           </button>
         </CanAccess>
+        <button onClick={() => setShowExportModal(true)} className={`${localStorage.getItem('darkMode') === 'true' ? ' text-whitetheme' : ''} btn-primary`}>
+          {/* {t('reviews.filters.all')} */}
+          export
+        </button>
+        </div>
       </div>
       <div className="flex lt-sm:flex-col lt-sm:gap-2 justify-between">
         <div className="">

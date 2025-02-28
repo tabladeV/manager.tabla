@@ -16,8 +16,8 @@ const baseStyles =
 
 const variantStyles: Record<string, string> = {
   primary: 'bg-greentheme text-white hover:bg-[#688F3D]',
-  secondary: 'bg-[#688F3D20] text-greentheme hover:bg-[#688F3D] hover:text-white',
-  outlined: 'bg-transparent border border-[#688F3D] text-subblack hover:bg-[#688F3D] hover:text-white',
+  secondary: 'bg-[#688F3D20] text-greentheme hover:bg-[#688F3D] hover:text-white ',
+  outlined: 'bg-transparent border border-[#688F3D] text-subblack hover:bg-[#688F3D]/30 dark:text-white',
 };
 
 const sizeStyles: Record<string, string> = {
