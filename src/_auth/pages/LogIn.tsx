@@ -72,9 +72,8 @@ const LogIn: React.FC = () => {
       <p className="text-center text-subblack">
         Log in to your account to continue
       </p>
-      <form className="flex flex-col gap-2 mt-8" onSubmit={handleSubmit}>
-        {
-          !!error?.response?.data && <Alert type="error">
+      {
+          !!error?.response?.data && <Alert type="error" className="mb-0 mt-4">
             {error.response.data.non_field_errors || ''}
             {error.response.data.restaurant_id && <ul className="list-disc mt-4">
               <strong>
@@ -92,6 +91,7 @@ const LogIn: React.FC = () => {
             </ul>}
           </Alert>
         }
+      <form className="flex flex-col gap-2 mt-4 justify-center" onSubmit={handleSubmit}>
         <input value={restaurantId} type="text" name="restaurant_id" placeholder="Restaurant ID" className="inputs-unique w-[30vw]" onChange={(e)=>setRestaurantId(e.target.value)} />
         <input value={email} type="text" name="email" placeholder="Email" className="inputs-unique w-[30vw]" onChange={(e)=>setEmail(e.target.value)} />
         <input value={password} type="password" name="password" placeholder="Password" className="inputs-unique w-[30vw]" onChange={(e)=>setPassword(e.target.value)} />

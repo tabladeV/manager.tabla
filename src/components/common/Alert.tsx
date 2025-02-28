@@ -14,6 +14,7 @@ interface AlertProps {
   type?: AlertType;
   variant?: AlertVariant;
   children: ReactNode;
+  className: string;
 }
 
 const alertStyles = {
@@ -48,6 +49,7 @@ const Alert: React.FC<AlertProps> = ({
   type = 'info',
   variant = 'filled',
   children,
+  className
 }) => {
   const [visible, setVisible] = useState(true);
 
@@ -58,7 +60,7 @@ const Alert: React.FC<AlertProps> = ({
   const Icon = icons[type];
 
   return (
-    <div className={`${baseStyle} ${style}`} role="alert">
+    <div className={`${className} ${baseStyle} ${style}`} role="alert">
       {Icon}
       <div className="ml-3 flex-1">{children}</div>
       <button
