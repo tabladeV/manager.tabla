@@ -21,6 +21,11 @@ interface DayData {
 }
 
 const Availability = () => {
+
+  
+  useEffect(() => {
+    document.title = 'Availability | Tabla'
+  }, [])
   const [restaurantId, setRestaurantId] = useState<string>(localStorage.getItem('restaurant_id') || '0');
   const { data: availabilityDays, isLoading, error } = useList({
     resource: `api/v1/bo/availability/days/`,

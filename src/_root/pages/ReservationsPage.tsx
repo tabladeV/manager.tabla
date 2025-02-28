@@ -38,6 +38,10 @@ interface Reservation extends BaseRecord {
 
 const ReservationsPage = () => {
 
+  useEffect(() => {
+    document.title = 'Reservations | Tabla'
+  }, [])
+
   const {data: changeRes} = useCan({resource: 'reservation', action: 'change'})
 
   interface dataTypes {
@@ -208,6 +212,8 @@ console.log(count,'test')
       return 'bg-softpurpletheme text-purpletheme'
     }else if(status === 'NO_SHOW'){
       return 'bg-softblushtheme text-blushtheme'
+    }else if(status === 'RESCHEDULED'){
+      return 'bg-softbrowntheme text-browntheme'
     }
      else {
       return 'bg-softredtheme text-redtheme'
@@ -567,7 +573,7 @@ console.log(count,'test')
       },
     })
     setToBeReviewedRes(id)
-    statusHandlerFulfilled(id)
+    // statusHandlerFulfilled(id)
   }
 
 
@@ -593,9 +599,24 @@ console.log(count,'test')
       {showAddReservation && <ReservationModal  onClick={()=>{setShowAddReservation(false)}}  onSubmit={(data: Reservation)=>{setReservations([...reservations, data])}} />} 
       {showModal && selectedClient && (
         <div>
-          <div className="overlay" onClick={() => setShowModal(false)}></div>
+          <div className="overlay z-[100]" onClick={() => setShowModal(false)}></div>
           <div className={`sidepopup w-[45%] overflow-y-auto lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:overflow-y-auto h-full ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme text-white':'bg-white'} `}>
             <h1 className="text-2xl font-[600] mb-4">{t('reservations.edit.title')} by <span className={`font-[800] `}>{selectedClient.full_name} </span><span className={`text-sm font-[400] ${localStorage.getItem('darkMode') === 'true' ? 'text-[#e1e1e1]':'text-subblack'}`}>{`(Reservation id: ${selectedClient.id})`}</span></h1>
+            <div className={`flex flex-col p-2 mb-2 rounded-xl gap-3 cursor-default ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':' border-2 text-darkthemeitems'}`}>
+              <p className="text-md mb-[-.4em] font-[500]">{selectedClient.full_name}'s preferences</p>
+              <div className="">
+                <p className="text-sm font-[400]">Allergies</p>
+                <div className={`flex items-center btn text-sm font-[400] ${localStorage.getItem('darkMode')==='true'?'text-white':''}`}>{selectedClient.allergies}</div>
+              </div>
+              <div className="">
+                <p className="text-sm font-[400]">Occasion</p>
+                <div className={`flex items-center btn text-sm font-[400] ${localStorage.getItem('darkMode')==='true'?'text-white':''}`}>{selectedClient.occasion}</div>
+              </div>
+              <div className="">
+                <p className="text-sm font-[400]">Comment</p>
+                <div className={`flex items-center btn text-sm font-[400] ${localStorage.getItem('darkMode')==='true'?'text-white':''}`}>{selectedClient.commenter}</div>
+              </div>
+            </div>
             <div className="space-y-2">
               {/* <div>
                 <label className="block text-sm font-medium ">{t('reservations.edit.informations.name')}</label>
@@ -638,12 +659,13 @@ console.log(count,'test')
                   className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
 >
                   <option value="MARKETPLACE">Market Place</option>
+                  <option value="WIDGET">Widget</option>
                   <option value="WEBSITE">Website</option>
                   <option value="BACK_OFFICE">Back Office</option>
                   <option value="WALK_IN">Walk In</option>
                 </select>
               </div>
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium ">{t('reservations.edit.informations.comment')}</label>
                 <input
                   type="text"
@@ -652,7 +674,7 @@ console.log(count,'test')
                   onChange={(e)=>setSelectedClient({...selectedClient, commenter: e.target.value})}
                   className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
 />
-              </div>
+              </div> */}
               <div>
                 <label className="block text-sm font-medium ">{t('reservations.edit.informations.internalNote')}</label>
                 <input
@@ -708,6 +730,7 @@ console.log(count,'test')
                   <option value="CANCELED">{t('reservations.statusLabels.cancelled')}</option>
                   <option value="SEATED">{t('reservations.statusLabels.seated')}</option>
                   <option value="NO_SHOW">{t('reservations.statusLabels.noShow')}</option>
+                  <option value="RESCHEDULED">{t('reservations.statusLabels.rescheduled')}</option>
                 </select>
               </div>
               <div onClick={()=>{setShowProcess(true)}} className={`btn flex justify-around cursor-pointer ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'}`}>
@@ -764,6 +787,9 @@ console.log(count,'test')
           <button onClick={() => setFocusedFilter('NO_SHOW')} className={`${localStorage.getItem('darkMode')==='true'?'text-white':''} ${focusedFilter === 'NO_SHOW' ? 'btn-primary' : 'btn'}`}>
             {t('reservations.filters.noShow')}
           </button>
+          <button onClick={() => setFocusedFilter('RESCHEDULED')} className={`${localStorage.getItem('darkMode')==='true'?'text-white':''} ${focusedFilter === 'RESCHEDULED' ? 'btn-primary' : 'btn'}`}>
+            {t('reservations.filters.rescheduled')}
+          </button>
           <button 
             className={`gap-2 flex items-center ${localStorage.getItem('darkMode')==='true'?' text-whitetheme':''} ${selectingDay === '' ? 'btn' : 'btn-primary'}`} 
             onClick={() => setFocusedDate(true)}
@@ -810,7 +836,7 @@ console.log(count,'test')
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.number_of_guests}</td>
                 <td className="px-3 py-4 whitespace-nowrap " onClick={()=> showStatusModification(reservation.id)}>
                   <span className={`${statusStyle(reservation.status)} text-center py-[.1em] px-3  rounded-[10px]`}> 
-                    {reservation.status === 'APPROVED'? t('reservations.statusLabels.confirmed') : reservation.status === 'PENDING' ? t('reservations.statusLabels.pending') : reservation.status === 'SEATED'?  t('reservations.statusLabels.seated') : reservation.status === 'FULFILLED' ? t('reservations.statusLabels.fulfilled') : reservation.status === 'NO_SHOW' ? t('reservations.statusLabels.noShow') :   t('reservations.statusLabels.cancelled')}
+                    {reservation.status === 'APPROVED'? t('reservations.statusLabels.confirmed') : reservation.status === 'PENDING' ? t('reservations.statusLabels.pending') : reservation.status === 'SEATED'?  t('reservations.statusLabels.seated') : reservation.status === 'FULFILLED' ? t('reservations.statusLabels.fulfilled') : reservation.status === 'NO_SHOW' ? t('reservations.statusLabels.noShow')  : reservation.status === 'RESCHEDULED' ?  t('reservations.statusLabels.rescheduled') :  t('reservations.statusLabels.cancelled')}
                   </span>
                     {showStatus && reservation.id === idStatusModification && reservation.status !== 'FULFILLED' && (
                       <div className="relative">
@@ -821,6 +847,7 @@ console.log(count,'test')
                           <li className="py-1 px-2  text-greentheme cursor-pointer" onClick={()=> statusHandler('APPROVED')}>{t('reservations.statusLabels.confirmed')}</li>
                           <li className="py-1 px-2 text-redtheme cursor-pointer" onClick={()=> statusHandler('CANCELED')}>{t('reservations.statusLabels.cancelled')}</li>
                           <li className="py-1 px-2 text-blushtheme cursor-pointer" onClick={()=> statusHandler('NO_SHOW')}>{t('reservations.statusLabels.noShow')}</li>
+                          <li className="py-1 px-2 text-browntheme cursor-pointer" onClick={()=> statusHandler('RESCHEDULED')}>{t('reservations.statusLabels.rescheduled')}</li>
                           <li className="py-1 px-2 text-orangetheme cursor-pointer" onClick={()=> statusHandler('SEATED')}>{t('reservations.statusLabels.seated')}</li>
                         </ul>
                       </div>

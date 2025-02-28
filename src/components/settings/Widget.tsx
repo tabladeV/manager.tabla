@@ -41,6 +41,10 @@ export default function WidgetConfig() {
     resource: `api/v1/bo/restaurants/${restaurantId}/widget/`,
   });
 
+  
+  useEffect(() => {
+    document.title = 'Booking Widget Settigns | Tabla'
+  }, [])
 
 
   const [widgetInfo, setWidgetInfo] = useState<Widget>();

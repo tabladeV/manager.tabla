@@ -19,6 +19,11 @@ interface RoleType {
 }
 
 const Roles = () => {
+
+    
+  useEffect(() => {
+    document.title = 'Roles | Tabla'
+  }, [])
     const { data: permissionsData, isLoading, error } = useList({
         resource: "api/v1/bo/permissions",
         

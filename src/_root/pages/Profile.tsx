@@ -1,8 +1,13 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Eye, EyeOff, MessageCircleWarningIcon } from 'lucide-react';
 import { useCreate } from '@refinedev/core';
 
 const Profile = () => {
+
+  useEffect(() => {
+    document.title = 'Profile | Tabla'
+  }, [])
+
   const [error, setError] = useState('')
   const oldPswrdRef = useRef<HTMLInputElement>(null);
   const newPswrdRef = useRef<HTMLInputElement>(null);

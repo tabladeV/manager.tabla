@@ -64,13 +64,14 @@ export default function TopActions() {
         { action: "Fulfilled", count: actions.find(a => a.action === "FULFILLED")?.count || 0, fill: "#7b2cbf" },
         { action: "Seated", count: actions.find(a => a.action === "SEATED")?.count || 0, fill: "#FFA500" },
         { action: "No Show", count: actions.find(a => a.action === "NO_SHOW")?.count || 0, fill: "#b75d69" },
+        { action: "Rescheduled", count: actions.find(a => a.action === "RESCHEDULED")?.count || 0, fill: "#9c6644" },
       ])
     }
   }, [reservationsActionsData])
 
   useEffect(() => {
     if (chartData.length > 0) {
-      setTotalActions(chartData[0].count + chartData[1].count + chartData[2].count + chartData[3].count + chartData[4].count+ chartData[5].count)
+      setTotalActions(chartData[0].count + chartData[1].count + chartData[2].count + chartData[3].count + chartData[4].count+ chartData[5].count + chartData[6].count)
     }
   }, [chartData])
 
@@ -178,6 +179,10 @@ export default function TopActions() {
         <div className="flex gap-3 items-center">
           <div className="h-3 w-3 rounded-full bg-blushtheme"></div>
           <span className={`text-sm ${localStorage.getItem('darkMode') === 'true' ? 'text-gray-200' : 'text-gray-600'}`}>{t('overview.charts.topUserActions.legend.noShow')}</span>
+        </div>
+        <div className="flex gap-3 items-center">
+          <div className="h-3 w-3 rounded-full bg-browntheme"></div>
+          <span className={`text-sm ${localStorage.getItem('darkMode') === 'true' ? 'text-gray-200' : 'text-gray-600'}`}>{t('overview.charts.topUserActions.legend.rescheduled')}</span>
         </div>
       </div>
       {showDay &&

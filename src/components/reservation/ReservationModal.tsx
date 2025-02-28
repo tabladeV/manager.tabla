@@ -213,7 +213,7 @@ const ReservationModal = (props: ReservationModalProps) => {
     });
 
     props.onClick();
-    // window.location.reload();
+    window.location.reload();
   };
 
   const [newClientData, setNewClientData] = useState({
@@ -247,6 +247,7 @@ const ReservationModal = (props: ReservationModalProps) => {
             retry: 3,
             onSuccess: (data) => {
               console.log('Reservation added:', data);
+              window.location.reload();
             },
             onError: (error) => {
               console.log('Error adding reservation:', error);

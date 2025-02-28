@@ -8,7 +8,7 @@ import { BaseKey, useList } from "@refinedev/core"
 interface Review {
     id: BaseKey
     food_rating: string
-    value_for_money_rating: string
+    value_for_money: string
     service_rating: string
     ambience_rating: string
     created_at: string
@@ -69,6 +69,7 @@ const HistoryList  = () => {
       useEffect(() => {
         if (reviewsAPIInfo) {
           setReviews(reviewsAPIInfo.results as Review[])
+          // console.log('reviews',reviews)
         }
       }, [reviewsAPIInfo])
       
@@ -117,7 +118,7 @@ const HistoryList  = () => {
             </div>
           </div>
           <div className="flex flex-col items-end">
-            <p className={`text-[16px] font-bold ${localStorage.getItem('darkMode')==='true'? 'text-softwhitetheme':'text-subblack'}`}>{item.ambience_rating}</p>
+            <p className={`text-[16px] font-bold ${localStorage.getItem('darkMode')==='true'? 'text-softwhitetheme':'text-subblack'}`}>{((Number(item.ambience_rating) + Number(item.food_rating) + Number(item.service_rating) + Number(item.value_for_money) )/4).toFixed(2)}</p>
             <p className={`text-[12px] ${localStorage.getItem('darkMode')==='true'? 'text-softwhitetheme':'text-subblack'}`}>{item.created_at.slice(0,10)}</p>
           </div>
         </div>

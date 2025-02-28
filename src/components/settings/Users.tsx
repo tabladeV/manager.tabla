@@ -32,6 +32,11 @@ const initialUsers: User[] = [
 
 export default function Users() {
 
+  
+  useEffect(() => {
+    document.title = 'Users Management | Tabla'
+  }, [])
+
   interface RolesType {
     
     results: BaseRecord[]

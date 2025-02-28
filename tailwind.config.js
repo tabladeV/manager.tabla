@@ -25,6 +25,8 @@ export const theme = {
       softblushtheme: '#b75d691A',
       bluetheme: '#3F72AF',
       softbluetheme: '#3F72AF1A',
+      browntheme: '#9c6644',
+      softbrowntheme: '#9c66441A',
       yellowtheme: '#F09300',
       softyellowtheme: '#FDE0301A',
       greytheme: '#1E1E1E',

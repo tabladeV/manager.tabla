@@ -95,26 +95,31 @@ const ReservationProcess: React.FC<ReservationProcessProps> = (props) => {
         )}
 
         {activeTab === 'time' && (
-          <div className="content">
+            <div className="content">
             <div className="text-[20px] text-left mx-[30px] mt-[1em] mb-[.5em] font-bold">
               {selectedTime} <span className="font-semibold">has been selected</span>
             </div>
             <div className="flex flex-wrap h-[284px] overflow-y-auto justify-center gap-[10px] p-[20px] rounded-[3px]">
               {[...Array(48)].map((_, index) => {
-                const hour = Math.floor(index / 2);
-                const minute = index % 2 === 0 ? '00' : '30';
-                return (
-                  <button
-                    onClick={() => handleTimeClick(`${hour < 10 ? '0' + hour : hour}:${minute}`)}
-                    className={`text-15 hover:bg-[#335a06] hover:text-white font-bold h-[65px] w-[65px] flex items-center justify-center border-solid border-[1px] border-[#335A06] ${localStorage.getItem('darkMode')==='true'?'text-white':' text-blacktheme'} ${selectedTime === `${hour < 10 ? '0' + hour : hour}:${minute}` ? 'bg-black text-white' : ''}`}
-                    key={index}
-                  >
-                    {hour < 10 ? '0' + hour : hour}:{minute}
-                  </button>
-                );
+              const hour = Math.floor(index / 2);
+              const minute = index % 2 === 0 ? '00' : '30';
+              const timeString = `${hour < 10 ? '0' + hour : hour}:${minute}`;
+              const now = new Date();
+              const isToday = selectedDate && format(selectedDate, 'yyyy-MM-dd') === format(now, 'yyyy-MM-dd');
+              const isPastTime = isToday && (hour < now.getHours() || (hour === now.getHours() && minute === '00' && now.getMinutes() >= 30));
+              return (
+                <button
+                onClick={() => !isPastTime && handleTimeClick(timeString)}
+                className={`text-15 ${isPastTime ? 'bg-softwhitetheme text-subblack cursor-not-allowed' : 'hover:bg-[#335a06] hover:text-white'} font-bold h-[65px] w-[65px] flex items-center justify-center border-solid border-[1px] border-[#335A06] ${localStorage.getItem('darkMode')==='true'?'text-white':' text-blacktheme'} ${selectedTime === timeString ? 'bg-black text-white' : ''}`}
+                key={index}
+                disabled={!!isPastTime}
+                >
+                {timeString}
+                </button>
+              );
               })}
             </div>
-          </div>
+            </div>
         )}
 
         {activeTab === 'guest' && (
