@@ -8,6 +8,7 @@ import { BaseKey, BaseRecord, useCreate, useList } from "@refinedev/core";
 import image from '../../assets/profile.png';
 import ExportModal, { InputType } from "../../components/common/ExportModal";
 import useExportConfig from "../../components/common/config/exportConfig";
+import useAdvancedExportConfig from "../../components/common/config/advancedExportConfig";
 
 interface ClientData {
   id: string;
@@ -166,6 +167,7 @@ const ClientsPage = () => {
 
   const [showExportModal, setShowExportModal] = useState(false);
   const {customers} = useExportConfig();
+  // const {customers} = useAdvancedExportConfig();
 
   useEffect(() => {
     setSearchResults(clients);

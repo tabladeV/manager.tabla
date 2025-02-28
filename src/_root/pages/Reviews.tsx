@@ -8,6 +8,7 @@ import { BaseKey, BaseRecord, useList } from "@refinedev/core"
 import Pagination from "../../components/reservation/Pagination"
 import ExportModal, { InputType } from "../../components/common/ExportModal"
 import useExportConfig from "../../components/common/config/exportConfig"
+import useAdvancedExportConfig from "../../components/common/config/advancedExportConfig"
 
 interface Review {
   id: BaseKey
@@ -52,6 +53,7 @@ const Reviews = () => {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [showExportModal, setShowExportModal] = useState(false);
   const {reviews: reviewsExportConfig} = useExportConfig();
+  // const {reviews: reviewsExportConfig} = useAdvancedExportConfig();
 
 
   const searchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {

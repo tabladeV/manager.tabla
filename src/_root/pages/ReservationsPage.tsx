@@ -13,6 +13,7 @@ import { Send } from "lucide-react"
 import Pagination from "../../components/reservation/Pagination"
 import ExportModal from "../../components/common/ExportModal"
 import useExportConfig from "../../components/common/config/exportConfig"
+import useAdvancedExportConfig from "../../components/common/config/advancedExportConfig"
 
 
 interface receivedTables {
@@ -199,6 +200,7 @@ console.log(count,'test')
   }, []);
   const [showExportModal, setShowExportModal] = useState(false);
   const { reservations: reservationsExportConfig } = useExportConfig();
+  // const { reservations: reservationsExportConfig } = useAdvancedExportConfig();
   
 
   function statusStyle(status: string) {

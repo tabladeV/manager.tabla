@@ -272,7 +272,7 @@ const ExportModal = ({ columns, customFields = [], title, customOptionsTitle, on
                 {t('export.selectAll', 'Select All')}
               </label>
             </div>
-            <div className="grid grid-cols-1 gap-2 max-h-60 overflow-y-auto bg-bgdarktheme2 p-1 px-2 rounded-lg">
+            <div className="grid grid-cols-1 gap-2 max-h-60 overflow-y-auto bg-[#F6F6F6] dark:bg-bgdarktheme2 p-1 px-2 rounded-lg">
               {columns.map(column => (
                 <label key={column.key} className="flex items-center">
                   <input
