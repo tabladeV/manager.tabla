@@ -4,9 +4,11 @@ import SearchBar from "../../components/header/SearchBar";
 import { Outlet, useLocation, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { BaseKey, BaseRecord, useCreate, useList } from "@refinedev/core";
-import { use } from "i18next";
 
 import image from '../../assets/profile.png';
+import ExportModal, { InputType } from "../../components/common/ExportModal";
+import useExportConfig from "../../components/common/config/exportConfig";
+import useAdvancedExportConfig from "../../components/common/config/advancedExportConfig";
 
 interface ClientData {
   id: string;
@@ -163,6 +165,10 @@ const ClientsPage = () => {
   const [selectedClient, setSelectedClient] = useState<BaseRecord[]>([]);
   const [searchResults, setSearchResults] = useState(clients);
 
+  const [showExportModal, setShowExportModal] = useState(false);
+  const {customers} = useExportConfig();
+  // const {customers} = useAdvancedExportConfig();
+
   useEffect(() => {
     setSearchResults(clients);
   }, [clients]);
@@ -273,6 +279,17 @@ const ClientsPage = () => {
 
   return (
     <div className="h-full">
+      {showExportModal && (
+        <ExportModal
+          columns={customers.columns}
+          customFields={customers.customFields}
+          onExport={(format, selectedColumns) => {
+            console.log(format, selectedColumns)
+            setShowExportModal(false);
+          }}
+          onClose={() => setShowExportModal(false)}
+        />
+      )}
       {showNotificationModal && (
         <div>
           <div className="overlay" onClick={()=>{setShowNotificationModal(false)}}></div>
@@ -328,8 +345,12 @@ const ClientsPage = () => {
           </div>
         </div>
       )}
-      <div>
-        <h1>{t('clients.title')}</h1>
+      <div className="flex justify-between items-center">
+        <h1>{t('clients.title')} aaa</h1>
+        <button onClick={() => setShowExportModal(true)} className={`${localStorage.getItem('darkMode') === 'true' ? ' text-whitetheme' : ''} btn-primary`}>
+          {/* {t('reviews.filters.all')} */}
+          {selectedClient?.length ? 'export selected' : 'export all'}
+        </button>
       </div>
       <div className="flex gap-2">
         <div
