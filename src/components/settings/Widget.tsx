@@ -37,9 +37,22 @@ export default function WidgetConfig() {
   const restaurantId = localStorage.getItem('restaurant_id');
   const { t } = useTranslation();
 
+  const {data : subdomainData, isLoading: isLoadingSubdomain, error: errorSubdomain} = useList({
+    resource: 'api/v1/bo/restaurants/subdomain',
+  })
+  const [subdomain, setSubdomain] = useState<string>('')
+  useEffect(() => {
+    if(subdomainData?.data){
+      const subdomainApi = subdomainData.data as unknown as {subdomain: string}
+      setSubdomain(subdomainApi.subdomain as unknown as string)
+    }
+  }, [subdomainData])
+
   const { data: widgetData, isLoading, error } = useList({
     resource: `api/v1/bo/restaurants/${restaurantId}/widget/`,
   });
+
+  console.log('widgetData', widgetData);
 
   
   useEffect(() => {
@@ -309,7 +322,7 @@ export default function WidgetConfig() {
         >
           {t('settingsPage.widget.buttons.save')}
         </button>
-        <Link to={`/widget/r/${restaurantId}`} target="_blank" className="btn-secondary w-1/2 text-center">
+        <Link to={`https://${subdomain}.dev.tabla.ma/make/reservation`} target="_blank" className="btn-secondary w-1/2 text-center">
           {t('settingsPage.widget.buttons.preview')}
         </Link>
       </div>

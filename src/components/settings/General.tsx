@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Map from '../map/Map';
 import { Plus, Trash2 } from 'lucide-react';
-import { BaseKey, BaseRecord, useList, useUpdate } from '@refinedev/core'; // Import useUpdate
+import { BaseKey, BaseRecord, useCustomMutation, useList, useUpdate } from '@refinedev/core'; // Import useUpdate
 import loading from '../../assets/loading.png';
 
 interface Restaurant {
@@ -43,6 +43,19 @@ const General = () => {
   const { data: restaurantData, isLoading, error } = useList({
     resource: `api/v1/bo/restaurants/${restaurantId}/current/`,
   });
+  
+
+  const {data : subdomainData, isLoading: isLoadingSubdomain, error: errorSubdomain} = useList({
+    resource: 'api/v1/bo/restaurants/subdomain',
+  })
+  const [subdomain, setSubdomain] = useState<string>('')
+  useEffect(() => {
+    if(subdomainData?.data){
+      const subdomainApi = subdomainData.data as unknown as {subdomain: string}
+      setSubdomain(subdomainApi.subdomain as unknown as string)
+    }
+  }, [subdomainData])
+  console.log(subdomain)
 
   const [restaurant, setRestaurant] = useState<Restaurant>();
 
@@ -209,6 +222,8 @@ const General = () => {
   // Use the useUpdate hook
   const { mutate: updateRestaurant } = useUpdate();
 
+  const { mutate, isLoading: subdomainLoading, data, error: subdomainError } = useCustomMutation();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
   
@@ -235,12 +250,20 @@ const General = () => {
       staff: restaurant?.staff || [0], // Use existing data or a default
     };
   
+    mutate({
+      url: 'https://api.dev.tabla.ma/api/v1/bo/restaurants/subdomain',
+      method: "patch",
+      values: {subdomain: subdomain},
+    })
+
+
     // Call the update mutation
     updateRestaurant({
       resource: "api/v1/bo/restaurants",
       values: updatedData,
       id: restaurantId + "/", // Ensure the ID is appended correctly
     });
+
     // window.location.reload();
   };
 
@@ -317,6 +340,17 @@ const General = () => {
             className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
             value={formData.website}
             onChange={handleInputChange}
+          />
+        </div>
+        <div className="flex flex-col gap-2 mt-2">
+          <p>{t('settingsPage.general.basicInformationForm.labels.subdomain')}</p>
+          <input 
+            type="text"
+            id="subdomain"
+            placeholder={t('settingsPage.general.basicInformationForm.labels.subdomain')}
+            className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+            value={subdomain}
+            onChange={(e)=>{setSubdomain(e.target.value)}}
           />
         </div>
         {/* <div className='flex flex-col gap-3'>

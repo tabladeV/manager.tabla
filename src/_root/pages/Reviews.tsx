@@ -206,7 +206,7 @@ console.log(selectedDateRange)
     
 
     
-    
+  
 
 
 
@@ -293,6 +293,15 @@ console.log(selectedDateRange)
                 
                 </tr>
               </thead>
+              {isLoading && (
+              <tbody className={localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme text-white':'bg-gray-50 text-gray-500'}>
+
+                <tr className="p-2">
+                  <td colSpan={8} className="text-center py-4 bg-darkthemeitems"></td>
+                </tr>
+              </tbody>
+              )  
+              }
               <tbody className={localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2 text-white':'bg-gray-50 text-gray-500'}>
                 {reviews.map(review => (
                 <tr key={review.id} className=" hover:opacity-75">

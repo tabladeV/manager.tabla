@@ -56,8 +56,8 @@ const OurCalendar = (props) => {
       </div>
       <div className='mx-auto'>
         <div className='grid mx-auto grid-cols-7'>
-          {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, index) => (
-            <button key={index} className='font-bold w-[30px] cursor-default rounded-[6px] h-[30px]'>{day}</button>
+          {[ 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => (
+            <button key={index} className='font-bold ml-3 w-[30px] cursor-default rounded-[6px] h-[30px]'>{day}</button>
           ))}
         </div>
         <div className='mx-auto grid grid-cols-7 justify-around'>

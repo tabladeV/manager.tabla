@@ -15,7 +15,19 @@ const ReviewPage = () => {
 
   const { data: res, isLoading, error } = useOne({
     resource: `api/v1/bo/subdomains/public/cutomer/reviws`,
-    id: ''
+    id: '',
+    queryOptions: {
+      onSuccess: (data) => {
+        console.log(data, 'data');
+      },
+      onError: (error) => {
+        console.log(error, 'error');
+        console.log(error?.response?.status, 'error status');
+        if(error?.response?.status === 203){
+          setStep(3);
+        }
+      }
+    }
 
   });
 
@@ -117,19 +129,19 @@ const ReviewPage = () => {
       localStorage.setItem('darkMode', newMode.toString());
       return newMode;
     });
-    window.location.reload();
+    // window.location.reload();
   };
 
   return (
-    <div className={`h-screen  flex flex-col items-center ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2 text-textdarktheme' : 'bg-softgreytheme text-blacktheme'}   lt-sm:w-full `}>
+    <div className={`h-screen  flex flex-col items-center ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2 text-textdarktheme' : 'bg-softgreentheme text-blacktheme'}   lt-sm:w-full `}>
       <button
         onClick={toggleDarkMode}
-        className={`bg-[#88AB6115] my-[1em] w-[40px] h-[40px] flex justify-center items-center rounded-[100%] ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2' : ''}`}
+        className={`btn-secondary p-1 my-[1em] w-[40px] h-[40px] flex justify-center items-center rounded-[100%] ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2' : ''}`}
       >
         {!isDarkMode ? (
 
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 7C9.24 7 7 9.24 7 12C7 14.76 9.24 17 12 17C14.76 17 17 14.76 17 12C17 9.24 14.76 7 12 7ZM11 1V5H13V1H11ZM11 19V23H13V19H11ZM23 11H19V13H23V11ZM5 11H1V13H5V11ZM16.24 17.66L18.71 20.13L20.12 18.72L17.65 16.25L16.24 17.66ZM3.87 5.28L6.34 7.75L7.75 6.34L5.28 3.87L3.87 5.28ZM6.34 16.24L3.87 18.71L5.28 20.12L7.75 17.65L6.34 16.24ZM18.72 3.87L16.25 6.34L17.66 7.75L20.13 5.28L18.72 3.87Z" fill="black" />
+            <path d="M12 7C9.24 7 7 9.24 7 12C7 14.76 9.24 17 12 17C14.76 17 17 14.76 17 12C17 9.24 14.76 7 12 7ZM11 1V5H13V1H11ZM11 19V23H13V19H11ZM23 11H19V13H23V11ZM5 11H1V13H5V11ZM16.24 17.66L18.71 20.13L20.12 18.72L17.65 16.25L16.24 17.66ZM3.87 5.28L6.34 7.75L7.75 6.34L5.28 3.87L3.87 5.28ZM6.34 16.24L3.87 18.71L5.28 20.12L7.75 17.65L6.34 16.24ZM18.72 3.87L16.25 6.34L17.66 7.75L20.13 5.28L18.72 3.87Z" fill="white" />
           </svg>
         ) : (
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -138,11 +150,11 @@ const ReviewPage = () => {
 
         )}
       </button>
-      <div className={`text-center flex p-5 flex-col items-center rounded-xl lt-sm:h-screen justify-center h-fit md:w-[70vw] ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-textdarktheme' : 'bg-softgreytheme text-blacktheme'}  `}>
+      <div className={`text-center min-h-[60vh] flex p-5 flex-col items-center rounded-xl lt-sm:h-screen justify-center h-fit md:w-[60vw] ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-textdarktheme' : 'bg-white text-blacktheme'}  `}>
         <img
           src={restaurantData?.logo}
           alt="logo"
-          className="w-[8em]"
+          className="h-[5em]"
         />
         {/* <img
           src={bg}
@@ -159,11 +171,11 @@ const ReviewPage = () => {
           {restaurantData?.title} <br />
         </h1>
 
-        <p className={`w-[50%] lt-sm:w-[90%]  mt-3 ${step === 1 ? 'block' : 'hidden'} ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffff95]' : 'text-blacktheme'}`}>
+        <p className={`w-[70%] lt-sm:w-[90%]  mt-3 ${step === 1 ? 'block' : 'hidden'} ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffff95]' : 'text-blacktheme'}`}>
           {restaurantData?.description}
         </p>
 
-        {step === 1 && <form onSubmit={handleSubmit} className="flex flex-col gap-3 items-center lg:w-[40%] w-[60%]  lt-sm:w-[90%] mt-3">
+        {step === 1 && <form onSubmit={handleSubmit} className="flex flex-col gap-3 items-center lg:w-[60%] sm:w-[90%] w-[100%]   mt-3">
           {/* <input
             type="email"
             value={email}
@@ -292,6 +304,14 @@ const ReviewPage = () => {
             <h2 className={`text-2xl font-bold text-darkthemeitems ${localStorage.getItem('darkMode') === 'true' ? 'text-textdarktheme' : 'text-blacktheme'}`}>Thank you for your review!</h2>
             <p className={localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffff90]' : 'text-blacktheme'}>
               Your review has been submitted successfully. We appreciate your feedback.
+            </p>
+          </div>
+        }{
+          step === 3 &&
+          <div className="flex flex-col gap-3 items-center lg:w-[40%] w-[60%]  lt-sm:w-[90%] mt-3">
+            <h2 className={`text-2xl font-bold text-darkthemeitems ${localStorage.getItem('darkMode') === 'true' ? 'text-textdarktheme' : 'text-blacktheme'}`}>Your Review Has Already Been Submitted</h2>
+            <p className={localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffff90]' : 'text-blacktheme'}>
+            Thank you for sharing your feedback! You've already submitted a review for this restaurant. We appreciate your support and value your opinion.
             </p>
           </div>
         }

@@ -134,7 +134,7 @@ console.log(count,'test')
     resource: 'api/v1/bo/floors/',
     meta: {
       headers: {
-        'X-Restaurant-ID': 1,
+        'X-Restaurant-ID': localStorage.getItem('restaurant_id'),
       },
     },
   });
@@ -144,7 +144,7 @@ console.log(count,'test')
     resource: 'api/v1/bo/tables/',
     meta: {
       headers: {
-        'X-Restaurant-ID': 1,
+        'X-Restaurant-ID': localStorage.getItem('restaurant_id'),
       },
     },
   });
@@ -230,20 +230,22 @@ console.log(count,'test')
       {
         field: "date",
         operator: "eq",
-        value: reservationProgressData.reserveDate
+        value: selectedClient ? reservationProgressData.reserveDate : ''
       },
       {
         field: "number_of_guests",
         operator: "eq",
-        value: reservationProgressData.guests
+        value: selectedClient ? reservationProgressData.guests : 0
       },
       {
         field: "time",
         operator: "eq",
-        value: reservationProgressData.time+ ':00'
+        value: selectedClient ? reservationProgressData.time + ':00' : ''
       }
-      
-    ]
+    ],
+    queryOptions: {
+      enabled: !!selectedClient
+    }
   })
 
   interface Table {
@@ -799,7 +801,7 @@ console.log(count,'test')
             </tr>
           </thead>
           <tbody className={ `  ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme divide-y divide-gray-800':'bg-white divide-y divide-gray-200'}`} >
-            {filteredReservations.sort((a, b) => (a.id < b.id ? 1 : -1)).map(reservation => (
+            {filteredReservations.sort((a, b) => (a.id < b.id ? 1 : -1)).map((reservation,index) => (
               <tr key={reservation.id} className="opacity-80 hover:opacity-100">
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer"  onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.id}</td>
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer"  onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.full_name}</td>

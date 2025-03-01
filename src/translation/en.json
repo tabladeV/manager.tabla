@@ -369,6 +369,7 @@
                     "description": "Restaurant Description",
                     "phone": "Phone",
                     "website": "Website",
+                    "subdomain": "Subdomain",
                     "categories": "Categories",
                     "location": "Location",
                     "avgPrice": "Average Price",

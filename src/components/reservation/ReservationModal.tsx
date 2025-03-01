@@ -300,7 +300,11 @@ const ReservationModal = (props: ReservationModalProps) => {
               },
               
           });
+          setDisabledButton(true);
       }
+
+      const [disabledButton, setDisabledButton] = useState(false);
+      const [disabledButton2, setDisabledButton2] = useState(false);
 
   return (
     <div>
@@ -381,7 +385,7 @@ const ReservationModal = (props: ReservationModalProps) => {
                       {data.time === '' ? <div>Time</div> : <span>{data.time}</span>}
                       {data.guests === 0 ? <div>Guests</div> : <span>{data.guests}</span>}
                     </div>
-                    <button onClick={handleNewReservationNewCustomer} className='w-full py-2 bg-greentheme text-white rounded-lg hover:opacity-90 transition-opacity mt-3'>{t('reservations.buttons.addReservation')}</button>
+                    <button onClick={handleNewReservationNewCustomer} className='w-full py-2 bg-greentheme text-white rounded-lg hover:opacity-90 transition-opacity mt-3' disabled={disabledButton}>{t('reservations.buttons.addReservation')}</button>
                 </div>
               </div>
             )
@@ -406,6 +410,7 @@ const ReservationModal = (props: ReservationModalProps) => {
               internal_note: formData.comment,
             };
             handleAddReservation(event, reservationData);
+            setDisabledButton2(true);
           }}
         >
           <ArrowLeft className="cursor-pointer" onClick={() => setFindClient(true)} />
@@ -469,7 +474,7 @@ const ReservationModal = (props: ReservationModalProps) => {
             {data.time === '' ? <div>Time</div> : <span>{data.time}</span>}
             {data.guests === 0 ? <div>Guests</div> : <span>{data.guests}</span>}
           </div>
-          <button type="submit" className="btn-primary">
+          <button type="submit" className="btn-primary" disabled={disabledButton2}>
             {t('grid.buttons.addReservation')}
           </button>
         </form>

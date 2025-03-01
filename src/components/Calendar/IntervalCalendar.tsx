@@ -100,7 +100,7 @@ const IntervalCalendar: React.FC<IntervalCalendarProps> = ({ onRangeSelect }) =>
       </div>
       <div className='mx-auto'>
         <div className='grid grid-cols-7 mb-2'>
-          {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, index) => (
+          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => (
             <div key={index} className='font-bold text-center text-sm text-greentheme'>{day}</div>
           ))}
         </div>
