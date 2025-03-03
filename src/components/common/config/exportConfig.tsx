@@ -116,49 +116,49 @@ export const useExportConfig = () => {
 
     // Customer/guest profile custom fields
     const customerCustomFields: CustomField[] = [
-        {
-            key: 'includeVisitHistory',
-            label: t('export.includeVisitHistory', 'Include Visit History'),
-            input: 'checkbox',
-            defaultValue: false
-        },
-        {
-            key: 'includeReviewsCount',
-            label: t('export.includeReviewsCount', 'Include Reviews Count'),
-            input: 'checkbox',
-            defaultValue: true
-        }
+        // {
+        //     key: 'includeVisitHistory',
+        //     label: t('export.includeVisitHistory', 'Include Visit History'),
+        //     input: 'checkbox',
+        //     defaultValue: false
+        // },
+        // {
+        //     key: 'includeReviewsCount',
+        //     label: t('export.includeReviewsCount', 'Include Reviews Count'),
+        //     input: 'checkbox',
+        //     defaultValue: true
+        // }
     ];
 
     // Reservation custom fields
     const reservationCustomFields: CustomField[] = [
-        {
-            key: 'dateRange',
-            label: t('export.dateRange', 'Date Range'),
-            input: 'radio',
-            options: [
-                { value: 'upcoming', label: t('export.upcoming', 'Upcoming Reservations') },
-                { value: 'past', label: t('export.past', 'Past Reservations') },
-                { value: 'all', label: t('export.all', 'All Reservations') },
-                { value: 'custom', label: t('export.custom', 'Custom Range') }
-            ],
-            defaultValue: 'upcoming',
-            children: [
-                {
-                    key: 'startDate',
-                    label: t('export.startDate', 'Start Date'),
-                    input: 'text',
-                    defaultValue: ''
-                },
-                {
-                    key: 'endDate',
-                    label: t('export.endDate', 'End Date'),
-                    input: 'text',
-                    defaultValue: ''
-                }
-            ],
-            showChildrenWhen: { value: 'custom', condition: 'equals' }
-        },
+        // {
+        //     key: 'dateRange',
+        //     label: t('export.dateRange', 'Date Range'),
+        //     input: 'radio',
+        //     options: [
+        //         { value: 'upcoming', label: t('export.upcoming', 'Upcoming Reservations') },
+        //         { value: 'past', label: t('export.past', 'Past Reservations') },
+        //         { value: 'all', label: t('export.all', 'All Reservations') },
+        //         { value: 'custom', label: t('export.custom', 'Custom Range') }
+        //     ],
+        //     defaultValue: 'upcoming',
+        //     children: [
+        //         {
+        //             key: 'startDate',
+        //             label: t('export.startDate', 'Start Date'),
+        //             input: 'text',
+        //             defaultValue: ''
+        //         },
+        //         {
+        //             key: 'endDate',
+        //             label: t('export.endDate', 'End Date'),
+        //             input: 'text',
+        //             defaultValue: ''
+        //         }
+        //     ],
+        //     showChildrenWhen: { value: 'custom', condition: 'equals' }
+        // },
         {
             key: 'includeTableUsage',
             label: t('export.includeTableUsage', 'Include Table Usage Summary'),
@@ -166,33 +166,45 @@ export const useExportConfig = () => {
             defaultValue: true
         },
         {
-            key: 'statusFilter',
-            label: t('export.statusFilter', 'Reservation Status'),
-            input: 'select',
-            options: [
-                { value: 'all', label: t('export.all', 'All Statuses') },
-                { value: 'pending', label: t('export.pending', 'Pending') },
-                { value: 'confirmed', label: t('export.confirmed', 'Confirmed') },
-                { value: 'seated', label: t('export.seated', 'Seated') },
-                { value: 'fulfilled', label: t('export.fulfilled', 'Fulfilled') },
-                { value: 'cancelled', label: t('export.cancelled', 'Cancelled') },
-                { value: 'noShow', label: t('export.noShow', 'No Show') }
-            ],
-            defaultValue: 'all'
+            key: 'includeReservationStatus',
+            label: 'Reservation Status',
+            input: 'checkbox',
+            defaultValue: true
         },
         {
-            key: 'reservationSource',
-            label: t('export.reservationSource', 'Reservation Source'),
-            input: 'select',
-            options: [
-                { value: 'all', label: t('export.all', 'All Sources') },
-                { value: 'website', label: t('export.website', 'Website') },
-                { value: 'phone', label: t('export.phone', 'Phone') },
-                { value: 'walkIn', label: t('export.walkIn', 'Walk-In') },
-                { value: 'thirdParty', label: t('export.thirdParty', 'Third-Party') }
-            ],
-            defaultValue: 'all'
-        }
+            key: 'includeReservationSource',
+            label: 'Reservation Status',
+            input: 'checkbox',
+            defaultValue: true
+        },
+        // {
+        //     key: 'statusFilter',
+        //     label: t('export.statusFilter', 'Reservation Status'),
+        //     input: 'select',
+        //     options: [
+        //         { value: 'all', label: t('export.all', 'All Statuses') },
+        //         { value: 'pending', label: t('export.pending', 'Pending') },
+        //         { value: 'confirmed', label: t('export.confirmed', 'Confirmed') },
+        //         { value: 'seated', label: t('export.seated', 'Seated') },
+        //         { value: 'fulfilled', label: t('export.fulfilled', 'Fulfilled') },
+        //         { value: 'cancelled', label: t('export.cancelled', 'Cancelled') },
+        //         { value: 'noShow', label: t('export.noShow', 'No Show') }
+        //     ],
+        //     defaultValue: 'all'
+        // },
+        // {
+        //     key: 'reservationSource',
+        //     label: t('export.reservationSource', 'Reservation Source'),
+        //     input: 'select',
+        //     options: [
+        //         { value: 'all', label: t('export.all', 'All Sources') },
+        //         { value: 'website', label: t('export.website', 'Website') },
+        //         { value: 'phone', label: t('export.phone', 'Phone') },
+        //         { value: 'walkIn', label: t('export.walkIn', 'Walk-In') },
+        //         { value: 'thirdParty', label: t('export.thirdParty', 'Third-Party') }
+        //     ],
+        //     defaultValue: 'all'
+        // }
     ];
 
     // Returns all the export configurations

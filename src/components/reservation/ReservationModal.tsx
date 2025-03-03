@@ -213,7 +213,7 @@ const ReservationModal = (props: ReservationModalProps) => {
     });
 
     props.onClick();
-    window.location.reload();
+    // window.location.reload();
   };
 
   const [newClientData, setNewClientData] = useState({
@@ -393,6 +393,7 @@ const ReservationModal = (props: ReservationModalProps) => {
             localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'
           }`}
           onSubmit={(event) => {
+            event.preventDefault();
             const reservationData: Reservation = {
               id: Date.now().toString(),
               phone: formData.phone,

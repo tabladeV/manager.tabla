@@ -248,7 +248,14 @@ console.log(count,'test')
         value: reservationProgressData.time+ ':00'
       }
       
-    ]
+    ],
+    errorNotification(error, values, resource) {
+      console.log('Error fetching available tables:', values, resource, error);
+      return {
+        message: `An Error occured when when trying to get available tables`,
+        type: "error",
+      }
+    },
   })
 
   interface Table {
@@ -334,13 +341,7 @@ console.log(count,'test')
         },
       },
       mutationOptions: {
-        retry: 3,
-        onSuccess: (data) => {
-          console.log('Review sent:', data);
-        },
-        onError: (error) => {
-          console.log('Error sending review:', error);
-        }
+        retry: 3
       },
     });
 
@@ -589,8 +590,8 @@ console.log(count,'test')
         <ExportModal
           columns={reservationsExportConfig.columns}
           customFields={reservationsExportConfig.customFields}
-          onExport={(format, selectedColumns) => {
-            console.log(format, selectedColumns)
+          onExport={(format, selectedColumns, customFields) => {
+            console.log(format, selectedColumns, customFields);
             setShowExportModal(false);
           }}
           onClose={() => setShowExportModal(false)}

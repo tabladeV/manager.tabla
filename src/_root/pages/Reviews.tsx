@@ -219,7 +219,7 @@ const Reviews = () => {
           columns={reviewsExportConfig.columns}
           customFields={reviewsExportConfig.customFields}
           onExport={(format, selectedColumns, customValues) => {
-            console.log(format, selectedColumns)
+            console.log(format, selectedColumns,customValues)
             setShowExportModal(false);
           }}
           onClose={() => setShowExportModal(false)}
