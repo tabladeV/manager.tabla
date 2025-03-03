@@ -35,6 +35,11 @@
   .btn-primary{
     @apply bg-greentheme hover:bg-[#688F3D] transition duration-200 text-white font-[500] py-2 px-4 rounded-[10px];
   }
+  
+  .btn-danger-outline{
+    @apply bg-transparent hover:bg-[#FF4B4BA1] hover:text-white border-[#FF4B4BA1] border transition duration-200 dark:text-white text-[#1E1E1E75] font-[500] py-2 px-4 rounded-[10px];
+  }
+
   .btn-secondary{
     @apply hover:text-white bg-[#688F3D20] hover:bg-[#688F3D] text-greentheme transition duration-200 font-[500] py-2 px-4 rounded-[10px];
   }
