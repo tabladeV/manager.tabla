@@ -47,8 +47,8 @@ const BaseSelect: React.FC<SelectProps> = ({
 }) => {
   const [selectedValues, setSelectedValues] = useState<(string | number)[]>(
     multiple 
-      ? Array.isArray(value) ? value : [] 
-      : value !== undefined && value !== null ? [value] : []
+      ? Array.isArray(value) ?  (value as (string | number)[]) : [] 
+      : value !== undefined && value !== null ? [value as string | number] : []
   );
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -61,7 +61,7 @@ const BaseSelect: React.FC<SelectProps> = ({
       setSelectedValues(
         multiple 
           ? Array.isArray(value) ? value : [] 
-          : value !== null ? [value] : []
+          : value !== null ? [value as string | number] : []
       );
     }
   }, [value, multiple]);
