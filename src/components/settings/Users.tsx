@@ -101,7 +101,7 @@ export default function Users() {
 
 
   const{mutate: updateUser} = useUpdate({
-    resource: `api/v1/api/v1/bo/restaurants/users`,
+    resource: `api/v1/bo/restaurants/users`,
 
   });
 
@@ -227,7 +227,7 @@ export default function Users() {
   const adduser = () => {
     console.log(newUser)
     addUserMutate({
-      resource: `api/v1/api/v1/bo/restaurants/users/`,
+      resource: `api/v1/bo/restaurants/users/`,
       values: {
         first_name: newUser.first_name,
         last_name: newUser.last_name,

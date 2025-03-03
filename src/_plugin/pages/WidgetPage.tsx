@@ -258,26 +258,27 @@ const WidgetPage = () => {
     // window.location.reload();
   };
   return (
-    <div className={`h-screen  flex flex-col items-center ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2 text-textdarktheme' : 'bg-softgreytheme text-blacktheme'}   lt-sm:w-full `}>
+    <div className={`h-screen  flex flex-col items-center ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2 text-textdarktheme' : 'bg-softgreentheme text-blacktheme'}   lt-sm:w-full `}>
       <button
         onClick={toggleDarkMode}
-        className={`bg-[#88AB6115] my-[1em] w-[40px] h-[40px] flex justify-center items-center rounded-[100%] ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2' : ''}`}
+        className={`btn-secondary my-[1em] p-1 w-[40px] h-[40px] flex justify-center items-center rounded-[100%] ${localStorage.getItem('darkMode') === 'true' ? '' : ''}`}
       >
         {!isDarkMode ? (
 
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 7C9.24 7 7 9.24 7 12C7 14.76 9.24 17 12 17C14.76 17 17 14.76 17 12C17 9.24 14.76 7 12 7ZM11 1V5H13V1H11ZM11 19V23H13V19H11ZM23 11H19V13H23V11ZM5 11H1V13H5V11ZM16.24 17.66L18.71 20.13L20.12 18.72L17.65 16.25L16.24 17.66ZM3.87 5.28L6.34 7.75L7.75 6.34L5.28 3.87L3.87 5.28ZM6.34 16.24L3.87 18.71L5.28 20.12L7.75 17.65L6.34 16.24ZM18.72 3.87L16.25 6.34L17.66 7.75L20.13 5.28L18.72 3.87Z" fill="black" />
           </svg>
-        ) : (
+          ) : (
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12.0581 20C9.83544 20 7.94644 19.2223 6.39111 17.667C4.83577 16.1117 4.05811 14.2227 4.05811 12C4.05811 9.97401 4.71811 8.21734 6.03811 6.73001C7.35811 5.24267 8.99277 4.36467 10.9421 4.09601C10.9961 4.09601 11.0491 4.09801 11.1011 4.10201C11.1531 4.10601 11.2041 4.11167 11.2541 4.11901C10.9168 4.58967 10.6498 5.11301 10.4531 5.68901C10.2564 6.26501 10.1581 6.86867 10.1581 7.50001C10.1581 9.27801 10.7801 10.789 12.0241 12.033C13.2681 13.277 14.7794 13.8993 16.5581 13.9C17.1921 13.9 17.7964 13.8017 18.3711 13.605C18.9458 13.4083 19.4618 13.1413 19.9191 12.804C19.9271 12.854 19.9328 12.905 19.9361 12.957C19.9394 13.009 19.9414 13.062 19.9421 13.116C19.6861 15.0647 18.8144 16.699 17.3271 18.019C15.8398 19.339 14.0841 19.9993 12.0581 20Z" fill="white" />
           </svg>
 
         )}
-      </button>
-      <div className={`sm:mt-[1em]  lt-sm:h-full text-center flex flex-col items-center overflow-y-scroll no-scrollbar h-fit p-5 sm:w-[60vw]  rounded-xl justify-center ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-textdarktheme' : 'bg-white text-blacktheme'}`}>
 
-        <img src={widgetInfo?.image} alt="logo" className=' w-[8em]' />
+      </button>
+      <div className={`sm:mt-[1em] shadow-[#88AB6120] min-h-[60vh] shadow-2xl lt-sm:h-full text-center flex flex-col items-center overflow-y-scroll no-scrollbar  p-5 sm:w-[60vw]  rounded-xl justify-center ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-textdarktheme' : 'bg-white text-blacktheme'}`}>
+
+        <img src={widgetInfo?.image} alt="logo" className=' h-[5em]' />
         <h1 className={`text-3xl  font-bold mt-4 ${step === 6 ? 'hidden' : 'block'} ${localStorage.getItem('darkMode') === 'true' ? 'text-greentheme ' : 'text-[#3A541C]'}`}> {widgetInfo?.title}</h1>
         {/* <img
           src={bg}
@@ -291,11 +292,13 @@ const WidgetPage = () => {
           {widgetInfo?.description}
         </p>
         {step === 1 && <div>
-          <div className={`btn flex justify-around cursor-pointer gap-10 items-center text-subblack mt-3 ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-textdarktheme' : 'bg-white text-blacktheme'} rounded-[10px] p-3`}>
-            {(data.reserveDate === '') ? <div onClick={() => { setShowProcess(true) }}>date </div> : <span onClick={() => { setShowProcess(true) }}>{data.reserveDate}</span>}
-            {(data.time === '') ? <div onClick={() => { setShowProcess(true) }}>Time </div> : <span onClick={() => { setShowProcess(true) }}>{data.time}</span>}
-            {(data.guests === 0) ? <div onClick={() => { setShowProcess(true) }}>Guests </div> : <span onClick={() => { setShowProcess(true) }}>{data.guests}</span>}
-            <button onClick={() => { setStep(2) }} className={`btn-primary ${(data.reserveDate === '' || data.time === '' || data.guests === 0) ? 'bg-slate-400 hover:bg-slate-300 cursor-not-allowed opacity-30' : ''} `} disabled={data.reserveDate === '' || data.time === '' || data.guests === 0}>
+          <div className={`btn flex justify-around cursor-default gap-10 items-center text-subblack mt-3 ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-textdarktheme' : 'bg-white text-blacktheme'} rounded-[10px] `}>
+            <div onClick={() => { setShowProcess(true) }} className='flex gap-10 cursor-pointer p-3 items-center'>
+              {(data.reserveDate === '') ? <div onClick={() => { setShowProcess(true) }}>date </div> : <span onClick={() => { setShowProcess(true) }}>{data.reserveDate}</span>}
+              {(data.time === '') ? <div onClick={() => { setShowProcess(true) }}>Time </div> : <span onClick={() => { setShowProcess(true) }}>{data.time}</span>}
+              {(data.guests === 0) ? <div onClick={() => { setShowProcess(true) }}>Guests </div> : <span onClick={() => { setShowProcess(true) }}>{data.guests}</span>}
+            </div>
+            <button onClick={() => { setStep(2) }} className={`btn-primary ${(data.reserveDate === '' || data.time === '' || data.guests === 0) ? 'bg-greentheme hover:bg-greentheme cursor-not-allowed opacity-30' : ''} `} disabled={data.reserveDate === '' || data.time === '' || data.guests === 0}>
               Book
             </button>
           </div>

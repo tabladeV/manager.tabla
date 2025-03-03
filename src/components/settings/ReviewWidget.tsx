@@ -1,4 +1,4 @@
-import { BaseKey, useList, useUpdate } from '@refinedev/core';
+import { BaseKey, useCustomMutation, useList, useUpdate } from '@refinedev/core';
 import { Upload, X } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +12,19 @@ const ReviewWidget = () => {
   }, [])
 
   const restaurantId = localStorage.getItem('restaurant_id');
+
+  const { mutate, isLoading: widgetLoading, data, error: widgetError } = useCustomMutation();
+  
+  const {data : subdomainData, isLoading: isLoadingSubdomain, error: errorSubdomain} = useList({
+    resource: 'api/v1/bo/restaurants/subdomain',
+  })
+  const [subdomain, setSubdomain] = useState<string>('')
+  useEffect(() => {
+    if(subdomainData?.data){
+      const subdomainApi = subdomainData.data as unknown as {subdomain: string}
+      setSubdomain(subdomainApi.subdomain as unknown as string)
+    }
+  }, [subdomainData])
 
   const { data: reviewData, isLoading, error } = useList({
     resource: 'api/v1/reviews/widget',
@@ -79,11 +92,11 @@ const ReviewWidget = () => {
 
 
     try {
-      await updateWidget({
-        id: '',
-        resource: `api/v1/reviews/widget`,
-        values: newFormData,
-      });
+      await     mutate({
+        url: 'https://api.dev.tabla.ma/api/v1/reviews/widget',
+        method: "patch",
+        values:newFormData,
+      })
       alert('Configuration saved successfully!');
     } catch (error) {
       console.error('Error updating widget:', error);
@@ -158,7 +171,7 @@ const ReviewWidget = () => {
         >
           {t('settingsPage.widget.buttons.save')}
         </button>
-        <Link to={`/review/r/${restaurantId}/6`} target="_blank" className="btn-secondary w-1/2 text-center">
+        <Link to={`https://${subdomain}.dev.tabla.ma/make/review/test`} target="_blank" className="btn-secondary w-1/2 text-center">
           {t('settingsPage.widget.buttons.preview')}
         </Link>
       </div>

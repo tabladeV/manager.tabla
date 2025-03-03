@@ -210,8 +210,6 @@ const Reviews = () => {
 
 
 
-
-
   return (
     <div>
       {showExportModal && (
@@ -313,22 +311,54 @@ const Reviews = () => {
             </tr>
           </thead>
           <tbody className={localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2 text-white' : 'bg-gray-50 text-gray-500'}>
-            {reviews.map(review => (
-              <tr key={review.id} className=" hover:opacity-75">
-                <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => (setSelectedClient(review.id))} >{review.id}</td>
-                <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => (setSelectedClient(review.id))} >{review.customer.first_name} {review.customer.last_name}</td>
-                <td className="px-6 py-4 max-w-[20em] whitespace-nowrap cursor-pointer" onClick={() => (setSelectedClient(review.id))}>
-                  {review.description.length > 50 ? `${review.description.substring(0, 40)}...` : review.description}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => (setSelectedClient(review.id))} >{review.food_rating}</td>
-                <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => (setSelectedClient(review.id))} >{review.service_rating}</td>
-                <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => (setSelectedClient(review.id))} >{review.ambience_rating}</td>
-                <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => (setSelectedClient(review.id))} >{review.value_for_money}</td>
-                <td className="px-6 py-4 whitespace-nowrap " onClick={() => (setSelectedClient(review.id))}>
-                  {avg(Number(review.food_rating), Number(review.service_rating), Number(review.ambience_rating), Number(review.value_for_money))}
-                </td>
-              </tr>
-            ))}
+            {isLoading ? (
+              Array.from({ length: size }).map((_, index) => (
+                <tr key={index} className="animate-pulse">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className={`h-4 rounded w-3/4 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className={`h-4 rounded w-3/4 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className={`h-4 rounded w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className={`h-4 rounded w-1/2 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className={`h-4 rounded w-1/2 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className={`h-4 rounded w-1/2 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className={`h-4 rounded w-1/2 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className={`h-4 rounded w-1/2 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              reviews.map(review => (
+                <tr key={review.id} className="hover:opacity-75">
+                  <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => setSelectedClient(review.id)}>{review.id}</td>
+                  <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => setSelectedClient(review.id)}>{review.customer.first_name} {review.customer.last_name}</td>
+                  <td className="px-6 py-4 max-w-[20em] whitespace-nowrap cursor-pointer" onClick={() => setSelectedClient(review.id)}>
+                    {review.description.length > 50 ? `${review.description.substring(0, 40)}...` : review.description}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => setSelectedClient(review.id)}>{review.food_rating}</td>
+                  <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => setSelectedClient(review.id)}>{review.service_rating}</td>
+                  <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => setSelectedClient(review.id)}>{review.ambience_rating}</td>
+                  <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => setSelectedClient(review.id)}>{review.value_for_money}</td>
+                  <td className="px-6 py-4 whitespace-nowrap" onClick={() => setSelectedClient(review.id)}>
+                    {avg(Number(review.food_rating), Number(review.service_rating), Number(review.ambience_rating), Number(review.value_for_money))}
+                  </td>
+                </tr>
+              ))
+            )}
+            
           </tbody>
         </table>
         <Pagination setPage={(page: number) => { setPage(page) }} size={size} count={count} />

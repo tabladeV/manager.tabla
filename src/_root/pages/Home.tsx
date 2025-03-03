@@ -46,7 +46,7 @@ const Home = () => {
 
       <div className='mb-4 ml-4'>
         <h1>
-          {t('overview.headline') +' '+ user?.first_name}
+          {t('overview.headline') +' '+ (user ? user.first_name :'')}
         </h1>
         <p className={` ${localStorage.getItem('darkMode')=== 'true'? ' text-softwhitetheme':'text-subblack'}`}>
           {t('overview.subtitle')}
