@@ -44,6 +44,7 @@ import Roles from "./components/settings/Roles";
 import Reviews from "./_root/pages/Reviews";
 import Profile from "./_root/pages/Profile";
 import ReviewPage from "./_plugin/pages/ReviewPage";
+import ModifyPage from "./_plugin/pages/ModifyPage";
 import WidgetPage from "./_plugin/pages/WidgetPage";
 import DesignPlacesIndex from "./_root/pages/DesignPlacesIndex";
 import ErrorPage from "./_root/pages/ErrorPage";
@@ -308,6 +309,7 @@ function App() {
                       <Route element={<Plugins />}>
                         <Route path="/make/reservation" element={<WidgetPage />} />
                         <Route path="/make/review/:token" element={<ReviewPage />} />
+                        <Route path="/make/modification" element={<ModifyPage />} />
                       </Route>
                     </Routes>
 

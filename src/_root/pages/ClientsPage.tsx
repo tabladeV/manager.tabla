@@ -56,7 +56,8 @@ const ClientsPage = () => {
     }
   });
 
-
+  const [searchKeyword, setSearchKeyword] = useState('');
+console.log(searchKeyword);
 
   const {data , isLoading, error} = useList({
     resource: 'api/v1/bo/customers/',
@@ -71,6 +72,11 @@ const ClientsPage = () => {
         operator: "eq",
         value: pageSize,
       },
+      {
+        field: "search",
+        operator: "eq",
+        value: searchKeyword,
+      }
     ],
     queryOptions:{
       onSuccess(data){
@@ -175,15 +181,17 @@ const ClientsPage = () => {
 
   const searchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
     const keyword = e.target.value;
-    if (keyword === '') {
-      setSearchResults(clients);
-    }
-    else{
-      const results = clients.filter((client) =>
-        client.full_name.toLowerCase().includes(keyword.toLowerCase())
-      );
-      setSearchResults(results);
-    }
+    setSearchKeyword(keyword);
+    
+    // if (keyword === '') {
+    //   setSearchResults(clients);
+    // }
+    // else{
+    //   const results = clients.filter((client) =>
+    //     client.full_name.toLowerCase().includes(keyword.toLowerCase())
+    //   );
+    //   setSearchResults(results);
+    // }
   };
 
   const { pathname } = useLocation();

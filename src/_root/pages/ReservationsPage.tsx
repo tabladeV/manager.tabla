@@ -704,22 +704,6 @@ console.log(count,'test')
                   ))}
                 </select>
               </div> */}
-              <div>
-                  
-                <label className="block text-sm font-medium ">{t('reservations.edit.informations.table')}</label>
-                <select 
-                  name="table"
-                  defaultValue={(selectedClient && selectedClient.tables && selectedClient.tables.length >0 && selectedClient.tables[0].id ) ? selectedClient.tables[0].id : 0}
-                  onChange={(e)=>{(Number(e.target.value) !== 0 || e.target.value) ? setHasTable(true) : setHasTable(false);setSelectedClient({...selectedClient, tableSet: Number(e.target.value)})}}
-                  className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
->
-                    <option key={0} value={0} >No table</option>
-                    {(selectedClient && selectedClient.tables && selectedClient.tables.length > 0 && selectedClient.tables[0].id)  ? <option key={selectedClient.tables[0].id} value={selectedClient.tables[0].id}>{selectedClient.tables[0].name} {`(${selectedClient.floor_name})`}</option>:null}
-                  {availableTables?.map((table) => (
-                    <option key={table.id} value={table.id}>{table.name} {`(${table.floor_name})`}</option>
-                  ))}
-                </select>
-              </div>
               
               <div className="">
                 <label className="block text-sm font-medium ">{t('reservations.edit.informations.status')}</label>
@@ -737,6 +721,22 @@ console.log(count,'test')
                   <option value="RESCHEDULED">{t('reservations.statusLabels.rescheduled')}</option>
                 </select>
               </div>
+              {(selectedClient.status === ('APPROVED') || selectedClient.status === ('SEATED')) && <div>
+                  
+                <label className="block text-sm font-medium ">{t('reservations.edit.informations.table')}</label>
+                <select 
+                  name="table"
+                  defaultValue={(selectedClient && selectedClient.tables && selectedClient.tables.length >0 && selectedClient.tables[0].id ) ? selectedClient.tables[0].id : 0}
+                  onChange={(e)=>{(Number(e.target.value) !== 0 || e.target.value) ? setHasTable(true) : setHasTable(false);setSelectedClient({...selectedClient, tableSet: Number(e.target.value)})}}
+                  className={`w-full rounded-md p-2 ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':'bg-softgreytheme text-subblack'}`}
+>
+                    <option key={0} value={0} >No table</option>
+                    {(selectedClient && selectedClient.tables && selectedClient.tables.length > 0 && selectedClient.tables[0].id)  ? <option key={selectedClient.tables[0].id} value={selectedClient.tables[0].id}>{selectedClient.tables[0].name} {`(${selectedClient.floor_name})`}</option>:null}
+                  {availableTables?.map((table) => (
+                    <option key={table.id} value={table.id}>{table.name} {`(${table.floor_name})`}</option>
+                  ))}
+                </select>
+              </div>}
               <div onClick={()=>{setShowProcess(true)}} className={`btn flex justify-around cursor-pointer ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'}`}>
                   {(reservationProgressData.reserveDate === '') ?<div>date </div>:<span>{reservationProgressData.reserveDate}</span>}
                   {(reservationProgressData.time === '') ? <div>Time </div>:<span>{reservationProgressData.time}</span>} 
@@ -823,6 +823,84 @@ console.log(count,'test')
             </tr>
           </thead>
           <tbody className={ `  ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme divide-y divide-gray-800':'bg-white divide-y divide-gray-200'}`} >
+            {isLoading ? (
+                [...Array(10)].map((_, index) => (
+                <tr key={index}>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className={`h-4 rounded w-3/4 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className={`h-4 rounded w-3/4 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className={`h-4 rounded w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className={`h-4 rounded w-1/2 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className={`h-4 rounded w-1/2 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className={`h-4 rounded w-1/2 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className={`h-4 rounded w-1/2 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className={`h-4 rounded w-1/2 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className={`h-4 rounded w-1/2 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className={`h-4 rounded w-1/2 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className={`h-4 rounded w-1/2 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
+                  </td>
+                </tr>
+                ))
+            ) : (
+              filteredReservations.sort((a, b) => (a.id < b.id ? 1 : -1)).map((reservation) => (
+                <tr key={reservation.id} className="opacity-80 hover:opacity-100">
+                  <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.id}</td>
+                  <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.full_name}</td>
+                  <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.email}</td>
+                  <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.phone}</td>
+                  <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>
+                    {reservation.commenter && reservation.commenter.length > 15 ? `${reservation.commenter.substring(0, 15)}...` : reservation.commenter}
+                  </td>
+                  <td className="px-3 py-4 flex items-center justify-center whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>
+                    {(reservation.tables && reservation.tables.length > 0) ? reservation.tables[0].name : ''}
+                  </td>
+                  <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.date}</td>
+                  <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.time.slice(0, 5)}</td>
+                  <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.number_of_guests}</td>
+                  <td className="px-3 py-4 whitespace-nowrap" onClick={() => showStatusModification(reservation.id)}>
+                    <span className={`${statusStyle(reservation.status)} text-center py-[.1em] px-3 rounded-[10px]`}>
+                      {reservation.status === 'APPROVED' ? t('reservations.statusLabels.confirmed') : reservation.status === 'PENDING' ? t('reservations.statusLabels.pending') : reservation.status === 'SEATED' ? t('reservations.statusLabels.seated') : reservation.status === 'FULFILLED' ? t('reservations.statusLabels.fulfilled') : reservation.status === 'NO_SHOW' ? t('reservations.statusLabels.noShow') : reservation.status === 'RESCHEDULED' ? t('reservations.statusLabels.rescheduled') : t('reservations.statusLabels.cancelled')}
+                    </span>
+                    {showStatus && reservation.id === idStatusModification && reservation.status !== 'FULFILLED' && (
+                      <div className="relative">
+                        <div className="overlay left-0 top-0 w-full h-full opacity-0" onClick={() => { setShowStatus(false) }}></div>
+                        <ul className={`absolute z-[400] p-2 rounded-md shadow-md ${localStorage.getItem('darkMode') === 'true' ? 'text-white bg-darkthemeitems' : 'bg-white text-subblack'}`}>
+                          <li className={`py-1 px-2 text-bluetheme cursor-pointer`} onClick={() => statusHandler('PENDING')}>{t('reservations.statusLabels.pending')}</li>
+                          <li className="py-1 px-2 text-greentheme cursor-pointer" onClick={() => statusHandler('APPROVED')}>{t('reservations.statusLabels.confirmed')}</li>
+                          <li className="py-1 px-2 text-redtheme cursor-pointer" onClick={() => statusHandler('CANCELED')}>{t('reservations.statusLabels.cancelled')}</li>
+                          <li className="py-1 px-2 text-blushtheme cursor-pointer" onClick={() => statusHandler('NO_SHOW')}>{t('reservations.statusLabels.noShow')}</li>
+                          <li className="py-1 px-2 text-browntheme cursor-pointer" onClick={() => statusHandler('RESCHEDULED')}>{t('reservations.statusLabels.rescheduled')}</li>
+                          <li className="py-1 px-2 text-orangetheme cursor-pointer" onClick={() => statusHandler('SEATED')}>{t('reservations.statusLabels.seated')}</li>
+                        </ul>
+                      </div>
+                    )}
+                  </td>
+                  <td className="whitespace-nowrap flex justify-center items-center">
+                    {reservation.status !== 'SEATED' ? '' : <span onClick={() => { sendReview(reservation.id) }} className="cursor-pointer text-greentheme items-center flex justify-center w-7 h-7 rounded-md p-1 hover:bg-softgreentheme"><Send size={20} /></span>}
+                  </td>
+                </tr>
+              ))
+            )}
             {filteredReservations.sort((a, b) => (a.id < b.id ? 1 : -1)).map((reservation,index) => (
               <tr key={reservation.id} className="opacity-80 hover:opacity-100">
                 <td className="px-3 py-4 whitespace-nowrap cursor-pointer"  onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.id}</td>
