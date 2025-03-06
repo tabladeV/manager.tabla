@@ -75,6 +75,7 @@ const SettingsPage = () => {
           </Link>
 
           {/* Widget - not restricted */}
+          <Link to='/settings/occasions' className={`hover:underline ${pathname === '/settings/occasions' ?navigatedMenuClass: normalMenuClass}`}>Occasions</Link>
           <Link to='/settings/widget/reservation' className={`hover:underline ${pathname === '/settings/widget/reservation' ?navigatedMenuClass: normalMenuClass}`}>{t('settingsPage.menuItems.widget')}</Link>
           <Link to='/settings/widget/review' className={`hover:underline ${pathname === '/settings/widget/review' ?navigatedMenuClass: normalMenuClass}`}>{t('settingsPage.menuItems.reviewWidget')}</Link>
 
