@@ -90,7 +90,7 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
       floor_id: selectedFloor,
       table_id: selectedTable,
       block_online: blockOnline,
-      block_in_house: blockInHouse,
+      block_back_office: blockInHouse,
       block_menus: blockMenus
     };
 
