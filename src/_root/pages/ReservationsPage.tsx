@@ -250,6 +250,12 @@ console.log(count,'test')
     ],
     queryOptions: {
       enabled: !!selectedClient
+    },
+    errorNotification(error, values, resource) {
+      return {
+        message: `An Error occured when when trying to get available tables`,
+        type: "error",
+      }
     }
   })
 
@@ -336,13 +342,7 @@ console.log(count,'test')
         },
       },
       mutationOptions: {
-        retry: 3,
-        onSuccess: (data) => {
-          console.log('Review sent:', data);
-        },
-        onError: (error) => {
-          console.log('Error sending review:', error);
-        }
+        retry: 3
       },
     });
 
@@ -591,8 +591,8 @@ console.log(count,'test')
         <ExportModal
           columns={reservationsExportConfig.columns}
           customFields={reservationsExportConfig.customFields}
-          onExport={(format, selectedColumns) => {
-            console.log(format, selectedColumns)
+          onExport={(format, selectedColumns, customFields) => {
+            console.log(format, selectedColumns, customFields);
             setShowExportModal(false);
           }}
           onClose={() => setShowExportModal(false)}

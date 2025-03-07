@@ -291,8 +291,8 @@ console.log(searchKeyword);
         <ExportModal
           columns={customers.columns}
           customFields={customers.customFields}
-          onExport={(format, selectedColumns) => {
-            console.log(format, selectedColumns)
+          onExport={(format, selectedColumns, customFields) => {
+            console.log(format, selectedColumns, customFields)
             setShowExportModal(false);
           }}
           onClose={() => setShowExportModal(false)}

@@ -30,6 +30,7 @@ import Tags from "./components/settings/Tags";
 import Messaging from "./components/settings/Messaging";
 import Features from "./components/settings/Features";
 import Users from "./components/settings/Users";
+import Occasions from "./components/settings/Occasions";
 import Billing from "./components/settings/Billing";
 import Widget from "./components/settings/Widget";
 import Permissions from "./components/settings/Permissions";
@@ -66,7 +67,7 @@ function App() {
   }, []);
 
   const subdomain = getSubdomain();
-  const isManager = subdomain === "manager"
+  const isManager = subdomain === "manager" || import.meta.env.DEV;
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLogedIn") === "true";
     const refreshToken = localStorage.getItem("refresh");
@@ -283,6 +284,7 @@ function App() {
                             } />
                             <Route path="/settings/features" element={<Features />} />
                             <Route path="/settings/users" element={<Users />} />
+                            <Route path="/settings/occasions" element={<Occasions />} />
                             <Route path="/settings/billing" element={<Billing />} />
                             <Route path="/settings/widget/reservation" element={<Widget />} />
                             <Route path="/settings/widget/review" element={<ReviewWidget />} />

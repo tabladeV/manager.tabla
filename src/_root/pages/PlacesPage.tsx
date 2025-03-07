@@ -7,12 +7,13 @@ import { Link } from 'react-router-dom';
 import { addHours, format, parse } from 'date-fns';
 import { useDateContext } from '../../context/DateContext';
 import { BaseKey, BaseRecord, CanAccess, useList } from '@refinedev/core';
-import axios from 'axios';
 import DraggableItem from '../../components/places/DraggableItem';
 import DropTarget from '../../components/places/DropTarget';
 import SearchBar from '../../components/header/SearchBar';
 import ZoomControls from '../../components/places/ZoomControls';
 import Pagination from '../../components/reservation/Pagination';
+import BlockReservationModal from '../../components/places/BlockReservationModal';
+import { Ban } from 'lucide-react';
 
 interface ReservationType {
     
@@ -121,6 +122,7 @@ const PlacePage: React.FC = () => {
   const [focusedRoof, setFocusedRoof] = useState<BaseKey | undefined>(undefined);
   const [floorId, setFloorId] = useState<BaseKey | undefined>(0);
   const [reservationAPIInfo, setReservationAPIInfo] =useState<ReservationType>()
+  const [showBlockingModal, setShowBlockingModal] =useState(false)
 
   // When fetched data changes, update local state
   useEffect(() => {
@@ -178,6 +180,7 @@ const PlacePage: React.FC = () => {
   const [scale, setScale] = useState(0.4);
   const [translate, setTranslate] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
+  const [showTableOptions, setShowTableOptions] = useState(false);
   const [lastPanPosition, setLastPanPosition] = useState<{ x: number; y: number } | null>(null);
   const [lastTouchDistance, setLastTouchDistance] = useState<number | null>(null);
   const [lastTouchCenter, setLastTouchCenter] = useState<{ x: number; y: number } | null>(null);
@@ -201,6 +204,7 @@ const PlacePage: React.FC = () => {
   }, [scale, translate, clampScale]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if((e.target as HTMLElement)?.id !== "tables-cont") return;
     e.preventDefault();
     setIsPanning(true);
     setLastPanPosition({ x: e.clientX, y: e.clientY });
@@ -333,8 +337,10 @@ const PlacePage: React.FC = () => {
 
   return (
     <div className=''>
+      { showBlockingModal && <BlockReservationModal onConfirm={(data)=>console.log(data)} onClose={()=> setShowBlockingModal(false)}/> }
       <div className='flex w-full justify-between mb-2'>
         <h1 className='text-3xl font-[700]'>{t('placeManagement.title')}</h1>
+        <div className='flex gap-2'>
         <CanAccess 
           resource="floor"
           action="change">
@@ -345,6 +351,15 @@ const PlacePage: React.FC = () => {
             </svg>
           </Link>
         </CanAccess>
+        <CanAccess 
+          resource="reservation"
+          action="change">
+          <button className='btn-danger-outline flex gap-1 items-center' onClick={()=>setShowBlockingModal(true)}>
+            <Ban size={18}/>
+            Block
+          </button>
+        </CanAccess>
+        </div>
       </div>
 
       <DndProvider backend={isTouchDevice() ? TouchBackend : HTML5Backend}>
@@ -401,7 +416,7 @@ const PlacePage: React.FC = () => {
 
             {/* Tables Container with Zoom and Pan */}
             <div
-              className={`tables-cont relative mt-1 lt-sm:overflow-x-auto overflow-hidden rounded-xl ${darkMode ? 'bg-bgdarktheme' : 'bg-whitetheme'}`}
+              className={`tables-cont relative mt-1 lt-sm:overflow-x-auto overflow-hidden rounded-xl ${darkMode ? 'bg-bgdarktheme' : 'bg-whitetheme'}`} id="tables-cont"
               ref={containerRef}
               onWheel={handleWheel}
               onMouseDown={handleMouseDown}
@@ -413,6 +428,7 @@ const PlacePage: React.FC = () => {
               onTouchEnd={handleTouchEnd}
               style={{ touchAction: "none" }}
             >
+              {/* {showTableOptions && <div className='overlay absolute z-[1000]'></div>} */}
               <ZoomControls onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} onFocusAll={handleFocusAll} />
               <div
                 style={{
@@ -442,6 +458,7 @@ const PlacePage: React.FC = () => {
                       refreshTables();
                       refetchReservations();
                     }}
+                    onShowOptions={(e) => setShowTableOptions(e)}
                   />
                 ))}
               </div>

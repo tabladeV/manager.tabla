@@ -31,6 +31,7 @@ const BaseBtn: React.FC<ButtonProps> = ({
   size = 'medium',
   disabled = false,
   loading = false,
+  className,
   onClick,
   children,
 }) => {
@@ -40,7 +41,7 @@ const BaseBtn: React.FC<ButtonProps> = ({
 
   return (
     <button
-      className={`${baseStyles} ${variantClass} ${sizeClass} ${disabledClass} relative`}
+      className={`${baseStyles} ${variantClass} ${sizeClass} ${disabledClass} relative ${className || ''}`}
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       onClick={!loading ? onClick : () => {}}
       disabled={disabled || loading}
