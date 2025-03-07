@@ -605,7 +605,7 @@ console.log(count,'test')
         <div>
           <div className="overlay z-[100]" onClick={() => setShowModal(false)}></div>
           <div className={`sidepopup w-[45%] overflow-y-auto lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:overflow-y-auto h-full ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme text-white':'bg-white'} `}>
-            <h1 className="text-2xl font-[600] mb-4">{t('reservations.edit.title')} by <span className={`font-[800] `}>{selectedClient.full_name} </span><span className={`text-sm font-[400] ${localStorage.getItem('darkMode') === 'true' ? 'text-[#e1e1e1]':'text-subblack'}`}>{`(Reservation id: ${selectedClient.id})`}</span></h1>
+            <h1 className="text-2xl font-[600] mb-4">{t('reservations.edit.title')} by <span className={`font-[800] `}>{selectedClient.full_name} </span><span className={`text-sm font-[400] ${localStorage.getItem('darkMode') === 'true' ? 'text-[#e1e1e1]':'text-subblack'}`}>{`(Reservation id: ${selectedClient.seq_id})`}</span></h1>
             <div className={`flex flex-col p-2 mb-2 rounded-xl gap-3 cursor-default ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems text-whitetheme':' border-2 text-darkthemeitems'}`}>
               <p className="text-md mb-[-.4em] font-[500]">{selectedClient.full_name}'s preferences</p>
               <div className="">
@@ -864,7 +864,7 @@ console.log(count,'test')
             ) : (
               filteredReservations.sort((a, b) => (a.id < b.id ? 1 : -1)).map((reservation) => (
                 <tr key={reservation.id} className="opacity-80 hover:opacity-100">
-                  <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.id}</td>
+                  <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.seq_id}</td>
                   <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.full_name}</td>
                   <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.email}</td>
                   <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>{reservation.phone}</td>

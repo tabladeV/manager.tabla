@@ -309,7 +309,7 @@ function App() {
                       <Route element={<Plugins />}>
                         <Route path="/make/reservation" element={<WidgetPage />} />
                         <Route path="/make/review/:token" element={<ReviewPage />} />
-                        <Route path="/make/modification" element={<ModifyPage />} />
+                        <Route path="/make/modification/:token" element={<ModifyPage />} />
                       </Route>
                     </Routes>
 
