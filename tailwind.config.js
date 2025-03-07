@@ -6,7 +6,22 @@ export const darkMode = 'class';
 export const theme = {
   extend: {
     screens: {
-      'lt-sm': { 'max': '639px' }, // Screens less than the default `sm` breakpoint
+      // "Less than" variants
+      'lt-sm': { max: '639px' },// Screens less than the default `sm` breakpoint
+      'lt-md': { max: '767px' },
+      'lt-lg': { max: '1023px' },
+      'lt-xl': { max: '1279px' },
+
+      // "Greater than" variants
+      'gt-sm': { min: '640px' },
+      'gt-md': { min: '768px' },
+      'gt-lg': { min: '1024px' },
+      'gt-xl': { min: '1280px' },
+
+      'sm-only': { min: '640px', max: '767px' },
+      'md-only': { min: '768px', max: '1023px' },
+      'lg-only': { min: '1024px', max: '1279px' },
+      'xl-only': { min: '1280px', max: '1535px' },
     },
     colors: {
       whitetheme: "#ffffff",

@@ -356,7 +356,7 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
           </div>
           
           {/* Contact info */}
-          <div className="flex flex-wrap mt-1 gap-x-4 gap-y-1 text-sm">
+          <div className="flex flex-wrap mt-1 gap-x-4 gap-y-1 text-sm lt-md:flex-col">
             <div className="flex items-center gap-1 text-gray-500">
               <Mail size={14} className={isDarkMode ? 'text-gray-400' : 'text-gray-500'} />
               <span>{reservation.email}</span>
@@ -369,15 +369,17 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
           </div>
           
           {/* Reservation details */}
-          <div className="flex flex-wrap mt-1 gap-x-4 gap-y-1 text-sm">
-            <div className="flex items-center gap-1 text-gray-500">
-              <Calendar size={14} className={isDarkMode ? 'text-gray-400' : 'text-gray-500'} />
-              <span>{reservation.date}</span>
-            </div>
-            
-            <div className="flex items-center gap-1 text-gray-500">
-              <Clock size={14} className={isDarkMode ? 'text-gray-400' : 'text-gray-500'} />
-              <span>{reservation.time.slice(0, 5)}</span>
+          <div className="flex flex-wrap mt-1 gap-x-4 gap-y-1 text-sm lt-md:flex-col">
+            <div className="flex gap-x-2">
+              <div className="flex items-center gap-1 text-gray-500">
+                <Calendar size={14} className={isDarkMode ? 'text-gray-400' : 'text-gray-500'} />
+                <span>{reservation.date}</span>
+              </div>
+
+              <div className="flex items-center gap-1 text-gray-500">
+                <Clock size={14} className={isDarkMode ? 'text-gray-400' : 'text-gray-500'} />
+                <span>{reservation.time.slice(0, 5)}</span>
+              </div>
             </div>
             
             <div className="flex items-center gap-1 text-gray-500">
@@ -463,178 +465,6 @@ const LoadingRow: React.FC<LoadingRowProps> = ({ isDarkMode }) => {
     </tr>
   )
 }
-
-// // ReservationTableHeader Component
-// const ReservationTableHeader: React.FC<ReservationTableHeaderProps> = ({ isDarkMode }) => {
-//   const { t } = useTranslation();
-//   return (
-//     <thead className={isDarkMode ? 'bg-bgdarktheme2 text-white' : 'bg-gray-50 text-gray-500'}>
-//       <tr>
-//         <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.id')}</th>
-//         <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
-//           {t('reservations.tableHeaders.details')}
-//         </th>
-//         <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.status')}</th>
-//         <th className="w-4 py-3 text-center text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.actions')}</th>
-//       </tr>
-//     </thead>
-//   )
-// }
-
-// // ReservationRow Component
-// const ReservationRow: React.FC<ReservationRowProps> = ({ 
-//   reservation, 
-//   EditClient, 
-//   showStatusModification,
-//   showStatus,
-//   idStatusModification,
-//   statusHandler,
-//   setShowStatus,
-//   sendReview,
-//   isDarkMode
-// }) => {
-//   const { t } = useTranslation();
-//   const [expanded, setExpanded] = useState<boolean>(false);
-  
-//   return (
-//     <>
-//       <tr 
-//         key={`${reservation.id}-main`} 
-//         className={`${expanded ? 'border-b-0' : ''} opacity-90 hover:opacity-100 transition-opacity ${isDarkMode ? 'hover:bg-bgdarktheme2' : 'hover:bg-gray-50'}`}
-//       >
-//         <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>
-//           {reservation.id}
-//         </td>
-//         <td className="px-3 py-3">
-//           <div className="flex justify-between items-center cursor-pointer" onClick={() => setExpanded(!expanded)}>
-//             <div className="flex flex-col">
-//               <div className="flex items-center gap-2 font-medium">
-//                 <User size={16} className={isDarkMode ? 'text-gray-400' : 'text-gray-500'} />
-//                 {reservation.full_name}
-//               </div>
-//               <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
-//                 <Calendar size={14} className={isDarkMode ? 'text-gray-400' : 'text-gray-500'} />
-//                 {reservation.date} 
-//                 <Clock size={14} className={isDarkMode ? 'text-gray-400' : 'text-gray-500'} />
-//                 {reservation.time.slice(0, 5)}
-//                 <Users size={14} className={isDarkMode ? 'text-gray-400' : 'text-gray-500'} />
-//                 {reservation.number_of_guests}
-//               </div>
-//             </div>
-//             <div className={`p-1 rounded-full transition-colors ${expanded ? (isDarkMode ? 'bg-gray-700' : 'bg-gray-200') : ''}`}>
-//               {expanded ? 
-//                 <ChevronUp size={18} className={isDarkMode ? 'text-gray-300' : 'text-gray-600'} /> : 
-//                 <ChevronDown size={18} className={isDarkMode ? 'text-gray-300' : 'text-gray-600'} />
-//               }
-//             </div>
-//           </div>
-//         </td>
-//         <td className="px-3 py-4 whitespace-nowrap" onClick={() => showStatusModification(reservation.id)}>
-//           <ReservationStatusLabel status={reservation.status} />
-          
-//           <StatusModifier
-//             showStatus={showStatus}
-//             reservation={reservation}
-//             idStatusModification={idStatusModification}
-//             statusHandler={statusHandler}
-//             setShowStatus={setShowStatus}
-//             isDarkMode={isDarkMode}
-//           />
-//         </td>
-//         <td className="px-3 py-4 whitespace-nowrap flex justify-center items-center gap-2">
-//           <button 
-//             onClick={() => { if (reservation.id) EditClient(reservation.id); }}
-//             className={`p-2 rounded-full ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`} 
-//             title={t('reservations.actions.edit')}
-//           >
-//             <Edit size={18} className={isDarkMode ? 'text-gray-300' : 'text-gray-600'} />
-//           </button>
-          
-//           {reservation.status === 'SEATED' && 
-//             <button 
-//               onClick={() => { sendReview(reservation.id) }}
-//               className="p-2 rounded-full bg-softgreentheme text-greentheme hover:bg-green-100" 
-//               title={t('reservations.actions.sendReview')}
-//             >
-//               <Send size={18} />
-//             </button>
-//           }
-//         </td>
-//       </tr>
-//       {expanded && (
-//         <tr 
-//           key={`${reservation.id}-details`} 
-//           className={`${isDarkMode ? 'bg-bgdarktheme2' : 'bg-gray-50'}`}
-//         >
-//           <td className="px-3 py-2"></td>
-//           <td colSpan={3} className={`px-6 py-3 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-//             <div className="grid grid-cols-2 gap-x-6 gap-y-1 pb-2">
-//               <DetailItem 
-//                 icon={<Mail size={16} />} 
-//                 label={t('reservations.tableHeaders.email')} 
-//                 value={reservation.email} 
-//                 isDarkMode={isDarkMode} 
-//               />
-//               <DetailItem 
-//                 icon={<Phone size={16} />} 
-//                 label={t('reservations.tableHeaders.phone')} 
-//                 value={reservation.phone} 
-//                 isDarkMode={isDarkMode} 
-//               />
-//               {(reservation.tables && reservation.tables.length > 0) && (
-//                 <DetailItem 
-//                   icon={<LayoutGrid size={16} />} 
-//                   label={t('reservations.tableHeaders.table')} 
-//                   value={reservation.tables[0].name} 
-//                   isDarkMode={isDarkMode} 
-//                 />
-//               )}
-//               {reservation.commenter && (
-//                 <DetailItem 
-//                   icon={<MessageSquare size={16} />} 
-//                   label={t('reservations.tableHeaders.comment')} 
-//                   value={reservation.commenter} 
-//                   isDarkMode={isDarkMode} 
-//                 />
-//               )}
-//               {reservation.internal_note && (
-//                 <DetailItem 
-//                   icon={<Info size={16} />} 
-//                   label={t('reservations.edit.informations.internalNote')} 
-//                   value={reservation.internal_note} 
-//                   isDarkMode={isDarkMode} 
-//                 />
-//               )}
-//             </div>
-//           </td>
-//         </tr>
-//       )}
-//     </>
-//   );
-// };
-
-// // LoadingRow Component
-// const LoadingRow: React.FC<LoadingRowProps> = ({ isDarkMode }) => {
-//   return (
-//     <tr>
-//       <td className="px-6 py-4 whitespace-nowrap">
-//         <div className={`h-4 rounded w-3/4 ${isDarkMode ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
-//       </td>
-//       <td className="px-6 py-4">
-//         <div className="flex flex-col gap-2">
-//           <div className={`h-5 rounded w-1/3 ${isDarkMode ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
-//           <div className={`h-4 rounded w-3/4 ${isDarkMode ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
-//         </div>
-//       </td>
-//       <td className="px-6 py-4 whitespace-nowrap">
-//         <div className={`h-6 rounded-full w-24 ${isDarkMode ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
-//       </td>
-//       <td className="px-6 py-4 whitespace-nowrap flex justify-center">
-//         <div className={`h-8 w-8 rounded-full ${isDarkMode ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
-//       </td>
-//     </tr>
-//   )
-// }
 
 // ReservationTable Component
 const ReservationTable: React.FC<ReservationTableProps> = ({ 
@@ -897,7 +727,7 @@ const ReservationsPage: React.FC = () => {
   });
   
   // Data fetching
-  const { data, isLoading, error } = useList({
+  const { data, isLoading, error, refetch: refetchReservations } = useList({
     resource: "api/v1/bo/reservations/",
     filters: [
       { field: "page", operator: "eq", value: page },
@@ -1104,6 +934,10 @@ const ReservationsPage: React.FC = () => {
             "X-Restaurant-ID": 1,
           },
         },
+      },{
+        onSuccess(){
+          refetchReservations();
+        }
       });
     }
     setShowModal(false);
@@ -1196,7 +1030,7 @@ const ReservationsPage: React.FC = () => {
       {showAddReservation && (
         <ReservationModal 
           onClick={() => {setShowAddReservation(false)}} 
-          onSubmit={(data) => {setReservations([...reservations, data])}} 
+          onSubmit={(data) => {refetchReservations()}} 
         />
       )} 
 
@@ -1217,11 +1051,11 @@ const ReservationsPage: React.FC = () => {
       />
 
       {/* Page Header */}
-      <div className='flex justify-between mb-4'>
+      <div className='flex justify-between mb-4 lt-sm:flex-col lt-sm:gap-2'>
         <h1 className={`text-3xl text-blacktheme font-[700] ${isDarkMode ? 'text-whitetheme' : 'text-blacktheme'}`}>
           {t('reservations.title')}
         </h1>
-        <div className="flex gap-4">
+        <div className="flex gap-4 justify-end">
           <CanAccess action="add" resource="reservation">
             <button className='btn-primary' onClick={() => {setShowAddReservation(true)}}>
               {t('reservations.buttons.addReservation')}
@@ -1234,8 +1068,8 @@ const ReservationsPage: React.FC = () => {
       </div>
 
       {/* Search and Filters */}
-      <div className="flex lt-sm:flex-col lt-sm:gap-2 justify-between">
-        <div className="">
+      <div className="flex lt-xl:flex-col lt-xl:gap-2 justify-between">
+        <div className="md-only:w-[50%] lg-only:w-[50%]" >
           <SearchBar SearchHandler={searchFilter} />
         </div>
         <ReservationFilters
@@ -1249,7 +1083,7 @@ const ReservationsPage: React.FC = () => {
       </div>
 
       {/* Reservations Table */}
-      <div className='mt-4 lt-sm:overflow-x-scroll'>
+      <div className='mt-4 overflow-x-auto max-w-full'>
         <ReservationTable
           isLoading={isLoading}
           filteredReservations={filteredReservations}

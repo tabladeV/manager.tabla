@@ -125,12 +125,14 @@ const RootLayout = () => {
       <div className="sm:hidden">
         <NavigationMenu stateOfSideBar={stateOfSideBar} handleSideBar={() => { setStateOfSideBar(!stateOfSideBar) }} />
       </div>
-      <div className="h-full lt-sm:hidden">
-        <Logo className={stateOfSideBar ? 'horizontal' : ''} />
+      <div className={`h-full lt-sm:hidden transition-all duration-300 ease-in-out ${stateOfSideBar ? 'w-[300px]' : 'w-[100px]'}`}>
+        <div className="transition-all duration-300 ease-in-out">
+          <Logo className={stateOfSideBar ? 'horizontal' : ''} />
+        </div>
         <NavigationMenu stateOfSideBar={stateOfSideBar} handleSideBar={() => { setStateOfSideBar(!stateOfSideBar) }} />
       </div>
 
-      <div className="w-full">
+      <div className={`transition-all duration-300 ease-in-out lt-sm:w-full ${stateOfSideBar ? 'gt-sm:w-[calc(100%-300px)]' : 'gt-sm:w-[calc(100%-100px)]'}`}>
         <header className='h-[80px] items-center flex justify-between px-6 lt-sm:px-2'>
           <div className="sm:hidden"><Logo /></div>
           <button className={`lt-sm:hidden z-10 p-2 rounded-md ${localStorage.getItem('darkMode') === 'true' ? 'hover:bg-subblack' : 'hover:bg-softgreytheme'}`} onClick={() => { setStateOfSideBar(!stateOfSideBar) }}>
