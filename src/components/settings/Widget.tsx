@@ -322,8 +322,11 @@ export default function WidgetConfig() {
         >
           {t('settingsPage.widget.buttons.save')}
         </button>
-        <Link to={`https://${subdomain}.dev.tabla.ma/make/reservation`} target="_blank" className="btn-secondary w-1/2 text-center">
-          {t('settingsPage.widget.buttons.preview')}
+        <Link to={`https://${subdomain}.dev.tabla.ma/make/reservation`} target="_blank" className="btn-secondary w-1/4 text-center">
+          {t('settingsPage.widget.buttons.preview')} Reservation
+        </Link>
+        <Link to={`https://${subdomain}.dev.tabla.ma/make/modification/test`} target="_blank" className="btn-secondary w-1/4 text-center">
+          {t('settingsPage.widget.buttons.preview')} Modification
         </Link>
       </div>
     </div>
