@@ -44,10 +44,10 @@ const DateSelection = () => {
             )}
 
             {/* Date Selection Controls */}
-            <div className={`  flex ml-[0vw] gap-4 lt-sm:m-0 btn border-[#00000030] ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme2 text-textdarktheme':''}`}>
+            <div className={`  flex ml-[0vw] gap-4 lt-sm:m-0 lt-lg:gap-2 btn border-[#00000030] ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme2 text-textdarktheme':''}`}>
                 {/* Previous Day Button */}
                 <button
-                    className={`p-1 w-8 rounded-[10px]  hidden md:block ${localStorage.getItem('darkMode')=== 'true'? 'hover:bg-bgdarktheme':'hover:bg-softgreytheme'}`}
+                    className={`p-1 w-6 rounded-[10px]  hidden md:block ${localStorage.getItem('darkMode')=== 'true'? 'hover:bg-bgdarktheme':'hover:bg-softgreytheme'}`}
                     onClick={getPreviousDay}
                 >
                     {"<"}
@@ -63,7 +63,7 @@ const DateSelection = () => {
 
                 {/* Next Day Button */}
                 <button
-                    className={`p-1 w-8 rounded-[10px]  hidden md:block ${localStorage.getItem('darkMode')=== 'true'? 'hover:bg-bgdarktheme':'hover:bg-softgreytheme'}`}
+                    className={`p-1 w-6 rounded-[10px]  hidden md:block ${localStorage.getItem('darkMode')=== 'true'? 'hover:bg-bgdarktheme':'hover:bg-softgreytheme'}`}
                     onClick={getNextDay}
                 >
                     {">"}

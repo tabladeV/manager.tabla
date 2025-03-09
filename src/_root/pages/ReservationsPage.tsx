@@ -41,6 +41,7 @@ interface Reservation extends BaseRecord {
   guests?: number;
   floor_name?: string;
   table_name?: string;
+  loading?: boolean;
 }
 
 interface Table {
@@ -88,6 +89,7 @@ interface StatusModifierProps {
 
 interface ReservationStatusLabelProps {
   status: string;
+  loading: boolean;
 }
 
 interface DetailItemProps {
@@ -260,7 +262,7 @@ const StatusModifier: React.FC<StatusModifierProps> = ({
 }
 
 // ReservationStatusLabel Component
-const ReservationStatusLabel: React.FC<ReservationStatusLabelProps> = ({ status }) => {
+const ReservationStatusLabel: React.FC<ReservationStatusLabelProps> = ({ status, loading }) => {
   const { t } = useTranslation();
   const statusStyles = statusStyle(status)
   let statusText = ''
@@ -289,9 +291,11 @@ const ReservationStatusLabel: React.FC<ReservationStatusLabelProps> = ({ status 
   }
 
   return (
-    <span className={`${statusStyles} text-center py-[.1em] px-3 rounded-[10px]`}>
+    <>
+    {loading?<div className={`h-4 w-[100px] rounded-full dark:bg-darkthemeitems bg-gray-300`}></div>:<span className={`${statusStyles} text-center py-[.1em] px-3 rounded-[10px]`}>
       {statusText}
-    </span>
+    </span>}
+    </>
   )
 }
 
@@ -306,7 +310,7 @@ const DetailItem: React.FC<DetailItemProps> = ({ icon, label, value, isDarkMode 
       </div>}
       {label && <span className="font-medium">{label}:</span>
       }
-      <span>{value}</span>
+      <p>{value}</p>
     </div>
   );
 };
@@ -344,10 +348,10 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
   const { t } = useTranslation();
   return (
     <tr key={reservation.id} className="opacity-80 hover:opacity-100">
-      <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>
+      <td className="px-3 py-2 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>
         {reservation.id}
       </td>
-      <td className="px-3 py-4 cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>
+      <td className="px-3 py-2 cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>
         <div className="flex flex-col">
           {/* Name */}
           <div className="flex items-center gap-2 font-medium">
@@ -386,15 +390,13 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
               <Users size={14} className={isDarkMode ? 'text-gray-400' : 'text-gray-500'} />
               <span>{reservation.number_of_guests} guests</span>
             </div>
-            
-            {(reservation.tables && reservation.tables.length > 0) && (
-              <div className="flex items-center gap-1 text-gray-500">
+          </div>
+          {(reservation.tables && reservation.tables.length > 0) && (
+              <div className="flex items-center gap-1 text-gray-500 text-sm mt-1">
                 <LayoutGrid size={14} className={isDarkMode ? 'text-gray-400' : 'text-gray-500'} />
-                <span>{reservation.tables[0].name}</span>
+                <span>{reservation.tables?.map(table=>table.name).join()}</span>
               </div>
             )}
-          </div>
-          
           {/* Comment if available */}
           {reservation.commenter && (
             <div className="flex items-start gap-1 mt-1 text-sm text-gray-500">
@@ -405,7 +407,7 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
         </div>
       </td>
       
-      <td className="px-3 py-4 whitespace-nowrap" onClick={() => EditClient(reservation.id)}>
+      <td className="px-3 py-2 max-w-40" onClick={() => EditClient(reservation.id)}>
         {reservation.internal_note && (
           <DetailItem
             icon={<Info size={16} />}
@@ -415,8 +417,8 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
           />
         )}
       </td>
-      <td className="px-3 py-4 whitespace-nowrap" onClick={() => showStatusModification(reservation.id)}>
-        <ReservationStatusLabel status={reservation.status} />
+      <td className="px-3 py-2 whitespace-nowrap" onClick={() => showStatusModification(reservation.id)}>
+        <ReservationStatusLabel status={reservation.status} loading={reservation.loading as boolean} />
         
         <StatusModifier
           showStatus={showStatus}
@@ -953,19 +955,25 @@ const ReservationsPage: React.FC = () => {
 
   const statusHandler = (status: string): void => {
     setReservations(reservations.map(r => 
-      r.id === idStatusModification ? {...r, status} : r
+      r.id === idStatusModification ? {...r, loading: true} : r
     ));
 
     upDateReservation({
       id: `${idStatusModification}/`,
       values: {
         status: status
+      }
+    },{
+      onSuccess(){
+        setReservations(reservations.map(r => 
+          r.id === idStatusModification ? {...r, status, loading: false} : r
+        ));
       },
-      meta: {
-        headers: {
-          "X-Restaurant-ID": 1,
-        },
-      },
+      onError(){
+        setReservations(reservations.map(r => 
+          r.id === idStatusModification ? {...r, loading: false} : r
+        ));
+      }
     });
   };
 

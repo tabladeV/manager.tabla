@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import ReservationProcess from './ReservationProcess';
 import { ArrowLeft, User } from 'lucide-react';
 import { BaseKey, BaseRecord, useCreate, useList } from '@refinedev/core';
+import BaseBtn from '../common/BaseBtn';
 
 interface Reservation extends BaseRecord {
     id: BaseKey;
@@ -88,7 +89,7 @@ const ReservationModal = (props: ReservationModalProps) => {
 
   });
 
-  const { mutate } = useCreate({
+  const { mutate, isLoading: loadingCreatReservation } = useCreate({
     resource: 'api/v1/bo/reservations/',
 
     mutationOptions: {
@@ -210,9 +211,13 @@ const ReservationModal = (props: ReservationModalProps) => {
         restaurant: 1,
         customer: selectedClient?.id,
       },
+    },{
+      onSuccess(data){
+        props.onClick();
+        props.onSubmit(reservationData);
+      }
     });
 
-    props.onClick();
     // window.location.reload();
   };
 
@@ -475,9 +480,9 @@ const ReservationModal = (props: ReservationModalProps) => {
             {data.time === '' ? <div>Time</div> : <span>{data.time}</span>}
             {data.guests === 0 ? <div>Guests</div> : <span>{data.guests}</span>}
           </div>
-          <button type="submit" className="btn-primary" disabled={disabledButton2}>
+          <BaseBtn type="submit" loading={loadingCreatReservation} disabled={disabledButton2}>
             {t('grid.buttons.addReservation')}
-          </button>
+          </BaseBtn>
         </form>
       )}
     </div>

@@ -126,7 +126,7 @@ const UserBar = () => {
         </div>
       )}
 
-      <div className='flex gap-3 items-center'>
+      <div className='flex gap-2 items-center'>
         <button className={`bg-[#88AB6115]  w-[40px] h-[40px] flex justify-center items-center rounded-[100%]  lt-sm:hidden ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme2':''}`} onClick={toggleFullscreen}>
           {!fullScreen?<Fullscreen size={40} className={`lt-sm:hidden z-10 p-2 rounded-md  `}  />
           :<Minimize size={40} className={`lt-sm:hidden z-10 p-2 rounded-md  `}  />}

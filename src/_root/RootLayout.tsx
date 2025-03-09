@@ -133,7 +133,7 @@ const RootLayout = () => {
       </div>
 
       <div className={`transition-all duration-300 ease-in-out lt-sm:w-full ${stateOfSideBar ? 'gt-sm:w-[calc(100%-300px)]' : 'gt-sm:w-[calc(100%-100px)]'}`}>
-        <header className='h-[80px] items-center flex justify-between px-6 lt-sm:px-2'>
+        <header className='h-[80px] items-center flex justify-between gap-1 px-6 lt-sm:px-2'>
           <div className="sm:hidden"><Logo /></div>
           <button className={`lt-sm:hidden z-10 p-2 rounded-md ${localStorage.getItem('darkMode') === 'true' ? 'hover:bg-subblack' : 'hover:bg-softgreytheme'}`} onClick={() => { setStateOfSideBar(!stateOfSideBar) }}>
             {stateOfSideBar ?
@@ -146,30 +146,30 @@ const RootLayout = () => {
               </svg>
             }
           </button>
-          <div className="flex gap-4 lt-sm:hidden">
+          <div className="flex gap-1 gt-md:gap-4 lt-sm:hidden">
             <div className="flex items-center gap-2 btn border-softbluetheme cursor-default hover:border-bluetheme text-bluetheme">
               {localStorage.getItem('darkMode') === 'true' ?
-                <img src={pendingDark} alt="pending" className="w-6 h-6" />
+                <img src={pendingDark} alt="pending" className="w-5 h-5 lt-lg:h-4 lt-lg:w-4" />
                 :
-                <img src={pending} alt="pending" className="w-6 h-6" />
+                <img src={pending} alt="pending" className="w-5 h-5 lt-lg:h-4 lt-lg:w-4" />
               }
-              <span className="text-[1.6rem] font-[600]">{actions[0].count}</span>
+              <span className="text-[1.6rem] lt-lg:text-[1rem] font-[600]">{actions[0].count}</span>
             </div>
             <div className="flex items-center gap-2 btn border-softgreentheme cursor-default hover:border-greentheme text-greentheme">
               {localStorage.getItem('darkMode') === 'true' ?
-                <img src={confirmDark} alt="confirm" className="w-6 h-6" />
+                <img src={confirmDark} alt="confirm" className="w-5 h-5 lt-lg:h-4 lt-lg:w-4" />
                 :
-                <img src={confirm} alt="confirm" className="w-6 h-6" />
+                <img src={confirm} alt="confirm" className="w-5 h-5 lt-lg:h-4 lt-lg:w-4" />
               }
-              <span className="text-[1.6rem] font-[600]">{actions[1].count}</span>
+              <span className="text-[1.6rem] lt-lg:text-[1rem] font-[600]">{actions[1].count}</span>
             </div>
             <div className="flex items-center gap-2 btn border-softredtheme cursor-default hover:border-redtheme text-redtheme">
               {localStorage.getItem('darkMode') === 'true' ?
-                <img src={cancelDark} alt="cancel" className="w-6 h-6" />
+                <img src={cancelDark} alt="cancel" className="w-5 h-5 lt-lg:h-4 lt-lg:w-4" />
                 :
-                <img src={cancel} alt="cancel" className="w-6 h-6" />
+                <img src={cancel} alt="cancel" className="w-5 h-5 lt-lg:h-4 lt-lg:w-4" />
               }
-              <span className="text-[1.6rem] font-[600]">{actions[2].count}</span>
+              <span className="text-[1.6rem] lt-lg:text-[1rem] font-[600]">{actions[2].count}</span>
             </div>
           </div>
 

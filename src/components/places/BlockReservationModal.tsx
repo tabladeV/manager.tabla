@@ -36,7 +36,7 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
     resource: "api/v1/bo/reservations/pauses/",
     queryOptions: {
       onSuccess(data) {
-        setBlockedReservations(data?.data?.results as unknown as any[]);
+        setBlockedReservations(data?.data as unknown as any[]);
       }
     }
   });
@@ -54,7 +54,7 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
   const [selectedDate, setSelectedDate] = useState(today);
   const [startBlockTime, setStartBlockTime] = useState<string | null>(format(new Date(), 'HH:00'));
   const [endBlockTime, setEndBlockTime] = useState<string | null>(null);
-  const [blockType, setBlockType] = useState<'ALL' | 'FLOOR' | 'TABLE'>('ALL');
+  const [blockType, setBlockType] = useState<'ALL' | 'FLOOR'>('ALL');
   const [selectedFloor, setSelectedFloor] = useState<string[]>([]);
   const [selectedTable, setSelectedTable] = useState<string[]>([]);
   const [blockOnline, setBlockOnline] = useState(true);
@@ -104,7 +104,7 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
       floor_id: selectedFloor,
       table_id: selectedTable,
       block_online: blockOnline,
-      block_back_office: blockInHouse
+      block_backoffice: blockInHouse
     };
 
     createReservationPause({
@@ -133,7 +133,7 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
       onSuccess: () => {
         // Filter out the deleted item from the local state
         setBlockedReservations(
-          blockedReservations.filter((item: any) => item.id !== id)
+          blockedReservations?.results.filter((item: any) => item.id !== id)
         );
       },
       onError: (error) => {
@@ -153,11 +153,7 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
       }
 
       if (blockType === 'FLOOR') {
-        return selectedFloor.length > 0 && isAtleastOneOptionSelected;
-      }
-
-      if (blockType === 'TABLE') {
-        return (selectedTable.length > 0 || selectedFloor.length > 0) && isAtleastOneOptionSelected;
+        return (selectedTable?.length || selectedFloor?.length) && isAtleastOneOptionSelected;
       }
 
       return false;
@@ -181,9 +177,9 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
 
   // Helper to get reservation channel
   const getReservationChannel = (block: any) => {
-    if (block.block_online && block.block_back_office) return 'Online & In-house';
+    if (block.block_online && block.block_backoffice) return 'Online & Back-Office';
     if (block.block_online) return 'Online only';
-    if (block.block_back_office) return 'In-house only';
+    if (block.block_backoffice) return 'Back-Office only';
     return '';
   };
 
@@ -279,45 +275,20 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
               >
                 Floor
               </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setBlockType('TABLE');
-                  setSelectedFloor([]);
-                  setSelectedTable([]);
-                }}
-                className={`px-3 py-1.5 text-sm rounded-md ${blockType === 'TABLE'
-                    ? 'btn-primary text-white'
-                    : darkMode ? 'bg-darkthemeitems' : 'bg-gray-100'
-                  }`}
-              >
-                Table
-              </button>
             </div>
 
-            {/* Conditional floor/table selector */}
             {blockType === 'FLOOR' && (
-              <div className="mb-3">
-                <BaseSelect loading={isLoadingFloors} 
-                    label='SELECT FLOOR'
-                    options={mappedFloors()}
-                    multiple
-                    error={!selectedFloor?.length}
-                    hint="This field is required"
-                    onChange={(val) => setSelectedFloor(val as string[])}
-                    chips={true}
-                  />
-              </div>
-            )}
-
-            {blockType === 'TABLE' && (
               <>
                 <div className="mb-3">
                   <BaseSelect loading={isLoadingFloors} 
                     label='SELECT FLOOR'
                     options={mappedFloors()}
                     multiple
-                    onChange={(val) => setSelectedFloor(val as string[])}
+                    value={selectedFloor}
+                    onChange={(val) => {
+                      setSelectedFloor(val as string[]);
+                      setSelectedTable([])
+                    }}
                     chips={true}
                   />
                 </div>
@@ -327,6 +298,7 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
                     label='SELECT TABLE'
                     options={filteredTables()}
                     multiple
+                    value={selectedTable}
                     onChange={(val) => setSelectedTable(val as string[])}
                     chips={true}
                   />
@@ -365,7 +337,7 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
         </div>
 
         {/* Currently blocked section */}
-        <div className="p-4 border-t border-gray-200 mt-4">
+        <div className="border-t border-gray-200 mt-4">
           <h3 className="text-sm font-semibold uppercase text-gray-500 mb-3">
             CURRENTLY BLOCKED RESERVATIONS
           </h3>
@@ -373,13 +345,13 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
           {/* Blocked reservations list */}
           {loadingReservationPauses ? (
             <div className="text-sm text-center py-4">Loading...</div>
-          ) : !blockedReservations?.length ? (
+          ) : !blockedReservations?.results?.length ? (
             <div className="text-sm text-gray-500 text-center py-4">
               No blocked reservations for this date
             </div>
           ) : (
-            <div className="space-y-2 max-h-64 overflow-y-auto">
-              {blockedReservations.map((block: any) => (
+            <div className="space-y-2 max-h-80 overflow-y-auto bg-[#F6F6F6] dark:bg-bgdarktheme2 p-2">
+              {blockedReservations?.results.map((block: any) => (
                 <div 
                   key={block.id} 
                   className={`p-2 rounded-md text-sm ${darkMode ? 'bg-darkthemeitems' : 'bg-gray-50'} flex justify-between items-center`}
@@ -387,23 +359,30 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
                   <div className="flex-1">
                     <div className="flex justify-between">
                       <span className="font-medium">
-                        {block.start_time} - {block.end_time}
+                        {block.date}
                       </span>
                       <span className={`text-xs px-2 py-0.5 rounded-full ${
-                        block.block_online && block.block_back_office 
+                        block.block_online && block.block_backoffice 
                           ? 'bg-red-100 text-red-800' 
                           : 'bg-yellow-100 text-yellow-800'
                       }`}>
                         {getReservationChannel(block)}
                       </span>
                     </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium">
+                        {block.start_time?.replace(':00','')} - {block.end_time?.replace(':00','')}
+                      </span>
+                    </div>
                     <div className="text-xs text-gray-500 mt-1">
                       {getBlockTypeLabel(block)}
-                      {block.block_type === 'FLOOR' && block.floor_id?.length > 0 && (
-                        <span> - {block.floor_id.join(', ')}</span>
-                      )}
-                      {block.block_type === 'TABLE' && block.table_id?.length > 0 && (
-                        <span> - {block.table_id.join(', ')}</span>
+                      {block.block_type === 'FLOOR' && (
+                        <>
+                          {block.floor_id?.length > 0 && (<span> - {block.floor_id.join(', ')}</span>)}
+                          {block.table_id?.length > 0 && (
+                            <span> - {block.table_id.join(', ')}</span>
+                          )}
+                        </>
                       )}
                     </div>
                   </div>

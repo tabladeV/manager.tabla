@@ -148,7 +148,7 @@ const BaseSelect: React.FC<SelectProps> = ({
 
   return (
     <div 
-      className={`relative w-full max-w-md ${disabled ? 'opacity-50 pointer-events-none' : ''}`}
+      className={`relative w-full ${disabled ? 'opacity-50 pointer-events-none' : ''}`}
       ref={selectRef}
     >
       {/* Label */}
