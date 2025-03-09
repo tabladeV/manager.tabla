@@ -6,35 +6,44 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { addHours, format, parse } from 'date-fns';
 import { useDateContext } from '../../context/DateContext';
-import { BaseKey, BaseRecord, CanAccess, useList } from '@refinedev/core';
+import { BaseKey, BaseRecord, CanAccess, useList, useUpdate } from '@refinedev/core';
 import DraggableItem from '../../components/places/DraggableItem';
 import DropTarget from '../../components/places/DropTarget';
 import SearchBar from '../../components/header/SearchBar';
 import ZoomControls from '../../components/places/ZoomControls';
 import Pagination from '../../components/reservation/Pagination';
 import BlockReservationModal from '../../components/places/BlockReservationModal';
+import EditReservationModal from '../../components/reservation/EditReservationModal';
+import ReservationProcess from '../../components/reservation/ReservationProcess';
 import { Ban } from 'lucide-react';
+import DraggableItemSkeleton from '../../components/places/DraggableItemSkeleton';
+import { ReservationStatus } from '../../components/common/types/Reservation';
 
 interface ReservationType {
-    
   results: Reservation[]
   count: number
-  
 }
 
-interface Reservation {
+export interface Reservation {
   id: BaseKey;
   full_name: string;
   time: string;
   date: string;
-  status: "PENDING" | "APPROVED" | "SEATED" | "CANCELED";
+  email?: string;
+  phone?: string;
+  status: ReservationStatus;
   number_of_guests: number;
   occasion?: string;
   created_at: string;
   tables: TableType[];
+  source?: string;
+  internal_note?: string;
+  commenter?: string;
+  allergies?: string;
+  loading?: boolean;
 }
 
-interface currentResType {
+export interface currentResType {
   id: BaseKey;
   full_name: string;
   time: string;
@@ -44,7 +53,7 @@ interface currentResType {
   number_of_guests: number;
 }
 
-interface TableType {
+export interface TableType {
   id: BaseKey;
   name: string;
   type: 'CIRCLE' | 'RECTANGLE';
@@ -57,6 +66,22 @@ interface TableType {
   max: number;
   min: number;
   current_reservations: currentResType[];
+}
+
+interface Table {
+  id: BaseKey;
+  floor_name: string;
+  name: string;
+  max: number;
+  min: number;
+  rotation: number;
+  floor: number;
+}
+
+interface DataTypes {
+  reserveDate: string;
+  time: string;
+  guests: number;
 }
 
 function isTouchDevice() {
@@ -93,16 +118,24 @@ const PlacePage: React.FC = () => {
   // Data fetching with useList
   const { data, isLoading, error } = useList({
     resource: "api/v1/bo/floors/",
+    queryOptions: {
+      keepPreviousData: false,
+    }
   });
 
-  const { data: tablesData, isLoading: isLoadingTables, error: errorTables, refetch: refreshTables } = useList({
+  const { data: tablesData, isLoading:isLoadingTables,error: errorTables, refetch: refreshTables } = useList({
     resource: "api/v1/bo/tables/tables_reservations/",
     filters: [
       { field: "reservations__date", operator: "eq", value: format(chosenDay, 'yyyy-MM-dd') },
       { field: "reservations__time_", operator: "gte", value: time },
       { field: "reservations__time_", operator: "lte", value: newTimeString + ':00' },
     ],
+    queryOptions: {
+      keepPreviousData: false,
+    }
   });
+
+  // We've removed the availableTablesData fetching since it's now handled inside the EditReservationModal
 
   const [page, setPage] = useState(1);
   const { data: reservationsData, isLoading: isLoadingReservations, error: errorReservations, refetch: refetchReservations } = useList({
@@ -113,6 +146,9 @@ const PlacePage: React.FC = () => {
       { field: "time_", operator: "gte", value: time },
       { field: "time_", operator: "lte", value: newTimeString },
     ],
+    queryOptions: {
+      keepPreviousData: false,
+    }
   });
 
   // Local state for data
@@ -121,13 +157,41 @@ const PlacePage: React.FC = () => {
   const [tables, setTables] = useState<TableType[]>([]);
   const [focusedRoof, setFocusedRoof] = useState<BaseKey | undefined>(undefined);
   const [floorId, setFloorId] = useState<BaseKey | undefined>(0);
-  const [reservationAPIInfo, setReservationAPIInfo] =useState<ReservationType>()
-  const [showBlockingModal, setShowBlockingModal] =useState(false)
+  const [reservationAPIInfo, setReservationAPIInfo] = useState<ReservationType>()
+  const [showBlockingModal, setShowBlockingModal] = useState(false);
+
+  // Edit Reservation Modal state
+  const [showModal, setShowModal] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Reservation | null>(null);
+  const [showProcess, setShowProcess] = useState(false);
+  const [hasTable, setHasTable] = useState(false);
+  const [editingClient, setEditingClient] = useState<BaseKey | undefined>(undefined);
+  const [reservationProgressData, setReservationProgressData] = useState<DataTypes>({
+    reserveDate: selectedClient?.date || '',
+    time: selectedClient?.time?.slice(0, 5) || '',
+    guests: selectedClient ? parseInt(String(selectedClient.number_of_guests)) : 0
+  });
+
+  // Update reservationProgressData when selectedClient changes
+  useEffect(() => {
+    if (selectedClient) {
+      setReservationProgressData({
+        reserveDate: selectedClient.date,
+        time: selectedClient.time.slice(0, 5),
+        guests: parseInt(String(selectedClient.number_of_guests))
+      });
+    }
+  }, [selectedClient]);
+
+  // Mutation
+  const { mutate: upDateReservation } = useUpdate({
+    resource: `api/v1/bo/reservations`,
+  });
 
   // When fetched data changes, update local state
   useEffect(() => {
     setReservations(reservationAPIInfo?.results as Reservation[] || [])
-  },[reservationAPIInfo])
+  }, [reservationAPIInfo])
   useEffect(() => {
     if (reservationsData?.data) {
       setReservationAPIInfo(reservationsData.data as unknown as ReservationType);
@@ -154,9 +218,9 @@ const PlacePage: React.FC = () => {
   }, [focusedRoof, roofData]);
 
 
-  useEffect(()=>{
+  useEffect(() => {
     handleFocusAll();
-  },[floorId])
+  }, [floorId])
 
   // Reservation search and filtering
   const [searchResults, setSearchResults] = useState<Reservation[]>(reservations);
@@ -204,7 +268,7 @@ const PlacePage: React.FC = () => {
   }, [scale, translate, clampScale]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if((e.target as HTMLElement)?.id !== "tables-cont") return;
+    if ((e.target as HTMLElement)?.id !== "tables-cont") return;
     e.preventDefault();
     setIsPanning(true);
     setLastPanPosition({ x: e.clientX, y: e.clientY });
@@ -224,6 +288,7 @@ const PlacePage: React.FC = () => {
   }, []);
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if ((e.target as HTMLElement)?.id !== "tables-cont") return;
     if (e.touches.length === 1) {
       setLastPanPosition({ x: e.touches[0].clientX, y: e.touches[0].clientY });
     } else if (e.touches.length === 2) {
@@ -335,30 +400,118 @@ const PlacePage: React.FC = () => {
     { id: 22, time: '21:00' }, { id: 23, time: '22:00' }, { id: 24, time: '23:00' }
   ]), []);
 
+  // Handle edit reservation
+  const handleEditReservation = (id: BaseKey) => {
+    setEditingClient(id);
+    if (!id) return;
+
+    // Find the reservation by id
+    const reservation = reservations.find(r => r.id === id);
+    if (reservation) {
+      setSelectedClient(reservation);
+      setShowModal(true);
+
+      // Check if the reservation has tables
+      if (reservation.tables && reservation.tables.length > 0) {
+        setHasTable(true);
+      } else {
+        setHasTable(false);
+      }
+    }
+  };
+
+  // Handle status change
+  const statusHandler = (status: ReservationStatus) => {
+    if (selectedClient) {
+      setSelectedClient({
+        ...selectedClient,
+        status: status,
+        loading: true
+      });
+    }
+  };
+
+  // Handle update reservation
+  const handleUpdateReservation = (reservation: Reservation) => {
+    if (selectedClient && editingClient) {
+      upDateReservation({
+        id: `${editingClient}/`,
+        values: {
+          full_name: reservation.full_name,
+          email: reservation.email,
+          phone: reservation.phone,
+          source: reservation.source,
+          status: reservation.status,
+          internal_note: reservation.internal_note,
+          date: reservationProgressData.reserveDate,
+          time: `${reservationProgressData.time}:00`,
+          tables: reservation.tables?.length ?  reservation.tables?.map(t=>t?.id? Number(t?.id):t) : [],
+          number_of_guests: reservationProgressData.guests,
+          commenter: reservation.commenter,
+        },
+        meta: {
+          headers: {
+            "X-Restaurant-ID": 1,
+          },
+        },
+      }, {
+        onSuccess() {
+          // Refresh data
+          refetchReservations();
+          refreshTables();
+          setShowModal(false);
+        }
+      });
+    }
+  };
+
   return (
     <div className=''>
-      { showBlockingModal && <BlockReservationModal onConfirm={(data)=>console.log(data)} onClose={()=> setShowBlockingModal(false)}/> }
+      {showBlockingModal && <BlockReservationModal onConfirm={(data) => console.log(data)} onClose={() => setShowBlockingModal(false)} />}
+
+      {/* Reservation Process Modal */}
+      {showProcess && (
+        <ReservationProcess
+          onClick={() => { setShowProcess(false) }}
+          getDateTime={(data) => { setReservationProgressData(data) }}
+        />
+      )}
+
+      {/* Edit Reservation Modal */}
+      {showModal && <EditReservationModal
+        showModal={showModal}
+        reservation={selectedClient}
+        setShowModal={setShowModal}
+        setShowProcess={setShowProcess}
+        reservationProgressData={reservationProgressData}
+        statusHandler={statusHandler}
+        upDateHandler={handleUpdateReservation}
+        hasTable={hasTable}
+        setHasTable={setHasTable}
+        isDarkMode={darkMode}
+      />}
+
       <div className='flex w-full justify-between mb-2'>
         <h1 className='text-3xl font-[700]'>{t('placeManagement.title')}</h1>
         <div className='flex gap-2'>
-        <CanAccess 
-          resource="floor"
-          action="change">
-          <Link to='/places/design' className='btn-primary flex gap-2 items-center lt-sm:hidden'>
-            {t('placeManagement.buttons.designPlace')}
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path d="M20.71 7.04c.39-.39.39-1.03 0-1.42l-2.34-2.34c-.39-.39-1.03-.39-1.42 0l-1.84 1.84 3.75 3.75zM3 17.25v3.75h3.75l11.06-11.06-3.75-3.75L3 17.25z" fill="white" />
-            </svg>
-          </Link>
-        </CanAccess>
-        <CanAccess 
-          resource="reservation"
-          action="change">
-          <button className='btn-danger-outline flex gap-1 items-center' onClick={()=>setShowBlockingModal(true)}>
-            <Ban size={18}/>
-            Block
-          </button>
-        </CanAccess>
+          <CanAccess
+            resource="floor"
+            action="change">
+            <Link to='/places/design' className='btn-primary flex gap-2 items-center lt-sm:hidden'>
+              {t('placeManagement.buttons.designPlace')}
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M20.71 7.04c.39-.39.39-1.03 0-1.42l-2.34-2.34c-.39-.39-1.03-.39-1.42 0l-1.84 1.84 3.75 3.75zM3 17.25v3.75h3.75l11.06-11.06-3.75-3.75L3 17.25z" fill="white" />
+              </svg>
+            </Link>
+          </CanAccess>
+          <CanAccess
+            resource="reservation"
+            action="change">
+            <button className='btn-danger-outline flex gap-1 items-center' onClick={() => setShowBlockingModal(true)}>
+              <Ban size={18} />
+              Block
+            </button>
+          </CanAccess>
         </div>
       </div>
 
@@ -378,25 +531,47 @@ const PlacePage: React.FC = () => {
               </button>
             </div>
             <div className='overflow-y-auto h-[55vh] bar-hide'>
-              {filteredReservations.map(item => (
-                <DraggableItem itemData={item} key={item.id} />
-              ))}
+              
+              {isLoadingReservations?
+              <DraggableItemSkeleton count={3} isDarkMode={darkMode} />
+              :(filteredReservations.map(item => (
+                <DraggableItem
+                  itemData={{
+                    ...item,
+                    onEdit: handleEditReservation,
+                    loading: item.loading ?? false
+                  }}
+                  key={item.id}
+                />
+              )))}
             </div>
-            <Pagination setPage={(p: number) => setPage(p)} size={20} count={0} />
+            <Pagination setPage={(p: number) => setPage(p)} size={20} count={reservationAPIInfo?.count || 0} />
           </div>
 
           <div className='w-full sm:overflow-auto'>
             <div className='flex lt-sm:flex-wrap lt-sm:gap-2 justify-between'>
               <div className='flex gap-2 w-[90%] overflow-x-scroll no-scrollbar'>
-                {roofData.map(roof => (
-                  <button
-                    key={roof.id}
-                    className={`flex items-center ${focusedRoof === roof.id ? 'btn-primary' : 'btn-secondary'}`}
-                    onClick={() => setFocusedRoof(roof.id)}
-                  >
-                    {roof.name}
-                  </button>
-                ))}
+                {isLoading ? (
+                  // Floor buttons skeleton loader
+                  <div className="flex gap-2 animate-pulse">
+                    {[1, 2, 3].map((_, index) => (
+                      <div
+                        key={index}
+                        className={`h-9 w-24 rounded-md ${darkMode ? 'bg-darkthemeitems' : 'bg-gray-300'}`}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  roofData.map(roof => (
+                    <button
+                      key={roof.id}
+                      className={`flex items-center ${focusedRoof === roof.id ? 'btn-primary' : 'btn-secondary'}`}
+                      onClick={() => setFocusedRoof(roof.id)}
+                    >
+                      {roof.name}
+                    </button>
+                  ))
+                )}
               </div>
               <div>
                 <select
@@ -415,54 +590,76 @@ const PlacePage: React.FC = () => {
             </div>
 
             {/* Tables Container with Zoom and Pan */}
-            <div
-              className={`tables-cont relative mt-1 lt-sm:overflow-x-auto overflow-hidden rounded-xl ${darkMode ? 'bg-bgdarktheme' : 'bg-whitetheme'}`} id="tables-cont"
-              ref={containerRef}
-              onWheel={handleWheel}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseUp}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-              style={{ touchAction: "none" }}
-            >
-              {/* {showTableOptions && <div className='overlay absolute z-[1000]'></div>} */}
-              <ZoomControls onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} onFocusAll={handleFocusAll} />
+            <div className='mt-1 lt-sm:overflow-x-auto overflow-hidden rounded-xl bg-whitetheme dark:bg-bgdarktheme tables-cont relative'>
+              {isLoadingTables &&
+                // Tables skeleton loader
+                <div className="w-full tables-cont min-h-[400px] flex items-center justify-center bg-white dark:bg-bgdarktheme rounded-lg" style={{
+                  position:"absolute",inset:"50%",transform: "translate(-50%, -50%)","zIndex": 5, height:"100%", opacity: 0.7
+                }}>
+                  <div className="flex flex-col items-center animate-pulse">
+                    <div className={`h-10 w-10 rounded-full m-2 ${darkMode ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
+                    <div className={`h-4 w-32 rounded m-6 ${darkMode ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
+                    <div className="grid grid-cols-3 gap-8">
+                      {[...Array(9)].map((_, index) => (
+                        <div
+                          key={index}
+                          className={`h-16 w-16 ${index % 2 === 0 ? 'rounded-full' : 'rounded'} ${darkMode ? 'bg-darkthemeitems' : 'bg-gray-300'}`}
+                        ></div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              }
               <div
-                style={{
-                  transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`,
-                  transformOrigin: '0 0',
-                  width: '100%',
-                  height: '100%',
-                  position: 'relative'
-                }}
+                className={`tables-cont relative`} id="tables-cont"
+                ref={containerRef}
+                onWheel={handleWheel}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                style={{ touchAction: "none" }}
               >
-                {tables.filter(table => table.floor === floorId).map(table => (
-                  <DropTarget
-                    key={table.id}
-                    id={table.id}
-                    name={table.name}
-                    type={table.type}
-                    floorId={floorId}
-                    x={table.x}
-                    y={table.y}
-                    height={table.height}
-                    width={table.width}
-                    max={table.max}
-                    min={table.min}
-                    reservedBy={table.current_reservations[0]}
-                    hourChosen={time}
-                    onUpdateReservations={() => {
-                      refreshTables();
-                      refetchReservations();
-                    }}
-                    onShowOptions={(e) => setShowTableOptions(e)}
-                  />
-                ))}
+                {/* {showTableOptions && <div className='overlay absolute z-[1000]'></div>} */}
+                <ZoomControls onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} onFocusAll={handleFocusAll} />
+                <div
+                  style={{
+                    transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`,
+                    transformOrigin: '0 0',
+                    width: '100%',
+                    height: '100%',
+                    position: 'relative'
+                  }}
+                >
+                  {tables.filter(table => table.floor === floorId).map(table => (
+                    <DropTarget
+                      key={table.id}
+                      id={table.id}
+                      name={table.name}
+                      type={table.type}
+                      floorId={floorId}
+                      x={table.x}
+                      y={table.y}
+                      height={table.height}
+                      width={table.width}
+                      max={table.max}
+                      min={table.min}
+                      reservedBy={table.current_reservations[0]}
+                      hourChosen={time}
+                      onUpdateReservations={() => {
+                        refreshTables();
+                        refetchReservations();
+                      }}
+                      onShowOptions={(e) => setShowTableOptions(e)}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
+
           </div>
         </div>
       </DndProvider>

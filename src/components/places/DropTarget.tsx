@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDrop } from 'react-dnd';
 import { BaseKey, useDelete, useUpdate } from '@refinedev/core';
-import { Trash } from 'lucide-react';
+import { Loader2, Trash } from 'lucide-react';
 import DraggableTableReservation from './DraggableTableReservation';
 
 // Original item type for reservations from the sidebar
@@ -70,7 +70,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
   
   const optionsRef = useRef<HTMLDivElement>(null);
 
-  const { mutate: mutateReservations } = useUpdate({
+  const { mutate: mutateReservations, isLoading: loadingMutateReservations } = useUpdate({
     resource: `api/v1/bo/tables/${id}/assign-reservation`,
     mutationOptions: {
       onSuccess: (data, variables) => {
@@ -79,7 +79,18 @@ const DropTarget: React.FC<DropTargetProps> = ({
     },
   });
   
-  const { mutate: deleteReservation } = useDelete();
+  const { mutate: moveReservation, isLoading: loadingMoveReservation } = useUpdate({
+    mutationOptions: {
+      onSuccess: (data, variables) => {
+        onUpdateReservations();
+      },
+    },
+  });
+  
+  const { mutate: deleteReservation, isLoading: loadingDeleteReservation } = useDelete();
+  
+  // Combined loading state
+  const isLoading = loadingMutateReservations || loadingMoveReservation || loadingDeleteReservation;
   
   useEffect(() => {
     if (reservedBy) {
@@ -102,9 +113,12 @@ const DropTarget: React.FC<DropTargetProps> = ({
   }, [reservedBy, hourChosen, id]);
 
   // Handle drops from the sidebar (regular reservations)
-  const [{ isOver }, drop] = useDrop({
+  const [{ isOver, canDrop }, drop] = useDrop({
     accept: [ItemType, TableReservationType],
+    canDrop: () => !isLoading, // Prevent dropping if loading
     drop: (item: DroppedItem) => {
+      if (isLoading) return; // Extra check to prevent drops during loading
+      
       // Handle table-to-table reservation drag
       if (item.fromTableId && item.fromTableId !== id) {
         setDraggedReservation(item);
@@ -122,30 +136,55 @@ const DropTarget: React.FC<DropTargetProps> = ({
         item.number_of_guests <= max &&
         item.number_of_guests >= min
       ) {
-        setDroppedItems((prevItems) => [...prevItems, item]);
         mutateReservations({
           id: item.id+'/',
           values: {
             reservations: [item.id],
           },
+        },{
+          onSuccess(){
+            setDroppedItems((prevItems) => [...prevItems, item]);
+          }
         });
       }
     },
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
+      canDrop: !!monitor.canDrop(),
     }),
   });
 
   // Handle option selection (move or link)
   const handleOptionClick = (option: 'move' | 'link') => {
-    if (!draggedReservation) return;
+    if (!draggedReservation || isLoading) return;
     
+    switch (option) {
+      case 'move': 
+        moveReservation({
+          resource: `api/v1/bo/tables/${draggedReservation?.fromTableId}/move-reservation/${id}`,
+          id: draggedReservation.id+'/',
+          values: {
+            target_id: id,
+            reservation_id: draggedReservation.id,
+          },
+        });
+        break;
+      case 'link':
+        mutateReservations({
+          id: draggedReservation.id+'/',
+          values: {
+            reservations: [id],
+          },
+        },{
+          onSuccess(){
+            // setDroppedItems((prevItems) => [...prevItems, item]);
+          }
+        });
+        break;
+    }
     console.log(`Option selected: ${option}`);
     console.log(`Move reservation ${draggedReservation.id} from table ${draggedReservation.fromTableId} to table ${id}`);
     
-    // Later you'll implement the actual logic here
-    // For now just logging the selection
-
     setShowOptions(false);
     setDraggedReservation(null);
   };
@@ -172,6 +211,11 @@ const DropTarget: React.FC<DropTargetProps> = ({
   const [isClients, setIsClients] = useState(false);
 
   const removeReservation = () => {
+    if (isLoading) return; // Prevent action if already loading
+    
+    if(!window.confirm('Are you sure you want to clear this table?'))
+      return;
+
     deleteReservation({
         resource: `api/v1/bo/tables/${id}/delete-reservation`,
         id: droppedItems[0]?.id+'/',
@@ -188,81 +232,126 @@ const DropTarget: React.FC<DropTargetProps> = ({
     );
   };
 
+  const isDarkMode = localStorage.getItem('darkMode') === 'true';
+  let isClientTimeOutId:NodeJS.Timeout;
   return (
     <>
     <div
-      onMouseOver={() => !showOptions && setIsClients(true)}
-      onMouseLeave={() => !showOptions && setIsClients(false)}
+      onMouseOver={() =>{ 
+        if(!showOptions) {
+          clearTimeout(isClientTimeOutId)
+          setIsClients(true);
+          isClientTimeOutId = setTimeout(()=> setIsClients(false), 5000);
+        }
+      }}
+      onMouseLeave={() => {
+        if(!showOptions){
+          clearTimeout(isClientTimeOutId)
+          setIsClients(false)
+        }
+      }}
       ref={drop}
       key={id}
       className={`absolute text-center ${
         droppedItems.length > 0 ? 'text-white' : ''
       } rounded-[10px] flex flex-col justify-center items-center border-[2px] ${
-        droppedItems.length > 0 ? 'border-redtheme' : 'border-greentheme'
-      }`}
+        isLoading 
+          ? 'border-blue-400' 
+          : droppedItems.length > 0 
+            ? 'border-redtheme' 
+            : isOver && canDrop 
+              ? 'border-yellow-400' 
+              : 'border-greentheme'
+      } ${isOver && canDrop ? 'ring-2 ring-yellow-300' : ''}`}
       style={{
         width,
         height,
         backgroundColor:
-          droppedItems.length > 0
-            ? '#FF4B4B'
-            : localStorage.getItem('darkMode') === 'true'
-            ? '#042117'
-            : '#F6F6F6',
+          isLoading 
+            ? (isDarkMode ? '#1e3a8a' : '#dbeafe')  // Blue loading background
+            : droppedItems.length > 0
+              ? '#FF4B4B'
+              : isDarkMode
+                ? '#042117'
+                : '#F6F6F6',
         left: x,
         top: y,
-        // transform: `translate(${x}px, ${y}px)`,
-        // transform: `translate(${x}px, ${y}px)`,
         borderRadius: type === 'RECTANGLE' ? '10px' : '50%',
+        position: 'absolute',
       }}
     >
-      
+      {/* Loading overlay */}
+      {isLoading && (
+        <div 
+          className="absolute inset-0 flex items-center justify-center z-20"
+          style={{
+            borderRadius: type === 'RECTANGLE' ? '10px' : '50%',
+            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+          }}
+        >
+          <Loader2 
+            className="animate-spin" 
+            size={width > 50 ? 24 : 16} 
+            color={isDarkMode ? 'white' : '#3b82f6'} 
+          />
+        </div>
+      )}
       
       {/* Make the reservation draggable if the table has one */}
       {droppedItems.length > 0 ? (
         <div className="absolute inset-0 z-10">
-          <DraggableTableReservation
-            type={type}
-            x={x}
-            y={y}
-            width={width}
-            height={height}
-            id={id}
-            name={name}
-            max={max}
-            reservation={droppedItems[0]}
-            fromTableId={id}
-          />
+          {!isLoading && (
+            <DraggableTableReservation
+              type={type}
+              x={x}
+              y={y}
+              width={width}
+              height={height}
+              id={id}
+              name={name}
+              max={max}
+              reservation={droppedItems[0]}
+              fromTableId={id}
+            />
+          )}
+          {isLoading && (
+            <div className="flex flex-col items-center justify-center h-full text-white">
+              <div className="text-xs font-semibold truncate w-full px-1 text-center">{name}</div>
+              <div className="text-xs truncate w-full px-1 text-center opacity-75">{droppedItems[0]?.full_name}</div>
+            </div>
+          )}
         </div>
-      ):(<>
-      <h6 
-        className="text-[14px] px-1 w-full text-center font-semibold"
-        style={{
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-        }}
-      >
-        {name}
-      </h6>
-      <span 
-        className={`text-[12px] pa-1 rounded-full h-[20px] min-w-[20px] font-semibold ${
-          localStorage.getItem('darkMode') === 'true'
-              ? 'bg-bgdarktheme text-white'
-              : 'bg-[#dddddd] text-greytheme'
-        }`}
-        style={{
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-        }}
-      >
-        {max}
-      </span>
-      </>)}
+      ) : (
+        <>
+          <h6 
+            className="text-[14px] px-1 w-full text-center font-semibold"
+            style={{
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {name}
+          </h6>
+          <span 
+            className={`text-[12px] pa-1 rounded-full h-[20px] min-w-[20px] font-semibold ${
+              isDarkMode
+                ? 'bg-bgdarktheme text-white'
+                : 'bg-[#dddddd] text-greytheme'
+            }`}
+            style={{
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {max}
+          </span>
+        </>
+      )}
       
       {/* Options tooltip when dragging between tables */}
-      {showOptions && droppedItems.length < 1 && (
+      {showOptions && droppedItems.length < 1 && !isLoading && (
         <>
         <div 
           ref={optionsRef}
@@ -296,10 +385,10 @@ const DropTarget: React.FC<DropTargetProps> = ({
         </>
       )}
       
-      {isClients && (
+      {isClients && !isLoading && (
         <div
           className={`absolute z-[1000] text-greytheme right-[-13em] w-[13em] p-2 rounded-[10px] font-medium ${
-            localStorage.getItem('darkMode') === 'true'
+            isDarkMode
               ? 'bg-bgdarktheme2 text-white'
               : 'bg-[#F6F6F6] text-greytheme'
           }`}
@@ -308,7 +397,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
           {droppedItems.slice(0, 3).map((item, index) => (
             <div
               className={`p-1 flex justify-between items-center gap-2 rounded-[5px] mt-1 font-semibold ${
-                localStorage.getItem('darkMode') === 'true'
+                isDarkMode
                   ? 'bg-bgdarktheme'
                   : 'bg-softgreytheme'
               }`}
@@ -325,7 +414,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
           {droppedItems.length > 3 && (
             <div
               className={`p-1 rounded-[5px] mt-1 font-semibold ${
-                localStorage.getItem('darkMode') === 'true'
+                isDarkMode
                   ? 'bg-softgreentheme text-blacktheme'
                   : 'bg-softgreentheme'
               }`}

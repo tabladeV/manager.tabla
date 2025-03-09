@@ -1,0 +1,1 @@
+export type ReservationStatus = "PENDING" | "APPROVED" | "CANCELED" | "SEATED" | "NO_SHOW";
