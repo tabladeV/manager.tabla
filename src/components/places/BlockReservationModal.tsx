@@ -32,7 +32,7 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
     }
   });
   
-  const { data: reservationPauses, isLoading: loadingReservationPauses, error: reservationPausesError } = useList({
+  const { data: reservationPauses, isLoading: loadingReservationPauses, error: reservationPausesError, refetch: refetchReservationPauses } = useList({
     resource: "api/v1/bo/reservations/pauses/",
     queryOptions: {
       onSuccess(data) {
@@ -101,8 +101,8 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
       start_time: startBlockTime,
       end_time: endBlockTime,
       block_type: blockType,
-      floor_id: selectedFloor,
-      table_id: selectedTable,
+      floors: selectedFloor,
+      tables: selectedTable,
       block_online: blockOnline,
       block_backoffice: blockInHouse
     };
@@ -128,13 +128,10 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
   const handleDeleteBlock = (id: string) => {
     deleteReservationPause({
       resource: `api/v1/bo/reservations/pauses`,
-      id: id,
+      id: id+'/',
     }, {
       onSuccess: () => {
-        // Filter out the deleted item from the local state
-        setBlockedReservations(
-          blockedReservations?.results.filter((item: any) => item.id !== id)
-        );
+        refetchReservationPauses();
       },
       onError: (error) => {
         console.error("Failed to delete reservation block:", error);
@@ -375,12 +372,12 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
                       </span>
                     </div>
                     <div className="text-xs text-gray-500 mt-1">
-                      {getBlockTypeLabel(block)}
                       {block.block_type === 'FLOOR' && (
                         <>
-                          {block.floor_id?.length > 0 && (<span> - {block.floor_id.join(', ')}</span>)}
-                          {block.table_id?.length > 0 && (
-                            <span> - {block.table_id.join(', ')}</span>
+                          {block.floors?.length > 0 && (<span>Floors: {block.floors.join(', ')}</span>)}
+                          <br/>
+                          {block.tables?.length > 0 && (
+                            <span>Tables: {block.tables.join(', ')}</span>
                           )}
                         </>
                       )}

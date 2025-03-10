@@ -1,23 +1,12 @@
 // DraggableTableReservation.tsx
 import { BaseKey } from '@refinedev/core';
 import { useDrag } from 'react-dnd';
-
-interface TableReservationType {
-  id: BaseKey;
-  full_name: string;
-  time: string;
-  date: string;
-  email: string;
-  phone: string;
-  number_of_guests: number;
-  status?: 'PENDING' | 'APPROVED' | 'CANCELED' | 'SEATED';
-  occasion?: string;
-  created_at?: string;
-  tables?: any[];
-}
+import { Occasion } from '../settings/Occasions';
+import { currentResType } from './DropTarget';
+import { getTextColor } from '../../utils/helpers';
 
 interface DraggableTableReservationProps {
-  reservation: TableReservationType;
+  reservation: currentResType | null;
   fromTableId: BaseKey;
   id: BaseKey;
   name: string;
@@ -55,15 +44,16 @@ const DraggableTableReservation: React.FC<DraggableTableReservationProps> = ({ r
     <div
       ref={drag}
       key={id}
-      className={`text-center border-redtheme text-white rounded-[10px] flex flex-col justify-center items-center border-[2px]`}
+      className={`text-center text-white rounded-[10px] flex flex-col justify-center items-center`}
       style={{
         opacity: isDragging ? 0.5 : 1,
         width,
         height,
-        backgroundColor: '#FF4B4B',
+        backgroundColor: reservation?.occasion?.color || '#FF4B4B',
         // transform: `translate(${x}px, ${y}px)`,
         // transform: `translate(${x}px, ${y}px)`,
         borderRadius: type === 'RECTANGLE' ? '10px' : '50%',
+        color: getTextColor((reservation?.occasion?.color || '#FF4B4B'))
       }}
     >
       <h6 

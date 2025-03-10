@@ -3,6 +3,8 @@ import { useDrop } from 'react-dnd';
 import { BaseKey, useDelete, useUpdate } from '@refinedev/core';
 import { Loader2, Trash } from 'lucide-react';
 import DraggableTableReservation from './DraggableTableReservation';
+import { Occasion } from '../settings/Occasions';
+import { getTextColor } from '../../utils/helpers';
 
 // Original item type for reservations from the sidebar
 const ItemType = 'BOX';
@@ -20,19 +22,20 @@ interface DropTargetProps {
   width: number;
   max: number;
   min: number;
-  reservedBy: currentResType | null;
+  reservedBy: currentResType;
   hourChosen: string;
   onUpdateReservations: () => void;
   onShowOptions: (status: boolean) => void;
 }
 
-interface currentResType {
+export interface currentResType {
   id: BaseKey;
   full_name: string;
   time: string;
   date: string;
   email: string;
   phone: string;
+  occasion: Occasion;
   number_of_guests: number;
 }
 
@@ -257,11 +260,9 @@ const DropTarget: React.FC<DropTargetProps> = ({
       } rounded-[10px] flex flex-col justify-center items-center border-[2px] ${
         isLoading 
           ? 'border-blue-400' 
-          : droppedItems.length > 0 
-            ? 'border-redtheme' 
-            : isOver && canDrop 
+          : isOver && canDrop 
               ? 'border-yellow-400' 
-              : 'border-greentheme'
+              : (!reservedBy?'border-greentheme':'')
       } ${isOver && canDrop ? 'ring-2 ring-yellow-300' : ''}`}
       style={{
         width,
@@ -269,8 +270,8 @@ const DropTarget: React.FC<DropTargetProps> = ({
         backgroundColor:
           isLoading 
             ? (isDarkMode ? '#1e3a8a' : '#dbeafe')  // Blue loading background
-            : droppedItems.length > 0
-              ? '#FF4B4B'
+            : reservedBy
+              ? (reservedBy?.occasion?.color || '#FF4B4B')
               : isDarkMode
                 ? '#042117'
                 : '#F6F6F6',
@@ -278,6 +279,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
         top: y,
         borderRadius: type === 'RECTANGLE' ? '10px' : '50%',
         position: 'absolute',
+        color: getTextColor(reservedBy ? (reservedBy?.occasion?.color || '#FF4B4B'): isDarkMode? '#042117': '#F6F6F6')
       }}
     >
       {/* Loading overlay */}
@@ -310,7 +312,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
               id={id}
               name={name}
               max={max}
-              reservation={droppedItems[0]}
+              reservation={reservedBy}
               fromTableId={id}
             />
           )}
@@ -324,7 +326,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
       ) : (
         <>
           <h6 
-            className="text-[14px] px-1 w-full text-center font-semibold"
+            className={"text-[14px] px-1 w-full text-center font-semibold"}
             style={{
               whiteSpace: 'nowrap',
               overflow: 'hidden',

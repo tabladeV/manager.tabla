@@ -4,21 +4,19 @@ import { useState, useCallback, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 
 // Interfaces
-interface Occasion {
+export interface Occasion {
   id: number
   name: string
   description: string
   color: string
 }
 
-const initialOccasions: Occasion[] = [
-  {
-    id: 1,
-    name: '',
-    description: '',
-    color: '#000000',
-  }
-]
+export interface OccasionsType {
+  results: Occasion[]
+  count: number
+}
+
+const initialOccasions: Occasion[] = []
 
 // OccasionModal Component
 interface OccasionModalProps {
@@ -189,11 +187,6 @@ export default function Occasions() {
   useEffect(() => {
     document.title = 'Occasions Management | Tabla'
   }, [])
-
-  interface OccasionsType {
-    results: Occasion[]
-    count: number
-  }
 
   const [occasionsAPIInfo, setOccasionsAPIInfo] = useState<OccasionsType>()
 

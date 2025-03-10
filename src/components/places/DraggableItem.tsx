@@ -5,6 +5,7 @@ import { useDrag } from 'react-dnd';
 import { useTranslation } from 'react-i18next';
 import DraggableItemSkeleton from './DraggableItemSkeleton';
 import { ReservationStatus } from '../common/types/Reservation';
+import { Occasion } from '../settings/Occasions';
 
 interface tablesType {
   id: BaseKey;
@@ -19,7 +20,7 @@ interface DraggableItemProps {
     date: string;
     status: ReservationStatus;
     number_of_guests: number;
-    occasion?: string;
+    occasion?: Occasion;
     created_at: string;
     tables: tablesType[];
     onEdit: (id: BaseKey) => void;
@@ -85,7 +86,7 @@ const DraggableItem = (props: DraggableItemProps) => {
 
                 <div className='flex gap-1 items-center'>
                   <CalendarCheck size={16} />
-                  <p className='font-[600] text-[13px]'>{itemData.occasion === "none" ? t('placeManagement.reservations.none') : itemData.occasion}</p>
+                  <p className='font-[600] text-[13px]'>{!itemData.occasion ? t('placeManagement.reservations.none') : itemData.occasion?.name}</p>
                 </div>
 
               </div>

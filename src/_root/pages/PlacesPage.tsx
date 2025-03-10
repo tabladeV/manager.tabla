@@ -17,30 +17,13 @@ import EditReservationModal from '../../components/reservation/EditReservationMo
 import ReservationProcess from '../../components/reservation/ReservationProcess';
 import { Ban } from 'lucide-react';
 import DraggableItemSkeleton from '../../components/places/DraggableItemSkeleton';
-import { ReservationStatus } from '../../components/common/types/Reservation';
+import { ReservationSource, ReservationStatus } from '../../components/common/types/Reservation';
+import { Occasion } from '../../components/settings/Occasions';
+import { Reservation } from './ReservationsPage';
 
 interface ReservationType {
   results: Reservation[]
   count: number
-}
-
-export interface Reservation {
-  id: BaseKey;
-  full_name: string;
-  time: string;
-  date: string;
-  email?: string;
-  phone?: string;
-  status: ReservationStatus;
-  number_of_guests: number;
-  occasion?: string;
-  created_at: string;
-  tables: TableType[];
-  source?: string;
-  internal_note?: string;
-  commenter?: string;
-  allergies?: string;
-  loading?: boolean;
 }
 
 export interface currentResType {
@@ -51,6 +34,7 @@ export interface currentResType {
   email: string;
   phone: string;
   number_of_guests: number;
+  occasion: Occasion;
 }
 
 export interface TableType {
@@ -443,6 +427,7 @@ const PlacePage: React.FC = () => {
           source: reservation.source,
           status: reservation.status,
           internal_note: reservation.internal_note,
+          occasion: reservation.occasion?.id || reservation.occasion,
           date: reservationProgressData.reserveDate,
           time: `${reservationProgressData.time}:00`,
           tables: reservation.tables?.length ?  reservation.tables?.map(t=>t?.id? Number(t?.id):t) : [],
@@ -538,8 +523,11 @@ const PlacePage: React.FC = () => {
                 <DraggableItem
                   itemData={{
                     ...item,
+                    number_of_guests: parseInt(item.number_of_guests, 10),
                     onEdit: handleEditReservation,
-                    loading: item.loading ?? false
+                    loading: item.loading ?? false,
+                    created_at: item.created_at,
+                    tables: item.tables || []
                   }}
                   key={item.id}
                 />
