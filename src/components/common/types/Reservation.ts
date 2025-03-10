@@ -1,1 +1,2 @@
-export type ReservationStatus = "PENDING" | "APPROVED" | "CANCELED" | "SEATED" | "NO_SHOW";
+export type ReservationStatus = "PENDING" | "APPROVED" | "CANCELED" | "SEATED" | "NO_SHOW" | "FULFILLED";
+export type ReservationSource = "MARKETPLACE" | "WIDGET" | "WEBSITE" | "BACK_OFFICE" | "WALK_IN";

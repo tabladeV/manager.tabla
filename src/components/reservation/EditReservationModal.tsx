@@ -2,8 +2,14 @@ import { useState, useEffect } from "react";
 import { useTranslation } from 'react-i18next';
 import { BaseKey, useList } from "@refinedev/core";
 import BaseSelect from "../common/BaseSelect";
-import { ReservationStatus } from "../common/types/Reservation";
-import { Reservation, TableType } from "../../_root/pages/PlacesPage";
+import { ReservationSource, ReservationStatus } from "../common/types/Reservation";
+import { TableType as OriginalTableType } from "../../_root/pages/PlacesPage";
+
+interface TableType extends OriginalTableType {
+  id: number;
+}
+import { Occasion, OccasionsType } from "../settings/Occasions";
+import { Reservation } from "../../_root/pages/ReservationsPage";
 
 // Types and Interfaces
 interface ReceivedTables {
@@ -46,7 +52,26 @@ const EditReservationModal = ({
   const [availableTables, setAvailableTables] = useState<TableType[]>([]);
   const [selectedTables, setSelectedTables] = useState<number[]>([]);
   const [selectedClient, setSelectedClient] = useState<Reservation | null>(null);
+  const [selectedOccasion, setSelectedOccasion] = useState<number | null>(null);
 
+  const [occasions, setOccasions] = useState<Occasion[]>([])
+  const [occasionsAPIInfo, setOccasionsAPIInfo] = useState<OccasionsType>()
+
+  const { isLoading: loadingOccasions, error: occasionsError } = useList({
+    resource: 'api/v1/bo/occasions/', // Placeholder API endpoint
+    queryOptions: {
+      onSuccess(data) {
+        setOccasionsAPIInfo(data.data as unknown as OccasionsType)
+      }
+    }
+  })
+
+  
+  useEffect(() => {
+    if (occasionsAPIInfo) {
+      setOccasions(occasionsAPIInfo.results as Occasion[] || occasionsAPIInfo || [])
+    }
+  }, [occasionsAPIInfo])
   // Fetch available tables
   const { data: availableTablesData, isLoading: isLoadingTables } = useList({
     resource: "api/v1/bo/tables/available_tables/",
@@ -65,12 +90,13 @@ const EditReservationModal = ({
   useEffect(() => {
     if (availableTablesData?.data) {
       setAvailableTables(availableTablesData.data as TableType[]);
-      setAvailableTables((prev)=>[...prev, ...(selectedClient?.tables || []) as TableType[]])
+      setAvailableTables((prev)=>[...prev, ...(selectedClient?.tables?.map(t=>({...t, name: `${t.name} (${reservation?.floor_name})`})) || []) as TableType[]])
     }
   }, [availableTablesData]);
   
   useEffect(()=>{
     setSelectedClient(reservation);
+    setSelectedOccasion(reservation?.occasion?.id as number);
     setSelectedTables(reservation?.tables?.map(t=>t.id) as number[])
   },[])
   
@@ -99,7 +125,7 @@ const EditReservationModal = ({
           <div className="">
             <p className="text-sm font-[400]">Occasion</p>
             <div className={`flex items-center btn text-sm font-[400] ${isDarkMode ? 'text-white' : ''}`}>
-              {selectedClient.occasion}
+              {selectedClient.occasion?.name}
             </div>
           </div>
           <div className="">
@@ -112,19 +138,22 @@ const EditReservationModal = ({
         
         <div className="space-y-2">
           <div>
-            <label className="block text-sm font-medium ">{t('reservations.edit.informations.madeBy')}</label>
-            <select 
-              name="source"
+            <BaseSelect
+              label={t('reservations.edit.informations.madeBy')}
+              placeholder={t('reservations.edit.source.placeholder')}
+              options={[
+              { label: 'Market Place', value: 'MARKETPLACE' },
+              { label: 'Widget', value: 'WIDGET' },
+              { label: 'Website', value: 'WEBSITE' },
+              { label: 'Back Office', value: 'BACK_OFFICE' },
+              { label: 'Walk In', value: 'WALK_IN' }
+              ]}
               value={selectedClient.source}
-              onChange={(e) => setSelectedClient({...selectedClient, source: e.target.value})}
-              className={`w-full rounded-md p-2 ${isDarkMode ? 'bg-darkthemeitems text-whitetheme' : 'bg-softgreytheme text-subblack'}`}
-            >
-              <option value="MARKETPLACE">Market Place</option>
-              <option value="WIDGET">Widget</option>
-              <option value="WEBSITE">Website</option>
-              <option value="BACK_OFFICE">Back Office</option>
-              <option value="WALK_IN">Walk In</option>
-            </select>
+              onChange={(value) => setSelectedClient({...selectedClient, source: value as ReservationSource})}
+              variant={isDarkMode ? "filled" : "outlined"}
+              clearable={true}
+              searchable={true}
+            />
           </div>
           
           <div>
@@ -157,7 +186,24 @@ const EditReservationModal = ({
               {/* <option value="RESCHEDULED">{t('reservations.statusLabels.rescheduled')}</option> */}
             </select>
           </div>
-          
+          <div>
+            <BaseSelect
+              label={t('reservations.edit.informations.occasion')}
+              options={occasions.map(occasion => ({
+                label: occasion.name,
+                value: occasion.id
+              }))}
+              value={selectedOccasion}
+              onChange={(value) => {
+                setSelectedOccasion(value as number);
+                const selectedOccasionObj = occasions.find(occasion => occasion.id === value) || undefined;
+                setSelectedClient({...selectedClient, occasion: selectedOccasionObj })
+              }}
+              variant={'filled'}
+              clearable={true}
+              searchable={true}
+            />
+          </div>
           {(selectedClient.status === ('APPROVED') || selectedClient.status === ('SEATED')) && (
             <BaseSelect
             label={t('reservations.edit.informations.table')}
@@ -209,7 +255,7 @@ const EditReservationModal = ({
             >
               {t('reservations.edit.buttons.cancel')}
             </button>
-            <button onClick={()=>upDateHandler(selectedClient)} className="btn-primary">
+            <button onClick={()=>{upDateHandler(selectedClient)}} className="btn-primary">
               {t('reservations.edit.buttons.save')}
             </button>
           </div>

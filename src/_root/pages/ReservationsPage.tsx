@@ -14,6 +14,9 @@ import {
 import Pagination from "../../components/reservation/Pagination"
 import ExportModal from "../../components/common/ExportModal"
 import useExportConfig from "../../components/common/config/exportConfig"
+import EditReservationModal from "../../components/reservation/EditReservationModal"
+import { ReservationSource, ReservationStatus } from "../../components/common/types/Reservation"
+import { Occasion } from "../../components/settings/Occasions"
 
 // Types and Interfaces
 interface ReceivedTables {
@@ -21,23 +24,23 @@ interface ReceivedTables {
   name: string;
 }
 
-interface Reservation extends BaseRecord {
+export interface Reservation extends BaseRecord {
   id: BaseKey;
   email: string;
   full_name: string;
   date: string;
   time: string;
   internal_note: string;
-  source: string;
+  source: ReservationSource;
   number_of_guests: string;
   tableSet?: number;
   phone: string;
   tables?: ReceivedTables[];
-  status: string;
+  status: ReservationStatus;
   commenter?: string;
   review?: boolean;
   allergies?: string;
-  occasion?: string;
+  occasion?: Occasion;
   guests?: number;
   floor_name?: string;
   table_name?: string;
@@ -128,29 +131,12 @@ interface ReservationTableProps {
   isDarkMode: boolean;
 }
 
-interface EditReservationModalProps {
-  showModal: boolean;
-  selectedClient: Reservation | null;
-  setShowModal: (show: boolean) => void;
-  setShowProcess: (show: boolean) => void;
-  availableTables?: Table[];
-  reservationProgressData: DataTypes;
-  setSelectedClient: (client: Reservation | null) => void;
-  statusHandler: (status: string) => void;
-  upDateHandler: () => void;
-  hasTable: boolean;
-  setHasTable: (hasTable: boolean) => void;
-  isDarkMode: boolean;
-}
-
 interface DateSelectionModalProps {
   focusedDate: boolean;
   setFocusedDate: (focused: boolean) => void;
   handleDateClick: (range: { start: Date, end: Date }) => void;
   isDarkMode: boolean;
 }
-
-type StatusType = 'PENDING' | 'APPROVED' | 'SEATED' | 'FULFILLED' | 'NO_SHOW' | 'CANCELED';
 
 // Helper functions
 const statusStyle = (status: string): string => {
@@ -512,157 +498,6 @@ const ReservationTable: React.FC<ReservationTableProps> = ({
   )
 }
 
-// EditReservationModal Component
-const EditReservationModal: React.FC<EditReservationModalProps> = ({
-  showModal,
-  selectedClient,
-  setShowModal,
-  setShowProcess,
-  availableTables,
-  reservationProgressData,
-  setSelectedClient,
-  statusHandler,
-  upDateHandler,
-  hasTable,
-  setHasTable,
-  isDarkMode
-}) => {
-  const { t } = useTranslation();
-  if (!showModal || !selectedClient) return null;
-  return (
-    <div>
-      <div className="overlay z-[100]" onClick={() => setShowModal(false)}></div>
-      <div className={`sidepopup w-[45%] overflow-y-auto lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:overflow-y-auto h-full ${isDarkMode ? 'bg-bgdarktheme text-white' : 'bg-white'} `}>
-        <h1 className="text-2xl font-[600] mb-4">
-          {t('reservations.edit.title')} by <span className={`font-[800] `}>{selectedClient.full_name} </span>
-          <span className={`text-sm font-[400] ${isDarkMode ? 'text-[#e1e1e1]' : 'text-subblack'}`}>
-            {`(Reservation id: ${selectedClient.id})`}
-          </span>
-        </h1>
-        
-        <div className={`flex flex-col p-2 mb-2 rounded-xl gap-3 cursor-default ${isDarkMode ? 'bg-darkthemeitems text-whitetheme' : ' border-2 text-darkthemeitems'}`}>
-          <p className="text-md mb-[-.4em] font-[500]">{selectedClient.full_name}'s preferences</p>
-          <div className="">
-            <p className="text-sm font-[400]">Allergies</p>
-            <div className={`flex items-center btn text-sm font-[400] ${isDarkMode ? 'text-white' : ''}`}>
-              {selectedClient.allergies}
-            </div>
-          </div>
-          <div className="">
-            <p className="text-sm font-[400]">Occasion</p>
-            <div className={`flex items-center btn text-sm font-[400] ${isDarkMode ? 'text-white' : ''}`}>
-              {selectedClient.occasion}
-            </div>
-          </div>
-          <div className="">
-            <p className="text-sm font-[400]">Comment</p>
-            <div className={`flex items-center btn text-sm font-[400] ${isDarkMode ? 'text-white' : ''}`}>
-              {selectedClient.commenter}
-            </div>
-          </div>
-        </div>
-        
-        <div className="space-y-2">
-          <div>
-            <label className="block text-sm font-medium ">{t('reservations.edit.informations.madeBy')}</label>
-            <select 
-              name="source"
-              value={selectedClient.source}
-              onChange={(e) => setSelectedClient({...selectedClient, source: e.target.value})}
-              className={`w-full rounded-md p-2 ${isDarkMode ? 'bg-darkthemeitems text-whitetheme' : 'bg-softgreytheme text-subblack'}`}
-            >
-              <option value="MARKETPLACE">Market Place</option>
-              <option value="WIDGET">Widget</option>
-              <option value="WEBSITE">Website</option>
-              <option value="BACK_OFFICE">Back Office</option>
-              <option value="WALK_IN">Walk In</option>
-            </select>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium ">{t('reservations.edit.informations.internalNote')}</label>
-            <input
-              type="text"
-              name="internal_note"
-              value={selectedClient.internal_note}
-              onChange={(e) => setSelectedClient({...selectedClient, internal_note: e.target.value})}
-              className={`w-full rounded-md p-2 ${isDarkMode ? 'bg-darkthemeitems text-whitetheme' : 'bg-softgreytheme text-subblack'}`}
-            />
-          </div>
-          
-          <div className="">
-            <label className="block text-sm font-medium ">{t('reservations.edit.informations.status')}</label>
-            <select
-              name="status"
-              value={selectedClient.status}
-              onChange={(e) => {
-                setSelectedClient({...selectedClient, status: e.target.value});
-                statusHandler(e.target.value);
-              }}
-              className={`w-full rounded-md p-2 ${isDarkMode ? 'bg-darkthemeitems text-whitetheme' : 'bg-softgreytheme text-subblack'}`}
-            >
-              <option value="PENDING">{t('reservations.statusLabels.pending')}</option>
-              <option value="APPROVED">{t('reservations.statusLabels.confirmed')}</option>
-              <option value="CANCELED">{t('reservations.statusLabels.cancelled')}</option>
-              <option value="SEATED">{t('reservations.statusLabels.seated')}</option>
-              <option value="NO_SHOW">{t('reservations.statusLabels.noShow')}</option>
-              {/* <option value="RESCHEDULED">{t('reservations.statusLabels.rescheduled')}</option> */}
-            </select>
-          </div>
-          
-          {(selectedClient.status === ('APPROVED') || selectedClient.status === ('SEATED')) && (
-            <div>
-              <label className="block text-sm font-medium ">{t('reservations.edit.informations.table')}</label>
-              <select 
-                name="table"
-                defaultValue={(selectedClient && selectedClient.tables && selectedClient.tables.length > 0 && selectedClient.tables[0].id) ? selectedClient.tables[0].id : 0}
-                onChange={(e) => {
-                  (Number(e.target.value) !== 0 || e.target.value) ? setHasTable(true) : setHasTable(false);
-                  setSelectedClient({...selectedClient, tableSet: Number(e.target.value)});
-                }}
-                className={`w-full rounded-md p-2 ${isDarkMode ? 'bg-darkthemeitems text-whitetheme' : 'bg-softgreytheme text-subblack'}`}
-              >
-                <option key={0} value={0}>No table</option>
-                {(selectedClient && selectedClient.tables && selectedClient.tables.length > 0 && selectedClient.tables[0].id) ? 
-                  <option key={selectedClient.tables[0].id} value={selectedClient.tables[0].id}>
-                    {selectedClient.tables[0].name} {`(${selectedClient.floor_name})`}
-                  </option> : null}
-                {availableTables?.map((table) => (
-                  <option key={table.id} value={table.id}>
-                    {table.name} {`(${table.floor_name})`}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-          
-          <div 
-            onClick={() => {setShowProcess(true)}} 
-            className={`btn flex justify-around cursor-pointer ${isDarkMode ? 'bg-darkthemeitems text-white' : 'bg-white'}`}
-          >
-            {(reservationProgressData.reserveDate === '') ? <div>date </div> : <span>{reservationProgressData.reserveDate}</span>}
-            {(reservationProgressData.time === '') ? <div>Time </div> : <span>{reservationProgressData.time}</span>} 
-            {(reservationProgressData.guests === 0) ? <div>Guests </div> : <span>{reservationProgressData.guests}</span>}
-          </div>
-          
-          <div className="h-10 sm:hidden"></div>
-          <div className="flex justify-center lt-sm:fixed lt-sm:bottom-0 lt-sm: lt-sm:p-3 lt-sm:w-full space-x-2">
-            <button 
-              onClick={() => setShowModal(false)} 
-              className="btn-secondary hover:bg-[#88AB6150] hover:text-greentheme transition-colors"
-            >
-              {t('reservations.edit.buttons.cancel')}
-            </button>
-            <button onClick={upDateHandler} className="btn-primary">
-              {t('reservations.edit.buttons.save')}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 // DateSelectionModal Component
 const DateSelectionModal: React.FC<DateSelectionModalProps> = ({ 
   focusedDate, 
@@ -712,7 +547,6 @@ const ReservationsPage: React.FC = () => {
   const [focusedDate, setFocusedDate] = useState<boolean>(false)
   const [searchResults, setSearchResults] = useState<Reservation[]>(reservations)
   const [searched, setSearched] = useState<boolean>(false)
-  const [availableTables, setAvailableTables] = useState<Table[]>()
   const [showModal, setShowModal] = useState<boolean>(false)
   const [editingClient, setEditingClient] = useState<BaseKey | undefined>(undefined)
   const [toBeReviewedRes, setToBeReviewedRes] = useState<BaseKey>()
@@ -721,6 +555,7 @@ const ReservationsPage: React.FC = () => {
   const [filteredReservations, setFilteredReservations] = useState<Reservation[]>(reservations)
   const [floorId, setFloorId] = useState<BaseKey>()
   const [showAddReservation, setShowAddReservation] = useState<boolean>(false);
+  
   // Reservation progress data
   const [reservationProgressData, setReservationProgressData] = useState<DataTypes>({
     reserveDate: selectedClient?.date || '',
@@ -767,25 +602,6 @@ const ReservationsPage: React.FC = () => {
         'X-Restaurant-ID': localStorage.getItem('restaurant_id'),
       },
     },
-  });
-
-  // Fetch available tables
-  const { data: availableTablesData } = useList({
-    resource: "api/v1/bo/tables/available_tables/",
-    filters: [
-      { field: "date", operator: "eq", value: selectedClient ? reservationProgressData.reserveDate : '' },
-      { field: "number_of_guests", operator: "eq", value: selectedClient ? reservationProgressData.guests : 0 },
-      { field: "time", operator: "eq", value: selectedClient ? reservationProgressData.time + ':00' : '' }
-    ],
-    queryOptions: {
-      enabled: !!selectedClient
-    },
-    errorNotification(error, values, resource) {
-      return {
-        message: `An Error occured when when trying to get available tables`,
-        type: "error",
-      }
-    }
   });
 
   // Mutations
@@ -842,13 +658,6 @@ const ReservationsPage: React.FC = () => {
       setFloors(floorsData.data);
     }
   }, [floorsData, tablesData]);
-
-  // Effect to update available tables
-  useEffect(() => {
-    if (availableTablesData?.data) {
-      setAvailableTables(availableTablesData.data as Table[]);
-    }
-  }, [availableTablesData]);
 
   // Effect to update search results
   useEffect(() => {
@@ -914,34 +723,35 @@ const ReservationsPage: React.FC = () => {
     }
   };
 
-  const upDateHandler = (): void => {
-    if (selectedClient) {
-      upDateReservation({
-        id: `${editingClient}/`,
-        values: {
-          full_name: selectedClient.full_name,
-          email: selectedClient.email,
-          table_name: selectedClient.table_name,
-          source: selectedClient.source,
-          status: selectedClient.status,
-          internal_note: selectedClient.internal_note,
-          date: reservationProgressData.reserveDate,
-          time: `${reservationProgressData.time}:00`,
-          tables: selectedClient.tableSet ? [Number(selectedClient.tableSet)] : [],
-          number_of_guests: reservationProgressData.guests,
-          commenter: selectedClient.commenter,
+  const upDateHandler = (updatedReservation: Reservation): void => {
+    upDateReservation({
+      id: `${editingClient}/`,
+      values: {
+        full_name: updatedReservation.full_name,
+        email: updatedReservation.email,
+        phone: updatedReservation.phone,
+        table_name: updatedReservation.table_name,
+        source: updatedReservation.source,
+        status: updatedReservation.status,
+        internal_note: updatedReservation.internal_note,
+        occasion: updatedReservation.occasion?.id || updatedReservation.occasion,
+        date: reservationProgressData.reserveDate,
+        time: `${reservationProgressData.time}:00`,
+        tables: updatedReservation.tables?.map(table => Number(table.id)),
+        number_of_guests: reservationProgressData.guests,
+        commenter: updatedReservation.commenter,
+      },
+      meta: {
+        headers: {
+          "X-Restaurant-ID": 1,
         },
-        meta: {
-          headers: {
-            "X-Restaurant-ID": 1,
-          },
-        },
-      },{
-        onSuccess(){
-          refetchReservations();
-        }
-      });
-    }
+      },
+    },{
+      onSuccess(){
+        refetchReservations();
+      }
+    });
+    
     setShowModal(false);
   };
 
@@ -966,7 +776,7 @@ const ReservationsPage: React.FC = () => {
     },{
       onSuccess(){
         setReservations(reservations.map(r => 
-          r.id === idStatusModification ? {...r, status, loading: false} : r
+          r.id === idStatusModification ? {...r, status: status as ReservationStatus, loading: false} : r
         ));
       },
       onError(){
@@ -1042,21 +852,21 @@ const ReservationsPage: React.FC = () => {
         />
       )} 
 
-      {/* Edit Reservation Modal */}
-      <EditReservationModal
-        showModal={showModal}
-        selectedClient={selectedClient}
-        setShowModal={setShowModal}
-        setShowProcess={setShowProcess}
-        availableTables={availableTables}
-        reservationProgressData={reservationProgressData}
-        setSelectedClient={setSelectedClient}
-        statusHandler={statusHandler}
-        upDateHandler={upDateHandler}
-        hasTable={hasTable}
-        setHasTable={setHasTable}
-        isDarkMode={isDarkMode}
-      />
+      {/* Edit Reservation Modal using the standalone component */}
+      {showModal && (
+        <EditReservationModal
+          showModal={showModal}
+          reservation={selectedClient}
+          setShowModal={setShowModal}
+          setShowProcess={setShowProcess}
+          reservationProgressData={reservationProgressData}
+          statusHandler={statusHandler}
+          upDateHandler={upDateHandler}
+          hasTable={hasTable}
+          setHasTable={setHasTable}
+          isDarkMode={isDarkMode}
+        />
+      )}
 
       {/* Page Header */}
       <div className='flex justify-between mb-4 lt-sm:flex-col lt-sm:gap-2'>
