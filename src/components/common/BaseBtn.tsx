@@ -7,6 +7,7 @@ type ButtonProps = {
   disabled?: boolean;
   loading?: boolean;
   className?: string;
+  type?: "button" | "submit" | "reset" | undefined;
   onClick?: () => void;
   children: React.ReactNode | null;
 };
@@ -29,6 +30,7 @@ const sizeStyles: Record<string, string> = {
 const BaseBtn: React.FC<ButtonProps> = ({
   variant = 'primary',
   size = 'medium',
+  type,
   disabled = false,
   loading = false,
   className,
@@ -41,6 +43,7 @@ const BaseBtn: React.FC<ButtonProps> = ({
 
   return (
     <button
+      type={type}
       className={`${baseStyles} ${variantClass} ${sizeClass} ${disabledClass} relative ${className || ''}`}
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       onClick={!loading ? onClick : () => {}}

@@ -92,9 +92,9 @@ const LogIn: React.FC = () => {
           </Alert>
         }
       <form className="flex flex-col gap-2 mt-4 justify-center" onSubmit={handleSubmit}>
-        <input value={restaurantId} type="text" name="restaurant_id" placeholder="Restaurant ID" className="inputs-unique w-[30vw]" onChange={(e)=>setRestaurantId(e.target.value)} />
-        <input value={email} type="text" name="email" placeholder="Email" className="inputs-unique w-[30vw]" onChange={(e)=>setEmail(e.target.value)} />
-        <input value={password} type="password" name="password" placeholder="Password" className="inputs-unique w-[30vw]" onChange={(e)=>setPassword(e.target.value)} />
+        <input value={restaurantId} type="text" name="restaurant_id" placeholder="Restaurant ID" className="inputs-unique lt-md:w-[60vw] gt-md:w-[30vw]" onChange={(e)=>setRestaurantId(e.target.value)} />
+        <input value={email} type="text" name="email" placeholder="Email" className="inputs-unique lt-md:w-[60vw] gt-md:w-[30vw]" onChange={(e)=>setEmail(e.target.value)} />
+        <input value={password} type="password" name="password" placeholder="Password" className="inputs-unique lt-md:w-[60vw] gt-md:w-[30vw]" onChange={(e)=>setPassword(e.target.value)} />
         <BaseBtn variant="primary" disabled={!isValid()} loading={isLoading} onClick={() => handleSubmit}>
           Login
         </BaseBtn>

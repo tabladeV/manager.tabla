@@ -148,7 +148,7 @@ const BaseSelect: React.FC<SelectProps> = ({
 
   return (
     <div 
-      className={`relative w-full max-w-md ${disabled ? 'opacity-50 pointer-events-none' : ''}`}
+      className={`relative w-full ${disabled ? 'opacity-50 pointer-events-none' : ''}`}
       ref={selectRef}
     >
       {/* Label */}
@@ -167,7 +167,7 @@ const BaseSelect: React.FC<SelectProps> = ({
           ${error ? 'border-redtheme' : 'hover:border-greentheme'}
           ${isOpen ? 'ring-2 ring-softgreentheme border-greentheme' : ''}
           ${dense ? 'py-1' : 'py-2'}
-          px-3 rounded-[10px] cursor-pointer relative transition duration-200 text-subblack dark:text-textdarktheme
+          px-3 rounded-[10px] cursor-pointer relative transition duration-200 text-black dark:text-textdarktheme
           ${loading || disabled ? 'cursor-not-allowed' : 'cursor-pointer'}
         `}
         onClick={() => !disabled && !loading && setIsOpen(!isOpen)}
