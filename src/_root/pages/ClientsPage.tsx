@@ -86,6 +86,20 @@ console.log(searchKeyword);
 
   });
 
+  const {mutate: sendToAll} = useCreate(
+    {
+      resource: 'api/v1/bo/notifications/send_all/',
+      mutationOptions:{
+        onSuccess: (data) => {
+          console.log('Notification sent to all:', data);
+        },
+        onError: (error) => {
+          console.log('Error in sending notification to all:', error.message);
+        },
+      },
+    }
+  )
+
 
   const {mutate: sendNotification} = useCreate(
     {
@@ -269,19 +283,32 @@ console.log(searchKeyword);
     message: '',
   });
 
-  
+  const [allClients, setAllClients] = useState(false);
 
   const sendNotificationHandler = () => {
     console.log(selectedClient.map(client => client.id),'CLIENTS');
-    sendNotification({
-      values: {
-      customers: selectedClient.map(client => client.id),
-      template: notificationInfo.template,
-      restaurant: Number(localStorage.getItem('restaurant_id')),
-      subject: notificationInfo.subject,
-      message: notificationInfo.message,
-      },
-    });
+    
+    if(allClients){
+      sendToAll({
+        values: {
+          template: notificationInfo.template,
+          restaurant: Number(localStorage.getItem('restaurant_id')),
+          subject: notificationInfo.subject,
+          message: notificationInfo.message,
+        },
+      });
+      
+    }else{
+      sendNotification({
+        values: {
+        customers: selectedClient.map(client => client.id),
+        template: notificationInfo.template,
+        restaurant: Number(localStorage.getItem('restaurant_id')),
+        subject: notificationInfo.subject,
+        message: notificationInfo.message,
+        },
+      });
+    }
   }
 
 
@@ -307,6 +334,12 @@ console.log(searchKeyword);
               <div className="p-2 rounded-[10px] cursor-default">
                 <p className="text-greentheme font-[600] mb-2">Send to</p>
                 <div className="flex gap-2 flex-wrap">
+                  {allClients &&
+                    <p className={`text-sm btn ${localStorage.getItem('darkMode')==='true'?'text-white':''}`}>
+
+                      All Clients
+                    </p>
+                  }
                   {selectedClient.slice(0,4).map((client)=>(
                   <div key={client.id} className={`flex items-center gap-2 ${localStorage.getItem('darkMode')==='true'?'text-white':''}`}>
                     <p className={`text-sm btn ${localStorage.getItem('darkMode')==='true'?'text-white':''}`}>
@@ -373,7 +406,7 @@ console.log(searchKeyword);
             <option>Canceled</option>
           </select> */}
           {!(selectedClient.length === clients.length) ? (
-            <button className={`btn-secondary hover:bg-softgreentheme hover:text-greentheme ${selectedClient === clients ? 'hidden':''}`} onClick={selectAll}>{t('clients.buttons.selectAll')}</button>
+            <button className={`btn-secondary hover:bg-softgreentheme hover:text-greentheme ${selectedClient === clients ? 'hidden':''}`} onClick={selectAll}>{t('clients.buttons.selectAll')} Visible Clients</button>
           ) : (
             <button className={`btn ${localStorage.getItem('darkMode')==='true'?'text-white':''} ${selectedClient !== clients ? 'hidden':''}`} onClick={() => setSelectedClient([])}>{t('clients.buttons.deselectAll')}</button>
           )  
@@ -394,6 +427,7 @@ console.log(searchKeyword);
 
           </div>
           
+          <button className={` btn-secondary`} onClick={()=>{(setShowNotificationModal(true));setAllClients(true)}}>Send a notification to all</button>
           <button className={` ${selectedClient.length === 0 ?  localStorage.getItem('darkMode')==='true'?'btn hover:border-[0px] border-[0px] cursor-not-allowed bg-subblack text-softwhitetheme ':'btn hover:border-[0px] border-[0px] cursor-not-allowed bg-softgreytheme ':'btn-primary'}`} disabled={selectedClient.length===0} onClick={()=>{(setShowNotificationModal(true))}}>{t('clients.sendNotificationButton')}</button>
         </div>
         {pathname === "/clients" || pathname === "/clients/" ? (

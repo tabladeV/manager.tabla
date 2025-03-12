@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import Logo from '../../components/header/Logo'
-import { Moon, Sun } from 'lucide-react'
-import { BaseRecord, useCustom, useOne } from '@refinedev/core';
+import { ArrowDown, Expand, Moon, MoveDown, Sun } from 'lucide-react'
+import { BaseRecord, useCreate, useCustom, useCustomMutation, useOne, useUpdate } from '@refinedev/core';
 import ReservationProcess from '../../components/reservation/ReservationProcess';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { set } from 'date-fns';
+import { format, set } from 'date-fns';
 import { getSubdomain } from '../../utils/getSubdomain';
+import { useRef } from 'react';
+import { useClickAway } from 'react-use';
 
 const Modify = () => {
 
@@ -13,11 +15,73 @@ const Modify = () => {
   
   
     const [widgetInfo, setWidgetInfo] = useState<BaseRecord>();
+    
+    const [reservationInfo, setReservationInfo] = useState<BaseRecord>();
+    
+    const { mutate, isLoading: widgetLoading , error: widgetError } = useCustomMutation();
+    
+    const [updateInfo, setUpdateInfo] = useState<BaseRecord>();
 
     const { data: reservation , isLoading: reservationLoading, error: reservationError } = useOne({
-      resource: `/api/v1/bo/subdomains/public/cutomer/reservations`,
-      id: token+'/'
+      resource: `api/v1/bo/subdomains/public/cutomer/reservations`,
+      id: token+'',
+      queryOptions:{
+        onSuccess: (data) => {
+          setUpdateInfo(data.data)
+        }
+      }
     });
+
+    const { mutate: cancelReservation, isLoading: cancelLoading, error: cancelError } = useCreate();
+
+    const handleCancel = () => {
+      cancelReservation({
+        resource: `api/v1/bo/subdomains/public/cutomer/reservations/${token}/cancel`,
+        values: {}
+      })
+    }
+    useEffect(() => {
+      console.log('updateInfo', updateInfo)
+    }
+    , [updateInfo])
+
+
+    const modifyeservation = () => {
+      console.log('updateInfo', updateInfo?.occasion)
+      mutate({
+        url: `api/v1/bo/subdomains/public/cutomer/reservations/${token}`,
+        method: 'patch',
+        values:{
+          customer: {
+            email: updateInfo?.customer?.email,
+            first_name: updateInfo?.customer?.first_name, 
+            last_name: updateInfo?.customer?.last_name,
+            phone: updateInfo?.customer?.phone
+          },
+          status: updateInfo?.status,
+          source: updateInfo?.source,
+          commenter: updateInfo?.commenter,
+          internal_note: updateInfo?.internal_note,
+          date: data.reserveDate !== '' ? format(data.reserveDate, 'yyyy-MM-dd'): updateInfo?.date,
+          time: data.time !== '' ? data.time+':00': updateInfo?.time,
+          number_of_guests: data.guests !== 0 ? data.guests : updateInfo?.number_of_guests,
+          allergies: updateInfo?.allergies,
+          preferences: updateInfo?.preferences,
+          restaurant: updateInfo?.restaurant,
+          offer: 0,
+          occasion: updateInfo?.occasion
+        }
+      })
+      
+    }
+
+    useEffect(() => {
+      if(reservation){
+        setReservationInfo(reservation.data)
+      }
+    }, [reservation])
+
+    console.log('reservation', reservation)
 
     const subdomain = getSubdomain();
 
@@ -87,6 +151,29 @@ const Modify = () => {
       guests: 0
     });
 
+    const [message,setMessage] = useState('')
+
+    const { mutate: sendMessage, isLoading: loadingMessage, error: cancelMessage } = useCreate()
+
+    const handleSendMessage = () => {
+
+      sendMessage({
+        resource: `api/v1/bo/subdomains/public/cutomer/reservations/${token}/message`,
+        values: {
+          text: message
+        }
+      })
+
+    }
+
+    const occasionRef = useRef(null);
+
+    useClickAway(occasionRef, () => {
+      setShowOccasions(false);
+    });
+
+    const[showOccasions, setShowOccasions] = useState(false);
+
 
 
   return (
@@ -138,53 +225,53 @@ const Modify = () => {
                 <span className='font-bold mx-4'>
                   Special Request
                 </span>
-                A table beside the window
+                {reservationInfo?.commenter}
               </p>
               <p className={`text-md mt-1 inputs gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`}>
                 <span className='font-bold mx-4'>
                   Allergies
                 </span>
-                Peanuts
+                {reservationInfo?.allergies}
               </p>
               <p className={`text-md mt-1 inputs gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`}>
                 <span className='font-bold mx-4'>
                   Occasion
                 </span>
-                Birthday
+                {occasions?.find(occasion => occasion.id === updateInfo?.occasion)?.name}
               </p>
               <p className={`text-md  flex justify-around mt-1 inputs gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`}>
                 <p className={`text-md  gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] ' : ''}`}>
                   <span className='font-bold mr-4'>
                     Date
                   </span>
-                  2025-04-02
+                  {reservationInfo?.date}
                 </p>
                 <p className={`text-md  gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] ' : ''}`}>
                   <span className='font-bold mr-4'>
                     Time
                   </span>
-                  20:00
+                  {reservationInfo?.time.slice(0, 5)}
                 </p>
                 <p className={`text-md  gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] ' : ''}`}>
                   <span className='font-bold mr-4'>
                     Guests
                   </span>
-                  3
+                  {reservationInfo?.number_of_guests}
                 </p>
               </p>
-              <button className={`btn-primary mt-2 ${localStorage.getItem('darkMode') === 'true' ? '' : ''}`}>
+              {/* <button className={`btn-primary mt-2 ${localStorage.getItem('darkMode') === 'true' ? '' : ''}`} onClick={confirmReservation}>
                 Confirm
-              </button>
+              </button> */}
             </div>
             <div className='w-full '>
-              <h3 className={`text-xl font-bold mt-5 ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ''}`}>
+              {/* <h3 className={`text-xl font-bold mt-5 ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ''}`}>
                 Other actions
-              </h3>
+              </h3> */}
               <div className='flex  w-full gap-2 mt-2'>
                 <button className={`btn-secondary w-full ${localStorage.getItem('darkMode') === 'true' ? '' : ''}`} onClick={() => setSearchParams('tab=modify')}>
                   Modify
                 </button>
-                <button className={`btn-secondary w-full bg-softredtheme hover:bg-redtheme  text-redtheme hover:text-white ${localStorage.getItem('darkMode') === 'true' ? '' : ''}`}>
+                <button className={`btn-secondary w-full bg-softredtheme hover:bg-redtheme  text-redtheme hover:text-white ${localStorage.getItem('darkMode') === 'true' ? '' : ''}`} onClick={handleCancel} >
                   Cancel
                 </button>
               </div>
@@ -201,28 +288,40 @@ const Modify = () => {
                 <h3 className={`text-xl font-bold mt-5 ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ''}`}>
                   Modify your reservation
                 </h3>
-                <input type='text' name='Special request' className={`text-md inputs gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`} placeholder='Special request' />
-                <input type='text' name='Allergies' className={`text-md inputs gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`} placeholder='Allergies' />
-                <select name='Occasion' className={`text-md  gap-3 inputs ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`}>
-                  {occasions?.map((occasion, index) => {
-                    return <option key={index} value={occasion.id}>{occasion.name}</option>
-                  })}
-                </select>
+                <input type='text' defaultValue={reservationInfo?.commenter} name='Special request' className={`text-md inputs gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`} placeholder='Special request'  onChange={(e) => {setUpdateInfo({...updateInfo, commenter: e.target.value})}} />
+                <input type='text' defaultValue={reservationInfo?.allergies} name='Allergies' className={`text-md inputs gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`} placeholder='Allergies'  onChange={(e) => {setUpdateInfo({...updateInfo, allergies: e.target.value})}} />
+                <div className={`text-md cursor-pointer gap-3 inputs ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`} >
+                  <div className=' flex justify-between items-center' onClick={()=>{setShowOccasions(!showOccasions)}}>{occasions?.find(occasion => occasion.id === updateInfo?.occasion)?.name || 'Select an occasions'} 
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M9.40755 13.4643L4.69338 8.75011L5.87171 7.57178L9.99672 11.6968L14.1217 7.57178L15.3 8.75011L10.5859 13.4643C10.4296 13.6205 10.2177 13.7083 9.99672 13.7083C9.77574 13.7083 9.56382 13.6205 9.40755 13.4643Z" fill={localStorage.getItem('darkMode') === 'true' ? 'white' : 'black'}/>
+                    </svg>
+   
+                  </div>
+                </div>
+                <div  className='relative'>
+                  
+
+                  <div ref={occasionRef} className={`flex w-full p-4 flex-col absolute gap-2 ${showOccasions ? 'block' : 'hidden'} ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-textdarktheme' : 'bg-white text-blacktheme'} rounded-[10px] p-2`}>
+                    {showOccasions && occasions?.map((occasion: BaseRecord) => (
+                      <button key={occasion.id} className='text-left' onClick={() => {setUpdateInfo({...updateInfo, occasion: occasion.id});setShowOccasions(false)}}>{occasion.name}</button>
+                    ))}
+                  </div>
+                </div>
                 <div className={`btn cursor-default  text-subblack ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-textdarktheme' : 'bg-white text-blacktheme'} rounded-[10px] `}>
                   <div onClick={() => { setShowProcess(true) }} className='cursor-pointer flex gap-10 justify-around  p-1 items-center'>
                     <div className='flex gap-2'>
-                      <div onClick={() => { setShowProcess(true) }} className={`font-[600] ${localStorage.getItem('darkMode')==='true'? 'text-white':'text-bgdarktheme'}`}>Date </div>{(data.reserveDate === '') ? '' : <span onClick={() => { setShowProcess(true) }}>{data.reserveDate}</span>}
+                      <div onClick={() => { setShowProcess(true) }} className={`font-[600] ${localStorage.getItem('darkMode')==='true'? 'text-white':'text-bgdarktheme'}`}>Date </div>{(data.reserveDate === '') ? reservationInfo?.date : <span onClick={() => { setShowProcess(true) }}>{data.reserveDate}</span>}
                     </div>
                     <div className='flex gap-2'>
-                      <div onClick={() => { setShowProcess(true) }} className={`font-[600] ${localStorage.getItem('darkMode')==='true'? 'text-white':'text-bgdarktheme'}`}>Time </div> {(data.time === '') ? '' : <span onClick={() => { setShowProcess(true) }}>{data.time}</span>}
+                      <div onClick={() => { setShowProcess(true) }} className={`font-[600] ${localStorage.getItem('darkMode')==='true'? 'text-white':'text-bgdarktheme'}`}>Time </div> {(data.time === '') ? reservationInfo?.time : <span onClick={() => { setShowProcess(true) }}>{data.time}</span>}
                     </div>
                     <div className='flex gap-2'>
-                      <div onClick={() => { setShowProcess(true) }} className={`font-[600] ${localStorage.getItem('darkMode')==='true'? 'text-white':'text-bgdarktheme'}`}>Guests </div> {(data.guests === 0) ? '' : <span onClick={() => { setShowProcess(true) }}>{data.guests}</span>}
+                      <div onClick={() => { setShowProcess(true) }} className={`font-[600] ${localStorage.getItem('darkMode')==='true'? 'text-white':'text-bgdarktheme'}`}>Guests </div> {(data.guests === 0) ? reservationInfo?.number_of_guests : <span onClick={() => { setShowProcess(true) }}>{data.guests}</span>}
                     </div>
                   </div>
 
                 </div>
-                <button className={`btn-primary mt-2 ${localStorage.getItem('darkMode') === 'true' ? '' : ''}`}>
+                <button className={`btn-primary mt-2 ${localStorage.getItem('darkMode') === 'true' ? '' : ''}`} onClick={modifyeservation}>
                   Confirm
                 </button>
                 <button className={`btn ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ''}`} onClick={() => setSearchParams('tab=preview')}>
@@ -236,8 +335,8 @@ const Modify = () => {
               <h3 className={`text-xl font-bold mt-5 ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ''}`}>
                 Send a message
               </h3>
-              <textarea name='Message' className={`text-md inputs gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`} placeholder='Message' />
-              <button className={`btn-primary mt-2 ${localStorage.getItem('darkMode') === 'true' ? '' : ''}`}>
+              <textarea name='Message' className={`text-md inputs gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`} placeholder='Message' onChange={(e)=>{setMessage(e.target.value)}} />
+              <button className={`btn-primary mt-2 ${localStorage.getItem('darkMode') === 'true' ? '' : ''}`} onClick={handleSendMessage} >
                 Send
               </button>
               <button className={`btn ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ''}`} onClick={() => {setTab('preview'); setSearchParams('tab=preview')}}>

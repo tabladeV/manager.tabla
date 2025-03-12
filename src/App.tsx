@@ -63,11 +63,11 @@ const API_HOST = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL : "
 function App() {
   
   useEffect(() => {
-    document.title = "Tabla | Management";
+    document.title = "Tabla | Taste Morocco's best ";
   }, []);
 
   const subdomain = getSubdomain();
-  const isManager = subdomain === "manager" || import.meta.env.DEV;
+  const isManager = subdomain === "manager";
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLogedIn") === "true";
     const refreshToken = localStorage.getItem("refresh");
