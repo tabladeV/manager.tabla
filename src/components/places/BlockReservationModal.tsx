@@ -374,10 +374,10 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
                     <div className="text-xs text-gray-500 mt-1">
                       {block.block_type === 'FLOOR' && (
                         <>
-                          {block.floors?.length > 0 && (<span>Floors: {block.floors.join(', ')}</span>)}
+                          {block.floors?.length > 0 && (<span>Floors: {block.floors.map((el:  {name: string})=>el.name).join(', ')}</span>)}
                           <br/>
                           {block.tables?.length > 0 && (
-                            <span>Tables: {block.tables.join(', ')}</span>
+                            <span>Tables: {block.tables.map((el: {name: string})=>el.name).join(', ')}</span>
                           )}
                         </>
                       )}
