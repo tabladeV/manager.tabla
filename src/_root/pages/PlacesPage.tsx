@@ -42,6 +42,7 @@ export interface TableType {
   name: string;
   type: 'CIRCLE' | 'RECTANGLE';
   floor: number;
+  floor_name: string,
   x: number;
   y: number;
   rotation: number;

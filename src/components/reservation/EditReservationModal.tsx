@@ -90,7 +90,7 @@ const EditReservationModal = ({
   useEffect(() => {
     if (availableTablesData?.data) {
       setAvailableTables(availableTablesData.data as TableType[]);
-      setAvailableTables((prev)=>[...prev, ...(selectedClient?.tables?.map(t=>({...t, name: `${t.name} (${reservation?.floor_name})`})) || []) as TableType[]])
+      setAvailableTables((prev)=>[...prev, ...(selectedClient?.tables || []) as TableType[]])
     }
   }, [availableTablesData]);
   
@@ -199,7 +199,7 @@ const EditReservationModal = ({
                 const selectedOccasionObj = occasions.find(occasion => occasion.id === value) || undefined;
                 setSelectedClient({...selectedClient, occasion: selectedOccasionObj })
               }}
-              variant={'filled'}
+              variant="filled"
               clearable={true}
               searchable={true}
             />
@@ -212,7 +212,7 @@ const EditReservationModal = ({
             chips={true}
             options={[
               ...(availableTables?.map(table => ({
-                label: `${table.name} (${table.floor})`,
+                label: `${table.name} (${table.floor_name})`,
                 value: table.id
               })) || [])
             ]}
@@ -221,14 +221,11 @@ const EditReservationModal = ({
               const tableValue = value as number[];
               (tableValue?.length) ? setHasTable(true) : setHasTable(false);
               setSelectedTables(tableValue);
-              setSelectedClient({...selectedClient, tables: tableValue.map(id => {
-                const table = availableTables.find(t => t.id === id);
-                return table ? table : { id, name: '', type: 'RECTANGLE', floor: 0, x: 0, y: 0, capacity: 0, status: '', rotation: 0, height: 0, width: 0, max: 0, min: 0, current_reservations: []};
-              })})
+              // setSelectedClient({...selectedClient, tables: tableValue})
             }}
             searchable={true}
             clearable={true}
-            variant={isDarkMode ? "filled" : "outlined"}
+            variant="filled"
             loading={isLoadingTables}
             hint={isLoadingTables ? "Loading available tables..." : ""}
             persistentHint={isLoadingTables}

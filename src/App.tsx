@@ -59,6 +59,7 @@ import { ToastContainer } from "react-toastify";
 import { getSubdomain } from "./utils/getSubdomain";
 import "react-toastify/dist/ReactToastify.css";
 import { notificationProvider } from "./providers/notificationProvider";
+import MessagesPage from "./_root/pages/MessagesPage";
 const API_HOST = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL : "https://api.dev.tabla.ma";
 function App() {
   
@@ -250,6 +251,9 @@ function App() {
 
                           {/* Support - not restricted */}
                           <Route path="/support" element={<SupportPage />} />
+                          
+                          {/* Support - not restricted */}
+                          <Route path="/messages" element={<MessagesPage />} />
 
                           {/* Settings */}
                           <Route path="/settings" element={<SettingsPage />}>

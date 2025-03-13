@@ -20,6 +20,7 @@ import { Occasion } from "../../components/settings/Occasions"
 
 // Types and Interfaces
 interface ReceivedTables {
+  floor_name: any
   id: number;
   name: string;
 }

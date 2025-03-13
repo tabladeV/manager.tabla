@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom'
 import { usePowerContext } from '../../context/PowerContext';
 import { BaseKey, CanAccess,BaseRecord, useList, useUpdate } from '@refinedev/core';
+import { MessagesSquare } from 'lucide-react';
 
 interface NavigationMenuProps {
     stateOfSideBar: boolean;
@@ -48,9 +49,9 @@ const NavigationMenu = (props:NavigationMenuProps) => {
     }
   },[widgetData])
 
-    const normalMenuClass = 'flex items-center my-1 hover:bg-[#88AB6115] text-[#1E1E1E75] transition duration-150  rounded-[10px] px-[1em]  h-[3em]  gap-[1em]';
+    const normalMenuClass = 'flex items-center my-1 hover:bg-[#88AB6115] stroke-[#1E1E1E75] fill-[#1E1E1E75] text-[#1E1E1E75] transition duration-150  rounded-[10px] px-[1em]  h-[3em]  gap-[1em]';
     const darkMenuClass = 'flex items-center my-1 hover:bg-[#88AB6115] text-whitetheme transition duration-150  rounded-[10px] px-[1em]  h-[3em]  gap-[1em]';
-    const navigatedMenuClass = 'flex items-center my-1 bg-greentheme text-white hover:bg-[#88AB61] transition duration-150  rounded-[10px] px-[1em] h-[3em]  gap-[1em]';
+    const navigatedMenuClass = 'flex items-center my-1 bg-greentheme text-white fill-white hover:bg-[#88AB61] transition duration-150  rounded-[10px] px-[1em] h-[3em]  gap-[1em]';
 
     const {pathname} = useLocation();
 
@@ -212,6 +213,10 @@ const {t}=  useTranslation();
           <h2 className={`font-[500] text-[17px] ${localStorage.getItem('darkMode')==='true'?'text-textdarktheme':'' } ${stateOfSideBar? 'block':'hidden'}`}>{t('reviews.title')}</h2>
         </Link>
         </CanAccess>
+        <Link to='/messages' className={`${pathname.includes('messages') ? navigatedMenuClass : normalMenuClass } `}>
+          <MessagesSquare className='dark:fill-white'/>
+          <h2 className={`font-[500] text-[17px] ${localStorage.getItem('darkMode')==='true'?'text-textdarktheme':'' } ${stateOfSideBar? 'block':'hidden'}`}>{t('messages.title')}</h2>
+        </Link>
       </div>
       <div className='lt-sm:hidden'>
       <Link to='/support' className={`${pathname === '/support' ? navigatedMenuClass : normalMenuClass }`}>

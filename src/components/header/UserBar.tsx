@@ -38,6 +38,11 @@ const UserBar = () => {
 
   useEffect(() => {
     document.addEventListener("click", handleClickOutside);
+    console.log(localStorage.getItem('darkMode'))
+    document.documentElement.classList.toggle(
+      "dark",
+      localStorage.getItem('darkMode') === 'true'
+    );
     return () => {
       document.removeEventListener("click", handleClickOutside); // Cleanup on unmount
     };
@@ -56,6 +61,10 @@ const UserBar = () => {
       localStorage.setItem('darkMode', newMode.toString());
       return newMode;
     });
+    document.documentElement.classList.toggle(
+      "dark",
+      localStorage.getItem('darkMode') === 'true'
+    );
     window.location.reload();
   };
 
