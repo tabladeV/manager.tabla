@@ -243,9 +243,9 @@ const WidgetPage = () => {
           phone: userInfromation.phone
         },
         review_link: "",
-        restaurant: restaurantID as number,
+        restaurant: 1,
         internal_note: "",
-        occasion: userInfromation.occasion,
+        occasion: Number(userInfromation.occasion),
         source: 'WIDGET',
         status: 'PENDING',
         allergies: userInfromation.allergies,

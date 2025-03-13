@@ -14,7 +14,7 @@ import { useList } from '@refinedev/core'
 const Home = () => {
   
   useEffect(() => {
-    document.title = 'Tabla Back Office'
+    document.title = `Tabla | taste Morocco's best`
   }, [])
 
   const{data, isLoading, error} = useList({

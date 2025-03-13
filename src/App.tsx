@@ -64,7 +64,7 @@ const API_HOST = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL : "
 function App() {
   
   useEffect(() => {
-    document.title = "Tabla | Management";
+    document.title = "Tabla | Taste Morocco's best ";
   }, []);
 
   const subdomain = getSubdomain();
