@@ -96,6 +96,7 @@
     "reservations": {
       "title": "Reservations",
       "searchPlaceholder": "Search...",
+      "occasion": "Occasion",
       "filters": {
         "fulfilled": "Fulfilled",
         "seated": "Seated",
@@ -120,11 +121,12 @@
         "time": "Time",
         "guests": "Guests",
         "madeBy": "Table",
+        "tables": "Tables",
         "status": "Status",
         "review": "reviews",
         "sendReview": "Send Review",
-        "reviewed": "Review sent"
-
+        "reviewed": "Review sent",
+        "details": "Reservation Details"
       },
       "statusLabels": {
         "pending": "Pending",

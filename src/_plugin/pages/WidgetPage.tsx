@@ -88,7 +88,14 @@ const WidgetPage = () => {
   //   }
   // });
 
-  const { mutate: createReservation } = useCreate()
+  const { mutate: createReservation } = useCreate({
+    errorNotification(error, values, resource) {
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
+    },
+  })
 
   const [widgetInfo, setWidgetInfo] = useState<BaseRecord>();
 

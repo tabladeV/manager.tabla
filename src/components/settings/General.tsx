@@ -220,7 +220,14 @@ const General = () => {
   const { t } = useTranslation();
 
   // Use the useUpdate hook
-  const { mutate: updateRestaurant } = useUpdate();
+  const { mutate: updateRestaurant } = useUpdate({
+    errorNotification(error, values, resource) {
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
+    },
+  });
 
   const { mutate, isLoading: subdomainLoading, data, error: subdomainError } = useCustomMutation();
 

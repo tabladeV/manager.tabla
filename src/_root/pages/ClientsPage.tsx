@@ -53,7 +53,13 @@ const ClientsPage = () => {
       onSuccess(data){
         setTemplates(data.data as unknown as BaseRecord[])
       }
-    }
+    },
+    errorNotification(error, values, resource) {
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
+    },
   });
 
   const [searchKeyword, setSearchKeyword] = useState('');
@@ -82,7 +88,13 @@ console.log(searchKeyword);
       onSuccess(data){
         setClientsAPIInfo(data.data as unknown as ClientsType)
       }
-    }
+    },
+    errorNotification(error, values, resource) {
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
+    },
 
   });
 
@@ -96,6 +108,12 @@ console.log(searchKeyword);
         onError: (error) => {
           console.log('Error in sending notification to all:', error.message);
         },
+      },
+      errorNotification(error, values, resource) {
+        return {
+          type: 'error',
+          message: error?.formattedMessage,
+        };
       },
     }
   )
@@ -111,6 +129,12 @@ console.log(searchKeyword);
         onError: (error) => {
           console.log('Error in sending notification:', error.message);
         },
+      },
+      errorNotification(error, values, resource) {
+        return {
+          type: 'error',
+          message: error?.formattedMessage,
+        };
       },
     }
   )

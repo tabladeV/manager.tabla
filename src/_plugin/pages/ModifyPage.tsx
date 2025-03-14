@@ -29,10 +29,23 @@ const Modify = () => {
         onSuccess: (data) => {
           setUpdateInfo(data.data)
         }
-      }
+      },
+      errorNotification(error, values, resource) {
+        return {
+          type: 'error',
+          message: error?.formattedMessage,
+        };
+      },
     });
 
-    const { mutate: cancelReservation, isLoading: cancelLoading, error: cancelError } = useCreate();
+    const { mutate: cancelReservation, isLoading: cancelLoading, error: cancelError } = useCreate({
+      errorNotification(error, values, resource) {
+        return {
+          type: 'error',
+          message: error?.formattedMessage,
+        };
+      },
+    });
 
     const handleCancel = () => {
       cancelReservation({
@@ -153,7 +166,14 @@ const Modify = () => {
 
     const [message,setMessage] = useState('')
 
-    const { mutate: sendMessage, isLoading: loadingMessage, error: cancelMessage } = useCreate()
+    const { mutate: sendMessage, isLoading: loadingMessage, error: cancelMessage } = useCreate({
+      errorNotification(error, values, resource) {
+        return {
+          type: 'error',
+          message: error?.formattedMessage,
+        };
+      },
+    })
 
     const handleSendMessage = () => {
 

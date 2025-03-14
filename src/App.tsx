@@ -113,7 +113,18 @@ function App() {
                         element={
                           <div>
                             <Outlet />
-                            <ToastContainer stacked />
+                            <ToastContainer
+                              position="top-right"
+                              autoClose={5000}
+                              hideProgressBar={false}
+                              newestOnTop
+                              closeOnClick
+                              rtl={false}
+                              pauseOnFocusLoss
+                              draggable
+                              pauseOnHover
+                              theme="light" // or "dark" based on your isDarkMode
+                            />
                           </div>
                         }
                       >

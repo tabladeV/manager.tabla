@@ -23,24 +23,15 @@ const Home = () => {
 
   const [user, setUser] = useState<any>()
 
-
-  console.log('user', data) 
   useEffect(() => {
     setUser(data?.data)
   }, [data])
-
-  useEffect(() => {
-    if(user){
-      console.log(user, 'user')
-    }
-  }, [user])
 
   
 
   
   const { t } = useTranslation();
 
-  console.log('Home')
   return (
     <div className={i18next.language === 'ar' ?'rtl':''}>
 

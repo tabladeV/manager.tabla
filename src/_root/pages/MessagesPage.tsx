@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
-import { BaseKey, BaseRecord, useList, useCreate } from "@refinedev/core";
+import { BaseKey, BaseRecord, useList, useForm } from "@refinedev/core";
 import SearchBar from "../../components/header/SearchBar";
 import Pagination from "../../components/reservation/Pagination";
 import { MessageSquare, User, Calendar, ArrowRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 // Types and Interfaces
 interface Message extends BaseRecord {
@@ -11,14 +12,20 @@ interface Message extends BaseRecord {
   text: string;
   created_at: string;
   updated_at: string;
-  reservation: number;
-  restaurant: number;
-  customer?: {
-    id: BaseKey;
-    full_name: string;
-    email: string;
-    phone?: string;
+  reservation?: {
+    customer?: {
+      id: BaseKey;
+      first_name: string;
+      full_name: string;
+      last_name: string;
+      email: string;
+      phone?: string;
+    };
+    date?: string,
+    time?: string,
+    id?: BaseKey;
   };
+  restaurant: number;
 }
 
 interface MessagesType {
@@ -31,26 +38,54 @@ interface MessageTableProps {
   messages: Message[];
   onSelectMessage: (message: Message) => void;
   selectedMessages: Message[];
-  isDarkMode: boolean;
 }
 
 interface MessageRowProps {
   message: Message;
   isSelected: boolean;
   onSelect: () => void;
-  isDarkMode: boolean;
-}
-
-interface LoadingRowProps {
-  isDarkMode: boolean;
 }
 
 interface NotificationModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
   selectedMessages: Message[];
-  onSendNotification: (subject: string, message: string) => void;
-  isDarkMode: boolean;
+  onSubmit: (values: { subject: string; message: string }) => void;
+  formLoading: boolean;
+}
+
+interface MessagesFiltersProps {
+  focusedFilter: string;
+  setFocusedFilter: (filter: string) => void;
+  selectingDay: string;
+  setFocusedDate: (focused: boolean) => void;
+  setDefaultFilter: () => void;
+}
+
+const isDarkMode = localStorage.getItem("darkMode") === "true";
+
+// ReservationFilters Component
+const MessagesFilters: React.FC<MessagesFiltersProps> = ({ 
+  focusedFilter, 
+  setFocusedFilter, 
+  selectingDay, 
+  setFocusedDate, 
+  setDefaultFilter,
+}) => {
+  const { t } = useTranslation();
+  return (
+    <div className="flex flex-wrap gap-2 mx-1">
+      <button 
+        className={`gap-2 flex items-center ${isDarkMode ? 'text-whitetheme' : ''} ${selectingDay === '' ? 'btn' : 'btn-primary'}`} 
+        onClick={() => setFocusedDate(true)}
+      >
+        {t('reservations.filters.date')}
+      </button>
+      <button onClick={setDefaultFilter} className={`${isDarkMode ? 'text-whitetheme' : ''} ${(focusedFilter === '') && (selectingDay === '') ? 'btn-primary' : 'btn'}`}>
+        {t('reservations.filters.all')}
+      </button>
+    </div>
+  )
 }
 
 // Main MessagesPage Component
@@ -58,8 +93,6 @@ const MessagesPage = () => {
   useEffect(() => {
     document.title = "Messages | Tabla";
   }, []);
-
-  const isDarkMode = localStorage.getItem("darkMode") === "true";
 
   // States
   const [page, setPage] = useState<number>(1);
@@ -80,47 +113,45 @@ const MessagesPage = () => {
     queryOptions: {
       onSuccess: (data) => {
         setMessagesAPIInfo(data.data as unknown as MessagesType);
-      },
-      onError: (error) => {
-        console.log("Error fetching data:", error);
-      },
+      }
+    },
+    errorNotification(error, values, resource) {
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
     },
   });
 
-  // Send notification mutation
-  const { mutate: sendNotification } = useCreate({
+  // Use Refine's useForm hook for form handling - configured for FormData
+  const { onFinish, formLoading, mutationResult } = useForm({
     resource: "api/v1/bo/notifications/",
-    mutationOptions: {
-      onSuccess: () => {
-        setShowNotificationModal(false);
-        setSelectedMessages([]);
-        // Optionally refresh messages to see updates
-        refetch();
-      },
-      onError: (error) => {
-        console.log("Error sending notification:", error);
-      },
+    action: "create",
+    redirect: false, 
+    onMutationSuccess: () => {
+      setShowNotificationModal(false);
+      setSelectedMessages([]);
+      // Refresh messages to see updates
+      refetch();
+    },
+    errorNotification: (error, values) => {
+      return {
+        type: 'error',
+        message: error?.message || "An error occurred while sending notifications",
+      };
+    },
+    successNotification: () => {
+      return {
+        type: 'success',
+        message: "Notifications sent successfully",
+      };
     },
   });
 
   // Effects to update messages from API
   useEffect(() => {
     if (messagesAPIInfo) {
-      // Assume we need to fetch customer details for each message
-      // This is a placeholder for actual implementation
-      const enrichedMessages = messagesAPIInfo.results.map(message => {
-        return {
-          ...message,
-          // This is a placeholder for customer data that would be attached to the message
-          // In a real implementation, you might need to fetch this separately
-          customer: {
-            id: message.reservation, // Assuming reservation is the customer ID
-            full_name: "Customer Name", // Placeholder
-            email: "customer@example.com", // Placeholder
-          }
-        };
-      });
-      setMessages(enrichedMessages);
+      setMessages(messagesAPIInfo.results);
     }
   }, [messagesAPIInfo]);
 
@@ -149,20 +180,31 @@ const MessagesPage = () => {
     }
   };
 
-  const handleSendNotification = (subject: string, messageText: string) => {
+  const handleSubmitNotification = (formValues: { subject: string; message: string }) => {
+    const formData = new FormData();
     // Get unique customer IDs from selected messages
     const customerIds = Array.from(
-      new Set(selectedMessages.map(message => message.reservation))
-    );
+      new Set(selectedMessages.map(message => Number(message.reservation?.customer?.id || 0)).filter(Boolean))
+    ) as BaseKey[];
+    selectedMessages.map(message => {
+      if (message?.reservation?.customer?.id) {
+        formData.append('customers', message.reservation.customer.id.toString());
+      }
+    })
+    
+  
+    
+    // Append customer IDs as a comma-separated string or as individual form fields
+    // formData.append('customers', JSON.stringify(customerIds.join(',')));
+    // formData.append('customers', customerIds.join(','));
+    
+    // Append other form fields
+    formData.append('restaurant', localStorage.getItem('restaurant_id') || '');
+    formData.append('subject', formValues.subject);
+    formData.append('message', formValues.message);
 
-    sendNotification({
-      values: {
-        customers: customerIds,
-        restaurant: Number(localStorage.getItem("restaurant_id")),
-        subject: subject,
-        message: messageText,
-      },
-    });
+    // Submit the form with FormData
+    onFinish(formData as any);
   };
 
   return (
@@ -173,8 +215,8 @@ const MessagesPage = () => {
           showModal={showNotificationModal}
           setShowModal={setShowNotificationModal}
           selectedMessages={selectedMessages}
-          onSendNotification={handleSendNotification}
-          isDarkMode={isDarkMode}
+          onSubmit={handleSubmitNotification}
+          formLoading={formLoading}
         />
       )}
 
@@ -214,7 +256,6 @@ const MessagesPage = () => {
           messages={messages}
           onSelectMessage={handleSelectMessage}
           selectedMessages={selectedMessages}
-          isDarkMode={isDarkMode}
         />
         <Pagination
           setPage={(newPage) => {
@@ -234,7 +275,6 @@ const MessageTable: React.FC<MessageTableProps> = ({
   messages,
   onSelectMessage,
   selectedMessages,
-  isDarkMode,
 }) => {
   return (
     <table className="min-w-full rounded-lg overflow-auto">
@@ -255,7 +295,7 @@ const MessageTable: React.FC<MessageTableProps> = ({
     </thead>
     <tbody className={`divide-y bg-white dark:divide-gray-700 dark:bg-bgdarktheme divide-gray-200`}>
       {isLoading ? (
-        [...Array(5)].map((_, index) => <LoadingRow key={index} isDarkMode={isDarkMode} />)
+        [...Array(5)].map((_, index) => <LoadingRow key={index}  />)
       ) : messages.length === 0 ? (
         <tr>
           <td colSpan={5} className="py-4 text-center">
@@ -271,7 +311,6 @@ const MessageTable: React.FC<MessageTableProps> = ({
             message={message}
             isSelected={selectedMessages.some((m) => m.id === message.id)}
             onSelect={() => onSelectMessage(message)}
-            isDarkMode={isDarkMode}
           />
         ))
       )}
@@ -281,7 +320,7 @@ const MessageTable: React.FC<MessageTableProps> = ({
 };
 
 // MessageRow Component
-const MessageRow: React.FC<MessageRowProps> = ({ message, isSelected, onSelect, isDarkMode }) => {
+const MessageRow: React.FC<MessageRowProps> = ({ message, isSelected, onSelect }) => {
   const date = new Date(message.created_at);
   const formattedDate = format(date, "dd MMM yyyy");
   const formattedTime = format(date, "HH:mm");
@@ -309,10 +348,10 @@ const MessageRow: React.FC<MessageRowProps> = ({ message, isSelected, onSelect, 
           </div>
           <div className="ml-4">
             <div className={`font-medium ${isDarkMode ? "text-white" : "text-gray-900"}`}>
-              {message.customer?.full_name || "Customer"}
+              {`${message?.reservation?.customer?.first_name} ${message?.reservation?.customer?.last_name}`  || "Customer"}
             </div>
             <div className={`text-sm ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>
-              {message.customer?.email || "No email provided"}
+              {message?.reservation?.customer?.email || "No email provided"}
             </div>
           </div>
         </div>
@@ -352,7 +391,7 @@ const MessageRow: React.FC<MessageRowProps> = ({ message, isSelected, onSelect, 
 };
 
 // Loading Row Component
-const LoadingRow: React.FC<LoadingRowProps> = ({ isDarkMode }) => {
+const LoadingRow: React.FC = () => {
   return (
     <tr>
       <td className="px-3 py-4 whitespace-nowrap">
@@ -388,8 +427,8 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
   showModal,
   setShowModal,
   selectedMessages,
-  onSendNotification,
-  isDarkMode,
+  onSubmit,
+  formLoading
 }) => {
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
@@ -401,6 +440,11 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
       setMessage("");
     }
   }, [showModal]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit({ subject, message });
+  };
 
   if (!showModal) return null;
 
@@ -415,7 +459,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
         <h2 className="text-2xl font-semibold mb-6">
           Respond to Message
         </h2>
-        <div className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="p-2 rounded-[10px] cursor-default">
             <p className="text-greentheme font-[600] mb-2">
               Send to
@@ -427,7 +471,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                   className={`flex items-center gap-2 ${isDarkMode ? "text-white" : ""}`}
                 >
                   <p className={`text-sm btn ${isDarkMode ? "text-white" : ""}`}>
-                    {message.customer?.full_name || `Customer #${message.reservation}`}
+                    {`${message?.reservation?.customer?.first_name} ${message?.reservation?.customer?.last_name}` || `Customer #${message.reservation}`}
                   </p>
                 </div>
               ))}
@@ -446,6 +490,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
             className={`inputs-unique ${isDarkMode ? "bg-bgdarktheme2" : "bg-white"}`}
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
+            required
           />
 
           {/* Message */}
@@ -457,25 +502,28 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
             className={`inputs-unique ${
               isDarkMode ? "bg-bgdarktheme2 focus:border-none" : "bg-white"
             }`}
+            required
           ></textarea>
 
           {/* Action Buttons */}
           <div className="flex gap-4 justify-end">
             <button
+              type="button"
               className={`btn-secondary ${isDarkMode ? "text-white" : ""}`}
               onClick={() => setShowModal(false)}
+              disabled={formLoading}
             >
               Cancel
             </button>
             <button
-              className="btn-primary"
-              onClick={() => onSendNotification(subject, message)}
-              disabled={!subject || !message}
+              type="submit"
+              className={`btn-primary ${formLoading ? 'opacity-70 cursor-wait' : ''}`}
+              disabled={!subject || !message || formLoading}
             >
-              Send
+              {formLoading ? 'Sending...' : 'Send'}
             </button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );

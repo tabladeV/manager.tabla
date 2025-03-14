@@ -27,7 +27,7 @@ interface SelectProps {
 }
 
 const BaseSelect: React.FC<SelectProps> = ({
-  label = "Select",
+  label,
   placeholder = "Select an option",
   options = [],
   multiple = false,

@@ -80,6 +80,13 @@ const DropTarget: React.FC<DropTargetProps> = ({
         onUpdateReservations();
       },
     },
+    errorNotification(error, values, resource) {
+        return {
+          type: 'error',
+          message: error?.formattedMessage,
+        };
+    },
+    
   });
   
   const { mutate: moveReservation, isLoading: loadingMoveReservation } = useUpdate({
@@ -87,6 +94,12 @@ const DropTarget: React.FC<DropTargetProps> = ({
       onSuccess: (data, variables) => {
         onUpdateReservations();
       },
+    },
+    errorNotification(error, values, resource) {
+        return {
+          type: 'error',
+          message: error?.formattedMessage,
+        };
     },
   });
   
@@ -160,9 +173,10 @@ const DropTarget: React.FC<DropTargetProps> = ({
   // Handle option selection (move or link)
   const handleOptionClick = (option: 'move' | 'link') => {
     if (!draggedReservation || isLoading) return;
-    
+    console.log(draggedReservation);
     switch (option) {
       case 'move': 
+      console.log({})
         moveReservation({
           resource: `api/v1/bo/tables/${draggedReservation?.fromTableId}/move-reservation/${id}`,
           id: draggedReservation.id+'/',
@@ -173,6 +187,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
         });
         break;
       case 'link':
+        console.log({})
         mutateReservations({
           id: draggedReservation.id+'/',
           values: {
@@ -236,22 +251,16 @@ const DropTarget: React.FC<DropTargetProps> = ({
   };
 
   const isDarkMode = localStorage.getItem('darkMode') === 'true';
-  let isClientTimeOutId:NodeJS.Timeout;
   return (
     <>
     <div
       onMouseOver={() =>{ 
         if(!showOptions) {
-          clearTimeout(isClientTimeOutId)
           setIsClients(true);
-          isClientTimeOutId = setTimeout(()=> setIsClients(false), 5000);
         }
       }}
       onMouseLeave={() => {
-        if(!showOptions){
-          clearTimeout(isClientTimeOutId)
-          setIsClients(false)
-        }
+        setIsClients(false)
       }}
       ref={drop}
       key={id}
@@ -300,7 +309,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
       )}
       
       {/* Make the reservation draggable if the table has one */}
-      {droppedItems.length > 0 ? (
+      {reservedBy ? (
         <div className="absolute inset-0 z-10">
           {!isLoading && (
             <DraggableTableReservation

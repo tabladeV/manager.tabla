@@ -19,7 +19,14 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
   const [floors, setFloors] = useState<any>([]);
   const [blockedReservations, setBlockedReservations] = useState<any>([]);
 
-  const {mutate: createReservationPause, isLoading: loadingCreate} = useCreate();
+  const {mutate: createReservationPause, isLoading: loadingCreate} = useCreate({
+    errorNotification(error, values, resource) {
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
+    },
+  });
   const {mutate: deleteReservationPause, isLoading: loadingDelete} = useDelete();
   
 
@@ -29,7 +36,13 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
       onSuccess(data) {
         setFloors(data?.data as unknown as any[]);
       }
-    }
+    },
+    errorNotification(error, values, resource) {
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
+    },
   });
   
   const { data: reservationPauses, isLoading: loadingReservationPauses, error: reservationPausesError, refetch: refetchReservationPauses } = useList({
@@ -38,7 +51,13 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
       onSuccess(data) {
         setBlockedReservations(data?.data as unknown as any[]);
       }
-    }
+    },
+    errorNotification(error, values, resource) {
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
+    },
   });
   
   const { chosenDay } = useDateContext();
@@ -281,6 +300,7 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
                     label='SELECT FLOOR'
                     options={mappedFloors()}
                     multiple
+                    searchable={true}
                     value={selectedFloor}
                     onChange={(val) => {
                       setSelectedFloor(val as string[]);
@@ -295,6 +315,7 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
                     label='SELECT TABLE'
                     options={filteredTables()}
                     multiple
+                    searchable={true}
                     value={selectedTable}
                     onChange={(val) => setSelectedTable(val as string[])}
                     chips={true}
