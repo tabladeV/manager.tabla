@@ -170,6 +170,60 @@
   scrollbar-width: none; /* Firefox */
 }
 
+.power-icon-on {
+  animation: blinkGreen 4s infinite;
+}
+
+.power-icon-off {
+  animation: blinkRed 4s infinite;
+}
+
+.power-bg-pulse-on {
+  animation: pulseGreenBg 4s infinite;
+}
+
+.power-bg-pulse-off {
+  animation: pulseRedBg 4s infinite;
+}
+
+@keyframes blinkGreen {
+  0%, 100% { color: #10B981; }
+  50% { color: white; }
+}
+
+@keyframes blinkRed {
+  0%, 100% { color: #EF4444; }
+  50% { color: white; }
+}
+
+@keyframes pulseGreenBg {
+  0%, 100% { opacity: 0.05; }
+  50% { opacity: 0.15; }
+}
+
+@keyframes pulseRedBg {
+  0%, 100% { opacity: 0.05; }
+  50% { opacity: 0.15; }
+}
+
+/* Dark mode variants */
+.dark .power-icon-on {
+  animation: blinkGreenDark 4s infinite;
+}
+
+.dark .power-icon-off {
+  animation: blinkRedDark 4s infinite;
+}
+
+@keyframes blinkGreenDark {
+  0%, 100% { color: #34D399; }
+  50% { color: white; }
+}
+
+@keyframes blinkRedDark {
+  0%, 100% { color: #F87171; }
+  50% { color: white; }
+}
 
 
 @layer base{

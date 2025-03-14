@@ -29,12 +29,21 @@ const DesignPlaces: React.FC = () => {
   // API hooks
   const { mutate: upDateFloor } = useUpdate({
     resource: 'api/v1/bo/floors',
+    errorNotification(error, values, resource) {
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
+    },
   });
   const { mutate: mutateDeleting } = useDelete();
   const { mutate } = useCreate({
     resource: 'api/v1/bo/floors/',
-    mutationOptions: {
-      onError: (error) => console.log('Error adding floor:', error),
+    errorNotification(error, values, resource) {
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
     },
   });
 
@@ -103,7 +112,13 @@ const DesignPlaces: React.FC = () => {
       successNotification: ()=>({
         message: `${placeName} Successfully Added.`,
         type: "success",
-      })
+      }),
+      errorNotification(error, values, resource) {
+        return {
+          type: 'error',
+          message: error?.formattedMessage,
+        };
+      },
     },
   );
     input.value = '';
@@ -125,6 +140,12 @@ const DesignPlaces: React.FC = () => {
             message: `Successfully Deleted Floor ${name}.`,
             type: "success",
           }
+        },
+        errorNotification(error, values, resource) {
+          return {
+            type: 'error',
+            message: error?.formattedMessage,
+          };
         },
       },
       {

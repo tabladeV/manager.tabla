@@ -12,7 +12,14 @@ const ReviewPage = () => {
   const { restaurant } = useParams();
   const { token } = useParams();
 
-  const { mutate: createReview } = useCreate();
+  const { mutate: createReview } = useCreate({
+    errorNotification(error, values, resource) {
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
+    },
+  });
 
   const { data: res, isLoading, error } = useOne({
     resource: `api/v1/bo/subdomains/public/cutomer/reviws`,
@@ -28,7 +35,13 @@ const ReviewPage = () => {
           setStep(3);
         }
       }
-    }
+    },
+    errorNotification(error, values, resource) {
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
+    },
 
   });
 

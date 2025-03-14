@@ -208,11 +208,23 @@ export default function Occasions() {
       onSuccess(data) {
         setOccasionsAPIInfo(data.data as unknown as OccasionsType)
       }
-    }
+    },
+    errorNotification(error, values, resource) {
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
+    },
   })
 
   const { mutate: updateOccasion } = useUpdate({
     resource: `api/v1/bo/occasions`, // Placeholder API endpoint
+    errorNotification(error, values, resource) {
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
+    },
   });
 
   const [occasions, setOccasions] = useState<Occasion[]>(initialOccasions)
@@ -257,7 +269,14 @@ export default function Occasions() {
 
   const { t } = useTranslation();
 
-  const { mutate: addOccasionMutate } = useCreate();
+  const { mutate: addOccasionMutate } = useCreate({
+    errorNotification(error, values, resource) {
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
+    },
+  });
   const { mutate: deleteOccasionMutate } = useDelete();
 
   const handleOccasionUpdate = () => {

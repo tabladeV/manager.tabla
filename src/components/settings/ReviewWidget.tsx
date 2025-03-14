@@ -77,7 +77,14 @@ const ReviewWidget = () => {
     }
   };
 
-  const { mutate: updateWidget } = useUpdate();
+  const { mutate: updateWidget } = useUpdate({
+    errorNotification(error, values, resource) {
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
+    },
+  });
 
   const handleSave = async () => {
     if (!reviewSettings) return;

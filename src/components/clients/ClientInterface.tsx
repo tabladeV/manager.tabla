@@ -58,16 +58,27 @@ const ClientInterface = () => {
 
   const {data: reservations, isLoading: isLoadingReservations, error: errorReservations} = useList({
     resource: `api/v1/bo/reservations/${id}/`,
-
+    errorNotification(error, values, resource){
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
+    },
   });
-  console.log(data)
 
   const {data: userReservations , isLoading: reservationLoading, error: reservationError}= useList({
     resource: `api/v1/bo/customers/${id}/reservations/`,
 
   })
 
-  const {mutate: updateClient} = useUpdate();
+  const {mutate: updateClient} = useUpdate({
+    errorNotification(error, values, resource) {
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
+    },
+  });
 
 
   const [reservation, setReservation] = useState<BaseRecord[]>([]);
@@ -83,7 +94,6 @@ const ClientInterface = () => {
     }
   }, [data, reservations]);
 
-  console.log(reservation,'new')
 
 
 
@@ -231,6 +241,12 @@ const ClientInterface = () => {
                     "X-Restaurant-ID": 1,
                 },
             },
+          errorNotification(error, values, resource) {
+            return {
+              type: 'error',
+              message: error?.formattedMessage,
+            };
+          }
         },
         {
             onSuccess: () => {
@@ -238,7 +254,6 @@ const ClientInterface = () => {
                 navigate('/clients');
             },
             onError: (error) => {
-                console.error("Error deleting the client:", error);
                 alert("Failed to delete the client. Please try again.");
             },
         }

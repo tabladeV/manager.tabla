@@ -9,13 +9,7 @@ interface TableType extends OriginalTableType {
   id: number;
 }
 import { Occasion, OccasionsType } from "../settings/Occasions";
-import { Reservation } from "../../_root/pages/ReservationsPage";
-
-// Types and Interfaces
-interface ReceivedTables {
-  id: number;
-  name: string;
-}
+import { ReceivedTables, Reservation } from "../../_root/pages/ReservationsPage";
 
 interface DataTypes {
   reserveDate: string;
@@ -140,7 +134,6 @@ const EditReservationModal = ({
           <div>
             <BaseSelect
               label={t('reservations.edit.informations.madeBy')}
-              placeholder={t('reservations.edit.source.placeholder')}
               options={[
               { label: 'Market Place', value: 'MARKETPLACE' },
               { label: 'Widget', value: 'WIDGET' },
@@ -151,8 +144,7 @@ const EditReservationModal = ({
               value={selectedClient.source}
               onChange={(value) => setSelectedClient({...selectedClient, source: value as ReservationSource})}
               variant={isDarkMode ? "filled" : "outlined"}
-              clearable={true}
-              searchable={true}
+              clearable={false}
             />
           </div>
           
@@ -188,7 +180,7 @@ const EditReservationModal = ({
           </div>
           <div>
             <BaseSelect
-              label={t('reservations.edit.informations.occasion')}
+              label={t('reservations.occasion')}
               options={occasions.map(occasion => ({
                 label: occasion.name,
                 value: occasion.id
@@ -207,7 +199,7 @@ const EditReservationModal = ({
           {(selectedClient.status === ('APPROVED') || selectedClient.status === ('SEATED')) && (
             <BaseSelect
             label={t('reservations.edit.informations.table')}
-            placeholder={t('reservations.edit.tables.placeholder')}
+            placeholder={t('reservations.tableHeaders.tables')}
             multiple
             chips={true}
             options={[
@@ -221,7 +213,10 @@ const EditReservationModal = ({
               const tableValue = value as number[];
               (tableValue?.length) ? setHasTable(true) : setHasTable(false);
               setSelectedTables(tableValue);
-              // setSelectedClient({...selectedClient, tables: tableValue})
+              setSelectedClient({
+                ...selectedClient,
+                tables: tableValue.map(id => availableTables.find(table => table.id === id) as ReceivedTables)
+              })
             }}
             searchable={true}
             clearable={true}

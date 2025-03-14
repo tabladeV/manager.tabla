@@ -19,8 +19,8 @@ import { ReservationSource, ReservationStatus } from "../../components/common/ty
 import { Occasion } from "../../components/settings/Occasions"
 
 // Types and Interfaces
-interface ReceivedTables {
-  floor_name: any
+export interface ReceivedTables {
+  floor_name?: string,
   id: number;
   name: string;
 }
@@ -608,6 +608,12 @@ const ReservationsPage: React.FC = () => {
   // Mutations
   const { mutate: upDateReservation } = useUpdate({
     resource: `api/v1/bo/reservations`,
+    errorNotification(error, values, resource) {
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
+    },
   });
 
   const { mutate: createReview } = useCreate({
@@ -619,6 +625,12 @@ const ReservationsPage: React.FC = () => {
     },
     mutationOptions: {
       retry: 3
+    },
+    errorNotification(error, values, resource) {
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
     },
   });
 
