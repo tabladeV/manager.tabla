@@ -114,6 +114,7 @@
         "id": "ID",
         "name": "Full Name",
         "email": "Email",
+        "details": "Details",
         "phone": "Phone",
         "date": "Date",
         "comment": "Comment",

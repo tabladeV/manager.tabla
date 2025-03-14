@@ -8,6 +8,7 @@ import { format, set } from 'date-fns';
 import { getSubdomain } from '../../utils/getSubdomain';
 import { useRef } from 'react';
 import { useClickAway } from 'react-use';
+import BaseBtn from '../../components/common/BaseBtn';
 
 const Modify = () => {
 
@@ -22,14 +23,20 @@ const Modify = () => {
     
     const [updateInfo, setUpdateInfo] = useState<BaseRecord>();
 
+    const [errorPage, setErrorPage] = useState(false);
+
     const { data: reservation , isLoading: reservationLoading, error: reservationError } = useOne({
       resource: `api/v1/bo/subdomains/public/cutomer/reservations`,
       id: token+'',
       queryOptions:{
         onSuccess: (data) => {
           setUpdateInfo(data.data)
+        },
+        onError: (error) => {
+          error.statusCode === 404 && setErrorPage(true)
         }
       }
+      // when it's 404 show a an error page
     });
 
     const { mutate: cancelReservation, isLoading: cancelLoading, error: cancelError } = useCreate();
@@ -104,6 +111,13 @@ const Modify = () => {
     const activeTab = searchParams.get("tab") || "preview";
 
     const [tab, setTab] = useState('preview');
+
+    useEffect(() => {
+      if(errorPage){
+        setTab('error')
+      }
+    }
+    , [errorPage,tab])
     
     const { data: widgetData, isLoading, error } = useOne({
       resource: `api/v1/bo/subdomains/public/cutomer/reservations`,
@@ -271,9 +285,12 @@ const Modify = () => {
                 <button className={`btn-secondary w-full ${localStorage.getItem('darkMode') === 'true' ? '' : ''}`} onClick={() => setSearchParams('tab=modify')}>
                   Modify
                 </button>
-                <button className={`btn-secondary w-full bg-softredtheme hover:bg-redtheme  text-redtheme hover:text-white ${localStorage.getItem('darkMode') === 'true' ? '' : ''}`} onClick={handleCancel} >
+                <BaseBtn variant="secondary" className='w-full bg-softredtheme hover:bg-redtheme  text-redtheme hover:text-white'  loading={cancelLoading}  onClick={handleCancel} >
                   Cancel
-                </button>
+                </BaseBtn>
+                {/* <button className={`btn-secondary w-full bg-softredtheme hover:bg-redtheme  text-redtheme hover:text-white ${localStorage.getItem('darkMode') === 'true' ? '' : ''}`} onClick={handleCancel} >
+                  Cancel
+                </button> */}
               </div>
               <div className='mt-2'>
                 <button className={`btn-secondary w-full bg-softorangetheme hover:bg-orangetheme  text-orangetheme hover:text-white ${localStorage.getItem('darkMode') === 'true' ? '' : ''}`} onClick={() => {setSearchParams('tab=contact')}}>
@@ -321,9 +338,9 @@ const Modify = () => {
                   </div>
 
                 </div>
-                <button className={`btn-primary mt-2 ${localStorage.getItem('darkMode') === 'true' ? '' : ''}`} onClick={modifyeservation}>
+                <BaseBtn variant="primary" className=''  loading={widgetLoading} onClick={modifyeservation} >
                   Confirm
-                </button>
+                </BaseBtn>
                 <button className={`btn ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ''}`} onClick={() => setSearchParams('tab=preview')}>
                   Back
                 </button>
@@ -336,9 +353,9 @@ const Modify = () => {
                 Send a message
               </h3>
               <textarea name='Message' className={`text-md inputs gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`} placeholder='Message' onChange={(e)=>{setMessage(e.target.value)}} />
-              <button className={`btn-primary mt-2 ${localStorage.getItem('darkMode') === 'true' ? '' : ''}`} onClick={handleSendMessage} >
+              <BaseBtn variant="primary" className=''  loading={loadingMessage} onClick={handleSendMessage} >
                 Send
-              </button>
+              </BaseBtn>
               <button className={`btn ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ''}`} onClick={() => {setTab('preview'); setSearchParams('tab=preview')}}>
                 Back
               </button>
