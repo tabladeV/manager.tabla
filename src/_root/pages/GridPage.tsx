@@ -44,7 +44,7 @@ const GridPage = () => {
 
 const { chosenDay } = useDateContext();
 
-  const {data: reservationsData, isLoading, error} = useList({
+  const {data: reservationsData, isLoading, error, refetch : refetchReservations} = useList({
     resource: 'api/v1/dashboard/reservations/grid',
     filters:[
       {
@@ -67,7 +67,13 @@ const { chosenDay } = useDateContext();
         operator: 'eq',
         value: '23:30'
       },
-    ]
+    ],
+    errorNotification(error, values, resource) {
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
+    }
   });
 
   const [gridReservations, setGridReservations] = useState<Reservation[]>()
@@ -77,8 +83,6 @@ const { chosenDay } = useDateContext();
       setGridReservations(reservationsData.data as unknown as Reservation[])
     }
   },[reservationsData])
-
-  console.log(reservationsData,'test')
 
 
 
@@ -196,11 +200,14 @@ const { chosenDay } = useDateContext();
 
 
   return (
-    <div className="flex  flex-col">
+    <div className="select-none flex  flex-col">
       {
         focusedAddReservation &&
 
-        <ReservationForGrid timeAndDate={selectedTime} onClick={()=>{setFocusedAddReservation(false)}}/>
+        <ReservationForGrid timeAndDate={selectedTime} onClick={()=>{setFocusedAddReservation(false)}} onSubmit={()=>{
+          setFocusedAddReservation(false);
+          refetchReservations();
+        }}/>
       }
       <div className="flex mb-4 justify-between items-center">
         <h1 className="">{t('grid.title')}</h1>

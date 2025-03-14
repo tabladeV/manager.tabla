@@ -59,7 +59,6 @@ const HistoryList  = () => {
           }
 
       })
-      console.log('data',reviewsData?.data)
   
       
   

@@ -8,16 +8,16 @@ import { Occasion, OccasionsType } from '../settings/Occasions';
 import BaseSelect from '../common/BaseSelect';
 
 interface Reservation extends BaseRecord {
-    id: BaseKey;
-    email: string;
-    full_name: string;
-    date: string;
-    time: string;
-    internal_note: string;
-    source: string;
-    number_of_guests: string;
-    phone: string;
-    status: string;
+    id?: BaseKey;
+    email?: string;
+    full_name?: string;
+    date?: string;
+    time?: string;
+    internal_note?: string;
+    source?: string;
+    number_of_guests?: string;
+    phone?: string;
+    status?: string;
     commenter?: string;
     review?: boolean; 
     occasion?: number | null;
@@ -85,24 +85,28 @@ const ReservationModal = (props: ReservationModalProps) => {
       onSuccess: (data) => {
         setClientsForAPI(data.data as unknown as ClientForApi);
       },
-      onError: (error) => {
-        console.log('Error:', error);
-      },
     },
-
+    errorNotification(error, values, resource) {
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
+    },
   });
 
   const { mutate, isLoading: loadingCreatReservation } = useCreate({
     resource: 'api/v1/bo/reservations/',
 
     mutationOptions: {
-      retry: 3,
       onSuccess: (data) => {
         console.log('Reservation added:', data);
-      },
-      onError: (error) => {
-        console.log('Error adding reservation:', error);
-      },
+      }
+    },
+    errorNotification(error, values, resource) {
+        return {
+          type: 'error',
+          message: error?.formattedMessage,
+        };
     },
   });
 
@@ -110,13 +114,13 @@ const ReservationModal = (props: ReservationModalProps) => {
     resource: 'api/v1/bo/customers/',
 
     mutationOptions: {
-      retry: 3,
-      onSuccess: (data) => {
-        console.log('Client added:', data);
-      },
-      onError: (error) => {
-        console.log('Error adding client:', error);
-      },
+      retry: 3
+    },
+    errorNotification(error, values, resource) {
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
     },
   });
 
@@ -155,7 +159,7 @@ const ReservationModal = (props: ReservationModalProps) => {
     id: 0,
     full_name: '',
     email: '',
-    source: '',
+    source: 'BACK_OFFICE',
     phone: '',
     comment: '',
   });
@@ -190,7 +194,7 @@ const ReservationModal = (props: ReservationModalProps) => {
   };
 
   const handleSelectClient = (client: Client) => {
-    setFormData({ ...client, id: 0, comment: '', source: '' });
+    setFormData({ ...client, id: 0, comment: '', source: 'BACK_OFFICE' });
     setInputName(client.full_name);
     setSelectedClient(client);
     setFocusedClient(false);
@@ -274,13 +278,12 @@ const ReservationModal = (props: ReservationModalProps) => {
       
           mutationOptions: {
             retry: 3,
-            onSuccess: (data) => {
-              console.log('Reservation added:', data);
-              window.location.reload();
-            },
-            onError: (error) => {
-              console.log('Error adding reservation:', error);
-            },
+          },
+          errorNotification(error, values, resource) {
+            return {
+              type: 'error',
+              message: error?.formattedMessage,
+            };
           },
       });
 
@@ -311,7 +314,7 @@ const ReservationModal = (props: ReservationModalProps) => {
   
           newCustomerReservation({
               values: {
-                occasion: 'none',
+                occasion: selectedOccasion,
                 status: 'PENDING',
                 source: reservationData.source,
                 commenter: '',
@@ -326,9 +329,14 @@ const ReservationModal = (props: ReservationModalProps) => {
                     email: reservationData.email,
                     phone: reservationData.phone,
                 },
-              },
-              
-          });
+              }  
+            },{
+              onSuccess(){
+                props.onClick();
+                props.onSubmit(reservationData as Reservation)
+              }
+            }
+        );
           setDisabledButton(true);
       }
 
@@ -400,6 +408,21 @@ const ReservationModal = (props: ReservationModalProps) => {
                     <input type='email' name='email' placeholder={t('grid.placeHolders.email')} className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' onChange={(e) => setNewCustomerData({...newCustomerData, email: e.target.value})} required/>
                     <input type='tel' name='phone' placeholder={t('grid.placeHolders.phone')} className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' onChange={(e) => setNewCustomerData({...newCustomerData, phone: e.target.value})} required/>
                     <input type="text" name='note' placeholder={t('grid.placeHolders.internalNote')} className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' onChange={(e) => setNewCustomerData({...newCustomerData, note: e.target.value})} />
+                    <BaseSelect
+                      placeholder={t('reservations.occasion')}
+                      options={occasions.map(occasion => ({
+                        label: occasion.name,
+                        value: occasion.id
+                      }))}
+                      value={selectedOccasion}
+                      onChange={(value) => {
+                        setSelectedOccasion(value as number)
+                      }}
+                      variant={darkMode ? "filled" : "outlined"}
+                      clearable={true}
+                      searchable={true}
+                      loading={loadingOccasions}
+                    />
                     <select name='source' className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' onChange={(e) => setNewCustomerData({...newCustomerData, source: e.target.value})} required>
                       <option value='BACK_OFFICE'>Back Office</option>
                       <option value='WALK_IN'>Walk In</option>
@@ -481,7 +504,7 @@ const ReservationModal = (props: ReservationModalProps) => {
             />
             <div>
             <BaseSelect
-              label={t('reservations.edit.informations.occasion')}
+              placeholder={t('reservations.occasion')}
               options={occasions.map(occasion => ({
                 label: occasion.name,
                 value: occasion.id
@@ -493,6 +516,7 @@ const ReservationModal = (props: ReservationModalProps) => {
               variant={darkMode ? "filled" : "outlined"}
               clearable={true}
               searchable={true}
+              loading={loadingOccasions}
             />
           </div>
             <input
@@ -506,10 +530,16 @@ const ReservationModal = (props: ReservationModalProps) => {
               onChange={handleFormChange}
               
             />
-            <select name='source' className='inputs-unique' onChange={(e) => setFormData((prev) => ({ ...prev, source: e.target.value }))} required>
-              <option value='BACK_OFFICE'>Back Office</option>
-              <option value='WALK_IN'>Walk In</option>
-            </select>
+            <BaseSelect
+              options={[
+              { label: 'Back Office', value: 'BACK_OFFICE' },
+              { label: 'Walk In', value: 'WALK_IN' },
+              ]}
+              value={formData.source}
+              onChange={(value) => setFormData((prev) => ({ ...prev, source: value as string }))}
+              variant={darkMode ? "filled" : "outlined"}
+              clearable={false}
+            />
           </div>
           <div
             onClick={() => setShowProcess(true)}
@@ -521,7 +551,7 @@ const ReservationModal = (props: ReservationModalProps) => {
             {data.time === '' ? <div>Time</div> : <span>{data.time}</span>}
             {data.guests === 0 ? <div>Guests</div> : <span>{data.guests}</span>}
           </div>
-          <BaseBtn type="submit" loading={loadingCreatReservation} disabled={disabledButton2}>
+          <BaseBtn type="submit" loading={loadingCreatReservation}>
             {t('grid.buttons.addReservation')}
           </BaseBtn>
         </form>

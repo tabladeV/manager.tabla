@@ -27,7 +27,10 @@ const WidgetPage = () => {
     if (posts) {
       setOccasions(posts.data as unknown as BaseRecord[]);
     }
-  }, [posts]);
+
+  }, [posts])
+
+  
 
   const { mutate: createReservation } = useCreate();
   const [widgetInfo, setWidgetInfo] = useState<BaseRecord>();

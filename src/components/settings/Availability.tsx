@@ -7,40 +7,41 @@ import { id } from 'date-fns/locale';
 import { set } from 'date-fns';
 
 interface SlotData {
-  name: string; // Renamed from 'type'
-  start_shift: string; // Renamed from 'start'
-  end_shift: string; // Renamed from 'end'
-  max_party_size: number; // Renamed from 'placeLimit'
+  name: string;
+  start_shift: string;
+  end_shift: string;
+  max_party_size: number;
 }
 
 interface DayData {
   id: BaseKey;
   day: string;
-  closed_day: boolean; // Renamed from 'available' (inverted logic)
-  availability_hours: SlotData[]; // Renamed from 'slots'
+  closed_day: boolean;
+  availability_hours: SlotData[];
 }
 
 const Availability = () => {
-
-  
   useEffect(() => {
     document.title = 'Availability | Tabla'
   }, [])
+  
   const [restaurantId, setRestaurantId] = useState<string>(localStorage.getItem('restaurant_id') || '0');
   const { data: availabilityDays, isLoading, error } = useList({
     resource: `api/v1/bo/availability/days/`,
-
   });
 
-  const { mutate: updateAvailability } = useCreate();
+  const { mutate: updateAvailability } = useCreate({
+    errorNotification(error, values, resource) {
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
+    },
+  });
 
   const { data: restaurantData, isLoading: restaurantLoading, error: restaurantError } = useList({
     resource: `api/v1/bo/restaurants/${restaurantId}/current/`,
   });
-
-
-
-
 
   const [duration, setDuration] = useState<string>('');
 
@@ -64,7 +65,6 @@ const Availability = () => {
   ];
 
   const [data, setData] = useState<DayData[]>(initialData);
-
   const [fetchedData, setFetchedData] = useState<DayData[]>(initialData)
 
   useEffect(() => {
@@ -91,9 +91,7 @@ const Availability = () => {
     newData[index].closed_day = !newData[index].closed_day;
     if (newData[index].closed_day) newData[index].availability_hours = [];
     else
-      newData[index].availability_hours = [
-        
-      ];
+      newData[index].availability_hours = [];
     setData(newData);
   };
 
@@ -159,10 +157,16 @@ const Availability = () => {
 
   const [pufferValue, setPufferValue] = useState<number | ''>('');
 
-  const { mutate: updateDuration } = useUpdate()
+  const { mutate: updateDuration } = useUpdate({
+    errorNotification(error, values, resource) {
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
+    },
+  })
 
   const handleSaveAvailability = () => {
-
     const restaurantId = localStorage.getItem('restaurant_id');
 
     updateDuration({
@@ -194,98 +198,118 @@ const Availability = () => {
   }
 
   return (
-    <div className={`rounded-lg p-6 w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}>
+    <div className={`rounded-lg p-4 md:p-6 w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}>
       {manageWeekly && (
-        <div>
-          <div className="overlay" onClick={() => setManageWeekly(false)}></div>
-          <div className={`popup w-fit lt-sm:w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}>
-            <div className="flex justify-between">
-              <h2 className="mb-3">{t('settingsPage.availability.manageWeek')}</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setManageWeekly(false)}></div>
+          <div className={`relative rounded-lg p-4 md:p-6 w-full max-w-lg mx-4 ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}>
+            <div className="flex justify-between mb-4">
+              <h2 className="text-xl font-semibold">{t('settingsPage.availability.manageWeek')}</h2>
+              <button onClick={() => setManageWeekly(false)} className="text-gray-500 hover:text-gray-700">
+                <X size={20} />
+              </button>
             </div>
             {weeklySlots.map((slot, index) => (
-              <div key={index} className="flex items-center gap-2 mb-2 lt-sm:flex-wrap">
-                <div className="flex flex-col">
+              <div key={index} className="flex flex-col md:flex-row md:items-center gap-2 mb-4">
+                <div className="flex flex-col w-full md:w-auto">
                   <label className="text-sm">{t('settingsPage.availability.type')}</label>
                   <input
                     type="text"
                     value={slot.name}
                     onChange={(e) => updateWeeklySlot(index, 'name', e.target.value)}
-                    className={`inputs-unique lt-sm:w-full w-[10em] ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                    className={`inputs-unique w-full md:w-32 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
                   />
                 </div>
-                <div>
-                  <label className="text-sm">{t('settingsPage.availability.from')}</label>
-                  <input
-                    type="time"
-                    value={slot.start_shift}
-                    onChange={(e) => updateWeeklySlot(index, 'start_shift', e.target.value)}
-                    className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
-                  />
+                <div className="flex items-center gap-2 w-full md:w-auto">
+                  <div className="flex flex-col flex-1">
+                    <label className="text-sm">{t('settingsPage.availability.from')}</label>
+                    <input
+                      type="time"
+                      value={slot.start_shift}
+                      onChange={(e) => updateWeeklySlot(index, 'start_shift', e.target.value)}
+                      className={`inputs w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                    />
+                  </div>
+                  <span className="self-end mb-2">-</span>
+                  <div className="flex flex-col flex-1">
+                    <label className="text-sm">{t('settingsPage.availability.to')}</label>
+                    <input
+                      type="time"
+                      value={slot.end_shift}
+                      onChange={(e) => updateWeeklySlot(index, 'end_shift', e.target.value)}
+                      className={`inputs w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                    />
+                  </div>
                 </div>
-                <span>-</span>
-                <div>
-                  <label className="text-sm">{t('settingsPage.availability.to')}</label>
-                  <input
-                    type="time"
-                    value={slot.end_shift}
-                    onChange={(e) => updateWeeklySlot(index, 'end_shift', e.target.value)}
-                    className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
-                  />
-                </div>
-                <div>
-                  <span className="text-sm w-[300px] ml-2">
+                <div className="flex flex-col w-full md:w-auto">
+                  <label className="text-sm">
                     {t('settingsPage.availability.placeLimitLabel')}
-                  </span>
-                  <input
-                    type="number"
-                    value={slot.max_party_size}
-                    onChange={(e) => updateWeeklySlot(index, 'max_party_size', parseInt(e.target.value))}
-                    className={`inputs-unique ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
-                  />
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      value={slot.max_party_size}
+                      onChange={(e) => updateWeeklySlot(index, 'max_party_size', parseInt(e.target.value))}
+                      className={`inputs-unique w-20 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                    />
+                    <X
+                      size={20}
+                      className="text-redtheme cursor-pointer"
+                      onClick={() => setWeeklySlots((prev) => prev.filter((_, i) => i !== index))}
+                    />
+                  </div>
                 </div>
-                <X
-                  size={24}
-                  className="text-redtheme cursor-pointer mt-3"
-                  onClick={() => setWeeklySlots((prev) => prev.filter((_, i) => i !== index))}
-                />
               </div>
             ))}
-            <button onClick={addWeeklySlot} className="hover:underline flex items-center gap-2">
+            <button 
+              onClick={addWeeklySlot} 
+              className="hover:underline flex items-center gap-2 mb-4"
+            >
               <Plus size={16} />
               {t('settingsPage.availability.addAnotherSlot')}
             </button>
-            <button onClick={applyWeeklyChanges} className="btn-primary mt-4">
+            <button 
+              onClick={applyWeeklyChanges} 
+              className="btn-primary w-full"
+            >
               {t('settingsPage.availability.applyToWeek')}
             </button>
           </div>
         </div>
       )}
 
-      <div className="flex justify-between mb-4 items-center">
-        <h2 className="text-2xl font-bold text-center">{t('settingsPage.availability.title')}</h2>
-        <div className="flex justify-center items-center gap-3">
-          <label className="text-sm">{t('settingsPage.availability.puffer')}</label>
+      <div className="flex flex-col md:flex-row md:justify-between mb-4 gap-4 items-start md:items-center">
+        <h2 className="text-xl md:text-2xl font-bold">{t('settingsPage.availability.title')}</h2>
+        <div className="flex items-center gap-2">
+          <label className="text-sm whitespace-nowrap">{t('settingsPage.availability.puffer')}</label>
           <CanAccess resource='availabilityday' action='change' fallback={duration}>
             <input
               type="string"
-              className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+              className={`inputs w-24 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
               defaultValue={duration}
               onChange={(e) => setDuration(e.target.value.trim() || '')}
             />
           </CanAccess>
         </div>
       </div>
+
       <CanAccess resource='availabilityday' action='change'>
-        <div className="flex justify-center gap-2 mb-6" onClick={() => setManageWeekly(true)}>
-          <button className="btn-primary">Manage the whole week</button>
+        <div className="flex justify-center mb-6">
+          <button className="btn-primary w-full sm:w-auto" onClick={() => setManageWeekly(true)}>
+            Manage the whole week
+          </button>
         </div>
       </CanAccess>
-      <div className="space-y-4 mx-4">
-        {data.sort((a, b) => (a.id > b.id ? 1 : -1)).map((day, dayIndex) => (
-          <div key={day.day} className="flex items-start">
-            <div className={`flex mt-5 items-center gap-2 w-20 ${i18next.language === 'ar' && 'mt-2'}`}>
 
-              <CanAccess resource='availabilityday' action='change' fallback={!day.closed_day ? <CheckSquare size={20} className="text-[#88AB61]" /> : <Square size={20} className="text-[#88AB61]" />}>
+      <div className="space-y-6">
+        {data.sort((a, b) => (a.id > b.id ? 1 : -1)).map((day, dayIndex) => (
+          <div key={day.day} className="flex flex-col sm:flex-row">
+            <div className={`flex items-center gap-2 w-full sm:w-20 mb-2 sm:mb-0 ${i18next.language === 'ar' && 'mt-2'}`}>
+              <CanAccess 
+                resource='availabilityday' 
+                action='change' 
+                fallback={!day.closed_day ? <CheckSquare size={20} className="text-[#88AB61]" /> : <Square size={20} className="text-[#88AB61]" />}
+              >
                 <input
                   type="checkbox"
                   checked={!day.closed_day}
@@ -309,112 +333,170 @@ const Availability = () => {
                             : t('settingsPage.availability.days.saturday')}
               </span>
             </div>
+            
             <div className="flex-1">
               {!day.closed_day ? (
                 day.availability_hours.map((slot, slotIndex) => (
-                  <div key={slotIndex} className="flex items-center gap-2 mb-2">
-                    <CanAccess resource='availabilityhour' action='change' fallback={
-                      <input
-                        type="text"
-                        value={slot.name}
-                        disabled={true}
-                        readOnly={true}
-                        className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
-                      />
-                    } >
-                    <input
-                      type="text"
-                      value={slot.name}
-                      onChange={(e) => updateSlot(dayIndex, slotIndex, 'name', e.target.value)}
-                      className={`inputs-unique w-[10em] ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
-                    />
-                    </CanAccess>
-                    
-                    <CanAccess resource='availabilityhour' action='change' fallback={
-                      <input
-                        type="time"
-                        value={slot.start_shift}
-                        disabled={true}
-                        readOnly={true}
-                        className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
-                      />
-                    } >
-                    <input
-                      type="time"
-                      value={slot.start_shift}
-                      onChange={(e) => updateSlot(dayIndex, slotIndex, 'start_shift', e.target.value)}
-                      className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
-                    />
-                    </CanAccess>
-                    <span>-</span>
-
-                    <CanAccess resource='availabilityhour' action='change' fallback={
-                      <input
-                        type="time"
-                        value={slot.end_shift}
-                        disabled={true}
-                        readOnly={true}
-                        className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
-                      />
-                    } >
-                      <input
-                        type="time"
-                        value={slot.end_shift}
-                        onChange={(e) => updateSlot(dayIndex, slotIndex, 'end_shift', e.target.value)}
-                        className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
-                      />
-                    </CanAccess>
-                    <span className={`text-sm w-[300px] ml-2`}>
-                      {t('settingsPage.availability.placeLimitLabel')}
-                    </span>
-                    <CanAccess resource='availabilityhour' action='change' fallback={
-                      <input
-                        disabled={true}
-                        readOnly={true}
-                        value={slot.max_party_size}
-                        className={`inputs-unique w-[4em] ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
-                      />
-                    } >
-                      <input
-                        type="number"
-                        value={slot.max_party_size}
-                        onChange={(e) => updateSlot(dayIndex, slotIndex, 'max_party_size', parseInt(e.target.value))}
-                        className={`inputs-unique w-[4em] ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
-                      />
-                    </CanAccess>
-                    <CanAccess resource='availabilityhour' action='remove'>
-                      <button
-                        onClick={() => removeSlot(dayIndex, slotIndex)}
-                        className="text-redtheme hover:text-gray-600"
+                  <div key={slotIndex} className="flex flex-col sm:flex-row sm:items-center gap-2 mb-4 sm:mb-2 border-b pb-3 sm:pb-2 sm:border-0">
+                    <div className="grid grid-cols-2 sm:flex sm:flex-row gap-2 w-full sm:w-auto mb-2 sm:mb-0">
+                      <CanAccess 
+                        resource='availabilityhour' 
+                        action='change' 
+                        fallback={
+                          <div className="flex flex-col">
+                            <label className="text-xs sm:hidden">Type</label>
+                            <input
+                              type="text"
+                              value={slot.name}
+                              disabled={true}
+                              readOnly={true}
+                              className={`inputs w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                            />
+                          </div>
+                        }
                       >
-                        <X size={16} />
-                      </button>
-                    </CanAccess>
+                        <div className="flex flex-col">
+                          <label className="text-xs sm:hidden">Type</label>
+                          <input
+                            type="text"
+                            value={slot.name}
+                            onChange={(e) => updateSlot(dayIndex, slotIndex, 'name', e.target.value)}
+                            className={`inputs-unique w-full sm:w-24 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                          />
+                        </div>
+                      </CanAccess>
+                      
+                      <CanAccess 
+                        resource='availabilityhour' 
+                        action='change' 
+                        fallback={
+                          <div className="flex flex-col">
+                            <label className="text-xs sm:hidden">From</label>
+                            <input
+                              type="time"
+                              value={slot.start_shift}
+                              disabled={true}
+                              readOnly={true}
+                              className={`inputs w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                            />
+                          </div>
+                        }
+                      >
+                        <div className="flex flex-col">
+                          <label className="text-xs sm:hidden">From</label>
+                          <input
+                            type="time"
+                            value={slot.start_shift}
+                            onChange={(e) => updateSlot(dayIndex, slotIndex, 'start_shift', e.target.value)}
+                            className={`inputs w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                          />
+                        </div>
+                      </CanAccess>
+                    </div>
 
+                    <div className="hidden sm:block">-</div>
+                    
+                    <div className="grid grid-cols-2 sm:flex sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
+                      <CanAccess 
+                        resource='availabilityhour' 
+                        action='change' 
+                        fallback={
+                          <div className="flex flex-col">
+                            <label className="text-xs sm:hidden">To</label>
+                            <input
+                              type="time"
+                              value={slot.end_shift}
+                              disabled={true}
+                              readOnly={true}
+                              className={`inputs w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                            />
+                          </div>
+                        }
+                      >
+                        <div className="flex flex-col">
+                          <label className="text-xs sm:hidden">To</label>
+                          <input
+                            type="time"
+                            value={slot.end_shift}
+                            onChange={(e) => updateSlot(dayIndex, slotIndex, 'end_shift', e.target.value)}
+                            className={`inputs w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                          />
+                        </div>
+                      </CanAccess>
+                      
+                      <div className="flex flex-col">
+                        <label className="text-xs sm:hidden">Place Limit</label>
+                        <div className="flex items-center gap-2">
+                          <CanAccess 
+                            resource='availabilityhour' 
+                            action='change' 
+                            fallback={
+                              <input
+                                disabled={true}
+                                readOnly={true}
+                                value={slot.max_party_size}
+                                className={`inputs-unique w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                              />
+                            }
+                          >
+                            <input
+                              type="number"
+                              value={slot.max_party_size}
+                              onChange={(e) => updateSlot(dayIndex, slotIndex, 'max_party_size', parseInt(e.target.value))}
+                              className={`inputs-unique w-full sm:w-16 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                            />
+                          </CanAccess>
+                          
+                          <CanAccess resource='availabilityhour' action='remove'>
+                            <button
+                              onClick={() => removeSlot(dayIndex, slotIndex)}
+                              className="text-redtheme hover:text-gray-600"
+                            >
+                              <X size={16} />
+                            </button>
+                          </CanAccess>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="sm:hidden mt-2">
+                      <span className="text-xs text-gray-500">
+                        {t('settingsPage.availability.placeLimitLabel')}
+                      </span>
+                    </div>
                   </div>
                 ))
               ) : (
-                <div className={`mt-5 ${i18next.language === 'ar' && 'mt-2'}`}>
+                <div className="py-2">
                   {t('settingsPage.availability.unavailable')}
                 </div>
               )}
-            </div>
-            <div className={`flex mt-4 items-center ${i18next.language === 'ar' && 'mt-[.4em]'}`}>
-              <CanAccess resource='availabilityhour' action='add'>
-                <button
-                  onClick={() => addSlot(dayIndex)}
-                  className="text-[#88AB61] hover:text-[#6A8A43] ml-2"
-                >
-                  <Plus size={16} />
-                </button>
-              </CanAccess>
+              
+              {!day.closed_day && (
+                <div className="mt-2">
+                  <CanAccess resource='availabilityhour' action='add'>
+                    <button
+                      onClick={() => addSlot(dayIndex)}
+                      className="flex items-center text-[#88AB61] hover:text-[#6A8A43]"
+                    >
+                      <Plus size={16} />
+                      <span className="ml-1 text-sm">Add slot</span>
+                    </button>
+                  </CanAccess>
+                </div>
+              )}
             </div>
           </div>
         ))}
+        
         <CanAccess resource='availabilityday' action='change'>
-          <div className="flex justify-center gap-2 mt-6">
-            <button onClick={handleSaveAvailability} className="btn-primary">{t('settingsPage.availability.save')}</button>
-            <button onClick={() => { setData(fetchedData) }} className="btn-secondary">{t('settingsPage.availability.cancel')}</button>
+          <div className="flex flex-col sm:flex-row gap-2 mt-6 pt-4 border-t">
+            <button onClick={handleSaveAvailability} className="btn-primary w-full sm:w-auto">
+              {t('settingsPage.availability.save')}
+            </button>
+            <button onClick={() => { setData(fetchedData) }} className="btn-secondary w-full sm:w-auto">
+              {t('settingsPage.availability.cancel')}
+            </button>
           </div>
         </CanAccess>
       </div>

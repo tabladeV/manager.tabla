@@ -20,6 +20,7 @@ import DraggableItemSkeleton from '../../components/places/DraggableItemSkeleton
 import { ReservationSource, ReservationStatus } from '../../components/common/types/Reservation';
 import { Occasion } from '../../components/settings/Occasions';
 import { Reservation } from './ReservationsPage';
+import BaseSelect from '../../components/common/BaseSelect';
 
 interface ReservationType {
   results: Reservation[]
@@ -42,6 +43,7 @@ export interface TableType {
   name: string;
   type: 'CIRCLE' | 'RECTANGLE';
   floor: number;
+  floor_name: string,
   x: number;
   y: number;
   rotation: number;
@@ -170,6 +172,12 @@ const PlacePage: React.FC = () => {
   // Mutation
   const { mutate: upDateReservation } = useUpdate({
     resource: `api/v1/bo/reservations`,
+    errorNotification(error, values, resource) {
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
+    },
   });
 
   // When fetched data changes, update local state
@@ -499,10 +507,17 @@ const PlacePage: React.FC = () => {
           </CanAccess>
         </div>
       </div>
-
       <DndProvider backend={isTouchDevice() ? TouchBackend : HTML5Backend}>
-        <div className="flex gap-[10px]">
-          <div className={`lt-sm:hidden rounded-[10px] p-[1em] ${darkMode ? 'bg-bgdarktheme' : 'bg-white'}`}>
+        <div className="gt-sm:flex gap-[10px]">
+          <div className='gt-sm:hidden lt-sm:mb-2'>
+            <BaseSelect
+              value={time}
+              clearable={false}
+              onChange={e => setTime(e as string)}
+              options={hours.map(hour => ({ value: hour.time, label: hour.time }))}
+            />
+          </div>
+          <div className={`rounded-[10px] p-[1em] ${darkMode ? 'bg-bgdarktheme' : 'bg-white'}`}>
             <SearchBar SearchHandler={searchFilter} />
             <div className='grid grid-flow-col gap-3 font-[500] my-3 justify-between'>
               <button className={showOnly === 'SEATED' ? 'btn-primary' : 'btn-secondary'} onClick={() => setShowOnly("SEATED")}>
@@ -515,7 +530,7 @@ const PlacePage: React.FC = () => {
                 {t('placeManagement.filters.pending')}
               </button>
             </div>
-            <div className='overflow-y-auto h-[55vh] bar-hide'>
+            <div className='overflow-y-auto h-[35vh] gt-sm:h-[55vh] bar-hide'>
               
               {isLoadingReservations?
               <DraggableItemSkeleton count={3} isDarkMode={darkMode} />
@@ -537,7 +552,7 @@ const PlacePage: React.FC = () => {
           </div>
 
           <div className='w-full sm:overflow-auto'>
-            <div className='flex lt-sm:flex-wrap lt-sm:gap-2 justify-between'>
+            <div className='flex lt-sm:flex-wrap lt-sm:gap-2 justify-between lt-sm:hidden'>
               <div className='flex gap-2 w-[90%] overflow-x-scroll no-scrollbar'>
                 {isLoading ? (
                   // Floor buttons skeleton loader
@@ -562,23 +577,17 @@ const PlacePage: React.FC = () => {
                 )}
               </div>
               <div>
-                <select
+                <BaseSelect
                   value={time}
-                  id='hourChosen'
-                  className={`inputs ${darkMode ? 'bg-darkthemeitems' : 'bg-white'}`}
-                  onChange={e => setTime(e.target.value)}
-                >
-                  {hours.map(hour => (
-                    <option key={hour.id} value={hour.time}>
-                      {hour.time}
-                    </option>
-                  ))}
-                </select>
+                  clearable={false}
+                  onChange={e => setTime(e as string)}
+                  options={hours.map(hour => ({ value: hour.time, label: hour.time }))}
+                />
               </div>
             </div>
 
             {/* Tables Container with Zoom and Pan */}
-            <div className='mt-1 lt-sm:overflow-x-auto overflow-hidden rounded-xl bg-whitetheme dark:bg-bgdarktheme tables-cont relative'>
+            <div className='lt-sm:hidden mt-1 lt-sm:overflow-x-auto overflow-hidden rounded-xl bg-whitetheme dark:bg-bgdarktheme tables-cont relative'>
               {isLoadingTables &&
                 // Tables skeleton loader
                 <div className="w-full tables-cont min-h-[400px] flex items-center justify-center bg-white dark:bg-bgdarktheme rounded-lg" style={{

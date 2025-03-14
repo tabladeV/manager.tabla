@@ -90,6 +90,7 @@
     "reservations": {
         "title": "Réservations",
         "searchPlaceholder": "Rechercher...",
+        "occasion": "Occasion",
         "filters": {
             "fulfilled": "Terminé",
             "seated": "Assis",
@@ -111,11 +112,13 @@
             "comment": "Commentaire",
             "time": "Heure",
             "guests": "Invités",
-            "madeBy": "Table",
+            "tables": "Tables",
+            "madeBy": "Fait par",
             "status": "Statut",
             "review": "Avis",
             "sendReview": "Envoyer un avis",
-            "reviewed": "Avis envoyé"
+            "reviewed": "Avis envoyé",
+            "details": "Détails de la réservation"
         },
         "statusLabels": {
             "pending": "En attente",

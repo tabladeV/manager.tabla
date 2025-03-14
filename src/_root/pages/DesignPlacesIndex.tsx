@@ -16,10 +16,13 @@ const DesignPlacesIndex = () => {
 
         refetch();
         setShowAddPlace(false);
-      },
-      onError: (error) => {
-        console.log("Error adding floor:", error);
-      },
+      }
+    },
+    errorNotification(error, values, resource) {
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
     },
   });
 

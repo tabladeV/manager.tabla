@@ -67,11 +67,7 @@ const DraggableTableReservation: React.FC<DraggableTableReservationProps> = ({ r
         {name}
       </h6>
       <span 
-        className={`text-[12px] pa-1 rounded-full h-[20px] min-w-[20px] font-semibold ${
-          localStorage.getItem('darkMode') === 'true'
-              ? 'bg-bgdarktheme text-white'
-              : 'bg-[#dddddd] text-greytheme'
-        }`}
+        className={`text-[12px] pa-1 rounded-full h-[20px] min-w-[20px] font-semibold dark:bg-bgdarktheme dark:text-white bg-[#dddddd] text-greytheme`}
         style={{
           whiteSpace: 'nowrap',
           overflow: 'hidden',

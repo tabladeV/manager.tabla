@@ -32,7 +32,13 @@ const Roles = () => {
                 setPermissions(data.data as PermissionType[]);
                 setAvailablePermissions(data.data as PermissionType[]);
             }
-        }
+        },
+        errorNotification(error, values, resource) {
+            return {
+              type: 'error',
+              message: error?.formattedMessage,
+            };
+          },
     });
     interface RolesType {
         
@@ -65,7 +71,13 @@ const Roles = () => {
             onSuccess(data) {
                 setRolesAPIInfo(data.data as unknown as  RolesType);
             },
-          }
+          },
+          errorNotification(error, values, resource) {
+            return {
+              type: 'error',
+              message: error?.formattedMessage,
+            };
+          },
     });
 
     useEffect(() => {
@@ -77,7 +89,14 @@ const Roles = () => {
 
     console.log('rolesData', rolesData);
 
-    const { mutate: createRole } = useCreate();
+    const { mutate: createRole } = useCreate({
+        errorNotification(error, values, resource) {
+            return {
+              type: 'error',
+              message: error?.formattedMessage,
+            };
+          },
+    });
     const { mutate: deleteRole } = useDelete();
 
     const [roles, setRoles] = useState<RoleType[]>([]);

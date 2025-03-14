@@ -46,10 +46,6 @@ const Reviews = () => {
 
   const [reviews, setReviews] = useState<Review[]>([])
 
-    useEffect(() => {
-      console.log(reviews,'reviews')
-    }
-    , [reviews])
   const [searchKeyword, setSearchKeyword] = useState('');
   const [showExportModal, setShowExportModal] = useState(false);
   const {reviews: reviewsExportConfig} = useExportConfig();
@@ -71,8 +67,6 @@ const Reviews = () => {
 
   const [reviewsAPIInfo, setReviewsAPIInfo] = useState<ReviewsType>()
   const [selectedDateRange, setSelectedDateRange] = useState<{ start: Date | null, end: Date | null }>({ start: null, end: null })
-
-  console.log(selectedDateRange)
 
   const { data, isLoading, error } = useList({
     resource: 'api/v1/reviews/',
@@ -111,9 +105,6 @@ const Reviews = () => {
     queryOptions: {
       onSuccess: (data) => {
         setReviewsAPIInfo(data.data as unknown as ReviewsType);
-      },
-      onError: (error) => {
-        console.log('Error fetching data:', error);
       }
     }
   })
@@ -217,7 +208,6 @@ const Reviews = () => {
           columns={reviewsExportConfig.columns}
           customFields={reviewsExportConfig.customFields}
           onExport={(format, selectedColumns, customValues) => {
-            console.log(format, selectedColumns,customValues)
             setShowExportModal(false);
           }}
           onClose={() => setShowExportModal(false)}

@@ -35,11 +35,24 @@ const Modify = () => {
         onError: (error) => {
           error.statusCode === 404 && setErrorPage(true)
         }
-      }
-      // when it's 404 show a an error page
+
+      },
+      errorNotification(error, values, resource) {
+        return {
+          type: 'error',
+          message: error?.formattedMessage,
+        };
+      },
     });
 
-    const { mutate: cancelReservation, isLoading: cancelLoading, error: cancelError } = useCreate();
+    const { mutate: cancelReservation, isLoading: cancelLoading, error: cancelError } = useCreate({
+      errorNotification(error, values, resource) {
+        return {
+          type: 'error',
+          message: error?.formattedMessage,
+        };
+      },
+    });
 
     const handleCancel = () => {
       cancelReservation({
@@ -167,7 +180,14 @@ const Modify = () => {
 
     const [message,setMessage] = useState('')
 
-    const { mutate: sendMessage, isLoading: loadingMessage, error: cancelMessage } = useCreate()
+    const { mutate: sendMessage, isLoading: loadingMessage, error: cancelMessage } = useCreate({
+      errorNotification(error, values, resource) {
+        return {
+          type: 'error',
+          message: error?.formattedMessage,
+        };
+      },
+    })
 
     const handleSendMessage = () => {
 

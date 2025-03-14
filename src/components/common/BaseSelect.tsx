@@ -27,7 +27,7 @@ interface SelectProps {
 }
 
 const BaseSelect: React.FC<SelectProps> = ({
-  label = "Select",
+  label,
   placeholder = "Select an option",
   options = [],
   multiple = false,
@@ -154,7 +154,7 @@ const BaseSelect: React.FC<SelectProps> = ({
       {/* Label */}
       {label && (
         <label 
-          className={`block text-sm font-medium mb-1 ${error ? 'text-redtheme' : 'text-subblack dark:text-textdarktheme'}`}
+          className={`block text-sm font-medium mb-1 ${error ? 'text-redtheme' : 'text-balck dark:text-textdarktheme'}`}
         >
           {label}
         </label>
