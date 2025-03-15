@@ -5,6 +5,9 @@ import SearchBar from "../../components/header/SearchBar";
 import Pagination from "../../components/reservation/Pagination";
 import { MessageSquare, User, Calendar, ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import profilepic from '../../assets/profile.png';
+import { t } from "i18next";
+
 
 // Types and Interfaces
 interface Message extends BaseRecord {
@@ -223,7 +226,7 @@ const MessagesPage = () => {
       {/* Page Header */}
       <div className="flex justify-between mb-4 lt-sm:flex-col lt-sm:gap-2">
         <h1 className={`text-3xl font-[700] ${isDarkMode ? "text-whitetheme" : "text-blacktheme"}`}>
-          Messages
+          {t('messages.title')}
         </h1>
         <div className="flex gap-4 justify-end">
           <button
@@ -343,9 +346,11 @@ const MessageRow: React.FC<MessageRowProps> = ({ message, isSelected, onSelect }
       </td>
       <td className="px-3 py-4 cursor-pointer" onClick={onSelect}>
         <div className="flex items-center">
-          <div className="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-blue-100 text-blue-600">
-            <User size={20} />
-          </div>
+          <img 
+            className="h-10 w-10 rounded-full object-cover" 
+            src={profilepic} 
+            alt="User avatar"
+          />
           <div className="ml-4">
             <div className={`font-medium ${isDarkMode ? "text-white" : "text-gray-900"}`}>
               {`${message?.reservation?.customer?.first_name} ${message?.reservation?.customer?.last_name}`  || "Customer"}

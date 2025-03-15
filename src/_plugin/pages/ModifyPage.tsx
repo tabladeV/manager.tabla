@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import Logo from '../../components/header/Logo'
-import { ArrowDown, Expand, Moon, MoveDown, Sun } from 'lucide-react'
+import { ArrowDown, ArrowLeft, Expand, Moon, MoveDown, Send, Sun } from 'lucide-react'
 import { BaseRecord, useCreate, useCustom, useCustomMutation, useOne, useUpdate } from '@refinedev/core';
 import ReservationProcess from '../../components/reservation/ReservationProcess';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { format, set } from 'date-fns';
 import { getSubdomain } from '../../utils/getSubdomain';
 import { useRef } from 'react';
@@ -11,6 +11,33 @@ import { useClickAway } from 'react-use';
 import BaseBtn from '../../components/common/BaseBtn';
 
 const Modify = () => {
+  interface LoadingRowProps {
+    isDarkMode: boolean;
+  }
+  const LoadingComponent: React.FC<LoadingRowProps> = ({ isDarkMode }) => {
+    return (
+      <tr>
+        
+        <td className=" py-2">
+          <div className="flex items-center">
+            <div className="ml-0 space-y-1">
+              <div className={`h-[2.4em] w-[10em] lt-sm:w-[20vw] rounded ${isDarkMode ? "bg-bgdarktheme" : "bg-gray-200"}`}></div>
+            </div>
+            <div className="ml-4 space-y-1">
+              <div className={`h-[2.4em] w-[18em] lt-sm:w-[60vw] rounded ${isDarkMode ? "bg-bgdarktheme" : "bg-gray-200"}`}></div>
+            </div>
+            
+          </div>
+        </td>
+        
+      </tr>
+    )
+  }
+
+  const { pathname } = useLocation();
+  useEffect(() => {
+    document.title = "Tabla | Taste Morocco's best ";
+  }, [pathname]);
 
     const { token } = useParams();
   
@@ -25,17 +52,18 @@ const Modify = () => {
 
     const [errorPage, setErrorPage] = useState(false);
 
-    const { data: reservation , isLoading: reservationLoading, error: reservationError } = useOne({
+    const { data: reservation, isLoading: reservationLoading, error: reservationError } = useOne({
       resource: `api/v1/bo/subdomains/public/cutomer/reservations`,
-      id: token+'',
-      queryOptions:{
+      id: token + '',
+      queryOptions: {
+        retry: 1,
         onSuccess: (data) => {
-          setUpdateInfo(data.data)
+          setUpdateInfo(data.data);
         },
         onError: (error) => {
-          error.statusCode === 404 && setErrorPage(true)
+          console.log('API Error:'); // Inspect the error object
+          setErrorPage(true)
         }
-
       },
       errorNotification(error, values, resource) {
         return {
@@ -44,6 +72,7 @@ const Modify = () => {
         };
       },
     });
+    console.log('error?',errorPage)
 
     const { mutate: cancelReservation, isLoading: cancelLoading, error: cancelError } = useCreate({
       errorNotification(error, values, resource) {
@@ -59,6 +88,7 @@ const Modify = () => {
         resource: `api/v1/bo/subdomains/public/cutomer/reservations/${token}/cancel`,
         values: {}
       })
+      window.location.reload();
     }
     useEffect(() => {
       console.log('updateInfo', updateInfo)
@@ -189,6 +219,8 @@ const Modify = () => {
       },
     })
 
+    const [messageSent, setMessageSent] = useState(false);
+
     const handleSendMessage = () => {
 
       sendMessage({
@@ -197,6 +229,7 @@ const Modify = () => {
           text: message
         }
       })
+      setMessageSent(true)
 
     }
 
@@ -236,7 +269,7 @@ const Modify = () => {
 
       </div>
 
-      <div className='h-[90vh] xl:max-w-[1200px] no-scrollbar mx-auto  pb-[5em] overflow-y-auto w-full flex p-5 px-10 justify-between'>
+      <div className='h-[90vh] items-center xl:max-w-[1200px] no-scrollbar mx-auto  pb-[5em] overflow-y-auto w-full flex p-5 px-10 justify-between'>
         <div className='w-[60%] lt-sm:w-full'>
           <h1 className={`text-4xl font-bold ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ''}`}>
             {widgetInfo?.title}
@@ -250,138 +283,171 @@ const Modify = () => {
               {widgetInfo?.description}
             </p>
           </div>
-          {tab === 'preview' && <div>
-            <div className='flex flex-col gap-2'>
-              <h3 className={`text-xl font-bold mt-5 ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ''}`}>
-                Your reservation details
-              </h3>
-              <p className={`text-md mt-1 inputs gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`}>
-                <span className='font-bold mx-4'>
-                  Special Request
-                </span>
-                {reservationInfo?.commenter}
+          { reservationLoading ? <div>
+            {Array.from({ length: 5 }, (_, index) => (
+              <LoadingComponent key={index} isDarkMode={isDarkMode} />
+            ))}
+          </div> :
+            errorPage ? <div className='flex flex-col gap-2 cursor-default bg-softredtheme p-3 text-center mt-2 items-center rounded-lg'>
+              <h1 className='text-2xl text-redtheme'>You can't modify your reservation</h1>
+              <p className='text-md'>
+                Something went wrong, you might have already fulfilled a modification or canceled your reservation
               </p>
-              <p className={`text-md mt-1 inputs gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`}>
-                <span className='font-bold mx-4'>
-                  Allergies
-                </span>
-                {reservationInfo?.allergies}
-              </p>
-              <p className={`text-md mt-1 inputs gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`}>
-                <span className='font-bold mx-4'>
-                  Occasion
-                </span>
-                {occasions?.find(occasion => occasion.id === updateInfo?.occasion)?.name}
-              </p>
-              <p className={`text-md  flex justify-around mt-1 inputs gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`}>
-                <p className={`text-md  gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] ' : ''}`}>
-                  <span className='font-bold mr-4'>
-                    Date
-                  </span>
-                  {reservationInfo?.date}
-                </p>
-                <p className={`text-md  gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] ' : ''}`}>
-                  <span className='font-bold mr-4'>
-                    Time
-                  </span>
-                  {reservationInfo?.time.slice(0, 5)}
-                </p>
-                <p className={`text-md  gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] ' : ''}`}>
-                  <span className='font-bold mr-4'>
-                    Guests
-                  </span>
-                  {reservationInfo?.number_of_guests}
-                </p>
-              </p>
-              {/* <button className={`btn-primary mt-2 ${localStorage.getItem('darkMode') === 'true' ? '' : ''}`} onClick={confirmReservation}>
-                Confirm
-              </button> */}
-            </div>
-            <div className='w-full '>
-              {/* <h3 className={`text-xl font-bold mt-5 ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ''}`}>
-                Other actions
-              </h3> */}
-              <div className='flex  w-full gap-2 mt-2'>
-                <button className={`btn-secondary w-full ${localStorage.getItem('darkMode') === 'true' ? '' : ''}`} onClick={() => setSearchParams('tab=modify')}>
-                  Modify
-                </button>
-                <BaseBtn variant="secondary" className='w-full bg-softredtheme hover:bg-redtheme  text-redtheme hover:text-white'  loading={cancelLoading}  onClick={handleCancel} >
-                  Cancel
-                </BaseBtn>
-                {/* <button className={`btn-secondary w-full bg-softredtheme hover:bg-redtheme  text-redtheme hover:text-white ${localStorage.getItem('darkMode') === 'true' ? '' : ''}`} onClick={handleCancel} >
-                  Cancel
-                </button> */}
-              </div>
-              <div className='mt-2'>
-                <button className={`btn-secondary w-full bg-softorangetheme hover:bg-orangetheme  text-orangetheme hover:text-white ${localStorage.getItem('darkMode') === 'true' ? '' : ''}`} onClick={() => {setSearchParams('tab=contact')}}>
-                  Send a message
-                </button>
-              </div>
-            </div>
-          </div>}
-          {
-            tab === 'modify' && 
-              <div className='flex flex-col gap-2'>
-                <h3 className={`text-xl font-bold mt-5 ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ''}`}>
-                  Modify your reservation
-                </h3>
-                <input type='text' defaultValue={reservationInfo?.commenter} name='Special request' className={`text-md inputs gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`} placeholder='Special request'  onChange={(e) => {setUpdateInfo({...updateInfo, commenter: e.target.value})}} />
-                <input type='text' defaultValue={reservationInfo?.allergies} name='Allergies' className={`text-md inputs gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`} placeholder='Allergies'  onChange={(e) => {setUpdateInfo({...updateInfo, allergies: e.target.value})}} />
-                <div className={`text-md cursor-pointer gap-3 inputs ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`} >
-                  <div className=' flex justify-between items-center' onClick={()=>{setShowOccasions(!showOccasions)}}>{occasions?.find(occasion => occasion.id === updateInfo?.occasion)?.name || 'Select an occasions'} 
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M9.40755 13.4643L4.69338 8.75011L5.87171 7.57178L9.99672 11.6968L14.1217 7.57178L15.3 8.75011L10.5859 13.4643C10.4296 13.6205 10.2177 13.7083 9.99672 13.7083C9.77574 13.7083 9.56382 13.6205 9.40755 13.4643Z" fill={localStorage.getItem('darkMode') === 'true' ? 'white' : 'black'}/>
-                    </svg>
-   
+            </div> :
+            <div>
+              {tab === 'preview' && <div>
+                <div className='flex flex-col gap-2'>
+                  <h3 className={`text-xl font-bold mt-5 ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ''}`}>
+                    Your reservation details
+                  </h3>
+                  <p className={`text-md mt-1 inputs gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`}>
+                    <span className='font-bold mx-4'>
+                      Special Request
+                    </span>
+                    {reservationInfo?.commenter}
+                  </p>
+                  <p className={`text-md mt-1 inputs gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`}>
+                    <span className='font-bold mx-4'>
+                      Allergies
+                    </span>
+                    {reservationInfo?.allergies}
+                  </p>
+                  <p className={`text-md mt-1 inputs gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`}>
+                    <span className='font-bold mx-4'>
+                      Occasion
+                    </span>
+                    {occasions?.find(occasion => occasion.id === updateInfo?.occasion)?.name}
+                  </p>
+                  <p className={`text-md  flex justify-around mt-1 inputs gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`}>
+                    <p className={`text-md  gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] ' : ''}`}>
+                      <span className='font-bold mr-4'>
+                        Date
+                      </span>
+                      {reservationInfo?.date}
+                    </p>
+                    <p className={`text-md  gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] ' : ''}`}>
+                      <span className='font-bold mr-4'>
+                        Time
+                      </span>
+                      {reservationInfo?.time.slice(0, 5)}
+                    </p>
+                    <p className={`text-md  gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] ' : ''}`}>
+                      <span className='font-bold mr-4'>
+                        Guests
+                      </span>
+                      {reservationInfo?.number_of_guests}
+                    </p>
+                  </p>
+                  {/* <button className={`btn-primary mt-2 ${localStorage.getItem('darkMode') === 'true' ? '' : ''}`} onClick={confirmReservation}>
+                    Confirm
+                  </button> */}
+                </div>
+                <div className='w-full '>
+                  {/* <h3 className={`text-xl font-bold mt-5 ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ''}`}>
+                    Other actions
+                  </h3> */}
+                  <div className='flex  w-full gap-2 mt-2'>
+                    <button className={`btn-secondary w-full ${localStorage.getItem('darkMode') === 'true' ? '' : ''}`} onClick={() => setSearchParams('tab=modify')}>
+                      Modify
+                    </button>
+                    <BaseBtn variant="secondary" className='w-full bg-softredtheme hover:bg-redtheme  text-redtheme hover:text-white'  loading={cancelLoading}  onClick={handleCancel} >
+                      Cancel
+                    </BaseBtn>
+                    {/* <button className={`btn-secondary w-full bg-softredtheme hover:bg-redtheme  text-redtheme hover:text-white ${localStorage.getItem('darkMode') === 'true' ? '' : ''}`} onClick={handleCancel} >
+                      Cancel
+                    </button> */}
+                  </div>
+                  <div className='mt-2'>
+                    <button className={`btn-secondary w-full bg-softorangetheme hover:bg-orangetheme  text-orangetheme hover:text-white ${localStorage.getItem('darkMode') === 'true' ? '' : ''}`} onClick={() => {setSearchParams('tab=contact')}}>
+                      Send a message
+                    </button>
                   </div>
                 </div>
-                <div  className='relative'>
+              </div>}
+              {
+                tab === 'modify' && 
+                  <div className='flex flex-col gap-2'>
+                    <h3 className={`text-xl font-bold mt-5 ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ''}`}>
+                      Modify your reservation
+                    </h3>
+                    <input type='text' defaultValue={reservationInfo?.commenter} name='Special request' className={`text-md inputs gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`} placeholder='Special request'  onChange={(e) => {setUpdateInfo({...updateInfo, commenter: e.target.value})}} />
+                    <input type='text' defaultValue={reservationInfo?.allergies} name='Allergies' className={`text-md inputs gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`} placeholder='Allergies'  onChange={(e) => {setUpdateInfo({...updateInfo, allergies: e.target.value})}} />
+                    <div className={`text-md cursor-pointer gap-3 inputs ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`} >
+                      <div className=' flex justify-between items-center' onClick={()=>{setShowOccasions(!showOccasions)}}>{occasions?.find(occasion => occasion.id === updateInfo?.occasion)?.name || 'Select an occasions'} 
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M9.40755 13.4643L4.69338 8.75011L5.87171 7.57178L9.99672 11.6968L14.1217 7.57178L15.3 8.75011L10.5859 13.4643C10.4296 13.6205 10.2177 13.7083 9.99672 13.7083C9.77574 13.7083 9.56382 13.6205 9.40755 13.4643Z" fill={localStorage.getItem('darkMode') === 'true' ? 'white' : 'black'}/>
+                        </svg>
+      
+                      </div>
+                    </div>
+                    <div  className='relative'>
+                      
+
+                      <div ref={occasionRef} className={`flex w-full z-[400] p-4 flex-col absolute gap-2 ${showOccasions ? 'block' : 'hidden'} ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-textdarktheme' : 'bg-white text-blacktheme'} rounded-[10px] p-2`}>
+                        {showOccasions && occasions?.map((occasion: BaseRecord) => (
+                          <button key={occasion.id} className='text-left' onClick={() => {setUpdateInfo({...updateInfo, occasion: occasion.id});setShowOccasions(false)}}>{occasion.name}</button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className={`btn cursor-default  text-subblack ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-textdarktheme' : 'bg-white text-blacktheme'} rounded-[10px] `}>
+                      <div onClick={() => { setShowProcess(true) }} className='cursor-pointer flex gap-10 justify-around  p-1 items-center'>
+                        <div className='flex gap-2'>
+                          <div onClick={() => { setShowProcess(true) }} className={`font-[600] ${localStorage.getItem('darkMode')==='true'? 'text-white':'text-bgdarktheme'}`}>Date </div>{(data.reserveDate === '') ? reservationInfo?.date : <span onClick={() => { setShowProcess(true) }}>{data.reserveDate}</span>}
+                        </div>
+                        <div className='flex gap-2'>
+                          <div onClick={() => { setShowProcess(true) }} className={`font-[600] ${localStorage.getItem('darkMode')==='true'? 'text-white':'text-bgdarktheme'}`}>Time </div> {(data.time === '') ? reservationInfo?.time : <span onClick={() => { setShowProcess(true) }}>{data.time}</span>}
+                        </div>
+                        <div className='flex gap-2'>
+                          <div onClick={() => { setShowProcess(true) }} className={`font-[600] ${localStorage.getItem('darkMode')==='true'? 'text-white':'text-bgdarktheme'}`}>Guests </div> {(data.guests === 0) ? reservationInfo?.number_of_guests : <span onClick={() => { setShowProcess(true) }}>{data.guests}</span>}
+                        </div>
+                      </div>
+
+                    </div>
+                    <BaseBtn variant="primary" className=''  loading={widgetLoading} onClick={modifyeservation} >
+                      Confirm
+                    </BaseBtn>
+                    <button className={`btn ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ''}`} onClick={() => setSearchParams('tab=preview')}>
+                      Back
+                    </button>
+                  </div>
+              }
+              {
+                tab === 'contact' &&
+                <div>
+                  {!messageSent ? <div className='flex flex-col gap-2'>
+                    <h3 className={`text-xl font-bold mt-5 ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ''}`}>
+                      Send a message
+                    </h3>
+                    <textarea name='Message' className={`text-md inputs gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`} placeholder='Message' onChange={(e)=>{setMessage(e.target.value)}} />
+                    <BaseBtn variant="primary" className=''  loading={loadingMessage} onClick={handleSendMessage} >
+                      Send
+                    </BaseBtn>
+                    <button className={`btn ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ''}`} onClick={() => {setTab('preview'); setSearchParams('tab=preview')}}>
+                      Back
+                    </button>
+                  </div>
+                  :
+                  <div className={`flex flex-col gap-2  items-center p-3 rounded-xl mt-4 bg-softgreentheme `}>
+                    
+                      <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12.1565 16.4058L12.1564 16.4057L10.8298 13.4212L12.6505 11.6001L12.6567 11.5939L12.6627 11.5874C12.819 11.4198 12.904 11.198 12.9 10.9688C12.8959 10.7396 12.8031 10.521 12.641 10.3589C12.479 10.1968 12.2603 10.104 12.0311 10.0999C11.802 10.0959 11.5802 10.181 11.4125 10.3372L11.4061 10.3432L11.3998 10.3494L9.57867 12.1701L6.59433 10.8436C6.5943 10.8436 6.59427 10.8436 6.59424 10.8436C6.46315 10.7851 6.47041 10.596 6.60631 10.5482C6.60633 10.5482 6.60636 10.5482 6.60638 10.5482L15.2873 7.51018C15.4131 7.46623 15.5338 7.58694 15.4898 7.71266L12.4517 16.3936C12.4517 16.3936 12.4517 16.3936 12.4517 16.3937C12.4039 16.5298 12.2146 16.5367 12.1565 16.4058Z" fill="#88AB61" stroke="#88AB61"/>
+                        <circle cx="11.5" cy="11.5" r="9.5" stroke="#88AB61" stroke-width="2"/>
+                      </svg>
+
+                      <h3 className={`text-xl font-bold text-greentheme mb-1`}>
+                        Your message has been sent
+                      </h3>
+                    <button className={`btn-secondary flex gap-2 items-center`} onClick={() => {setTab('preview'); setSearchParams('tab=preview')}}>
+                      <ArrowLeft size={15}/> <span>Back</span>
+                    </button>
+                  </div>
                   
-
-                  <div ref={occasionRef} className={`flex w-full p-4 flex-col absolute gap-2 ${showOccasions ? 'block' : 'hidden'} ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-textdarktheme' : 'bg-white text-blacktheme'} rounded-[10px] p-2`}>
-                    {showOccasions && occasions?.map((occasion: BaseRecord) => (
-                      <button key={occasion.id} className='text-left' onClick={() => {setUpdateInfo({...updateInfo, occasion: occasion.id});setShowOccasions(false)}}>{occasion.name}</button>
-                    ))}
-                  </div>
+                  }
                 </div>
-                <div className={`btn cursor-default  text-subblack ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-textdarktheme' : 'bg-white text-blacktheme'} rounded-[10px] `}>
-                  <div onClick={() => { setShowProcess(true) }} className='cursor-pointer flex gap-10 justify-around  p-1 items-center'>
-                    <div className='flex gap-2'>
-                      <div onClick={() => { setShowProcess(true) }} className={`font-[600] ${localStorage.getItem('darkMode')==='true'? 'text-white':'text-bgdarktheme'}`}>Date </div>{(data.reserveDate === '') ? reservationInfo?.date : <span onClick={() => { setShowProcess(true) }}>{data.reserveDate}</span>}
-                    </div>
-                    <div className='flex gap-2'>
-                      <div onClick={() => { setShowProcess(true) }} className={`font-[600] ${localStorage.getItem('darkMode')==='true'? 'text-white':'text-bgdarktheme'}`}>Time </div> {(data.time === '') ? reservationInfo?.time : <span onClick={() => { setShowProcess(true) }}>{data.time}</span>}
-                    </div>
-                    <div className='flex gap-2'>
-                      <div onClick={() => { setShowProcess(true) }} className={`font-[600] ${localStorage.getItem('darkMode')==='true'? 'text-white':'text-bgdarktheme'}`}>Guests </div> {(data.guests === 0) ? reservationInfo?.number_of_guests : <span onClick={() => { setShowProcess(true) }}>{data.guests}</span>}
-                    </div>
-                  </div>
-
-                </div>
-                <BaseBtn variant="primary" className=''  loading={widgetLoading} onClick={modifyeservation} >
-                  Confirm
-                </BaseBtn>
-                <button className={`btn ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ''}`} onClick={() => setSearchParams('tab=preview')}>
-                  Back
-                </button>
-              </div>
-          }
-          {
-            tab === 'contact' &&
-            <div className='flex flex-col gap-2'>
-              <h3 className={`text-xl font-bold mt-5 ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ''}`}>
-                Send a message
-              </h3>
-              <textarea name='Message' className={`text-md inputs gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`} placeholder='Message' onChange={(e)=>{setMessage(e.target.value)}} />
-              <BaseBtn variant="primary" className=''  loading={loadingMessage} onClick={handleSendMessage} >
-                Send
-              </BaseBtn>
-              <button className={`btn ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ''}`} onClick={() => {setTab('preview'); setSearchParams('tab=preview')}}>
-                Back
-              </button>
+              }
+              <div className='h-10'></div>
             </div>
           }
-          <div className='h-10'></div>
         </div>
         <div className='sm:w-[40%] lt-sm:hidden flex justify-center items-center'>
           <img src={widgetInfo?.image} className='w-[300px] h-[300px] rounded-md ' />

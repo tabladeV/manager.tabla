@@ -115,7 +115,6 @@
         "id": "ID",
         "name": "Full Name",
         "email": "Email",
-        "details": "Details",
         "phone": "Phone",
         "date": "Date",
         "comment": "Comment",
@@ -340,6 +339,29 @@
             "total":"Total Rating",
             "environment":"Environment Rating"
 
+        }
+    },
+    "messages": {
+        "title": "Messages",
+        "tableHeaders": {
+            "id": "ID",
+            "date": "Date",
+            "name": "Name",
+            "email": "Email",
+            "subject": "Subject",
+            "message": "Message"
+        },
+        "filters":{
+            "all": "All",
+            "date": "Date"
+        },
+        "view":{
+            "title": "View Message",
+            "name"  : "Name",
+            "email" : "Email",
+            "date"  : "Date",
+            "subject": "Subject",
+            "message": "Message"
         }
     },
      "settingsPage": {

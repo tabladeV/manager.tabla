@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import Logo from '../../components/header/Logo';
 import ReservationProcess from '../../components/reservation/ReservationProcess';
-import { ScreenShareIcon } from 'lucide-react';
+import { LoaderCircle, ScreenShareIcon } from 'lucide-react';
 import { BaseKey, BaseRecord, useCreate, useCustom, useOne } from '@refinedev/core';
 import { format } from 'date-fns';
 import { getSubdomain } from '../../utils/getSubdomain';
 
 const WidgetPage = () => {
+
+  const { pathname } = useLocation();
+  useEffect(() => {
+    document.title = "Tabla | Taste Morocco's best ";
+  }, [pathname]);
+
   const { restaurant } = useParams();
   const [restaurantID, setRestaurantID] = useState<BaseKey>();
   const { data: widgetData } = useOne({
@@ -182,7 +188,7 @@ const WidgetPage = () => {
       <div className="h-[10vh] w-full flex items-center justify-between px-4 sm:px-10 shadow-xl shadow-[#00000004] bg-white dark:bg-bgdarktheme">
         <Logo className="horizontal" />
         <button
-          onClick={() => document.documentElement.classList.toggle('dark')}
+          onClick={() => {document.documentElement.classList.toggle('dark');localStorage.setItem('darkMode', document.documentElement.classList.contains('dark') ? 'true' : 'false');}}
           className="btn-secondary my-[1em] p-1 w-[40px] h-[40px] flex justify-center items-center rounded-[100%]"
         >
           <svg
@@ -213,7 +219,7 @@ const WidgetPage = () => {
           </svg>
         </button>
       </div>
-      <div className="h-[90vh] xl:max-w-[1200px] no-scrollbar mx-auto pb-[5em] overflow-y-auto w-full flex flex-col sm:flex-row p-5 px-4 sm:px-10 justify-between">
+      <div className="h-[90vh] items-center xl:max-w-[1200px] no-scrollbar mx-auto pb-[5em] overflow-y-auto w-full flex flex-col sm:flex-row p-5 px-4 sm:px-10 justify-between">
         <div className="w-full sm:w-[60%]">
           <h1 className={`text-3xl font-bold mt-4 ${step === 6 ? 'hidden' : 'block'} text-[#3A541C] dark:text-greentheme`}>
             {widgetInfo?.title}
@@ -224,16 +230,17 @@ const WidgetPage = () => {
           {step === 1 && (
             <div className="w-full sm:w-[70%]">
               <div
-                className={`btn flex justify-around inputs cursor-default gap-10 items-center text-subblack mt-3 bg-white dark:bg-bgdarktheme text-blacktheme dark:text-textdarktheme rounded-[10px]`}
+                className={`btn flex justify-around  cursor-default items-center text-subblack my-3 bg-white dark:bg-bgdarktheme text-blacktheme dark:text-textdarktheme rounded-[10px]`}
               >
-                <div onClick={() => setShowProcess(true)} className="flex justify-around w-full gap-10 cursor-pointer p-3 items-center">
+                <div onClick={() => setShowProcess(true)} className="flex justify-around w-full gap-10 cursor-pointer p-1 items-center">
                   {data.reserveDate === '' ? <div>Date</div> : <span>{data.reserveDate}</span>}
                   {data.time === '' ? <div>Time</div> : <span>{data.time}</span>}
                   {data.guests === 0 ? <div>Guests</div> : <span>{data.guests}</span>}
                 </div>
+              </div>
                 <button
                   onClick={() => setStep(2)}
-                  className={`btn-primary ${
+                  className={`btn-primary lt-sm:w-full ${
                     data.reserveDate === '' || data.time === '' || data.guests === 0
                       ? 'bg-greentheme hover:bg-greentheme cursor-not-allowed opacity-30'
                       : ''
@@ -242,7 +249,6 @@ const WidgetPage = () => {
                 >
                   Book
                 </button>
-              </div>
               {widgetInfo?.menu_file && (
                 <div className="btn-secondary w-fit flex gap-4 items-center mt-3 justify-center cursor-pointer">
                   <p onClick={() => window.open(widgetInfo.menu_file, '_blank')}>Preview our menu</p>
@@ -272,15 +278,62 @@ const WidgetPage = () => {
                     Back
                   </button>
                   <button type="submit" className="btn-primary w-full mt-3">
-                    Submit
+                    
+
+                    Continue
                   </button>
                 </div>
               </form>
             </div>
           )}
           {step === 4 && (
-            <div className="flex flex-col items-center gap-3">
-              <button onClick={handleConfirmation} className="btn-primary mt-3">
+            <div className="flex flex-col  gap-3">
+              <div className=' w-full sm:w-[30em] flex flex-col gap-3 bg-white dark:bg-bgdarktheme2'>
+                <div className="flex flex-col gap-3">
+                  <p className="text-left text-xl font-bold mt-3">Your reservation details</p>                  
+                </div>
+                <div className="flex gap-3 inputs-unique">
+                  <p className='text-subblack font-[600] dark:text-[#e1e1e1]'>First Name:</p>
+                  <p className='' >{userInfromation.firstname}</p>
+                </div>
+                <div className="flex gap-3 inputs-unique">
+                  <p className='text-subblack font-[600] dark:text-[#e1e1e1]'>Last Name:</p>
+                  <p className='' >{userInfromation.lastname}</p>
+                </div>
+                <div className="flex gap-3 inputs-unique">
+                  <p className='text-subblack font-[600] dark:text-[#e1e1e1]'>Email:</p>
+                  <p className='' >{userInfromation.email}</p>
+                </div>
+                <div className="flex gap-3 inputs-unique">
+                  <p className='text-subblack font-[600] dark:text-[#e1e1e1]'>Phone:</p>
+                  <p className='' >{userInfromation.phone}</p>
+                </div>
+                <div className="flex gap-3 inputs-unique">
+                  <p className='text-subblack font-[600] dark:text-[#e1e1e1]'>Preferences:</p>
+                  <p className='' >{userInfromation.preferences}</p>
+                </div>
+                <div className="flex gap-3 inputs-unique">
+                  <p className='text-subblack font-[600] dark:text-[#e1e1e1]'>Allergies:</p>
+                  <p className='' >{userInfromation.allergies}</p>
+                </div>
+                <div className="flex gap-3 inputs-unique">
+                  <p className='text-subblack font-[600] dark:text-[#e1e1e1]'>Occasion:</p>
+                  <p className='' >{occasions?.find((occasion: BaseRecord) => occasion.id === Number(userInfromation.occasion))?.name}</p>
+                </div>
+                <div className="flex gap-3 inputs-unique">
+                  <p className='text-subblack font-[600] dark:text-[#e1e1e1]'>Date:</p>
+                  <p className='' >{format(data.reserveDate, 'yyyy-MM-dd')}</p>
+                </div>
+                <div className="flex gap-3 inputs-unique">
+                  <p className='text-subblack font-[600] dark:text-[#e1e1e1]'>Time:</p>
+                  <p className='' >{data.time}</p>
+                </div>
+                <div className="flex gap-3 inputs-unique">
+                  <p className='text-subblack font-[600] dark:text-[#e1e1e1]'>Guests:</p>
+                  <p className='' >{data.guests}</p>
+                </div>
+              </div>
+              <button onClick={handleConfirmation} className="btn-primary mt-3 w-fit lt-sm:w-full">
                 Confirm your reservation
               </button>
               <p className="text-sm text-center text-redtheme">{serverError}</p>
@@ -292,7 +345,7 @@ const WidgetPage = () => {
                 Your reservation has been successfully made. You will receive a confirmation email shortly.
               </p>
               <button onClick={() => setStep(1)} className="btn-primary mt-3">
-                Back
+                Make another reservation
               </button>
             </div>
           )}

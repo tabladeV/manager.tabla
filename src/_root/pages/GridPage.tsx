@@ -263,9 +263,9 @@ const { chosenDay } = useDateContext();
                   <div className="flex overflow-y-scroll no-scrollbar h-[10em] flex-col p-1 gap-1 justify-start items-center">
                     {isLoading ? (
                       <div className="flex flex-col gap-2 w-full animate-pulse">
-                        <div className={`w-full text-center  px-[4em] py-[2em] rounded-lg ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'border-[1px] border-solid border-subblack'}`} style={{ animationDuration: '0.1s' }}></div>
-                        <div className={`w-full text-center  px-[4em] py-[2em] rounded-lg ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'border-[1px] border-solid border-subblack'}`} style={{ animationDuration: '4s' }}></div>
-                        <div className={`w-full text-center  px-[4em] py-[2em] rounded-lg ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'border-[1px] border-solid border-subblack'}`} style={{ animationDuration: '2s' }}></div>
+                        <div className={`w-full text-center  px-[4em] py-[2em] rounded-lg ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-gray-100'}`} style={{ animationDuration: '0.1s' }}></div>
+                        <div className={`w-full text-center  px-[4em] py-[2em] rounded-lg ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-gray-100'}`} style={{ animationDuration: '4s' }}></div>
+                        <div className={`w-full text-center  px-[4em] py-[2em] rounded-lg ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-gray-100'}`} style={{ animationDuration: '2s' }}></div>
                       </div>
                         
                     ) : null  
