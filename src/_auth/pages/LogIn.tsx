@@ -8,17 +8,11 @@ import BaseBtn from "../../components/common/BaseBtn";
 
 const LogIn: React.FC = () => {
   const navigate = useNavigate();
-  const [restaurantId, setRestaurantId] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  function handleRestaurantId(variables: any) {
-    if (variables.values?.restaurant_id) {
-        localStorage.setItem("restaurant_id", variables.values.restaurant_id);
-    }
-  }
 
   const { mutate: login, isLoading, error } = useCreate({
-    resource: "api/v1/auth/login/",
+    resource: "api/v1/bo/managers/login/",
     errorNotification() {
       return false;
     },
@@ -28,39 +22,34 @@ const LogIn: React.FC = () => {
         if (refreshToken) {
           localStorage.setItem("refresh", refreshToken);
         }
-
-        if (data?.data.user.permissions) {
-          localStorage.setItem("permissions", JSON.stringify(data?.data.user.permissions));
-        }
         
         if (data?.data.user.is_manager) {
           localStorage.setItem("is_manager", "true");
         }
 
-        handleRestaurantId(variables);
 
         localStorage.setItem("isLogedIn", "true");
 
-        navigate("/");
+        navigate("/select-restaurant");
       }
     },
   });
 
   useEffect(() => {
     if (localStorage.getItem("isLogedIn")) {
-      navigate("/");
+      navigate("/select-restaurant");
     }
   }, [navigate]);
 
   const isValid = useCallback(()=>{
-    return !!restaurantId && !!email && !!password
-  },[restaurantId, email, password])
+    return !!email && !!password
+  },[email, password])
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if(!isValid())
       return;
-    login({ values: { restaurant_id: Number(restaurantId), email, password } });
+    login({ values: { email, password } });
   };
 
   return (
@@ -92,7 +81,6 @@ const LogIn: React.FC = () => {
           </Alert>
         }
       <form className="flex flex-col gap-2 mt-4 justify-center" onSubmit={handleSubmit}>
-        <input value={restaurantId} type="text" name="restaurant_id" placeholder="Restaurant ID" className="inputs-unique lt-md:w-[60vw] gt-md:w-[30vw]" onChange={(e)=>setRestaurantId(e.target.value)} />
         <input value={email} type="text" name="email" placeholder="Email" className="inputs-unique lt-md:w-[60vw] gt-md:w-[30vw]" onChange={(e)=>setEmail(e.target.value)} />
         <input value={password} type="password" name="password" placeholder="Password" className="inputs-unique lt-md:w-[60vw] gt-md:w-[30vw]" onChange={(e)=>setPassword(e.target.value)} />
         <BaseBtn variant="primary" disabled={!isValid()} loading={isLoading} onClick={() => handleSubmit}>

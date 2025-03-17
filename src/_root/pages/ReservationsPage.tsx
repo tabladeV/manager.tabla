@@ -308,7 +308,9 @@ const ReservationTableHeader: React.FC<ReservationTableHeaderProps> = ({ isDarkM
   return (
     <thead className={isDarkMode ? 'bg-bgdarktheme2 text-white' : 'bg-gray-50 text-gray-500'}>
       <tr>
-        <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.id')}</th>
+        <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
+          {t('clients.title')}
+        </th>
         <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
           {t('reservations.tableHeaders.details')}
         </th>
@@ -335,9 +337,6 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
   const { t } = useTranslation();
   return (
     <tr key={reservation.id} className="opacity-80 hover:opacity-100">
-      <td className="px-3 py-2 whitespace-nowrap cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>
-        {reservation.id}
-      </td>
       <td className="px-3 py-2 cursor-pointer" onClick={() => { if (reservation.id) EditClient(reservation.id); }}>
         <div className="flex flex-col">
           {/* Name */}
@@ -347,7 +346,7 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
           </div>
           
           {/* Contact info */}
-          <div className="flex flex-wrap mt-1 gap-x-4 gap-y-1 text-sm lt-md:flex-col">
+          <div className="flex flex-col mt-1 gap-x-4 gap-y-1 text-sm lt-md:flex-col">
             <div className="flex items-center gap-1 text-gray-500">
               <Mail size={14} className={isDarkMode ? 'text-gray-400' : 'text-gray-500'} />
               <span>{reservation.email}</span>
@@ -359,31 +358,6 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
             </div>
           </div>
           
-          {/* Reservation details */}
-          <div className="flex flex-wrap mt-1 gap-x-4 gap-y-1 text-sm lt-md:flex-col">
-            <div className="flex gap-x-2">
-              <div className="flex items-center gap-1 text-gray-500">
-                <Calendar size={14} className={isDarkMode ? 'text-gray-400' : 'text-gray-500'} />
-                <span>{reservation.date}</span>
-              </div>
-
-              <div className="flex items-center gap-1 text-gray-500">
-                <Clock size={14} className={isDarkMode ? 'text-gray-400' : 'text-gray-500'} />
-                <span>{reservation.time.slice(0, 5)}</span>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-1 text-gray-500">
-              <Users size={14} className={isDarkMode ? 'text-gray-400' : 'text-gray-500'} />
-              <span>{reservation.number_of_guests} guests</span>
-            </div>
-          </div>
-          {(reservation.tables && reservation.tables.length > 0) && (
-              <div className="flex items-center gap-1 text-gray-500 text-sm mt-1">
-                <LayoutGrid size={14} className={isDarkMode ? 'text-gray-400' : 'text-gray-500'} />
-                <span>{reservation.tables?.map(table=>table.name).join()}</span>
-              </div>
-            )}
           {/* Comment if available */}
           {reservation.commenter && (
             <div className="flex items-start gap-1 mt-1 text-sm text-gray-500">
@@ -391,9 +365,39 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
               <span>{reservation.commenter.length > 50 ? `${reservation.commenter.substring(0, 50)}...` : reservation.commenter}</span>
             </div>
           )}
+          <div className="text-sm text-gray-500">
+            {` # ${reservation.seq_id}`}
+          </div>
         </div>
       </td>
       
+      <td className="px-3 py-2 max-w-40" onClick={() => EditClient(reservation.id)}>
+        {/* Reservation details */}
+        <div className="flex flex-wrap mt-1 gap-x-4 gap-y-1 text-sm lt-md:flex-col">
+          <div className="flex gap-x-2 flex-wrap">
+            <div className="flex items-center gap-1 font-bold">
+              <Calendar size={14} />
+              <span>{reservation.date}</span>
+            </div>
+
+            <div className="flex items-center gap-1 font-bold">
+              <Clock size={14} />
+              <span>{reservation.time.slice(0, 5)}</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1 font-bold">
+            <Users size={14} />
+            <span>{reservation.number_of_guests} guests</span>
+          </div>
+        </div>
+        {(reservation.tables && reservation.tables.length > 0) && (
+          <div className="flex gap-1 text-sm mt-1 font-bold">
+            <LayoutGrid size={14} />
+            <span>{reservation.tables?.map(table => table.name).join()}</span>
+          </div>
+        )}
+      </td>
       <td className="px-3 py-2 max-w-40" onClick={() => EditClient(reservation.id)}>
         {reservation.internal_note && (
           <DetailItem
@@ -432,15 +436,15 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
 const LoadingRow: React.FC<LoadingRowProps> = ({ isDarkMode }) => {
   return (
     <tr>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <div className={`h-4 rounded w-3/4 ${isDarkMode ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
-      </td>
       <td className="px-6 py-4">
         <div className="space-y-2">
           <div className={`h-5 rounded w-1/3 ${isDarkMode ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
           <div className={`h-4 rounded w-2/3 ${isDarkMode ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
           <div className={`h-4 rounded w-1/2 ${isDarkMode ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
         </div>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <div className={`h-6 rounded-full w-24 ${isDarkMode ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
         <div className={`h-6 rounded-full w-24 ${isDarkMode ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>

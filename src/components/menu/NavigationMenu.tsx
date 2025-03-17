@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom'
 import { usePowerContext } from '../../context/PowerContext';
 import { BaseKey, CanAccess,BaseRecord, useList, useUpdate } from '@refinedev/core';
-import { MessagesSquare } from 'lucide-react';
+import { MessagesSquare, Store } from 'lucide-react';
 import WidgetOnlineToggle from '../common/WidgetOnlineToggle';
 
 interface NavigationMenuProps {
@@ -239,6 +239,11 @@ const {t}=  useTranslation();
 
 
 
+        <h2 className={`font-[500] text-[17px] ${localStorage.getItem('darkMode')==='true'?'text-textdarktheme':'' } ${stateOfSideBar? 'block':'hidden'}`}>Support</h2>
+      </Link>
+
+      <Link to='/change-restaurant' className={`${pathname === '/change-restaurant' ? navigatedMenuClass : normalMenuClass }`}>
+        <Store className={ `dark:stroke-white ${pathname === '/change-restaurant'?'stroke-white':'opacity-[75]'}`}/>
         <h2 className={`font-[500] text-[17px] ${localStorage.getItem('darkMode')==='true'?'text-textdarktheme':'' } ${stateOfSideBar? 'block':'hidden'}`}>Support</h2>
       </Link>
 

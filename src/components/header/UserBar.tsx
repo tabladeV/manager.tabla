@@ -108,6 +108,7 @@ const UserBar = () => {
     localStorage.removeItem("isLogedIn");
     localStorage.removeItem("restaurant_id");
     localStorage.removeItem("refresh");
+    localStorage.removeItem("permissions");
     document.location.href = '/sign-in';
   };
 
