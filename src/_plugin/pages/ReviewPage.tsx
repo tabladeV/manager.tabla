@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import { BaseRecord, useCreate, useList, useOne } from '@refinedev/core';
 import bg from '../../assets/bg-widget.png'
 import Logo from '../../components/header/Logo';
+import BaseBtn from '../../components/common/BaseBtn';
 
 
 const ReviewPage = () => {
@@ -29,11 +30,7 @@ const ReviewPage = () => {
         console.log(data, 'data');
       },
       onError: (error) => {
-        console.log(error, 'error');
-        console.log(error?.response?.status, 'error status');
-        if(error?.response?.status === 203){
-          setStep(3);
-        }
+        setStep(3);
       }
     },
     errorNotification(error, values, resource) {
@@ -169,7 +166,7 @@ const ReviewPage = () => {
           )}
         </button>
       </div>
-      <div className='h-[90vh] xl:max-w-[1200px] no-scrollbar mx-auto  pb-[5em] overflow-y-auto w-full flex p-5 px-10 justify-between'>
+      <div className='h-[90vh] items-center xl:max-w-[1200px] no-scrollbar mx-auto  pb-[5em] overflow-y-auto w-full flex p-5 px-10 justify-between'>
         <div className='w-[60%] lt-sm:w-full'>
           {/* <img
             src={bg}

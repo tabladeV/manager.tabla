@@ -173,8 +173,6 @@ export default function WidgetConfig() {
 
     if (filePDF && searchTabs.menu) {
       formData.append('menu_file', filePDF);
-    }else {
-      formData.append('menu_file', '');
     }
 
     try {

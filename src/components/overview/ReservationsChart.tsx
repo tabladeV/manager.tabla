@@ -159,7 +159,7 @@ export default function ReservationsChart() {
   
 
   return (
-    <div className={`w-full h-full mx-auto p-4  rounded-[20px] lt-sm:w-full ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme text-textdarktheme':'bg-white text-blacktheme'}`}>
+    <div className={`w-full h-full mx-auto p-4  rounded-[20px] lt-sm:w-full dark:text-textdarktheme dark:bg-bgdarktheme bg-white text-blacktheme`}>
       <div className="flex flex-row items-center justify-between">
         <h1 className='text-xl font-bold'>{t('overview.reservations.title')}</h1>
         <div className="flex items-center space-x-4 lt-sm:hidden">
