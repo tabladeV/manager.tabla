@@ -10,6 +10,22 @@ import ExportModal, { InputType } from "../../components/common/ExportModal";
 import useExportConfig from "../../components/common/config/exportConfig";
 import useAdvancedExportConfig from "../../components/common/config/advancedExportConfig";
 
+interface LoadingRowProps {
+  isDarkMode: boolean;
+}
+
+const LoadingComponent: React.FC<LoadingRowProps> = ({ isDarkMode }) => {
+  return (
+    <div className="flex flex-col gap-2">
+      <div className={`w-full text-center py-[1.4em] rounded-lg ${isDarkMode ? 'bg-softgreentheme' : 'bg-softgreentheme'}`} style={{ animationDuration: '0.1s' }}><div className="m-2 t"></div></div>
+      <div className={`w-full text-center py-[2em] rounded-lg ${isDarkMode ? 'bg-darkthemeitems' : 'bg-gray-100'}`} style={{ animationDuration: '0.1s' }}></div>
+      <div className={`w-full text-center py-[2em] rounded-lg ${isDarkMode ? 'bg-darkthemeitems' : 'bg-gray-100'}`} style={{ animationDuration: '0.4s' }}></div>
+      <div className={`w-full text-center py-[2em] rounded-lg ${isDarkMode ? 'bg-darkthemeitems' : 'bg-gray-100'}`} style={{ animationDuration: '0.2s' }}></div>
+      <div className={`w-full text-center py-[2em] rounded-lg ${isDarkMode ? 'bg-darkthemeitems' : 'bg-gray-100'}`} style={{ animationDuration: '1s' }}></div>
+      <div className={`w-full text-center py-[2em] rounded-lg ${isDarkMode ? 'bg-darkthemeitems' : 'bg-gray-100'}`} style={{ animationDuration: '2s' }}></div>
+    </div>
+  )
+}
 interface ClientData {
   id: string;
   name: string;
@@ -155,57 +171,6 @@ console.log(searchKeyword);
   console.log(data);
   const {t} = useTranslation();
 
-  // const clients = [
-  //   {
-  //     id: 'janereq',
-  //     name: 'Jane Smith',
-  //     email: 'janeSmith@gmail.com',
-  //     phoneNumber: '123456789',
-  //     image: 'https://images.unsplash.com/photo-1526835746352-0b9da4054862?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  //     lifetime: {
-  //       upcoming: 3,
-  //       materialized: 1,
-  //       denied: 20,
-  //       cancelled: 4,
-  //       noShow: 2,
-  //       spendCover: 100.856,
-  //       spendMAD: 521,
-  //     },
-  //   },
-  //   {
-  //     id: 'akans',
-  //     name: 'Emily Nord',
-  //     email: 'emilynord@gmail.com',
-  //     phoneNumber: '123456789',
-  //     image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  //     lifetime: {
-  //       upcoming: 7,
-  //       materialized: 6,
-  //       denied: 10,
-  //       cancelled: 29,
-  //       noShow: 1,
-  //       spendCover: 34.856,
-  //       spendMAD: 300,
-  //     },
-  //   },
-  //   {
-  //     id: 'sasak',
-  //     name: 'Jake Jackson',
-  //     email: 'jakejack@gmail.com',
-  //     phoneNumber: '123456789',
-  //     image: 'https://images.unsplash.com/photo-1542727313-4f3e99aa2568?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  //     lifetime: {
-  //       upcoming: 2,
-  //       materialized: 5,
-  //       denied: 5,
-  //       cancelled: 66,
-  //       noShow: 0,
-  //       spendCover: 87.856,
-  //       spendMAD: 745,
-  //     },
-  //   },
-  // ];
-
   const [selectedClient, setSelectedClient] = useState<BaseRecord[]>([]);
   const [searchResults, setSearchResults] = useState(clients);
 
@@ -311,26 +276,34 @@ console.log(searchKeyword);
 
   const sendNotificationHandler = () => {
     console.log(selectedClient.map(client => client.id),'CLIENTS');
+
+    const formData = new FormData();
+    formData.append('customers', selectedClient.map(client => client.id).join(','));
+    formData.append('template', notificationInfo.template?.toString() || '');
+    formData.append('restaurant', notificationInfo.restaurant?.toString() || '');
+    formData.append('subject', notificationInfo.subject);
+    formData.append('message', notificationInfo.message);
+
     
     if(allClients){
+      formData.append('template', notificationInfo.template?.toString() || '');
+      formData.append('restaurant', notificationInfo.restaurant?.toString() || '');
+      formData.append('subject', notificationInfo.subject);
+      formData.append('message', notificationInfo.message);
+      
       sendToAll({
-        values: {
-          template: notificationInfo.template,
-          restaurant: Number(localStorage.getItem('restaurant_id')),
-          subject: notificationInfo.subject,
-          message: notificationInfo.message,
-        },
+        values: formData,
       });
       
     }else{
+      formData.append('customers', selectedClient.map(client => client.id).join(','));
+      formData.append('template', notificationInfo.template?.toString() || '');
+      formData.append('restaurant', notificationInfo.restaurant?.toString() || '');
+      formData.append('subject', notificationInfo.subject);
+      formData.append('message', notificationInfo.message);
+
       sendNotification({
-        values: {
-        customers: selectedClient.map(client => client.id),
-        template: notificationInfo.template,
-        restaurant: Number(localStorage.getItem('restaurant_id')),
-        subject: notificationInfo.subject,
-        message: notificationInfo.message,
-        },
+        values: formData,
       });
     }
   }
@@ -411,7 +384,7 @@ console.log(searchKeyword);
         </div>
       )}
       <div className="flex justify-between items-center">
-        <h1>{t('clients.title')} aaa</h1>
+        <h1>{t('clients.title')}</h1>
         <button onClick={() => setShowExportModal(true)} className={`${localStorage.getItem('darkMode') === 'true' ? ' text-whitetheme' : ''} btn-primary`}>
           {/* {t('reviews.filters.all')} */}
           {selectedClient?.length ? 'export selected' : 'export all'}
@@ -437,6 +410,11 @@ console.log(searchKeyword);
           }
 
           <div className="flex flex-col gap-2 overflow-y-scroll overflow-x-auto h-full lt-sm:h-[26em]">
+            {isLoading &&
+              [...Array(1)].map((_, index) => (
+                <LoadingComponent isDarkMode={localStorage.getItem('darkMode') === 'true'} />
+              ))
+            }
             {searchResults.map((client) => (
               <AccessToClient
                 key={client.id}
@@ -451,8 +429,8 @@ console.log(searchKeyword);
 
           </div>
           
-          <button className={` btn-secondary`} onClick={()=>{(setShowNotificationModal(true));setAllClients(true)}}>Send a notification to all</button>
-          <button className={` ${selectedClient.length === 0 ?  localStorage.getItem('darkMode')==='true'?'btn hover:border-[0px] border-[0px] cursor-not-allowed bg-subblack text-softwhitetheme ':'btn hover:border-[0px] border-[0px] cursor-not-allowed bg-softgreytheme ':'btn-primary'}`} disabled={selectedClient.length===0} onClick={()=>{(setShowNotificationModal(true))}}>{t('clients.sendNotificationButton')}</button>
+          <button className={` btn-secondary`} onClick={()=>{(setShowNotificationModal(true));setAllClients(true);setSelectedClient([])}}>Send a notification to all</button>
+          <button className={` ${selectedClient.length === 0 ?  localStorage.getItem('darkMode')==='true'?'btn hover:border-[0px] border-[0px] cursor-not-allowed bg-subblack text-softwhitetheme ':'btn hover:border-[0px] border-[0px] cursor-not-allowed bg-softgreytheme ':'btn-primary'}`} disabled={selectedClient.length===0} onClick={()=>{(setShowNotificationModal(true));setAllClients(false)}}>{t('clients.sendNotificationButton')}</button>
         </div>
         {pathname === "/clients" || pathname === "/clients/" ? (
           <div className={`lt-sm:hidden flex flex-col items-center w-3/4 text-center p-2 rounded-[10px]`}>

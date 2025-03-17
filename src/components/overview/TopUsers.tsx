@@ -18,12 +18,12 @@ interface FilterProps {
 // Generate chart data (moved outside the component to avoid redefining it on every render)
 const generateChartData = (): ChartData[] => {
   return [
-    { country: "Morocco", interactions: Math.floor(Math.random() * 200) },
-    { country: "Spain", interactions: Math.floor(Math.random() * 50) },
-    { country: "England", interactions: Math.floor(Math.random() * 30) },
-    { country: "Germany", interactions: Math.floor(Math.random() * 20) },
-    { country: "France", interactions: Math.floor(Math.random() * 10) },
-    { country: "Italy", interactions: Math.floor(Math.random() * 5) },
+    { country: "Morocco", interactions: 0 },
+    { country: "Spain", interactions: 0},
+    { country: "England", interactions: 0 },
+    { country: "Germany", interactions: 0 },
+    { country: "France", interactions: 0 },
+    { country: "Italy", interactions: 0 },
   ];
 };
 
@@ -63,7 +63,7 @@ export default function TopUsers() {
         {
           field: "page_size",
           operator: "eq",
-          value: 400,
+          value: 500,
         }
       ],
       queryOptions:{

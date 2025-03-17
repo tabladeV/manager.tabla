@@ -5,7 +5,8 @@ import SearchBar from "../../components/header/SearchBar";
 import Pagination from "../../components/reservation/Pagination";
 import { MessageSquare, User, Calendar, ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import image from '../../assets/profile.png';
+import profilepic from '../../assets/profile.png';
+import { t } from "i18next";
 // Types and Interfaces
 interface Message extends BaseRecord {
   id: BaseKey;
@@ -223,7 +224,7 @@ const MessagesPage = () => {
       {/* Page Header */}
       <div className="flex justify-between mb-4 lt-sm:flex-col lt-sm:gap-2">
         <h1 className={`text-3xl font-[700] ${isDarkMode ? "text-whitetheme" : "text-blacktheme"}`}>
-          Messages
+          {t('messages.title')}
         </h1>
         <div className="flex gap-4 justify-end">
           <button
@@ -343,7 +344,11 @@ const MessageRow: React.FC<MessageRowProps> = ({ message, isSelected, onSelect }
       </td>
       <td className="px-3 py-4 cursor-pointer" onClick={onSelect}>
         <div className="flex items-center">
-          <img className="size-10 object-cover rounded-full opacity-85" src={image}/>
+          <img 
+            className="h-10 w-10 rounded-full object-cover" 
+            src={profilepic} 
+            alt="User avatar"
+          />
           <div className="ml-4">
             <div className={`font-medium ${isDarkMode ? "text-white" : "text-gray-900"}`}>
               {`${message?.reservation?.customer?.first_name} ${message?.reservation?.customer?.last_name}`  || "Customer"}
@@ -393,28 +398,28 @@ const LoadingRow: React.FC = () => {
   return (
     <tr>
       <td className="px-3 py-4 whitespace-nowrap">
-        <div className={`h-4 w-4 rounded ${isDarkMode ? "bg-gray-700" : "bg-gray-200"}`}></div>
+        <div className={`h-4 w-4 rounded ${isDarkMode ? "bg-darkthemeitems" : "bg-gray-200"}`}></div>
       </td>
       <td className="px-3 py-4">
         <div className="flex items-center">
-          <div className={`h-10 w-10 rounded-full ${isDarkMode ? "bg-gray-700" : "bg-gray-200"}`}></div>
+          <div className={`h-10 w-10 rounded-full ${isDarkMode ? "bg-darkthemeitems" : "bg-gray-200"}`}></div>
           <div className="ml-4 space-y-1">
-            <div className={`h-4 w-24 rounded ${isDarkMode ? "bg-gray-700" : "bg-gray-200"}`}></div>
-            <div className={`h-3 w-32 rounded ${isDarkMode ? "bg-gray-700" : "bg-gray-200"}`}></div>
+            <div className={`h-4 w-24 rounded ${isDarkMode ? "bg-darkthemeitems" : "bg-gray-200"}`}></div>
+            <div className={`h-3 w-32 rounded ${isDarkMode ? "bg-darkthemeitems" : "bg-gray-200"}`}></div>
           </div>
         </div>
       </td>
       <td className="px-3 py-4">
         <div className="space-y-1">
-          <div className={`h-4 w-3/4 rounded ${isDarkMode ? "bg-gray-700" : "bg-gray-200"}`}></div>
-          <div className={`h-4 w-1/2 rounded ${isDarkMode ? "bg-gray-700" : "bg-gray-200"}`}></div>
+          <div className={`h-4 w-3/4 rounded ${isDarkMode ? "bg-darkthemeitems" : "bg-gray-200"}`}></div>
+          <div className={`h-4 w-1/2 rounded ${isDarkMode ? "bg-darkthemeitems" : "bg-gray-200"}`}></div>
         </div>
       </td>
       <td className="px-3 py-4 whitespace-nowrap">
-        <div className={`h-4 w-32 rounded ${isDarkMode ? "bg-gray-700" : "bg-gray-200"}`}></div>
+        <div className={`h-4 w-32 rounded ${isDarkMode ? "bg-darkthemeitems" : "bg-gray-200"}`}></div>
       </td>
       <td className="px-3 py-4 whitespace-nowrap">
-        <div className={`h-8 w-8 rounded-full ${isDarkMode ? "bg-gray-700" : "bg-gray-200"}`}></div>
+        <div className={`h-8 w-8 rounded-full ${isDarkMode ? "bg-darkthemeitems" : "bg-gray-200"}`}></div>
       </td>
     </tr>
   );

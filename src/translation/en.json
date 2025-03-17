@@ -341,6 +341,29 @@
 
         }
     },
+    "messages": {
+        "title": "Messages",
+        "tableHeaders": {
+            "id": "ID",
+            "date": "Date",
+            "name": "Name",
+            "email": "Email",
+            "subject": "Subject",
+            "message": "Message"
+        },
+        "filters":{
+            "all": "All",
+            "date": "Date"
+        },
+        "view":{
+            "title": "View Message",
+            "name"  : "Name",
+            "email" : "Email",
+            "date"  : "Date",
+            "subject": "Subject",
+            "message": "Message"
+        }
+    },
      "settingsPage": {
         "title": "Settings",
         "chooseSettingPrompt": "Choose a setting to modify",

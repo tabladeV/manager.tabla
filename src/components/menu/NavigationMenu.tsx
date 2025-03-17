@@ -62,7 +62,7 @@ const NavigationMenu = (props:NavigationMenuProps) => {
     }
   },[widgetData])
 
-    const normalMenuClass = 'flex items-center my-1 hover:bg-[#88AB6115] stroke-[#1E1E1E75] fill-[#1E1E1E75] text-[#1E1E1E75] transition duration-150  rounded-[10px] px-[1em]  h-[3em]  gap-[1em]';
+    const normalMenuClass = 'flex items-center my-1 hover:bg-[#88AB6115]  fill-[#1E1E1E75] text-[#1E1E1E75] transition duration-150  rounded-[10px] px-[1em]  h-[3em]  gap-[1em]';
     const darkMenuClass = 'flex items-center my-1 hover:bg-[#88AB6115] text-whitetheme transition duration-150  rounded-[10px] px-[1em]  h-[3em]  gap-[1em]';
     const navigatedMenuClass = 'flex items-center my-1 bg-greentheme text-white fill-white hover:bg-[#88AB61] transition duration-150  rounded-[10px] px-[1em] h-[3em]  gap-[1em]';
 
@@ -227,7 +227,10 @@ const {t}=  useTranslation();
         </Link>
         </CanAccess>
         <Link to='/messages' className={`${pathname.includes('messages') ? navigatedMenuClass : normalMenuClass } `}>
-          <MessagesSquare className='dark:fill-white'/>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17 12V3C17 2.73478 16.8946 2.48043 16.7071 2.29289C16.5196 2.10536 16.2652 2 16 2H3C2.73478 2 2.48043 2.10536 2.29289 2.29289C2.10536 2.48043 2 2.73478 2 3V17L6 13H16C16.2652 13 16.5196 12.8946 16.7071 12.7071C16.8946 12.5196 17 12.2652 17 12ZM21 6H19V15H6V17C6 17.2652 6.10536 17.5196 6.29289 17.7071C6.48043 17.8946 6.73478 18 7 18H18L22 22V7C22 6.73478 21.8946 6.48043 21.7071 6.29289C21.5196 6.10536 21.2652 6 21 6Z" fill={pathname === '/messages' || localStorage.getItem('darkMode')=== 'true' ? 'white':'#1e1e1e'} fillOpacity={pathname === '/messages'? '1':'0.75'}/>
+          </svg>
+
           <h2 className={`font-[500] text-[17px] ${localStorage.getItem('darkMode')==='true'?'text-textdarktheme':'' } ${stateOfSideBar? 'block':'hidden'}`}>{t('messages.title')}</h2>
         </Link>
       </div>
