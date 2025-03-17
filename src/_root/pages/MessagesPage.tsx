@@ -400,28 +400,28 @@ const LoadingRow: React.FC = () => {
   return (
     <tr>
       <td className="px-3 py-4 whitespace-nowrap">
-        <div className={`h-4 w-4 rounded ${isDarkMode ? "bg-gray-700" : "bg-gray-200"}`}></div>
+        <div className={`h-4 w-4 rounded ${isDarkMode ? "bg-darkthemeitems" : "bg-gray-200"}`}></div>
       </td>
       <td className="px-3 py-4">
         <div className="flex items-center">
-          <div className={`h-10 w-10 rounded-full ${isDarkMode ? "bg-gray-700" : "bg-gray-200"}`}></div>
+          <div className={`h-10 w-10 rounded-full ${isDarkMode ? "bg-darkthemeitems" : "bg-gray-200"}`}></div>
           <div className="ml-4 space-y-1">
-            <div className={`h-4 w-24 rounded ${isDarkMode ? "bg-gray-700" : "bg-gray-200"}`}></div>
-            <div className={`h-3 w-32 rounded ${isDarkMode ? "bg-gray-700" : "bg-gray-200"}`}></div>
+            <div className={`h-4 w-24 rounded ${isDarkMode ? "bg-darkthemeitems" : "bg-gray-200"}`}></div>
+            <div className={`h-3 w-32 rounded ${isDarkMode ? "bg-darkthemeitems" : "bg-gray-200"}`}></div>
           </div>
         </div>
       </td>
       <td className="px-3 py-4">
         <div className="space-y-1">
-          <div className={`h-4 w-3/4 rounded ${isDarkMode ? "bg-gray-700" : "bg-gray-200"}`}></div>
-          <div className={`h-4 w-1/2 rounded ${isDarkMode ? "bg-gray-700" : "bg-gray-200"}`}></div>
+          <div className={`h-4 w-3/4 rounded ${isDarkMode ? "bg-darkthemeitems" : "bg-gray-200"}`}></div>
+          <div className={`h-4 w-1/2 rounded ${isDarkMode ? "bg-darkthemeitems" : "bg-gray-200"}`}></div>
         </div>
       </td>
       <td className="px-3 py-4 whitespace-nowrap">
-        <div className={`h-4 w-32 rounded ${isDarkMode ? "bg-gray-700" : "bg-gray-200"}`}></div>
+        <div className={`h-4 w-32 rounded ${isDarkMode ? "bg-darkthemeitems" : "bg-gray-200"}`}></div>
       </td>
       <td className="px-3 py-4 whitespace-nowrap">
-        <div className={`h-8 w-8 rounded-full ${isDarkMode ? "bg-gray-700" : "bg-gray-200"}`}></div>
+        <div className={`h-8 w-8 rounded-full ${isDarkMode ? "bg-darkthemeitems" : "bg-gray-200"}`}></div>
       </td>
     </tr>
   );

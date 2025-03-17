@@ -9,6 +9,7 @@ import { getSubdomain } from '../../utils/getSubdomain';
 
 const WidgetPage = () => {
 
+  
   const { pathname } = useLocation();
   useEffect(() => {
     document.title = "Tabla | Taste Morocco's best ";

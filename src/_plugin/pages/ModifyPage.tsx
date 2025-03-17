@@ -24,7 +24,7 @@ const Modify = () => {
               <div className={`h-[2.4em] w-[10em] lt-sm:w-[20vw] rounded ${isDarkMode ? "bg-bgdarktheme" : "bg-gray-200"}`}></div>
             </div>
             <div className="ml-4 space-y-1">
-              <div className={`h-[2.4em] w-[18em] lt-sm:w-[60vw] rounded ${isDarkMode ? "bg-bgdarktheme" : "bg-gray-200"}`}></div>
+              <div className={`h-[2.4em] w-[25em] lt-sm:w-[60vw] rounded ${isDarkMode ? "bg-bgdarktheme" : "bg-gray-200"}`}></div>
             </div>
             
           </div>
@@ -374,16 +374,24 @@ const Modify = () => {
                     <input type='text' defaultValue={reservationInfo?.allergies} name='Allergies' className={`text-md inputs gap-3 ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`} placeholder='Allergies'  onChange={(e) => {setUpdateInfo({...updateInfo, allergies: e.target.value})}} />
                     <div className={`text-md cursor-pointer gap-3 inputs ${localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffffd5] bg-darkthemeitems ' : ''}`} >
                       <div className=' flex justify-between items-center' onClick={()=>{setShowOccasions(!showOccasions)}}>{occasions?.find(occasion => occasion.id === updateInfo?.occasion)?.name || 'Select an occasions'} 
+                        {!showOccasions? 
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M9.40755 13.4643L4.69338 8.75011L5.87171 7.57178L9.99672 11.6968L14.1217 7.57178L15.3 8.75011L10.5859 13.4643C10.4296 13.6205 10.2177 13.7083 9.99672 13.7083C9.77574 13.7083 9.56382 13.6205 9.40755 13.4643Z" fill={localStorage.getItem('darkMode') === 'true' ? 'white' : 'black'}/>
+                          <path fill-rule="evenodd" clip-rule="evenodd" d="M9.40755 13.4643L4.69338 8.75011L5.87171 7.57178L9.99672 11.6968L14.1217 7.57178L15.3 8.75011L10.5859 13.4643C10.4296 13.6205 10.2177 13.7083 9.99672 13.7083C9.77574 13.7083 9.56382 13.6205 9.40755 13.4643Z" fill={localStorage.getItem('darkMode') === 'true' ? 'white' : 'black'}/>
                         </svg>
+                        :
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path fill-rule="evenodd" clip-rule="evenodd" d="M13.4748 8.61491L19.1318 14.2719L17.7178 15.6859L12.7678 10.7359L7.81781 15.6859L6.40381 14.2719L12.0608 8.61491C12.2483 8.42744 12.5026 8.32213 12.7678 8.32213C13.033 8.32213 13.2873 8.42744 13.4748 8.61491Z"  fill={localStorage.getItem('darkMode') === 'true' ? 'white' : 'black'}/>
+                        </svg>
+                        
+                        
+                        }
       
                       </div>
                     </div>
                     <div  className='relative'>
                       
 
-                      <div ref={occasionRef} className={`flex w-full z-[400] p-4 flex-col absolute gap-2 ${showOccasions ? 'block' : 'hidden'} ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-textdarktheme' : 'bg-white text-blacktheme'} rounded-[10px] p-2`}>
+                      <div ref={occasionRef} className={`flex w-full z-[400] p-4  flex-col absolute gap-2 ${showOccasions ? 'block' : 'hidden'} ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-textdarktheme' : 'bg-white text-blacktheme border-[1px] '} rounded-[10px] p-2`}>
                         {showOccasions && occasions?.map((occasion: BaseRecord) => (
                           <button key={occasion.id} className='text-left' onClick={() => {setUpdateInfo({...updateInfo, occasion: occasion.id});setShowOccasions(false)}}>{occasion.name}</button>
                         ))}

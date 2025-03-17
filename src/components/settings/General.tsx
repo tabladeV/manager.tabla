@@ -242,19 +242,13 @@ const General = () => {
       phone: formData.phone,
       location: restaurant?.location || "string", // Use existing data or a placeholder
       address: restaurant?.address || "string", // Use existing data or a placeholder
-      is_approved: restaurant?.is_approved || true, // Use existing data or a default
       // max_of_guests: restaurant?.max_of_guests || 2147483647, // Use existing data or a default
       description: formData.description,
-      allow_reservation: restaurant?.allow_reservation || true, // Use existing data or a default
       average_price: formData.average_price,
       // due_cancellation_period: restaurant?.due_cancellation_period || 2147483647, // Use existing data or a default
       country: formData.country,
       city: formData.city,
-      category: restaurant?.category || 0, // Use existing data or a default
-      manager: restaurant?.manager || 0, // Use existing data or a default
-      restaurant_type: restaurant?.restaurant_type || 0, // Use existing data or a default
       // categories: categories.length() === 0 ? 0 : categories?.map((cat) => parseInt(cat)), // Ensure categories are numbers
-      staff: restaurant?.staff || [0], // Use existing data or a default
     };
   
     mutate({
