@@ -134,9 +134,9 @@ const WidgetOnlineToggle: React.FC<WidgetOnlineToggleProps> = ({
           <>
             <Power 
               size={size} 
-              className={`mr-2 ${power ? 'text-green-500' : 'text-red-500'}`} 
+              className={`mr-2 ${power ? 'text-greentheme' : 'text-red-500'}`} 
             />
-            <span className={power ? 'text-green-500' : 'text-red-500'}>
+            <span className={power ? 'text-greentheme' : 'text-red-500'}>
               Widget {power ? 'Online' : 'Offline'}
             </span>
           </>
@@ -158,10 +158,10 @@ const WidgetOnlineToggle: React.FC<WidgetOnlineToggleProps> = ({
         <>
           <Power 
             size={size} 
-            className={`transition-colors duration-300 ${power ? 'text-green-500 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`} 
+            className={`transition-colors duration-300 ${power ? 'text-greentheme ' : 'text-red-500 dark:text-red-400'}`} 
           />
           {power ? (
-            <span className="absolute w-full h-full rounded-full bg-green-400 opacity-10 animate-pulse" 
+            <span className="absolute w-full h-full rounded-full bg-greentheme opacity-10 animate-pulse" 
                   style={{ animationDuration: '4s' }}></span>
           ) : (
             <span className="absolute w-full h-full rounded-full bg-red-400 opacity-10 animate-pulse" 

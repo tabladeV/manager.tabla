@@ -1,9 +1,8 @@
-// DraggableTableReservation.tsx
+import React from 'react';
 import { BaseKey } from '@refinedev/core';
 import { useDrag } from 'react-dnd';
-import { Occasion } from '../settings/Occasions';
-import { currentResType } from './DropTarget';
 import { getTextColor } from '../../utils/helpers';
+import { currentResType } from './DropTarget';
 
 interface DraggableTableReservationProps {
   reservation: currentResType | null;
@@ -23,17 +22,31 @@ interface DraggableTableReservationProps {
 
 const ItemType = 'TABLE_RESERVATION';
 
-const DraggableTableReservation: React.FC<DraggableTableReservationProps> = ({ reservation, fromTableId, name, id, max,
+const DraggableTableReservation: React.FC<DraggableTableReservationProps> = ({ 
+  reservation, 
+  fromTableId, 
+  name, 
+  id, 
+  max,
   type,
   x,
   y,
   height,
-  width }) => {
+  width 
+}) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemType,
     item: { 
       ...reservation,
-      fromTableId
+      fromTableId,
+      // Include dimension and appearance properties for the preview
+      type,
+      x,
+      y,
+      height,
+      width,
+      max,
+      name
     },
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
@@ -44,14 +57,12 @@ const DraggableTableReservation: React.FC<DraggableTableReservationProps> = ({ r
     <div
       ref={drag}
       key={id}
-      className={`text-center text-white rounded-[10px] flex flex-col justify-center items-center`}
+      className={`text-center text-white rounded-[10px] flex flex-col justify-center items-center cursor-grab`}
       style={{
         opacity: isDragging ? 0.5 : 1,
         width,
         height,
         backgroundColor: reservation?.occasion?.color || '#FF4B4B',
-        // transform: `translate(${x}px, ${y}px)`,
-        // transform: `translate(${x}px, ${y}px)`,
         borderRadius: type === 'RECTANGLE' ? '10px' : '50%',
         color: getTextColor((reservation?.occasion?.color || '#FF4B4B'))
       }}

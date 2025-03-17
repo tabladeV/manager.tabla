@@ -7,8 +7,6 @@ import { MessageSquare, User, Calendar, ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import profilepic from '../../assets/profile.png';
 import { t } from "i18next";
-
-
 // Types and Interfaces
 interface Message extends BaseRecord {
   id: BaseKey;
@@ -340,7 +338,7 @@ const MessageRow: React.FC<MessageRowProps> = ({ message, isSelected, onSelect }
             type="checkbox"
             checked={isSelected}
             onChange={onSelect}
-            className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            className="checkbox h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
           />
         </div>
       </td>

@@ -166,7 +166,6 @@ const EditReservationModal = ({
               value={selectedClient.status}
               onChange={(e) => {
                 setSelectedClient({...selectedClient, status: e.target.value as ReservationStatus});
-                statusHandler(e.target.value as ReservationStatus);
               }}
               className={`w-full rounded-md p-2 ${isDarkMode ? 'bg-darkthemeitems text-whitetheme' : 'bg-softgreytheme text-subblack'}`}
             >

@@ -202,7 +202,7 @@ const Availability = () => {
       {manageWeekly && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setManageWeekly(false)}></div>
-          <div className={`relative rounded-lg p-4 md:p-6 w-full max-w-lg mx-4 ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}>
+          <div className={`relative rounded-lg p-4 md:p-6 w-full max-w-xl mx-4 ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}>
             <div className="flex justify-between mb-4">
               <h2 className="text-xl font-semibold">{t('settingsPage.availability.manageWeek')}</h2>
               <button onClick={() => setManageWeekly(false)} className="text-gray-500 hover:text-gray-700">

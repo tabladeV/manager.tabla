@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
+import { Preview } from 'react-dnd-preview';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { addHours, format, parse } from 'date-fns';
@@ -21,6 +22,7 @@ import { ReservationSource, ReservationStatus } from '../../components/common/ty
 import { Occasion } from '../../components/settings/Occasions';
 import { Reservation } from './ReservationsPage';
 import BaseSelect from '../../components/common/BaseSelect';
+import DndPreview from '../../components/places/DndPreview';
 
 interface ReservationType {
   results: Reservation[]
@@ -73,6 +75,30 @@ interface DataTypes {
 function isTouchDevice() {
   return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 }
+
+const touchBackendOptions = {
+  enableMouseEvents: true, // Allow mouse events on touch devices
+  enableKeyboardEvents: true,
+  delayTouchStart: 50, // Small delay to distinguish between tap and drag
+  ignoreContextMenu: true,
+  scrollAngleRanges: [
+    { start: 30, end: 150 },
+    { start: 210, end: 330 }
+  ]
+};
+
+const DndProviderWithPreview: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const isTouch = isTouchDevice();
+  const backend = isTouch ? TouchBackend : HTML5Backend;
+  const options = isTouch ? touchBackendOptions : undefined;
+
+  return (
+    <DndProvider backend={backend} options={options}>
+      {children}
+      <DndPreview />
+    </DndProvider>
+  );
+};
 
 const PlacePage: React.FC = () => {
   const { t } = useTranslation();
@@ -507,7 +533,9 @@ const PlacePage: React.FC = () => {
           </CanAccess>
         </div>
       </div>
-      <DndProvider backend={isTouchDevice() ? TouchBackend : HTML5Backend}>
+      
+      {/* Replace the original DndProvider with our enhanced version */}
+      <DndProviderWithPreview>
         <div className="gt-sm:flex gap-[10px]">
           <div className='gt-sm:hidden lt-sm:mb-2'>
             <BaseSelect
@@ -659,7 +687,7 @@ const PlacePage: React.FC = () => {
 
           </div>
         </div>
-      </DndProvider>
+      </DndProviderWithPreview>
     </div>
   );
 };

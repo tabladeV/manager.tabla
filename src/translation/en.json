@@ -536,7 +536,7 @@
             "addAnotherSlot": "Add another slot",
             "to": "To",
             "applyToWeek": "Apply to weekly",
-            "placeLimitLabel": "Place limit number"
+            "placeLimitLabel": "Place limit"
         },
         "tags":{
             "title": "Tags",
