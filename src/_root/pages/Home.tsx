@@ -12,12 +12,12 @@ import { useList } from '@refinedev/core'
 
 
 const Home = () => {
-  
+
   useEffect(() => {
     document.title = `Tabla | taste Morocco's best`
   }, [])
 
-  const{data, isLoading, error} = useList({
+  const { data, isLoading, error } = useList({
     resource: 'api/v1/bo/restaurants/users/me/',
   })
 
@@ -27,19 +27,19 @@ const Home = () => {
     setUser(data?.data)
   }, [data])
 
-  
 
-  
+
+
   const { t } = useTranslation();
 
   return (
-    <div className={i18next.language === 'ar' ?'rtl':''}>
+    <div className={i18next.language === 'ar' ? 'rtl' : ''}>
 
       <div className='mb-4 ml-4'>
         <h1>
-          {t('overview.headline') +' '+ (user ? user.first_name :'')}
+          {t('overview.headline') + ' ' + (user ? user.first_name : '')}
         </h1>
-        <p className={` ${localStorage.getItem('darkMode')=== 'true'? ' text-softwhitetheme':'text-subblack'}`}>
+        <p className={` ${localStorage.getItem('darkMode') === 'true' ? ' text-softwhitetheme' : 'text-subblack'}`}>
           {t('overview.subtitle')}
           {/* Here’s what’s happening with your business today. */}
         </p>
