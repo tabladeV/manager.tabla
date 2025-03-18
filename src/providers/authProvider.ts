@@ -43,10 +43,6 @@ const authProvider: ExtendedAuthProvider = {
 
                 if (response?.data.user.is_manager) {
                     localStorage.setItem("is_manager", "true");
-                  }
-
-                if (response.data.users.permissions) {
-                    localStorage.setItem("permissions", JSON.stringify(response.data.users.permissions));
                 }
 
                 // Start the refresh timer after a successful login.
@@ -95,6 +91,10 @@ const authProvider: ExtendedAuthProvider = {
         if (!token) return Promise.reject();
         try {
             const response = await axiosInstance.get("/api/v1/bo/restaurants/users/me/");
+            
+            if (response.data.permissions) {
+                localStorage.setItem("permissions", JSON.stringify(response.data.users.permissions));
+            }
             return Promise.resolve(response.data);
         } catch (error) {
             return Promise.reject();

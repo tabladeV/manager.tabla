@@ -60,6 +60,7 @@ import { getSubdomain } from "./utils/getSubdomain";
 import "react-toastify/dist/ReactToastify.css";
 import { notificationProvider } from "./providers/notificationProvider";
 import MessagesPage from "./_root/pages/MessagesPage";
+import RestaurantSelection from "./components/settings/RestaurantSelection";
 const API_HOST = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL : "https://api.dev.tabla.ma";
 function App() {
   
@@ -68,7 +69,7 @@ function App() {
   }, []);
 
   const subdomain = getSubdomain();
-  const isManager = subdomain === "manager";
+  const isManager = subdomain === "manager" || true;
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLogedIn") === "true";
     const refreshToken = localStorage.getItem("refresh");
@@ -134,6 +135,12 @@ function App() {
                         <Route element={<AuthLayout />}>
                           <Route path="/sign-in" element={<LogIn />} />
                           <Route path="/sign-up" element={<LogIn />} />
+                            <Route path="/select-restaurant" element={
+                              <Authenticated key="*" redirectOnFail="/sign-in">
+                                <RestaurantSelection />
+                              </Authenticated>
+                              } />
+
                         </Route>
                         {/* Private Routes */}
                         <Route
@@ -260,11 +267,14 @@ function App() {
                             } />
                           </Route>
 
+                          <Route path="/change-restaurant" element={<RestaurantSelection showLogo={false} />} />
+
+                          {/* Messages - not restricted yet */}
+                          <Route path="/messages" element={<MessagesPage />} />
+                          
                           {/* Support - not restricted */}
                           <Route path="/support" element={<SupportPage />} />
                           
-                          {/* Support - not restricted */}
-                          <Route path="/messages" element={<MessagesPage />} />
 
                           {/* Settings */}
                           <Route path="/settings" element={<SettingsPage />}>

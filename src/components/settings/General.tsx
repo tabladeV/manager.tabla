@@ -55,7 +55,6 @@ const General = () => {
       setSubdomain(subdomainApi.subdomain as unknown as string)
     }
   }, [subdomainData])
-  console.log(subdomain)
 
   const [restaurant, setRestaurant] = useState<Restaurant>();
 
@@ -240,22 +239,30 @@ const General = () => {
       email: formData.email,
       website: formData.website,
       phone: formData.phone,
-      location: restaurant?.location || "string", // Use existing data or a placeholder
+      // location: restaurant?.location || "string", // Use existing data or a placeholder
       address: restaurant?.address || "string", // Use existing data or a placeholder
+      // is_approved: restaurant?.is_approved || true, // Use existing data or a default
       // max_of_guests: restaurant?.max_of_guests || 2147483647, // Use existing data or a default
       description: formData.description,
-      average_price: formData.average_price,
+      // allow_reservation: restaurant?.allow_reservation || true, // Use existing data or a default
+      // average_price: formData.average_price,
       // due_cancellation_period: restaurant?.due_cancellation_period || 2147483647, // Use existing data or a default
       country: formData.country,
       city: formData.city,
+      // category: restaurant?.category || 0, // Use existing data or a default
+      // manager: restaurant?.manager || 0, // Use existing data or a default
+      // restaurant_type: restaurant?.restaurant_type || 0, // Use existing data or a default
       // categories: categories.length() === 0 ? 0 : categories?.map((cat) => parseInt(cat)), // Ensure categories are numbers
+      // staff: restaurant?.staff || [0], // Use existing data or a default
     };
+    if(subdomain){
+      mutate({
+        url: 'https://api.dev.tabla.ma/api/v1/bo/restaurants/subdomain',
+        method: "patch",
+        values: {subdomain: subdomain},
+      })
+    }
   
-    mutate({
-      url: 'https://api.dev.tabla.ma/api/v1/bo/restaurants/subdomain',
-      method: "patch",
-      values: {subdomain: subdomain},
-    })
 
 
     // Call the update mutation
