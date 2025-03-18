@@ -6,6 +6,7 @@ import { BaseRecord, useCreate, useList, useOne } from '@refinedev/core';
 import bg from '../../assets/bg-widget.png'
 import Logo from '../../components/header/Logo';
 import BaseBtn from '../../components/common/BaseBtn';
+import { LoaderCircle } from 'lucide-react';
 
 
 const ReviewPage = () => {
@@ -22,15 +23,35 @@ const ReviewPage = () => {
     },
   });
 
-  const { data: res, isLoading, error } = useOne({
-    resource: `api/v1/bo/subdomains/public/cutomer/reviws`,
-    id: '',
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const {data : reviewAccess, isLoading: loading, error: err} = useList({
+    resource: `api/v1/bo/subdomains/public/cutomer/reviews/${token}`,
     queryOptions: {
+      retry: 1,
       onSuccess: (data) => {
         console.log(data, 'data');
       },
       onError: (error) => {
         setStep(3);
+        setErrorMessage(error?.formattedMessage);
+        
+      }
+    },
+    errorNotification(error, values, resource) {
+      return {
+        type: 'error',
+        message: error?.formattedMessage,
+      };
+    }
+  });
+
+  const { data: res, isLoading, error } = useOne({
+    resource: `api/v1/bo/subdomains/public/cutomer/reviews`,
+    id: '',
+    queryOptions: {
+      onSuccess: (data) => {
+        console.log(data, 'data');
       }
     },
     errorNotification(error, values, resource) {
@@ -166,8 +187,49 @@ const ReviewPage = () => {
           )}
         </button>
       </div>
+      {loading ? 
+        <div className='w-full flex justify-center gap-2 p-4'>
+          <div className='md:w-[40%] items-center w-full pl-10 lt-md:pl-0 lt-md:p-0  mx-auto mt-10 flex flex-col gap-4  justify-center'>
+            <div className={`animate-pulse   flex items-center justify-center w-[300px] h-[40px] rounded-md ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-gray-300'}`}></div>
+            <div className={`animate-pulse   flex items-center justify-center w-[400px] h-[30px] rounded-md ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-gray-300'}`}></div>
+            {Array.from({ length: 5 }, (_, index) => (
+
+            <div className='flex gap-4 items-center justify-start'>
+              <div className={`animate-pulse flex items-center justify-center lt-md:w-[150px] w-[300px] h-[40px] rounded-md ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-gray-300'}`}></div>
+              <div className={`animate-pulse flex items-center justify-center w-[40px] h-[40px] rounded-md ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-gray-300'}`}></div>
+              <div className={`animate-pulse flex items-center justify-center w-[40px] h-[40px] rounded-md ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-gray-300'}`}></div>
+              <div className={`animate-pulse flex items-center justify-center w-[40px] h-[40px] rounded-md ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-gray-300'}`}></div>
+              <div className={`animate-pulse flex items-center justify-center w-[40px] h-[40px] rounded-md ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-gray-300'}`}></div>
+              <div className={`animate-pulse flex items-center justify-center w-[40px] h-[40px] rounded-md ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-gray-300'}`}></div>
+            </div>
+            ))}
+            <div className='flex gap-3' >
+              <div className={`animate-pulse   flex items-center justify-center w-[200px] h-[50px] rounded-md ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-gray-300'}`}></div>
+              <div className={`animate-pulse   flex items-center justify-center w-[200px] h-[50px] rounded-md ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-gray-300'}`}></div>
+            </div>  
+
+            
+          </div>
+          <div className='w-[40%] lt-md:hidden mx-auto mt-10 flex items-center justify-center'>
+            <div className={`animate-pulse  mx-auto mt-10 flex items-center justify-center w-[300px] h-[300px] rounded-md ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-gray-300'}`}></div>
+                
+          </div>
+            
+        </div>
+      :
+      err?
+      
+        
+        <div className="flex bg-softredtheme p-2 rounded text-redtheme flex-col gap-3 w-[60%] mx-auto text-center mt-[10vw] items-left ">
+          <h2 className={`text-2xl font-bold`}>Error!</h2>
+          <p >
+            {errorMessage}
+          </p>
+        </div>
+        
+      :
       <div className='h-[90vh] items-center xl:max-w-[1200px] no-scrollbar mx-auto  pb-[5em] overflow-y-auto w-full flex p-5 px-10 justify-between'>
-        <div className='w-[60%] lt-sm:w-full'>
+        <div className='w-[60%] '>
           {/* <img
             src={bg}
             alt="logo"
@@ -318,14 +380,6 @@ const ReviewPage = () => {
                 Your review has been submitted successfully. We appreciate your feedback.
               </p>
             </div>
-          }{
-            step === 3 &&
-            <div className="flex flex-col gap-3  items-left  mt-3">
-              <h2 className={`text-2xl font-bold text-darkthemeitems ${localStorage.getItem('darkMode') === 'true' ? 'text-textdarktheme' : 'text-blacktheme'}`}>Your Review Has Already Been Submitted</h2>
-              <p className={localStorage.getItem('darkMode') === 'true' ? 'text-[#ffffff90]' : 'text-blacktheme'}>
-              Thank you for sharing your feedback! You've already submitted a review for this restaurant. We appreciate your support and value your opinion.
-              </p>
-            </div>
           }
         </div>
         <div className='w-[40%] lt-sm:hidden'>
@@ -333,9 +387,11 @@ const ReviewPage = () => {
             src={restaurantData?.logo}
             alt="logo"
             className="h-[300px] rounded-md"
-          />
+            />
         </div>
       </div>
+      }
+      
     </div>
   );
 };

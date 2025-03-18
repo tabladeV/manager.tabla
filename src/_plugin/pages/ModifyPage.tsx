@@ -61,7 +61,7 @@ const Modify = () => {
           setUpdateInfo(data.data);
         },
         onError: (error) => {
-          console.log('API Error:'); // Inspect the error object
+          console.log(error.message,'error')
           setErrorPage(true)
         }
       },
@@ -88,7 +88,8 @@ const Modify = () => {
         resource: `api/v1/bo/subdomains/public/cutomer/reservations/${token}/cancel`,
         values: {}
       })
-      window.location.reload();
+      // window.location.reload();
+      setErrorPage(true)
     }
     useEffect(() => {
       console.log('updateInfo', updateInfo)
@@ -142,6 +143,20 @@ const Modify = () => {
       method: "get",
       
     });
+
+
+
+    const {data: messageAccess, isLoading: messageLoading, error: messageError} = useOne({
+      resource: `api/v1/bo/subdomains/public/cutomer/reservations`,
+      id: `${token}/message`,
+      queryOptions: {
+        retry: 1,
+        onError: (error) => {
+          setMessageSent(true)
+        }
+      },
+    })
+
 
     useEffect(() => {
       if(posts){
@@ -422,7 +437,17 @@ const Modify = () => {
               {
                 tab === 'contact' &&
                 <div>
-                  {!messageSent ? <div className='flex flex-col gap-2'>
+                  {
+
+                    messageLoading ? <div>
+                      {Array.from({ length: 5 }, (_, index) => (
+                        <LoadingComponent key={index} isDarkMode={isDarkMode} />
+                      ))}
+                    </div> 
+                    
+                    :
+                  
+                  !messageSent ? <div className='flex flex-col gap-2'>
                     <h3 className={`text-xl font-bold mt-5 ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ''}`}>
                       Send a message
                     </h3>
@@ -443,7 +468,7 @@ const Modify = () => {
                       </svg>
 
                       <h3 className={`text-xl font-bold text-greentheme mb-1`}>
-                        Your message has been sent
+                        You have sent a message
                       </h3>
                     <button className={`btn-secondary flex gap-2 items-center`} onClick={() => {setTab('preview'); setSearchParams('tab=preview')}}>
                       <ArrowLeft size={15}/> <span>Back</span>
