@@ -247,7 +247,7 @@ const {t}=  useTranslation();
 
       <Link to='/change-restaurant' className={`${pathname === '/change-restaurant' ? navigatedMenuClass : normalMenuClass }`}>
         <Store className={ `dark:stroke-white ${pathname === '/change-restaurant'?'stroke-white':'opacity-[75]'}`}/>
-        <h2 className={`font-[500] text-[17px] ${localStorage.getItem('darkMode')==='true'?'text-textdarktheme':'' } ${stateOfSideBar? 'block':'hidden'}`}>Support</h2>
+        <h2 className={`font-[500] text-[17px] ${localStorage.getItem('darkMode')==='true'?'text-textdarktheme':'' } ${stateOfSideBar? 'block':'hidden'}`}>Restaurants</h2>
       </Link>
 
 
