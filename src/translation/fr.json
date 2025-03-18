@@ -118,7 +118,8 @@
             "review": "Avis",
             "sendReview": "Envoyer un avis",
             "reviewed": "Avis envoyé",
-            "details": "Détails de la réservation"
+            "details": "Détails de la réservation",
+            "detailsShort": "Date/Heure/Invités"
         },
         "statusLabels": {
             "pending": "En attente",

@@ -34,12 +34,13 @@ const authProvider: ExtendedAuthProvider = {
         return Promise.reject(error);
     },
 
-    login: async ({ username, password }) => {
+    login: async ({ email, password }) => {
         try {
-            const response = await axiosInstance.post("/auth/login", { username, password });
+            const response = await axiosInstance.post("/api/v1/bo/managers/login/", { email, password });
             if (response.data.token) {
                 localStorage.setItem("isLogedIn", "true");
                 localStorage.setItem("refresh", response.data.refresh);
+                localStorage.setItem("token", response.data.refresh);
 
                 if (response?.data.user.is_manager) {
                     localStorage.setItem("is_manager", "true");
@@ -57,17 +58,28 @@ const authProvider: ExtendedAuthProvider = {
     },
 
     logout: async () => {
-        localStorage.removeItem("isLogedIn");
-        localStorage.removeItem("refresh");
-        localStorage.removeItem("restaurant_id");
-        localStorage.removeItem("permissions");
-        localStorage.removeItem("is_manager");
+        try {
+            const response = await axiosInstance.post("/api/v1/auth/logout/");
+            if (response.status === 204 || response.status === 200) {
+                localStorage.removeItem("isLogedIn");
+                localStorage.removeItem("refresh");
+                localStorage.removeItem("token");
+                localStorage.removeItem("restaurant_id");
+                localStorage.removeItem("permissions");
+                localStorage.removeItem("is_manager");
 
-        if (refreshInterval) {
-            clearInterval(refreshInterval);
-            refreshInterval = null;
+                if (refreshInterval) {
+                    clearInterval(refreshInterval);
+                    refreshInterval = null;
+                }
+                window.location.href = "/sign-in";
+                return Promise.resolve({ success: true });
+            } else {
+                return Promise.reject({ success: false });
+            }
+        } catch (error) {
+            return Promise.reject(error);
         }
-        return Promise.resolve({ success: true });
     },
 
     check: async () => {
@@ -88,16 +100,22 @@ const authProvider: ExtendedAuthProvider = {
 
     getIdentity: async () => {
         const token = localStorage.getItem("token");
-        if (!token) return Promise.reject();
+        if (!token) return Promise.reject({ message: "No token available" });
         try {
             const response = await axiosInstance.get("/api/v1/bo/restaurants/users/me/");
             
             if (response.data.permissions) {
-                localStorage.setItem("permissions", JSON.stringify(response.data.users.permissions));
+                localStorage.setItem("permissions", JSON.stringify(response.data.permissions));
             }
+
+            if (response?.data.is_manager) {
+                localStorage.setItem("is_manager", "true");
+            }
+
             return Promise.resolve(response.data);
         } catch (error) {
-            return Promise.reject();
+            console.log("getIdentity error", error);
+            return Promise.reject(error);
         }
     },
 

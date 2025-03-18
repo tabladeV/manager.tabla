@@ -2,12 +2,14 @@ import { useTranslation } from "react-i18next";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { CanAccess } from "@refinedev/core";
 import { useEffect } from "react";
+import { useDarkContext } from "../../context/DarkContext";
 
 const SettingsPage = () => {
+  const { darkMode } = useDarkContext();
   
-    useEffect(() => {
-      document.title = 'Settings | Tabla'
-    }, [])
+  useEffect(() => {
+    document.title = 'Settings | Tabla'
+  }, [])
   const { t } = useTranslation();
   const { pathname } = useLocation();
 
@@ -28,11 +30,8 @@ const SettingsPage = () => {
             localStorage.getItem("preferredLanguage") === "ar"
               ? "text-right"
               : ""
-          } ${pathname === "/settings" ? "" : "lt-sm:hidden"} ${
-            localStorage.getItem("darkMode") === "true"
-              ? "text-white bg-bgdarktheme"
-              : "text-[#1E1E1E99] bg-white"
-          }`}
+          } ${pathname === "/settings" ? "" : "lt-sm:hidden"} 
+          text-[#1E1E1E99] bg-white dark:text-white dark:bg-bgdarktheme`}
         >
           {/* General - no permission yet, so left open */}
           <Link

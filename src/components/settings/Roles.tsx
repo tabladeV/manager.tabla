@@ -2,6 +2,7 @@ import { ArrowLeft, ArrowRight, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import SearchBar from "../header/SearchBar";
+import { useDarkContext } from "../../context/DarkContext";
 
 import { BaseKey, useList, useCreate, useDelete, CanAccess, BaseRecord } from "@refinedev/core";
 import Pagination from "../reservation/Pagination";
@@ -19,7 +20,7 @@ interface RoleType {
 }
 
 const Roles = () => {
-
+    const { darkMode } = useDarkContext();
     
   useEffect(() => {
     document.title = 'Roles | Tabla'
@@ -241,11 +242,7 @@ const Roles = () => {
     };
 
     return (
-        <div
-            className={`rounded-[10px] p-3 w-full ${
-                localStorage.getItem("darkMode") === "true" ? "bg-bgdarktheme" : "bg-white"
-            }`}
-        >
+        <div className="rounded-[10px] p-3 w-full bg-white dark:bg-bgdarktheme">
             <h2 className="text-center mb-3">{t("settingsPage.roles.title")}</h2>
 
             <div className="mt-4">
@@ -257,8 +254,7 @@ const Roles = () => {
                         value={roleName}
                         onChange={(e) => setRoleName(e.target.value)}
                         placeholder={t("settingsPage.roles.labels.roleName")}
-                        className={`inputs ${localStorage.getItem("darkMode") === "true" ? "bg-darkthemeitems" : "bg-white"
-                            }`}
+                        className="inputs bg-white dark:bg-darkthemeitems"
                     />
                 </CanAccess>
 
@@ -267,11 +263,7 @@ const Roles = () => {
                     <div className="flex w-full flex-col">
                         <label className="text-[17px]">{t("settingsPage.roles.labels.permissionsavailable")}</label>
                         <SearchBar SearchHandler={handleSearchAvailable} />
-                        <div
-                            className={`rounded-md p-3 flex flex-col gap-2 h-[10em] overflow-y-auto ${
-                                localStorage.getItem("darkMode") === "true" ? "bg-bgdarktheme2" : "bg-softgreytheme"
-                            }`}
-                        >
+                        <div className="rounded-md p-3 flex flex-col gap-2 h-[10em] overflow-y-auto bg-softgreytheme dark:bg-bgdarktheme2">
                             {searchAvailable.map((permission, index) => (
                                 <div
                                     key={index}
@@ -290,33 +282,25 @@ const Roles = () => {
                     <CanAccess resource="role" action="create">
                     <div className="flex flex-col gap-3 mt-10">
                         <button
-                            className={`btn-primary flex justify-center px-2 ${
-                                localStorage.getItem("darkMode") === "true" ? "bg-darkthemeitems" : ""
-                            }`}
+                            className="btn-primary flex justify-center px-2 dark:bg-darkthemeitems"
                             onClick={moveRight}
                         >
                             <ArrowRight size={20} />
                         </button>
                         <button
-                            className={`btn-primary flex items-center px-2 ${
-                                localStorage.getItem("darkMode") === "true" ? "bg-darkthemeitems" : ""
-                            }`}
+                            className="btn-primary flex items-center px-2 dark:bg-darkthemeitems"
                             onClick={()=>{setAffectedPermissions((prev) => [...prev, ...availablePermissions]);setAvailablePermissions([])}}
                         >
                             All <ArrowRight size={20}/>
                         </button>
                         <button
-                            className={`btn-primary flex justify-center px-2 ${
-                                localStorage.getItem("darkMode") === "true" ? "bg-darkthemeitems" : ""
-                            }`}
+                            className="btn-primary flex justify-center px-2 dark:bg-darkthemeitems"
                             onClick={moveLeft}
                         >
                             <ArrowLeft size={20} />
                         </button>
                         <button
-                            className={`btn-primary flex items-center px-2 ${
-                                localStorage.getItem("darkMode") === "true" ? "bg-darkthemeitems" : ""
-                            }`}
+                            className="btn-primary flex items-center px-2 dark:bg-darkthemeitems"
                             onClick={()=>{setAvailablePermissions((prev) => [...prev, ...affectedPermissions]); setAffectedPermissions([])}}
                         >
                             <ArrowLeft size={20}/> All 
@@ -326,11 +310,7 @@ const Roles = () => {
                     <div className="flex w-full flex-col">
                         <label className="text-[17px]">{t("settingsPage.roles.labels.permissionsaffected")}</label>
                         <SearchBar SearchHandler={handleSearchAffected} />
-                        <div
-                            className={`rounded-md p-3 flex flex-col gap-2 h-[10em] overflow-y-auto ${
-                                localStorage.getItem("darkMode") === "true" ? "bg-bgdarktheme2" : "bg-softgreytheme"
-                            }`}
-                        >
+                        <div className="rounded-md p-3 flex flex-col gap-2 h-[10em] overflow-y-auto bg-softgreytheme dark:bg-bgdarktheme2">
                             {searchAffected.map((permission, index) => (
                                 <div
                                     key={index}
@@ -359,11 +339,7 @@ const Roles = () => {
                 {/* Display Saved Roles */}
                 <div className="mt-6">
                     <h3 className="text-[20px] mb-3">{t("settingsPage.roles.labels.savedRoles")}</h3>
-                    <div
-                        className={`rounded-md p-3 ${
-                            localStorage.getItem("darkMode") === "true" ? "bg-bgdarktheme2" : "bg-white"
-                        }`}
-                    >
+                    <div className="rounded-md p-3 bg-white dark:bg-bgdarktheme2">
                         {savedRoles.length === 0 ? (
                             <p>{t("settingsPage.roles.labels.noRolesSaved")}</p>
                         ) : (

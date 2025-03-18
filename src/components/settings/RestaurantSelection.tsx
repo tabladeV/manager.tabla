@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { MapPin } from 'lucide-react';
 import Logo from "../../components/header/Logo";
 import { BaseKey, useList } from "@refinedev/core";
+import authProvider from "../../providers/authProvider";
 
 
 interface RestaurantType {
@@ -26,24 +27,27 @@ const RestaurantSelection: React.FC<{showLogo?: boolean}> = ({showLogo=true}) =>
     setRestaurents(apiRestaurants?.data as RestaurantType[] || []);
   },[apiRestaurants])
 
+  // Logout handler
   const handleLogout = () => {
-    localStorage.removeItem("isLogedIn");
-    localStorage.removeItem("restaurant_id");
-    localStorage.removeItem("refresh");
-    localStorage.removeItem("permissions");
-    document.location.href = '/sign-in';
+    authProvider.logout({});
   };
 
-  const handleSelectRestaurant = (restaurantId: BaseKey) => {
+  const handleSelectRestaurant = async (restaurantId: BaseKey) => {
     // Store the selected restaurant ID
     localStorage.setItem("restaurant_id", restaurantId.toString());
-    
-    // Navigate to the main dashboard
-    navigate("/");
+    try {
+      if (authProvider && authProvider.getIdentity) {
+        await authProvider.getIdentity();
+        navigate("/");
+      }
+    }catch (e) {
+      localStorage.removeItem("restaurant_id");
+      console.log(e);
+    }
   };
   
   return (
-    <div className="overflow-y-auto flex bg-cover flex-col items-center w-full min-h-screen">
+    <div className="overflow-y-auto flex bg-cover flex-col items-center w-full min-h-screen dark:bg-bgdarktheme">
       
       <div className="relative w-full flex items-center justify-center">
         {showLogo && <>
@@ -64,14 +68,14 @@ const RestaurantSelection: React.FC<{showLogo?: boolean}> = ({showLogo=true}) =>
         
         <div className="flex flex-wrap gap-6 justify-center">
           {restaurants?.map((restaurant, i) => {
-            const isHoveredActive = hoveredId === restaurant.id || Number(localStorage.getItem('restaurant_id') || 0) == restaurant.id;
+            const isHoveredActive = hoveredId === restaurant.id+'-'+i || Number(localStorage.getItem('restaurant_id') || 0) == restaurant.id;
             return (
               <div 
                 key={restaurant.id+'-'+i}
                 onClick={() => handleSelectRestaurant(restaurant.id)}
-                onMouseEnter={() => setHoveredId(restaurant.id)}
+                onMouseEnter={() => setHoveredId(restaurant.id+'-'+i)}
                 onMouseLeave={() => setHoveredId(null)}
-                className={`size-[200px] cursor-pointer overflow-hidden rounded-lg max-w-xs transition-all duration-300 border-2 dark:border-darkthemeitems ${
+                className={`size-[200px] cursor-pointer overflow-hidden rounded-lg max-w-xs transition-all duration-300 border-1 dark:bg-bgdarktheme2 dark:border-darkthemeitems ${
                     isHoveredActive? "transform scale-105 shadow-xl" : ""
                   }`}
               >
@@ -79,7 +83,7 @@ const RestaurantSelection: React.FC<{showLogo?: boolean}> = ({showLogo=true}) =>
                 <div className={`relative h-[80%] flex items-center justify-center rounded-lg transition-all duration-[900] ${
                   isHoveredActive ? "transform scale-105 btn-primary" : "btn-secondary"
                 }`}>
-                  <Logo/>
+                  <Logo nolink/>
                   <div className={`flex items-center text-subblack rounded-lg bg-white px-2 py-0.5 top-2 right-1 absolute transition-all duration-500 text-xs ${
                     isHoveredActive ? "transform scale-105" : ""
                   }`}>

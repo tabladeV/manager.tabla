@@ -312,8 +312,9 @@ const ReservationTableHeader: React.FC<ReservationTableHeaderProps> = ({ isDarkM
           {t('clients.title')}
         </th>
         <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
-          {t('reservations.tableHeaders.details')}
+          {t('reservations.tableHeaders.detailsShort')}
         </th>
+        <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.tables')}</th>
         <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.edit.informations.internalNote')}</th>
         <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.status')}</th>
         <th className="w-4 py-3 text-left text-xs font-medium uppercase tracking-wider">{t('reservations.tableHeaders.review')}</th>
@@ -391,10 +392,11 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
             <span>{reservation.number_of_guests} guests</span>
           </div>
         </div>
-        {(reservation.tables && reservation.tables.length > 0) && (
-          <div className="flex gap-1 text-sm mt-1 font-bold">
-            <LayoutGrid size={14} />
-            <span>{reservation.tables?.map(table => table.name).join()}</span>
+      </td>
+      <td className="px-3 py-2 max-w-40" onClick={() => EditClient(reservation.id)}>
+      {(reservation.tables && reservation.tables.length > 0) && (
+          <div className="flex gap-1 text-sm mt-1 font-bold ">
+            <span>{reservation.tables?.map(table => table.name).join(', ')}</span>
           </div>
         )}
       </td>
@@ -442,6 +444,9 @@ const LoadingRow: React.FC<LoadingRowProps> = ({ isDarkMode }) => {
           <div className={`h-4 rounded w-2/3 ${isDarkMode ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
           <div className={`h-4 rounded w-1/2 ${isDarkMode ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
         </div>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <div className={`h-6 rounded-full w-24 ${isDarkMode ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
         <div className={`h-6 rounded-full w-24 ${isDarkMode ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
@@ -593,20 +598,10 @@ const ReservationsPage: React.FC = () => {
   // Fetch floors and tables
   const { data: floorsData } = useList({
     resource: 'api/v1/bo/floors/',
-    meta: {
-      headers: {
-        'X-Restaurant-ID': localStorage.getItem('restaurant_id'),
-      },
-    },
   });
 
   const { data: tablesData } = useList({
     resource: 'api/v1/bo/tables/',
-    meta: {
-      headers: {
-        'X-Restaurant-ID': localStorage.getItem('restaurant_id'),
-      },
-    },
   });
 
   // Mutations
@@ -622,11 +617,6 @@ const ReservationsPage: React.FC = () => {
 
   const { mutate: createReview } = useCreate({
     resource: `api/v1/bo/reservations/${toBeReviewedRes}/send_review_link/`,
-    meta: {
-      headers: {
-        'X-Restaurant-ID': 1,
-      },
-    },
     mutationOptions: {
       retry: 3
     },
@@ -758,11 +748,6 @@ const ReservationsPage: React.FC = () => {
         number_of_guests: reservationProgressData.guests,
         commenter: updatedReservation.commenter,
       },
-      meta: {
-        headers: {
-          "X-Restaurant-ID": 1,
-        },
-      },
     },{
       onSuccess(){
         refetchReservations();
@@ -813,12 +798,7 @@ const ReservationsPage: React.FC = () => {
       id: `${id}/`,
       values: {
         status: 'FULFILLED'
-      },
-      meta: {
-        headers: {
-          "X-Restaurant-ID": 1,
-        },
-      },
+      }
     });
   };
 
@@ -828,11 +808,6 @@ const ReservationsPage: React.FC = () => {
     createReview({
       values: {
         reservations
-      },
-      meta: {
-        headers: {
-          "X-Restaurant-ID": 1,
-        },
       },
     });
     setToBeReviewedRes(id);

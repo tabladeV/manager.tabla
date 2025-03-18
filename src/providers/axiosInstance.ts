@@ -69,7 +69,7 @@ axiosInstance.interceptors.request.use(
   (config) => {
     const restaurantId = localStorage.getItem("restaurant_id");
     if (restaurantId) {
-      config.headers["X-Restaurant-ID"] = restaurantId;
+      config.headers["X-Restaurant-ID"] = Number(restaurantId);
     }
     return config;
   },

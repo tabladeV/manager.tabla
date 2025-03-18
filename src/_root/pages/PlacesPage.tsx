@@ -467,12 +467,7 @@ const PlacePage: React.FC = () => {
           tables: reservation.tables?.length ?  reservation.tables?.map(t=>t?.id? Number(t?.id):t) : [],
           number_of_guests: reservationProgressData.guests,
           commenter: reservation.commenter,
-        },
-        meta: {
-          headers: {
-            "X-Restaurant-ID": 1,
-          },
-        },
+        }
       }, {
         onSuccess() {
           // Refresh data
