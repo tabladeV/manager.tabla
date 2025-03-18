@@ -21,6 +21,7 @@ const Home = () => {
     resource: 'api/v1/bo/restaurants/users/me/',
     queryOptions: {
       onSuccess: (data: any) => {
+        console.log(' onSuccess data.is_manager', data)
         if (data.is_manager) {
           localStorage.setItem("is_manager", "true");
         }
