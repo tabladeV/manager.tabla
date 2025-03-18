@@ -95,9 +95,6 @@ const authProvider: ExtendedAuthProvider = {
             if (response.data.permissions) {
                 localStorage.setItem("permissions", JSON.stringify(response.data.users.permissions));
             }
-            if (response?.data.is_manager) {
-                localStorage.setItem("is_manager", "true");
-            }
 
             return Promise.resolve(response.data);
         } catch (error) {

@@ -19,12 +19,23 @@ const Home = () => {
 
   const { data, isLoading, error } = useList({
     resource: 'api/v1/bo/restaurants/users/me/',
-  })
+    queryOptions: {
+      onSuccess: (data: any) => {
+        if (data.is_manager) {
+          localStorage.setItem("is_manager", "true");
+        }
+
+      },
+    }
+  },
+  )
 
   const [user, setUser] = useState<any>()
 
   useEffect(() => {
     setUser(data?.data)
+
+
   }, [data])
 
 
