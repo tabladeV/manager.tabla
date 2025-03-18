@@ -22,8 +22,10 @@ const Home = () => {
     queryOptions: {
       onSuccess: (data: any) => {
         console.log(' onSuccess data.is_manager', data)
+        localStorage.setItem("is_manager", data.is_manager);
         if (data.is_manager) {
           localStorage.setItem("is_manager", "true");
+          console.log(' if is_manager', data.is_manager)
         }
 
       },
