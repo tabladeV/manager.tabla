@@ -62,7 +62,9 @@ const Modify = () => {
         },
         onError: (error) => {
           console.log(error.message,'error')
-          setErrorPage(true)
+          if(token !== 'preview'){
+            setErrorPage(true)
+          }
         }
       },
       errorNotification(error, values, resource) {
@@ -256,8 +258,6 @@ const Modify = () => {
 
     const[showOccasions, setShowOccasions] = useState(false);
 
-
-
   return (
     <div className={`h-[100vh] ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2 text-white' : 'bg-white'}`}>
       <div
@@ -298,17 +298,19 @@ const Modify = () => {
               {widgetInfo?.description}
             </p>
           </div>
-          { reservationLoading ? <div>
+          { 
+          ( reservationLoading ) ? <div>
             {Array.from({ length: 5 }, (_, index) => (
               <LoadingComponent key={index} isDarkMode={isDarkMode} />
             ))}
           </div> :
-            errorPage ? <div className='flex flex-col gap-2 cursor-default bg-softredtheme p-3 text-center mt-2 items-center rounded-lg'>
+            ((errorPage ) ? <div className='flex flex-col gap-2 cursor-default bg-softredtheme p-3 text-center mt-2 items-center rounded-lg'>
               <h1 className='text-2xl text-redtheme'>You can't modify your reservation</h1>
               <p className='text-md'>
                 Something went wrong, you might have already fulfilled a modification or canceled your reservation
               </p>
-            </div> :
+            </div> 
+            :
             <div>
               {tab === 'preview' && <div>
                 <div className='flex flex-col gap-2'>
@@ -479,7 +481,7 @@ const Modify = () => {
                 </div>
               }
               <div className='h-10'></div>
-            </div>
+            </div>)
           }
         </div>
         <div className='sm:w-[40%] lt-sm:hidden flex justify-center items-center'>

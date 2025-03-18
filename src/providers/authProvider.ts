@@ -84,13 +84,13 @@ const authProvider: ExtendedAuthProvider = {
 
     check: async () => {
         return localStorage.getItem("isLogedIn") === "true"
-        ? Promise.resolve({ authenticated: true })
-        : Promise.reject({
-            authenticated: false,
-            error: { message: "Not authenticated", name: "Unauthorized" },
-            logout: true,
-            redirectTo: "/login",
-          });
+            ? Promise.resolve({ authenticated: true })
+            : Promise.reject({
+                authenticated: false,
+                error: { message: "Not authenticated", name: "Unauthorized" },
+                logout: true,
+                redirectTo: "/login",
+            });
     },
 
     getPermissions: async () => {
@@ -103,7 +103,7 @@ const authProvider: ExtendedAuthProvider = {
         if (!token) return Promise.reject({ message: "No token available" });
         try {
             const response = await axiosInstance.get("/api/v1/bo/restaurants/users/me/");
-            
+
             if (response.data.permissions) {
                 localStorage.setItem("permissions", JSON.stringify(response.data.permissions));
             }
