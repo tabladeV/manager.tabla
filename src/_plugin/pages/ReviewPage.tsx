@@ -33,7 +33,7 @@ const ReviewPage = () => {
         console.log(data, 'data');
       },
       onError: (error) => {
-        setStep(3);
+        // setStep(3);
         setErrorMessage(error?.formattedMessage);
         
       }
@@ -217,7 +217,7 @@ const ReviewPage = () => {
             
         </div>
       :
-      err?
+      (token !== 'preview' && err)?
       
         
         <div className="flex bg-softredtheme p-2 rounded text-redtheme flex-col gap-3 w-[60%] mx-auto text-center mt-[10vw] items-left ">

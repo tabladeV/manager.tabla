@@ -51,6 +51,16 @@
                 "pending": "Pending"
             }
         },
+        "messages": {
+            "title": "Messages",
+            "status": {
+                "confirmed": "Confirmed",
+                "cancelled": "Cancelled",
+                "noShow": "No show",
+                "rescheduled": "Rescheduled",
+                "pending": "Pending"
+            }
+        },
         "charts": {
             "reservationsChart": {
             "title": "Reservations",

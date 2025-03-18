@@ -1,158 +1,144 @@
 import { useTranslation } from "react-i18next";
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis, ResponsiveContainer, Tooltip, TooltipProps } from "recharts";
-import Filter from "./Filter";
 import { useEffect, useState } from "react";
-import { BaseRecord, useList } from "@refinedev/core";
+import { BaseKey, BaseRecord, useList } from "@refinedev/core";
+import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import { format } from "date-fns";
 
-// Define the interface for chart data
-interface ChartData {
-  country: string;
-  interactions: number;
-}
 
-// Define the interface for the Filter component's onClick prop
-interface FilterProps {
-  onClick: (range: string) => void;
-}
 
-// Generate chart data (moved outside the component to avoid redefining it on every render)
-const generateChartData = (): ChartData[] => {
-  return [
-    { country: "Morocco", interactions: 0 },
-    { country: "Spain", interactions: 0},
-    { country: "England", interactions: 0 },
-    { country: "Germany", interactions: 0 },
-    { country: "France", interactions: 0 },
-    { country: "Italy", interactions: 0 },
-  ];
-};
 
-// Custom Tooltip Component
-const CustomTooltip: React.FC<TooltipProps<number, string>> = ({ active, payload, label }) => {
-  const isDarkMode = localStorage.getItem('darkMode') === 'true';
-  if (active && payload && payload.length) {
-    return (
-      <div className={`p-2 shadow-md rounded-md ${isDarkMode ? 'bg-bgdarktheme2 text-textdarktheme' : 'bg-white text-blacktheme'}`}>
-        <p className="font-semibold">{label}</p>
-        <p className="text-sm">Interactions: {payload[0].value}</p>
-      </div>
-    );
-  }
-  return null;
-};
 
 export default function TopUsers() {
 
-  interface ReservationType {
-    
-    results: BaseRecord[]
-    count: number
-    
+
+  interface Message extends BaseRecord {
+    id: BaseKey;
+    text: string;
+    created_at: string;
+    updated_at: string;
+    reservation?: {
+      customer?: {
+        id: BaseKey;
+        first_name: string;
+        full_name: string;
+        last_name: string;
+        email: string;
+        phone?: string;
+      };
+      date?: string,
+      time?: string,
+      id?: BaseKey;
+    };
+    restaurant: number;
   }
 
-  const [reservationAPIInfo, setReservationAPIInfo] =useState<ReservationType>() 
+  interface MessagesType {
+    results: Message[];
+    count: number;
+  }
+  const [messagesAPIInfo, setMessagesAPIInfo] = useState<MessagesType>();
 
-  const { data, isLoading, error } = useList({
-      resource: 'api/v1/bo/reservations/',
+  
+  const { data: messagesData, isLoading: messagesLoading, error: messagesErr, refetch } = useList({
+      resource: "bo/messages/",
       filters: [
-        {
-          field: "page",
-          operator: "eq",
-          value: 1,
-        },
-        {
-          field: "page_size",
-          operator: "eq",
-          value: 500,
-        }
+        { field: "page", operator: "eq", value: 1 },
+        { field: "page_size", operator: "eq", value: 10 },
+        { field: "ordering", operator: "eq", value: "-created_at" },
       ],
-      queryOptions:{
-        onSuccess(data){
-          setReservationAPIInfo(data.data as unknown as ReservationType)
+      queryOptions: {
+        onSuccess: (data) => {
+          setMessagesAPIInfo(data.data as unknown as MessagesType);
         }
-      }
+      },
+      errorNotification(error, values, resource) {
+        return {
+          type: 'error',
+          message: error?.formattedMessage,
+        };
+      },
+    });
 
-    })
+    const [messages, setMessages] = useState<Message[]>([]);
 
-    const [reservations, setReservations] = useState<BaseRecord[]>([])
+      // Effects to update messages from API
     useEffect(() => {
-      if (reservationAPIInfo) {
-        setReservations(reservationAPIInfo.results as BaseRecord[]);
+      if (messagesAPIInfo) {
+        setMessages(messagesAPIInfo.results);
       }
-    }, [reservationAPIInfo])
+    }, [messagesAPIInfo]);
 
+
+
+    const colors: string[] = []
+    const len = messages.length
+
+
+  for (let i = 0; i < len; i++) {
+    if (i % 4 === 0) {
+      colors.push('bg-redtheme')
+    } else if (i % 4 === 1) {
+      colors.push('bg-bluetheme')
+    } else if (i % 4 === 2) {
+      colors.push('bg-greentheme')
+    }
+    else {
+      colors.push('bg-purpletheme')
+    }
+  }
 
   const { t } = useTranslation();
-  const [timeRange, setTimeRange] = useState<string>("");
-  const [chartData, setChartData] = useState<ChartData[]>([
-    { country: "Morocco", interactions: 0 },
-    { country: "Spain", interactions: 0 },
-    { country: "England", interactions: 0 },
-    { country: "Germany", interactions: 0 },
-    { country: "France", interactions: 0 },
-    { country: "Italy", interactions: 0 },
-  ]);
-
-  useEffect(() => {
-    if (reservations) {
-      setChartData([
-        { country: "Morocco", interactions: reservations.length },
-        { country: "Spain", interactions: 0 },
-        { country: "England", interactions: 0 },
-        { country: "Germany", interactions: 0 },
-        { country: "France", interactions: 0 },
-        { country: "Italy", interactions: 0 },
-      ])
-    }
-  }, [reservations])
-
-  // Update chart data when time range changes
-  useEffect(() => {
-    setChartData(generateChartData());
-  }, [timeRange]);
 
   // Dark mode class
   const isDarkMode = localStorage.getItem('darkMode') === 'true';
   const containerClass = `rounded-[20px] lt-sm:w-full overflow-hidden ${isDarkMode ? 'bg-bgdarktheme text-textdarktheme' : 'bg-white text-blacktheme'}`;
   const tickFill = isDarkMode ? '#ffffff' : '#1e1e1e';
 
+  const [showText, setShowText] = useState(false);
+
   return (
-    <div className={containerClass}>
-      <div className="px-6 py-4 flex justify-between">
-        <h2 className="text-xl font-bold mb-2">{t('overview.charts.topUsers.title')}</h2>
-        {/* <Filter onClick={(range: string) => setTimeRange(range)} /> */}
+    <div
+      onMouseLeave={() => {
+        setShowText(false);
+      }}
+      onMouseOver={() => {
+        setShowText(true);
+      }}
+      className={`rounded-[20px] lt-sm:w-full h-[400px] ${localStorage.getItem("darkMode") === "true" ? "bg-bgdarktheme text-textdarktheme" : "bg-white text-blacktheme"}`}
+    >
+      <div className="flex justify-between items-center p-4">
+        <h1 className="text-xl font-bold">{t("overview.messages.title")}</h1>
       </div>
-      <div className="px-6 py-4">
-        <div className="h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={chartData}
-              layout="vertical"
-              margin={{ top: 5, right: 0, left: 0, bottom: 5 }}
-            >
-              <CartesianGrid horizontal={false} strokeDasharray="3 3" />
-              <YAxis
-                dataKey="country"
-                type="category"
-                tickLine={false}
-                axisLine={false}
-                width={80}
-                tick={{ fontSize: 12, fill: tickFill }}
-              />
-              <XAxis type="number" hide />
-              <Tooltip content={<CustomTooltip />} cursor={false} />
-              <Bar dataKey="interactions" fill="#88AB61" radius={[0, 4, 4, 0]}>
-                <LabelList
-                  dataKey="interactions"
-                  position="right"
-                  fill={tickFill}
-                  fontSize={12}
-                />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+      <div className="cursor-default flex flex-col no-scrollbar overflow-y-scroll h-[330px] gap-4 p-2">
+        {messages.map((item, index) => (
+          <div key={item.id} className="flex justify-between items-center p-1 rounded-lg hover:bg-[#00000003]">
+            <div className="flex items-center gap-2">
+              <div className={`w-10 h-10 ${colors[index]} flex justify-center items-center rounded-full text-white`}>
+                {item.reservation?.customer?.first_name.slice(0, 1)}
+              </div>
+              <div>
+                <h3 className="text-md">{`${item.reservation?.customer?.first_name} ${item.reservation?.customer?.last_name}`}</h3>
+                <p className={`text-[14px] ${localStorage.getItem("darkMode") === "true" ? "text-softwhitetheme" : "text-subblack"}`}>
+                  {item.text.length > 30 ? `${item.text.substring(0, 30)}...` : item.text}
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-col items-end">
+              
+              <p className={`text-[12px] ${localStorage.getItem("darkMode") === "true" ? "text-softwhitetheme" : "text-subblack"}`}>{format(item.created_at, "yyyy-MM-dd")} at {format(item.created_at, "HH:mm")}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      {showText && (
+        <div className="relative flex justify-center">
+          <Link to="/messages" className="flex btn-primary shadow-xl shadow-[#00000010] z-50 opacity-100 absolute justify-center mb-[2em] ml-[1em] mt-[-3em] gap-2">
+            <p>View all</p>
+            <ArrowRight size={20} />
+          </Link>
         </div>
-      </div>
+      )}
     </div>
   );
 }

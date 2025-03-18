@@ -178,7 +178,7 @@ const ReviewWidget = () => {
         >
           {t('settingsPage.widget.buttons.save')}
         </button>
-        <Link to={`https://${subdomain}.dev.tabla.ma/make/review/test`} target="_blank" className="btn-secondary w-1/2 text-center">
+        <Link to={`https://${subdomain}.dev.tabla.ma/make/review/preview`} target="_blank" className="btn-secondary w-1/2 text-center">
           {t('settingsPage.widget.buttons.preview')}
         </Link>
       </div>
