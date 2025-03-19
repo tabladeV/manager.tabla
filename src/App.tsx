@@ -63,7 +63,7 @@ import MessagesPage from "./_root/pages/MessagesPage";
 import RestaurantSelection from "./components/settings/RestaurantSelection";
 const API_HOST = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL : "https://api.dev.tabla.ma";
 function App() {
-  
+
   useEffect(() => {
     document.title = "Tabla | Taste Morocco's best ";
   }, []);
@@ -135,11 +135,11 @@ function App() {
                         <Route element={<AuthLayout />}>
                           <Route path="/sign-in" element={<LogIn />} />
                           <Route path="/sign-up" element={<LogIn />} />
-                            <Route path="/select-restaurant" element={
-                              <Authenticated key="*" redirectOnFail="/sign-in">
-                                <RestaurantSelection />
-                              </Authenticated>
-                              } />
+                          <Route path="/select-restaurant" element={
+                            <Authenticated key="*" redirectOnFail="/sign-in">
+                              <RestaurantSelection />
+                            </Authenticated>
+                          } />
 
                         </Route>
                         {/* Private Routes */}
@@ -270,16 +270,42 @@ function App() {
                           <Route path="/change-restaurant" element={<RestaurantSelection showLogo={false} />} />
 
                           {/* Messages - not restricted yet */}
-                          <Route path="/messages" element={<MessagesPage />} />
-                          
+                          <Route path="/messages" element={
+                            <CanAccess
+                              resource="message"
+                              action="view"
+                              fallback="You don't have access to Messaging"
+                            >
+                              <MessagesPage />
+                            </CanAccess>
+                          }
+                          />
+
                           {/* Support - not restricted */}
                           <Route path="/support" element={<SupportPage />} />
-                          
+
 
                           {/* Settings */}
-                          <Route path="/settings" element={<SettingsPage />}>
+                          <Route path="/settings" element={
+                            <CanAccess
+                              resource="restaurant"
+                              action="view"
+                              fallback="You don't have access to Settings"
+                            >
+                              <SettingsPage />
+                            </CanAccess>
+                            }>
                             <Route index element={<IndexSettings />} />
-                            <Route path="/settings/general" element={<General />} />
+                            <Route path="/settings/general" element={
+                              <CanAccess
+                                resource="restaurant"
+                                action="view"
+                                fallback="You don't have access to General info"
+                              >
+                                <General />
+                              </CanAccess>
+
+                            } />
                             <Route path="/settings/availability" element={
                               <CanAccess
                                 resource="availabilityday"

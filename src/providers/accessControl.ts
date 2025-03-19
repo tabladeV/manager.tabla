@@ -6,13 +6,13 @@ const accessControlProvider: AccessControlProvider = {
     // Retrieve the permissions array from storage
     const stored = localStorage.getItem("permissions");
     // Check if the user is a manager (managers have all permissions)
-    const isManager = localStorage.getItem("is_manager")? true : false;
-    
-    if (isManager) {
+    const isManager = localStorage.getItem("is_manager") === 'true' ? true : false;
+    const isRestaurantSet = localStorage.getItem("restaurant_id") ? true : false;
+    if (isManager && isRestaurantSet) {
       return { can: true };
     }
     
-    if (!stored) {
+    if (!stored || !isRestaurantSet) {
       return { can: false };
     }
     

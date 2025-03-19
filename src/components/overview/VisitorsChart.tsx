@@ -38,8 +38,6 @@ export default function ReservationSource() {
     ],
 
   })
-
-  console.log('data', data)
   
   const [reservations, setReservations] = useState<BaseRecord[]>([])
   useEffect(() => {

@@ -236,11 +236,6 @@ const ClientInterface = () => {
         {
             resource: `api/v1/bo/customers`, 
             id: id+'/',
-            meta: {
-                headers: {
-                    "X-Restaurant-ID": 1,
-                },
-            },
           errorNotification(error, values, resource) {
             return {
               type: 'error',

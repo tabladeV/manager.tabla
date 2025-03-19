@@ -9,6 +9,7 @@ import english from '../../assets/english.png';
 import arabic from '../../assets/arabic.jpg';
 import french from '../../assets/french.png';
 import WidgetOnlineToggle from '../common/WidgetOnlineToggle';
+import authProvider from '../../providers/authProvider';
 
 const UserBar = () => {
   // State management
@@ -105,11 +106,7 @@ const UserBar = () => {
 
   // Logout handler
   const handleLogout = () => {
-    localStorage.removeItem("isLogedIn");
-    localStorage.removeItem("restaurant_id");
-    localStorage.removeItem("refresh");
-    localStorage.removeItem("permissions");
-    document.location.href = '/sign-in';
+    authProvider.logout({});
   };
 
   // Determine current language icon

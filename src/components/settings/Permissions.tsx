@@ -1,9 +1,10 @@
 import React, { useState } from "react"
 import { useTranslation } from "react-i18next"
+import { useDarkContext } from "../../context/DarkContext"
 
 const Permissions = () => {
   const { t } = useTranslation()
-  const isDarkMode = localStorage.getItem("darkMode") === "true"
+  const { darkMode } = useDarkContext()
 
   // Sample data for users and roles
   const [users, setUsers] = useState([
@@ -19,11 +20,11 @@ const Permissions = () => {
   }
 
   return (
-    <div className={`rounded-[10px] p-3 w-full ${isDarkMode ? "bg-bgdarktheme" : "bg-white"}`}>
+    <div className="rounded-[10px] p-3 w-full bg-white dark:bg-bgdarktheme">
       <h2 className="text-center mb-3">{t("settingsPage.permissions.title")}</h2>
 
       <div className="mt-4">
-        <table className={`w-full border-collapse ${isDarkMode ? "text-white" : "text-black"}`}>
+        <table className="w-full border-collapse text-black dark:text-white">
           <thead>
             <tr>
               <th className="text-left p-2 border-b">{t("settingsPage.permissions.labels.user")}</th>
@@ -38,7 +39,7 @@ const Permissions = () => {
                   <select
                     value={user.role}
                     onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                    className={`w-full p-2 rounded ${isDarkMode ? "bg-darkthemeitems text-white" : "bg-white text-black"}`}
+                    className="w-full p-2 rounded bg-white dark:bg-darkthemeitems text-black dark:text-white"
                   >
                     <option value="">{t("settingsPage.permissions.labels.selectRole")}</option>
                     {roles.map((role) => (
@@ -56,7 +57,7 @@ const Permissions = () => {
 
       <div className="mt-6">
         <h3 className="text-[20px] mb-3">{t("settingsPage.permissions.labels.assignedRoles")}</h3>
-        <div className={`rounded-md p-3 ${isDarkMode ? "bg-bgdarktheme2" : "bg-softgreytheme"}`}>
+        <div className="rounded-md p-3 bg-softgreytheme dark:bg-bgdarktheme2">
           {users.some((user) => user.role) ? (
             <ul>
               {users

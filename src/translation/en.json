@@ -136,7 +136,8 @@
         "review": "reviews",
         "sendReview": "Send Review",
         "reviewed": "Review sent",
-        "details": "Reservation Details"
+        "details": "Reservation Details",
+        "detailsShort": "Date/Time/Guests"
       },
       "statusLabels": {
         "pending": "Pending",

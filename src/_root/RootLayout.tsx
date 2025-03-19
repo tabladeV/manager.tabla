@@ -6,7 +6,7 @@ import NavigationMenu from '../components/menu/NavigationMenu';
 import SupportMenu from '../components/menu/SupportMenu';
 import { useEffect, useState } from "react";
 import DateSelection from "../components/header/DateSelection";
-import i18n, { loadLanguages, use } from 'i18next';
+import i18n from 'i18next';
 import { useDarkContext } from "../context/DarkContext";
 import { Fullscreen } from "lucide-react";
 
@@ -23,6 +23,7 @@ import { useDateContext } from "../context/DateContext";
 import { format } from "date-fns";
 
 const RootLayout = () => {
+  const { darkMode } = useDarkContext();
   const { chosenDay } = useDateContext();
 
   const { data: reservationsActionsData, isLoading, error } = useList({
@@ -40,8 +41,6 @@ const RootLayout = () => {
       },
     ],
   });
-
-  console.log(format(chosenDay, 'yyyy-MM-dd'));
 
   interface ReservationAction {
     action: string;
@@ -97,21 +96,15 @@ const RootLayout = () => {
 
   localStorage.setItem('preferredLanguage', 'en');
 
-  window.onload = function () {
+  useEffect(() => {
     const savedLanguage = localStorage.getItem('preferredLanguage');
-    const darkMode = localStorage.getItem('darkMode');
-    if (darkMode === 'true') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-
+    
     if (savedLanguage) {
       i18n.changeLanguage(savedLanguage);
     } else {
       i18n.changeLanguage('en');
     }
-  };
+  }, []);
 
   const [shownlang, setShownLang] = useState(localStorage.getItem('preferredLanguage') || 'en');
   useEffect(() => {
@@ -120,8 +113,10 @@ const RootLayout = () => {
 
   const [stateOfSideBar, setStateOfSideBar] = useState(false);
 
+  const strokeColor = "stroke-[#1e1e1e70] dark:stroke-[#ffffff70]";
+
   return (
-    <div className={`flex overflow-hidden ${(shownlang === 'ar') ? "rtl" : ''} ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-textdarktheme' : ''}`}>
+    <div className={`flex overflow-hidden ${(shownlang === 'ar') ? "rtl" : ''} bg-white dark:bg-bgdarktheme dark:text-textdarktheme`}>
       <div className="sm:hidden">
         <NavigationMenu stateOfSideBar={stateOfSideBar} handleSideBar={() => { setStateOfSideBar(!stateOfSideBar) }} />
       </div>
@@ -135,40 +130,31 @@ const RootLayout = () => {
       <div className={`transition-all duration-300 ease-in-out lt-sm:w-full ${stateOfSideBar ? 'gt-sm:w-[calc(100%-300px)]' : 'gt-sm:w-[calc(100%-100px)]'}`}>
         <header className='h-[80px] items-center flex justify-between gap-1 px-6 lt-sm:px-2'>
           <div className="sm:hidden"><Logo /></div>
-          <button className={`lt-sm:hidden z-10 p-2 rounded-md ${localStorage.getItem('darkMode') === 'true' ? 'hover:bg-subblack' : 'hover:bg-softgreytheme'}`} onClick={() => { setStateOfSideBar(!stateOfSideBar) }}>
+          <button className={`lt-sm:hidden z-10 p-2 rounded-md hover:bg-softgreytheme dark:hover:bg-subblack`} onClick={() => { setStateOfSideBar(!stateOfSideBar) }}>
             {stateOfSideBar ?
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 12L19 19M12 12L5 5M12 12L5 19M12 12L19 5" stroke={localStorage.getItem('darkMode') === 'true' ? '#ffffff70' : '#1e1e1e70'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={strokeColor}>
+                <path d="M12 12L19 19M12 12L5 5M12 12L5 19M12 12L19 5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               :
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 6H21M3 12H21M3 18H21" stroke={localStorage.getItem('darkMode') === 'true' ? '#ffffff70' : '#1e1e1e70'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={strokeColor}>
+                <path d="M3 6H21M3 12H21M3 18H21" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             }
           </button>
           <div className="flex gap-1 gt-md:gap-4 lt-sm:hidden">
             <div className="flex items-center gap-2 btn border-softbluetheme cursor-default hover:border-bluetheme text-bluetheme">
-              {localStorage.getItem('darkMode') === 'true' ?
-                <img src={pendingDark} alt="pending" className="w-5 h-5 lt-lg:h-4 lt-lg:w-4" />
-                :
-                <img src={pending} alt="pending" className="w-5 h-5 lt-lg:h-4 lt-lg:w-4" />
-              }
+              <img src={pending} alt="pending" className="w-5 h-5 lt-lg:h-4 lt-lg:w-4 block dark:hidden" />
+              <img src={pendingDark} alt="pending" className="w-5 h-5 lt-lg:h-4 lt-lg:w-4 hidden dark:block" />
               <span className="text-[1.6rem] lt-lg:text-[1rem] font-[600]">{actions[0].count}</span>
             </div>
             <div className="flex items-center gap-2 btn border-softgreentheme cursor-default hover:border-greentheme text-greentheme">
-              {localStorage.getItem('darkMode') === 'true' ?
-                <img src={confirmDark} alt="confirm" className="w-5 h-5 lt-lg:h-4 lt-lg:w-4" />
-                :
-                <img src={confirm} alt="confirm" className="w-5 h-5 lt-lg:h-4 lt-lg:w-4" />
-              }
+              <img src={confirm} alt="confirm" className="w-5 h-5 lt-lg:h-4 lt-lg:w-4 block dark:hidden" />
+              <img src={confirmDark} alt="confirm" className="w-5 h-5 lt-lg:h-4 lt-lg:w-4 hidden dark:block" />
               <span className="text-[1.6rem] lt-lg:text-[1rem] font-[600]">{actions[1].count}</span>
             </div>
             <div className="flex items-center gap-2 btn border-softredtheme cursor-default hover:border-redtheme text-redtheme">
-              {localStorage.getItem('darkMode') === 'true' ?
-                <img src={cancelDark} alt="cancel" className="w-5 h-5 lt-lg:h-4 lt-lg:w-4" />
-                :
-                <img src={cancel} alt="cancel" className="w-5 h-5 lt-lg:h-4 lt-lg:w-4" />
-              }
+              <img src={cancel} alt="cancel" className="w-5 h-5 lt-lg:h-4 lt-lg:w-4 block dark:hidden" />
+              <img src={cancelDark} alt="cancel" className="w-5 h-5 lt-lg:h-4 lt-lg:w-4 hidden dark:block" />
               <span className="text-[1.6rem] lt-lg:text-[1rem] font-[600]">{actions[2].count}</span>
             </div>
           </div>
@@ -179,7 +165,7 @@ const RootLayout = () => {
 
         </header>
         <section className='flex justify-between h-[calc(100vh-80px)]'>
-          <div className={`p-[1em] w-full h-full lt-sm:pb-[10em] overflow-x-hidden overflow-y-scroll ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2 text-textdarktheme' : 'bg-[#F6F6F6]'}`}>
+          <div className={`p-[1em] w-full h-full lt-sm:pb-[10em] overflow-x-hidden overflow-y-scroll bg-[#F6F6F6] dark:bg-bgdarktheme2 dark:text-textdarktheme`}>
             <Outlet />
             <div className="lt-sm:h-[4em]"></div>
           </div>

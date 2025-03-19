@@ -18,9 +18,13 @@ const LogIn: React.FC = () => {
     },
     mutationOptions: {
       onSuccess: (data, variables) => {
-        const refreshToken = data.data?.refresh;
-        if (refreshToken) {
-          localStorage.setItem("refresh", refreshToken);
+
+        if (data.data?.refresh) {
+          localStorage.setItem("refresh", data.data?.refresh);
+        }
+
+        if (data.data?.access) {
+          localStorage.setItem("token", data.data?.access);
         }
         
         if (data?.data.user.is_manager) {
