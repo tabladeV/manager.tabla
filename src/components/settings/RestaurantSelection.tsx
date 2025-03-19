@@ -39,6 +39,7 @@ const RestaurantSelection: React.FC<{showLogo?: boolean}> = ({showLogo=true}) =>
       if (authProvider && authProvider.getIdentity) {
         await authProvider.getIdentity();
         navigate("/");
+        window.location.reload();
       }
     }catch (e) {
       localStorage.removeItem("restaurant_id");
