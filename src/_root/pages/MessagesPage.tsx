@@ -7,6 +7,8 @@ import { MessageSquare, User, Calendar, ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import profilepic from '../../assets/profile.png';
 import { t } from "i18next";
+import { useDarkContext } from "../../context/DarkContext";
+
 // Types and Interfaces
 interface Message extends BaseRecord {
   id: BaseKey;
@@ -63,8 +65,6 @@ interface MessagesFiltersProps {
   setDefaultFilter: () => void;
 }
 
-const isDarkMode = localStorage.getItem("darkMode") === "true";
-
 // ReservationFilters Component
 const MessagesFilters: React.FC<MessagesFiltersProps> = ({ 
   focusedFilter, 
@@ -77,12 +77,12 @@ const MessagesFilters: React.FC<MessagesFiltersProps> = ({
   return (
     <div className="flex flex-wrap gap-2 mx-1">
       <button 
-        className={`gap-2 flex items-center ${isDarkMode ? 'text-whitetheme' : ''} ${selectingDay === '' ? 'btn' : 'btn-primary'}`} 
+        className={`gap-2 flex items-center text-blacktheme dark:text-whitetheme ${selectingDay === '' ? 'btn' : 'btn-primary'}`} 
         onClick={() => setFocusedDate(true)}
       >
         {t('reservations.filters.date')}
       </button>
-      <button onClick={setDefaultFilter} className={`${isDarkMode ? 'text-whitetheme' : ''} ${(focusedFilter === '') && (selectingDay === '') ? 'btn-primary' : 'btn'}`}>
+      <button onClick={setDefaultFilter} className={`text-blacktheme dark:text-whitetheme ${(focusedFilter === '') && (selectingDay === '') ? 'btn-primary' : 'btn'}`}>
         {t('reservations.filters.all')}
       </button>
     </div>
@@ -91,6 +91,8 @@ const MessagesFilters: React.FC<MessagesFiltersProps> = ({
 
 // Main MessagesPage Component
 const MessagesPage = () => {
+  const { darkMode } = useDarkContext();
+  
   useEffect(() => {
     document.title = "Messages | Tabla";
   }, []);
@@ -223,7 +225,7 @@ const MessagesPage = () => {
 
       {/* Page Header */}
       <div className="flex justify-between mb-4 lt-sm:flex-col lt-sm:gap-2">
-        <h1 className={`text-3xl font-[700] ${isDarkMode ? "text-whitetheme" : "text-blacktheme"}`}>
+        <h1 className="text-3xl font-[700] text-blacktheme dark:text-whitetheme">
           {t('messages.title')}
         </h1>
         <div className="flex gap-4 justify-end">
@@ -232,9 +234,7 @@ const MessagesPage = () => {
             disabled={selectedMessages.length === 0}
             className={`${
               selectedMessages.length === 0
-                ? isDarkMode
-                  ? "btn hover:border-[0px] border-[0px] cursor-not-allowed bg-subblack text-softwhitetheme"
-                  : "btn hover:border-[0px] border-[0px] cursor-not-allowed bg-softgreytheme"
+                ? "btn hover:border-[0px] border-[0px] cursor-not-allowed bg-softgreytheme dark:bg-subblack dark:text-softwhitetheme"
                 : "btn-primary"
             }`}
           >
@@ -279,57 +279,58 @@ const MessageTable: React.FC<MessageTableProps> = ({
 }) => {
   return (
     <table className="min-w-full rounded-lg overflow-auto">
-    <thead className={isDarkMode ? "bg-bgdarktheme2 text-white" : "bg-gray-50 text-gray-500"}>
-      <tr>
-        <th className="w-12 px-3 py-3"></th>
-        <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
-          From
-        </th>
-        <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
-          Message
-        </th>
-        <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
-          Received
-        </th>
-        <th className="w-12 px-3 py-3"></th>
-      </tr>
-    </thead>
-    <tbody className={`divide-y bg-white dark:divide-gray-700 dark:bg-bgdarktheme divide-gray-200`}>
-      {isLoading ? (
-        [...Array(5)].map((_, index) => <LoadingRow key={index}  />)
-      ) : messages.length === 0 ? (
+      <thead className="bg-gray-50 dark:bg-bgdarktheme2 text-gray-500 dark:text-white">
         <tr>
-          <td colSpan={5} className="py-4 text-center">
-            <p className={isDarkMode ? "text-gray-400" : "text-gray-500"}>
-              No messages found
-            </p>
-          </td>
+          <th className="w-12 px-3 py-3"></th>
+          <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
+            From
+          </th>
+          <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
+            Message
+          </th>
+          <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
+            Received
+          </th>
+          <th className="w-12 px-3 py-3"></th>
         </tr>
-      ) : (
-        messages.map((message) => (
-          <MessageRow
-            key={message.id}
-            message={message}
-            isSelected={selectedMessages.some((m) => m.id === message.id)}
-            onSelect={() => onSelectMessage(message)}
-          />
-        ))
-      )}
-    </tbody>
-  </table>
+      </thead>
+      <tbody className="bg-white dark:bg-bgdarktheme divide-y divide-gray-200 dark:divide-gray-700">
+        {isLoading ? (
+          [...Array(5)].map((_, index) => <LoadingRow key={index} />)
+        ) : messages.length === 0 ? (
+          <tr>
+            <td colSpan={5} className="py-4 text-center">
+              <p className="text-gray-500 dark:text-gray-400">
+                No messages found
+              </p>
+            </td>
+          </tr>
+        ) : (
+          messages.map((message) => (
+            <MessageRow
+              key={message.id}
+              message={message}
+              isSelected={selectedMessages.some((m) => m.id === message.id)}
+              onSelect={() => onSelectMessage(message)}
+            />
+          ))
+        )}
+      </tbody>
+    </table>
   );
 };
 
 // MessageRow Component
 const MessageRow: React.FC<MessageRowProps> = ({ message, isSelected, onSelect }) => {
+  const { darkMode } = useDarkContext();
   const date = new Date(message.created_at);
   const formattedDate = format(date, "dd MMM yyyy");
   const formattedTime = format(date, "HH:mm");
 
   return (
     <tr
-      className={`transition-colors hover:bg-gray-50 ${isDarkMode ? "hover:bg-gray-800" : ""} ${
-        isSelected ? (isDarkMode ? "bg-gray-800" : "bg-blue-50") : ""
+      className={`transition-colors hover:bg-gray-50 dark:hover:bg-gray-800 ${
+        isSelected ? "bg-blue-50 dark:bg-gray-800" : ""
       }`}
     >
       <td className="px-3 py-4 whitespace-nowrap">
@@ -350,10 +351,10 @@ const MessageRow: React.FC<MessageRowProps> = ({ message, isSelected, onSelect }
             alt="User avatar"
           />
           <div className="ml-4">
-            <div className={`font-medium ${isDarkMode ? "text-white" : "text-gray-900"}`}>
+            <div className="font-medium text-gray-900 dark:text-white">
               {`${message?.reservation?.customer?.first_name} ${message?.reservation?.customer?.last_name}`  || "Customer"}
             </div>
-            <div className={`text-sm ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
               {message?.reservation?.customer?.email || "No email provided"}
             </div>
           </div>
@@ -361,16 +362,16 @@ const MessageRow: React.FC<MessageRowProps> = ({ message, isSelected, onSelect }
       </td>
       <td className="px-3 py-4 cursor-pointer" onClick={onSelect}>
         <div className="flex items-start gap-2">
-          <MessageSquare size={16} className={`mt-1 ${isDarkMode ? "text-gray-400" : "text-gray-500"}`} />
-          <p className={`text-sm ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
+          <MessageSquare size={16} className="mt-1 text-gray-500 dark:text-gray-400" />
+          <p className="text-sm text-gray-600 dark:text-gray-300">
             {message.text.length > 120 ? `${message.text.substring(0, 120)}...` : message.text}
           </p>
         </div>
       </td>
       <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={onSelect}>
         <div className="flex items-center gap-2">
-          <Calendar size={16} className={isDarkMode ? "text-gray-400" : "text-gray-500"} />
-          <span className={`text-sm ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
+          <Calendar size={16} className="text-gray-500 dark:text-gray-400" />
+          <span className="text-sm text-gray-600 dark:text-gray-300">
             {formattedDate} at {formattedTime}
           </span>
         </div>
@@ -381,9 +382,7 @@ const MessageRow: React.FC<MessageRowProps> = ({ message, isSelected, onSelect }
           className={`p-2 rounded-full ${
             isSelected
               ? "bg-green-100 text-green-600"
-              : isDarkMode
-              ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
           }`}
         >
           <ArrowRight size={16} />
@@ -398,28 +397,28 @@ const LoadingRow: React.FC = () => {
   return (
     <tr>
       <td className="px-3 py-4 whitespace-nowrap">
-        <div className={`h-4 w-4 rounded ${isDarkMode ? "bg-darkthemeitems" : "bg-gray-200"}`}></div>
+        <div className="h-4 w-4 rounded bg-gray-200 dark:bg-darkthemeitems"></div>
       </td>
       <td className="px-3 py-4">
         <div className="flex items-center">
-          <div className={`h-10 w-10 rounded-full ${isDarkMode ? "bg-darkthemeitems" : "bg-gray-200"}`}></div>
+          <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-darkthemeitems"></div>
           <div className="ml-4 space-y-1">
-            <div className={`h-4 w-24 rounded ${isDarkMode ? "bg-darkthemeitems" : "bg-gray-200"}`}></div>
-            <div className={`h-3 w-32 rounded ${isDarkMode ? "bg-darkthemeitems" : "bg-gray-200"}`}></div>
+            <div className="h-4 w-24 rounded bg-gray-200 dark:bg-darkthemeitems"></div>
+            <div className="h-3 w-32 rounded bg-gray-200 dark:bg-darkthemeitems"></div>
           </div>
         </div>
       </td>
       <td className="px-3 py-4">
         <div className="space-y-1">
-          <div className={`h-4 w-3/4 rounded ${isDarkMode ? "bg-darkthemeitems" : "bg-gray-200"}`}></div>
-          <div className={`h-4 w-1/2 rounded ${isDarkMode ? "bg-darkthemeitems" : "bg-gray-200"}`}></div>
+          <div className="h-4 w-3/4 rounded bg-gray-200 dark:bg-darkthemeitems"></div>
+          <div className="h-4 w-1/2 rounded bg-gray-200 dark:bg-darkthemeitems"></div>
         </div>
       </td>
       <td className="px-3 py-4 whitespace-nowrap">
-        <div className={`h-4 w-32 rounded ${isDarkMode ? "bg-darkthemeitems" : "bg-gray-200"}`}></div>
+        <div className="h-4 w-32 rounded bg-gray-200 dark:bg-darkthemeitems"></div>
       </td>
       <td className="px-3 py-4 whitespace-nowrap">
-        <div className={`h-8 w-8 rounded-full ${isDarkMode ? "bg-darkthemeitems" : "bg-gray-200"}`}></div>
+        <div className="h-8 w-8 rounded-full bg-gray-200 dark:bg-darkthemeitems"></div>
       </td>
     </tr>
   );
@@ -433,6 +432,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
   onSubmit,
   formLoading
 }) => {
+  const { darkMode } = useDarkContext();
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
 
@@ -454,12 +454,8 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
   return (
     <div>
       <div className="overlay" onClick={() => setShowModal(false)}></div>
-      <div
-        className={`sidepopup h-full lt-sm:w-full overflow-y-auto lt-sm:h-[70vh] lt-sm:bottom-0 ${
-          isDarkMode ? "bg-bgdarktheme" : "bg-white"
-        }`}
-      >
-        <h2 className="text-2xl font-semibold mb-6">
+      <div className="sidepopup h-full lt-sm:w-full overflow-y-auto lt-sm:h-[70vh] lt-sm:bottom-0 bg-white dark:bg-bgdarktheme">
+        <h2 className="text-2xl font-semibold mb-6 text-blacktheme dark:text-white">
           Respond to Message
         </h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -471,15 +467,15 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
               {selectedMessages.slice(0, 4).map((message) => (
                 <div
                   key={message.id}
-                  className={`flex items-center gap-2 ${isDarkMode ? "text-white" : ""}`}
+                  className="flex items-center gap-2"
                 >
-                  <p className={`text-sm btn ${isDarkMode ? "text-white" : ""}`}>
+                  <p className="text-sm btn text-blacktheme dark:text-white">
                     {`${message?.reservation?.customer?.first_name} ${message?.reservation?.customer?.last_name}` || `Customer #${message.reservation}`}
                   </p>
                 </div>
               ))}
               {selectedMessages.length > 4 && (
-                <p className={`text-sm btn ${isDarkMode ? "text-white" : ""}`}>
+                <p className="text-sm btn text-blacktheme dark:text-white">
                   and {selectedMessages.length - 4} more
                 </p>
               )}
@@ -490,7 +486,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
           <input
             type="text"
             placeholder="Subject"
-            className={`inputs-unique ${isDarkMode ? "bg-bgdarktheme2" : "bg-white"}`}
+            className="inputs-unique bg-white dark:bg-bgdarktheme2"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             required
@@ -502,9 +498,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
             rows={5}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            className={`inputs-unique ${
-              isDarkMode ? "bg-bgdarktheme2 focus:border-none" : "bg-white"
-            }`}
+            className="inputs-unique bg-white dark:bg-bgdarktheme2 dark:focus:border-none"
             required
           ></textarea>
 
@@ -512,7 +506,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
           <div className="flex gap-4 justify-end">
             <button
               type="button"
-              className={`btn-secondary ${isDarkMode ? "text-white" : ""}`}
+              className="btn-secondary text-blacktheme dark:text-white"
               onClick={() => setShowModal(false)}
               disabled={formLoading}
             >

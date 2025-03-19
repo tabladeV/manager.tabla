@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { addHours, format, parse } from 'date-fns';
 import { useDateContext } from '../../context/DateContext';
+import { useDarkContext } from '../../context/DarkContext';
 import { BaseKey, BaseRecord, CanAccess, useList, useUpdate } from '@refinedev/core';
 import DraggableItem from '../../components/places/DraggableItem';
 import DropTarget from '../../components/places/DropTarget';
@@ -102,7 +103,7 @@ const DndProviderWithPreview: React.FC<{ children: React.ReactNode }> = ({ child
 
 const PlacePage: React.FC = () => {
   const { t } = useTranslation();
-  const darkMode = localStorage.getItem('darkMode') === 'true';
+  const { darkMode } = useDarkContext();
 
   // Manage current time (updates every minute)
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -206,39 +207,7 @@ const PlacePage: React.FC = () => {
     },
   });
 
-  // When fetched data changes, update local state
-  useEffect(() => {
-    setReservations(reservationAPIInfo?.results as Reservation[] || [])
-  }, [reservationAPIInfo])
-  useEffect(() => {
-    if (reservationsData?.data) {
-      setReservationAPIInfo(reservationsData.data as unknown as ReservationType);
-    }
-    if (data?.data) {
-      setRoofData(data.data);
-      if (!focusedRoof) {
-        setFocusedRoof(data.data[0]?.id);
-      }
-    }
-    if (tablesData?.data) {
-      setTables(tablesData.data as TableType[]);
-    }
-  }, [data, tablesData, reservationsData]);
-
-  // Update floorId when focusedRoof changes
-  useEffect(() => {
-    if (focusedRoof) {
-      const foundFloor = roofData.find((floor) => floor.id === focusedRoof);
-      setFloorId(foundFloor?.id);
-      handleFocusAll();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [focusedRoof, roofData]);
-
-
-  useEffect(() => {
-    handleFocusAll();
-  }, [floorId])
+  
 
   // Reservation search and filtering
   const [searchResults, setSearchResults] = useState<Reservation[]>(reservations);
@@ -385,7 +354,8 @@ const PlacePage: React.FC = () => {
   // "Focus on All Tables": centers all tables of the current floor
   const handleFocusAll = useCallback(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container || isLoadingTables || tables.length === 0) return;
+    
     const containerWidth = container.clientWidth;
     const containerHeight = container.clientHeight;
     const floorTables = tables.filter(table => table.floor === floorId);
@@ -404,7 +374,7 @@ const PlacePage: React.FC = () => {
     const newTranslateY = (containerHeight - contentHeight * newScale) / 2 - minY * newScale;
     setScale(newScale);
     setTranslate({ x: newTranslateX, y: newTranslateY });
-  }, [tables, floorId, clampScale]);
+  }, [tables, floorId, clampScale, isLoadingTables]);
 
   // Hours list memoized to prevent re-creation on every render
   const hours = useMemo(() => ([
@@ -478,6 +448,49 @@ const PlacePage: React.FC = () => {
       });
     }
   };
+
+
+  // When fetched data changes, update local state
+  useEffect(() => {
+    setReservations(reservationAPIInfo?.results as Reservation[] || [])
+  }, [reservationAPIInfo])
+  useEffect(() => {
+    if (reservationsData?.data) {
+      setReservationAPIInfo(reservationsData.data as unknown as ReservationType);
+    }
+    if (data?.data) {
+      setRoofData(data.data);
+      if (!focusedRoof) {
+        setFocusedRoof(data.data[0]?.id);
+      }
+    }
+    if (tablesData?.data) {
+      setTables(tablesData.data as TableType[]);
+    }
+  }, [data, tablesData, reservationsData]);
+
+  // Update floorId when focusedRoof changes
+  useEffect(() => {
+    if (focusedRoof) {
+      const foundFloor = roofData.find((floor) => floor.id === focusedRoof);
+      setFloorId(foundFloor?.id);
+      // Don't call handleFocusAll here, it will be called by the floorId effect
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusedRoof, roofData]);
+
+  useEffect(() => {
+    if (floorId !== undefined && tables.length > 0 && !isLoadingTables) {
+      handleFocusAll();
+    }
+  }, [floorId, tables, isLoadingTables, handleFocusAll]);
+  
+  // Add a new effect specifically for table data changes
+  useEffect(() => {
+    if (tables.length > 0 && floorId !== undefined && !isLoadingTables) {
+      handleFocusAll();
+    }
+  }, [tables, isLoadingTables, handleFocusAll]);
 
   return (
     <div className=''>

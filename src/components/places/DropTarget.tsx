@@ -5,6 +5,7 @@ import { Loader2, Trash } from 'lucide-react';
 import DraggableTableReservation from './DraggableTableReservation';
 import { Occasion } from '../settings/Occasions';
 import { getTextColor } from '../../utils/helpers';
+import { useDarkContext } from '../../context/DarkContext';
 
 // Original item type for reservations from the sidebar
 const ItemType = 'BOX';
@@ -250,7 +251,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
     );
   };
 
-  const isDarkMode = localStorage.getItem('darkMode') === 'true';
+  const { darkMode } = useDarkContext();
   return (
     <>
     <div
@@ -278,17 +279,17 @@ const DropTarget: React.FC<DropTargetProps> = ({
         height,
         backgroundColor:
           isLoading 
-            ? (isDarkMode ? '#1e3a8a' : '#dbeafe')  // Blue loading background
+            ? (darkMode ? '#1e3a8a' : '#dbeafe')  // Blue loading background
             : reservedBy
               ? (reservedBy?.occasion?.color || '#FF4B4B')
-              : isDarkMode
+              : darkMode
                 ? '#042117'
                 : '#F6F6F6',
         left: x,
         top: y,
         borderRadius: type === 'RECTANGLE' ? '10px' : '50%',
         position: 'absolute',
-        color: getTextColor(reservedBy ? (reservedBy?.occasion?.color || '#FF4B4B'): isDarkMode? '#042117': '#F6F6F6')
+        color: getTextColor(reservedBy ? (reservedBy?.occasion?.color || '#FF4B4B'): darkMode? '#042117': '#F6F6F6')
       }}
     >
       {/* Loading overlay */}
@@ -303,7 +304,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
           <Loader2 
             className="animate-spin" 
             size={width > 50 ? 24 : 16} 
-            color={isDarkMode ? 'white' : '#3b82f6'} 
+            color={darkMode ? 'white' : '#3b82f6'} 
           />
         </div>
       )}
@@ -346,7 +347,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
           </h6>
           <span 
             className={`text-[12px] pa-1 rounded-full h-[20px] min-w-[20px] font-semibold ${
-              isDarkMode
+              darkMode
                 ? 'bg-bgdarktheme text-white'
                 : 'bg-[#dddddd] text-greytheme'
             }`}
@@ -399,7 +400,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
       {isClients && !isLoading && (
         <div
           className={`absolute z-[1000] text-greytheme right-[-13em] w-[13em] p-2 rounded-[10px] font-medium ${
-            isDarkMode
+            darkMode
               ? 'bg-bgdarktheme2 text-white'
               : 'bg-[#F6F6F6] text-greytheme'
           }`}
@@ -408,7 +409,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
           {droppedItems.slice(0, 3).map((item, index) => (
             <div
               className={`p-1 flex justify-between items-center gap-2 rounded-[5px] mt-1 font-semibold ${
-                isDarkMode
+                darkMode
                   ? 'bg-bgdarktheme'
                   : 'bg-softgreytheme'
               }`}
@@ -425,7 +426,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
           {droppedItems.length > 3 && (
             <div
               className={`p-1 rounded-[5px] mt-1 font-semibold ${
-                isDarkMode
+                darkMode
                   ? 'bg-softgreentheme text-blacktheme'
                   : 'bg-softgreentheme'
               }`}

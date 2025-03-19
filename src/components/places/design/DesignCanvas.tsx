@@ -17,6 +17,7 @@ import dataProvider from '@refinedev/simple-rest';
 import axiosInstance from '../../../providers/axiosInstance';
 import { off } from 'process';
 import BaseBtn from '../../common/BaseBtn';
+import { useDarkContext } from '../../../context/DarkContext';
 
 const MAX_ZOOM = 0.9; // maximum scale allowed
 const MIN_ZOOM = 0.4; // minimum scale allowed
@@ -44,6 +45,7 @@ interface CanvasTypes {
 }
 
 const DesignCanvas: React.FC<CanvasTypes> = (props) => {
+  const { darkMode } = useDarkContext();
   const [shapes, setShapes] = useState<Table[]>([]);
   const [selectedId, selectShape] = useState<BaseKey | null>(null);
   const [showTools, setShowTools] = useState(false);
@@ -68,6 +70,12 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
   useEffect(() => {
     if (props.focusedRoofId) {
       setShapes(props.tables);
+      
+      // Auto focus when tables are loaded
+      if (props.tables.length > 0) {
+        // Use setTimeout to ensure the stage is ready
+        setTimeout(() => focusAll(), 100);
+      }
     }
   }, [props.focusedRoofId, props.tables]);
 
@@ -141,10 +149,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
       return (
         <div>
           <form
-            className={`popup bg-bgdarktheme ${localStorage.getItem('darkMode') === 'true'
-              ? 'bg-darkthemeitems text-textdarktheme'
-              : 'bg-white text-black'
-              }`}
+            className="popup bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme rounded-[10px]"
             onSubmit={async (e) => {
               e.preventDefault();
               const newName = (e.target as any).elements[0].value;
@@ -177,28 +182,19 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
             <input
               type="text"
               defaultValue={shape.name}
-              className={`inputs-unique mt-2 ${localStorage.getItem('darkMode') === 'true'
-                ? 'bg-darkthemeitems text-textdarktheme'
-                : 'bg-white text-black'
-                }`}
+              className="inputs-unique mt-2 bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme"
             />
             <p>Change maximum capacity</p>
             <input
               type="text"
               defaultValue={shape.max}
-              className={`inputs-unique mt-2 ${localStorage.getItem('darkMode') === 'true'
-                ? 'bg-darkthemeitems text-textdarktheme'
-                : 'bg-white text-black'
-                }`}
+              className="inputs-unique mt-2 bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme"
             />
             <p>Change minimum capacity</p>
             <input
               type="text"
               defaultValue={shape.min}
-              className={`inputs-unique mt-2 ${localStorage.getItem('darkMode') === 'true'
-                ? 'bg-darkthemeitems text-textdarktheme'
-                : 'bg-white text-black'
-                }`}
+              className="inputs-unique mt-2 bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme"
             />
             <button type="submit" className="btn-primary mt-2">
               Save
@@ -216,10 +212,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
       return (
         <div>
           <form
-            className={`popup bg-bgdarktheme ${localStorage.getItem('darkMode') === 'true'
-              ? 'bg-darkthemeitems text-textdarktheme'
-              : 'bg-white text-black'
-              }`}
+            className="popup bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme rounded-[10px]"
             onSubmit={async (e) => {
               e.preventDefault();
               const newName = (e.target as any).elements[0].value;
@@ -238,28 +231,19 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
             <p>Table Name</p>
             <input
               type="text"
-              className={`inputs-unique mt-2 ${localStorage.getItem('darkMode') === 'true'
-                ? 'bg-darkthemeitems text-textdarktheme'
-                : 'bg-white text-black'
-                }`}
+              className="inputs-unique mt-2 bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme"
             />
             <p>Maximum capacity</p>
             <input
               type="text"
               defaultValue={6}
-              className={`inputs-unique mt-2 ${localStorage.getItem('darkMode') === 'true'
-                ? 'bg-darkthemeitems text-textdarktheme'
-                : 'bg-white text-black'
-                }`}
+              className="inputs-unique mt-2 bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme"
             />
             <p>Minimum capacity</p>
             <input
               type="text"
               defaultValue={1}
-              className={`inputs-unique mt-2 ${localStorage.getItem('darkMode') === 'true'
-                ? 'bg-darkthemeitems text-textdarktheme'
-                : 'bg-white text-black'
-                }`}
+              className="inputs-unique mt-2 bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme"
             />
             <button type="submit" className="btn-primary mt-2">
               Add
@@ -268,7 +252,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
         </div>
       );
     },
-    [shapes]
+    [shapes, showAdd]
   );
 
   const editShape = useCallback(() => {
@@ -607,7 +591,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
       {showEdit && (
         <div>
           <div
-            className={`overlay  opacity-15 z-[200] ${localStorage.getItem('darkMode') === 'true'?'bg-black':'bg-white'}`}
+            className="overlay opacity-15 z-[200] bg-white dark:bg-black"
             onClick={() => setShowEdit(false)}
           ></div>
           {selectedId && <ChangingName id={selectedId as number} />}
@@ -616,7 +600,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
       {showAdd && (
         <div>
           <div
-            className={`overlay  opacity-15 z-[200] ${localStorage.getItem('darkMode') === 'true'?'bg-black':'bg-white'}`}
+            className="overlay opacity-15 z-[200] bg-white dark:bg-black"
             onClick={() => setShowAdd(null)}
           ></div>
           <AddTable />
@@ -624,10 +608,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
       )}
       <div className="flex justify-between gap-5 my-4">
         <div
-          className={`p-2 flex rounded-[10px] gap-2 ${localStorage.getItem('darkMode') === 'true'
-              ? 'bg-bgdarktheme text-white'
-              : 'bg-white text-subblack'
-            }`}
+          className="p-2 flex rounded-[10px] gap-2 bg-white dark:bg-bgdarktheme text-subblack dark:text-white"
         >
           <button
             onClick={() => {
@@ -639,7 +620,6 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
           >
             <div className="text-greentheme bg-softgreentheme w-[2em] h-[2em] rounded-[10px] items-center flex justify-center">
               +
-              {loading}
             </div>
             <p>
               {t('editPlace.buttons.addTable')}{' '}
@@ -655,7 +635,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
             {showTools && (
               <>
                 <BaseBtn variant='outlined'
-                  className={`btn ${localStorage.getItem('darkMode') === 'true'
+                  className={`btn ${darkMode
                       ? 'text-white'
                       : ''
                     }`}
@@ -667,7 +647,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
                   {t('editPlace.buttons.rectangleTable')}
                 </BaseBtn>
                 <BaseBtn variant='outlined'
-                  className={`btn ${localStorage.getItem('darkMode') === 'true'
+                  className={`btn ${darkMode
                       ? 'text-white'
                       : ''
                     }`}

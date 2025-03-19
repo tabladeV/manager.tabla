@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MapPin } from 'lucide-react';
 import Logo from "../../components/header/Logo";
-import { BaseKey, useList } from "@refinedev/core";
+import { BaseKey, useCan, useList } from "@refinedev/core";
 import authProvider from "../../providers/authProvider";
-
+import { useDateContext } from "../../context/DateContext";
 
 interface RestaurantType {
     id: BaseKey;
@@ -14,14 +14,18 @@ interface RestaurantType {
     subdomain: string | null;
 }
 
+interface IdentityType {is_manager: boolean, permissions: string[]}
+
 const RestaurantSelection: React.FC<{showLogo?: boolean}> = ({showLogo=true}) => {
   const navigate = useNavigate();
   const [hoveredId, setHoveredId] = useState<BaseKey | null>(null);
   const [restaurants, setRestaurents] = useState<RestaurantType[]>([]);
+  const { setRestaurantData } = useDateContext();
 
   const {data: apiRestaurants, error, isLoading: loading} = useList({
     resource: "api/v1/bo/restaurants/my_restaurants/",
   });
+
   
   useEffect(()=>{
     setRestaurents(apiRestaurants?.data as RestaurantType[] || []);
@@ -35,10 +39,23 @@ const RestaurantSelection: React.FC<{showLogo?: boolean}> = ({showLogo=true}) =>
   const handleSelectRestaurant = async (restaurantId: BaseKey) => {
     // Store the selected restaurant ID
     localStorage.setItem("restaurant_id", restaurantId.toString());
+    
+    // Find the selected restaurant from the list
+    const selectedRestaurant = restaurants.find(restaurant => restaurant.id === restaurantId);
+    
+    // Store restaurant data in context if found
+    if (selectedRestaurant) {
+      setRestaurantData(selectedRestaurant as any);
+    }
+    
     try {
       if (authProvider && authProvider.getIdentity) {
-        await authProvider.getIdentity();
-        navigate("/");
+        const res = await authProvider.getIdentity() as IdentityType;
+        if(res?.is_manager || res?.permissions?.includes('view_dashboard')) {
+          navigate("/");
+        }else {
+          navigate("/change-restaurant");
+        }
       }
     }catch (e) {
       localStorage.removeItem("restaurant_id");
@@ -47,12 +64,12 @@ const RestaurantSelection: React.FC<{showLogo?: boolean}> = ({showLogo=true}) =>
   };
   
   return (
-    <div className="overflow-y-auto flex bg-cover flex-col items-center w-full min-h-screen dark:bg-bgdarktheme">
+    <div className="flex bg-cover flex-col items-center w-full min-h-screen dark:bg-bgdarktheme">
       
       <div className="relative w-full flex items-center justify-center">
         {showLogo && <>
-          <Logo className="horizontal" />
-          <button className="btn-primary absolute top-[10px] left-[20px]" onClick={() => handleLogout()}>
+          <Logo className="horizontal" nolink />
+          <button className="btn-primary fixed top-[10px] left-[20px]" onClick={() => handleLogout()}>
             change user
           </button>
         </>}

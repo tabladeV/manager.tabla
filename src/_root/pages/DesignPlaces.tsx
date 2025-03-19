@@ -3,6 +3,7 @@ import DesignCanvas from '../../components/places/design/DesignCanvas';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { BaseKey, BaseRecord, CanAccess, useCreate, useDelete, useList, useNotification, useUpdate } from '@refinedev/core';
+import { useDarkContext } from '../../context/DarkContext';
 
 interface Table extends BaseRecord {
   id: BaseKey | undefined;
@@ -24,6 +25,7 @@ const DesignPlaces: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { open } = useNotification();
+  const { darkMode } = useDarkContext();
 
   
   // API hooks
@@ -219,7 +221,8 @@ const DesignPlaces: React.FC = () => {
               <g clipPath="url(#clip0_412_5)">
                 <path
                   d="M6.5 13C10.0899 13 13 10.0899 13 6.5C13 2.91015 10.0899 0 6.5 0C2.91015 0 0 2.91015 0 6.5C0 10.0899 2.91015 13 6.5 13Z"
-                  fill={localStorage.getItem('darkMode') === 'true' ? '#1e1e1e50' : '#e1e1e1'}
+                  fill="#e1e1e1"
+                  className="dark:fill-[#1e1e1e50]"
                 />
                 <path
                   d="M7.06595 6.5036L8.99109 9H7.85027L6.45098 7.18705L5.14082 9H4.00891L5.93405 6.5036L4 4H5.14082L6.54902 5.82734L7.86809 4H9L7.06595 6.5036Z"
@@ -244,7 +247,7 @@ const DesignPlaces: React.FC = () => {
         <div>
           <div className="overlay" onClick={() => setShowAddPlace(false)}></div>
           <form
-            className={`popup gap-5 ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}
+            className="popup gap-5 bg-white dark:bg-bgdarktheme"
             onSubmit={(e) => {
               e.preventDefault();
               handleAddFloor();
@@ -256,7 +259,7 @@ const DesignPlaces: React.FC = () => {
               autoFocus={true}
               type="text"
               placeholder="Place Alias"
-              className={`inputs-unique ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-textdarktheme' : 'bg-white text-black'}`}
+              className="inputs-unique bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme"
             />
             <button
               type="button"
@@ -283,7 +286,7 @@ const DesignPlaces: React.FC = () => {
       <div className="flex gap-3">
         <CanAccess resource="floor" action="add">
           <button
-            className={`btn-primary ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ''}`}
+            className="btn-primary dark:text-white"
             onClick={() => setShowAddPlace(true)}
           >
             +

@@ -106,11 +106,7 @@ const RootLayout = () => {
     }
   }, []);
 
-  const [shownlang, setShownLang] = useState(localStorage.getItem('preferredLanguage') || 'en');
-  useEffect(() => {
-    setShownLang(localStorage.getItem('preferredLanguage') || 'en');
-  }, [localStorage.getItem('preferredLanguage')]);
-
+  const { preferredLanguage: shownlang} = useDateContext();
   const [stateOfSideBar, setStateOfSideBar] = useState(false);
 
   const strokeColor = "stroke-[#1e1e1e70] dark:stroke-[#ffffff70]";
@@ -141,21 +137,21 @@ const RootLayout = () => {
               </svg>
             }
           </button>
-          <div className="flex gap-1 gt-md:gap-4 lt-sm:hidden">
+          <div className="flex gap-1 gt-md:gap-2 lt-sm:hidden">
             <div className="flex items-center gap-2 btn border-softbluetheme cursor-default hover:border-bluetheme text-bluetheme">
-              <img src={pending} alt="pending" className="w-5 h-5 lt-lg:h-4 lt-lg:w-4 block dark:hidden" />
-              <img src={pendingDark} alt="pending" className="w-5 h-5 lt-lg:h-4 lt-lg:w-4 hidden dark:block" />
-              <span className="text-[1.6rem] lt-lg:text-[1rem] font-[600]">{actions[0].count}</span>
+              <img src={pending} alt="pending" className="size-4 lt-lg:size-3 block dark:hidden" />
+              <img src={pendingDark} alt="pending" className="size-4 lt-lg:size-3 hidden dark:block" />
+              <span className="text-[1.2rem] lt-lg:text-[1rem] font-[600]">{actions[0].count}</span>
             </div>
             <div className="flex items-center gap-2 btn border-softgreentheme cursor-default hover:border-greentheme text-greentheme">
-              <img src={confirm} alt="confirm" className="w-5 h-5 lt-lg:h-4 lt-lg:w-4 block dark:hidden" />
-              <img src={confirmDark} alt="confirm" className="w-5 h-5 lt-lg:h-4 lt-lg:w-4 hidden dark:block" />
-              <span className="text-[1.6rem] lt-lg:text-[1rem] font-[600]">{actions[1].count}</span>
+              <img src={confirm} alt="confirm" className="size-4 lt-lg:size-3 block dark:hidden" />
+              <img src={confirmDark} alt="confirm" className="size-4 lt-lg:size-3 hidden dark:block" />
+              <span className="text-[1.2rem] lt-lg:text-[1rem] font-[600]">{actions[1].count}</span>
             </div>
             <div className="flex items-center gap-2 btn border-softredtheme cursor-default hover:border-redtheme text-redtheme">
-              <img src={cancel} alt="cancel" className="w-5 h-5 lt-lg:h-4 lt-lg:w-4 block dark:hidden" />
-              <img src={cancelDark} alt="cancel" className="w-5 h-5 lt-lg:h-4 lt-lg:w-4 hidden dark:block" />
-              <span className="text-[1.6rem] lt-lg:text-[1rem] font-[600]">{actions[2].count}</span>
+              <img src={cancel} alt="cancel" className="size-4 lt-lg:size-3 block dark:hidden" />
+              <img src={cancelDark} alt="cancel" className="size-4 lt-lg:size-3 hidden dark:block" />
+              <span className="text-[1.2rem] lt-lg:text-[1rem] font-[600]">{actions[2].count}</span>
             </div>
           </div>
 

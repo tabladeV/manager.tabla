@@ -4,13 +4,10 @@ import { BaseKey, BaseRecord, useList } from "@refinedev/core";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
-
-
-
-
+import { useDarkContext } from "../../context/DarkContext";
 
 export default function TopUsers() {
-
+  const { darkMode } = useDarkContext();
 
   interface Message extends BaseRecord {
     id: BaseKey;
@@ -89,12 +86,6 @@ export default function TopUsers() {
   }
 
   const { t } = useTranslation();
-
-  // Dark mode class
-  const isDarkMode = localStorage.getItem('darkMode') === 'true';
-  const containerClass = `rounded-[20px] lt-sm:w-full overflow-hidden ${isDarkMode ? 'bg-bgdarktheme text-textdarktheme' : 'bg-white text-blacktheme'}`;
-  const tickFill = isDarkMode ? '#ffffff' : '#1e1e1e';
-
   const [showText, setShowText] = useState(false);
 
   return (
@@ -105,9 +96,9 @@ export default function TopUsers() {
       onMouseOver={() => {
         setShowText(true);
       }}
-      className={`rounded-[20px] lt-sm:w-full h-[400px] ${localStorage.getItem("darkMode") === "true" ? "bg-bgdarktheme text-textdarktheme" : "bg-white text-blacktheme"}`}
+      className="rounded-[20px] lt-sm:w-full h-[400px] bg-white dark:bg-bgdarktheme text-blacktheme dark:text-textdarktheme"
     >
-      <div className="flex justify-between items-center p-4">
+      <div className="flex justify-between items-center px-2 py-2">
         <h1 className="text-xl font-bold">{t("overview.messages.title")}</h1>
       </div>
       <div className="cursor-default flex flex-col no-scrollbar overflow-y-scroll h-[330px] gap-4 p-2">
@@ -119,14 +110,14 @@ export default function TopUsers() {
               </div>
               <div>
                 <h3 className="text-md">{`${item.reservation?.customer?.first_name} ${item.reservation?.customer?.last_name}`}</h3>
-                <p className={`text-[14px] ${localStorage.getItem("darkMode") === "true" ? "text-softwhitetheme" : "text-subblack"}`}>
+                <p className="text-[14px] text-subblack dark:text-softwhitetheme">
                   {item.text.length > 30 ? `${item.text.substring(0, 30)}...` : item.text}
                 </p>
               </div>
             </div>
             <div className="flex flex-col items-end">
               
-              <p className={`text-[12px] ${localStorage.getItem("darkMode") === "true" ? "text-softwhitetheme" : "text-subblack"}`}>{format(item.created_at, "yyyy-MM-dd")} at {format(item.created_at, "HH:mm")}</p>
+              <p className="text-[12px] text-subblack dark:text-softwhitetheme">{format(item.created_at, "yyyy-MM-dd")} at {format(item.created_at, "HH:mm")}</p>
             </div>
           </div>
         ))}
