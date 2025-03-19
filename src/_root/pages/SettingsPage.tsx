@@ -6,7 +6,7 @@ import { useDarkContext } from "../../context/DarkContext";
 
 const SettingsPage = () => {
   const { darkMode } = useDarkContext();
-  
+
   useEffect(() => {
     document.title = 'Settings | Tabla'
   }, [])
@@ -26,21 +26,19 @@ const SettingsPage = () => {
       </div>
       <div className="flex gap-4">
         <div
-          className={`h-[calc(100vh-160px)] overflow-y-auto flex flex-col w-1/5 rounded-[10px] px-6 py-4 gap-4 lt-sm:w-full lt-sm:h-fit ${
-            localStorage.getItem("preferredLanguage") === "ar"
+          className={`h-[calc(100vh-160px)] overflow-y-auto flex flex-col w-1/5 rounded-[10px] px-6 py-4 gap-4 lt-sm:w-full lt-sm:h-fit ${localStorage.getItem("preferredLanguage") === "ar"
               ? "text-right"
               : ""
-          } ${pathname === "/settings" ? "" : "lt-sm:hidden"} 
+            } ${pathname === "/settings" ? "" : "lt-sm:hidden"} 
           text-[#1E1E1E99] bg-white dark:text-white dark:bg-bgdarktheme`}
         >
           {/* General - no permission yet, so left open */}
           <Link
             to="/settings/general"
-            className={`${
-              pathname === "/settings/general"
+            className={`${pathname === "/settings/general"
                 ? navigatedMenuClass
                 : normalMenuClass
-            }`}
+              }`}
           >
             {t("settingsPage.menuItems.general")}
           </Link>
@@ -52,31 +50,51 @@ const SettingsPage = () => {
           >
             <Link
               to="/settings/availability"
-              className={`${
-                pathname === "/settings/availability"
+              className={`${pathname === "/settings/availability"
                   ? navigatedMenuClass
                   : normalMenuClass
-              }`}
+                }`}
             >
               {t("settingsPage.menuItems.availability")}
             </Link>
           </CanAccess>
 
           {/* General - no permission yet, so left open*/}
-          <Link
-            to="/settings/users"
-            className={`${pathname === "/settings/users"
+          <CanAccess
+            resource="customuser"
+            action="view"
+          >
+            <Link
+              to="/settings/users"
+              className={`${pathname === "/settings/users"
                 ? navigatedMenuClass
                 : normalMenuClass
-              }`}
-          >
-            {t("settingsPage.menuItems.users")}
-          </Link>
+                }`}
+            >
+              {t("settingsPage.menuItems.users")}
+            </Link>
+          </CanAccess>
 
           {/* Widget - not restricted */}
-          <Link to='/settings/occasions' className={`hover:underline ${pathname === '/settings/occasions' ?navigatedMenuClass: normalMenuClass}`}>Occasions</Link>
-          <Link to='/settings/widget/reservation' className={`hover:underline ${pathname === '/settings/widget/reservation' ?navigatedMenuClass: normalMenuClass}`}>{t('settingsPage.menuItems.widget')}</Link>
-          <Link to='/settings/widget/review' className={`hover:underline ${pathname === '/settings/widget/review' ?navigatedMenuClass: normalMenuClass}`}>{t('settingsPage.menuItems.reviewWidget')}</Link>
+          <CanAccess
+            resource="occasion"
+            action="view"
+          >
+            <Link to='/settings/occasions' className={`hover:underline ${pathname === '/settings/occasions' ? navigatedMenuClass : normalMenuClass}`}>Occasions</Link>
+          </CanAccess>
+
+          <CanAccess
+            resource="widget"
+            action="view"
+          >
+            <Link to='/settings/widget/reservation' className={`hover:underline ${pathname === '/settings/widget/reservation' ? navigatedMenuClass : normalMenuClass}`}>{t('settingsPage.menuItems.widget')}</Link>
+          </CanAccess>
+          <CanAccess
+            resource="reviewwidget"
+            action="view"
+          >
+            <Link to='/settings/widget/review' className={`hover:underline ${pathname === '/settings/widget/review' ? navigatedMenuClass : normalMenuClass}`}>{t('settingsPage.menuItems.reviewWidget')}</Link>
+          </CanAccess>
 
           {/* Roles - check for view_role */}
           <CanAccess
@@ -85,11 +103,10 @@ const SettingsPage = () => {
           >
             <Link
               to="/settings/roles"
-              className={`${
-                pathname === "/settings/roles"
+              className={`${pathname === "/settings/roles"
                   ? navigatedMenuClass
                   : normalMenuClass
-              }`}
+                }`}
             >
               {t("settingsPage.menuItems.roles")}
             </Link>
@@ -105,7 +122,7 @@ const SettingsPage = () => {
           {/* <Link to='/settings/permissions' className={`hover:underline ${pathname === '/settings/permissions' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.permissions')}</Link> */}
           {/* <Link to='/settings/services' className={`hover:underline ${pathname === '/settings/services' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.services')}</Link> */}
         </div>
-        <div className={`w-full overflow-y-scroll ${pathname === '/settings' ? 'lt-sm:hidden': ''}`}>
+        <div className={`w-full overflow-y-auto ${pathname === '/settings' ? 'lt-sm:hidden' : ''}`}>
           <Outlet />
         </div>
       </div>

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { ArrowRight } from "lucide-react"
 import { BaseKey, useList } from "@refinedev/core"
-
+import { useDarkContext } from "../../context/DarkContext"
 
 interface Review {
     id: BaseKey
@@ -24,8 +24,6 @@ interface Review {
     source: string
 }
 
-
-
 const HistoryList  = () => {
 
   interface ReviewsType {
@@ -37,6 +35,8 @@ const HistoryList  = () => {
   
   const [reviewsAPIInfo, setReviewsAPIInfo] =useState<ReviewsType>()
 
+  const { t } = useTranslation()
+  const { darkMode } = useDarkContext()
 
   const {data: reviewsData, isLoading, error} = useList({
           resource: 'api/v1/reviews/',
@@ -60,9 +60,6 @@ const HistoryList  = () => {
 
       })
   
-      
-  
-  
       const [reviews, setReviews] = useState<Review[]>([])
       
       useEffect(() => {
@@ -72,9 +69,6 @@ const HistoryList  = () => {
         }
       }, [reviewsAPIInfo])
       
-
-  const { t } = useTranslation()
-
   const len = reviews.length
 
   const colors: string[] = []
@@ -92,13 +86,10 @@ const HistoryList  = () => {
     }
   }
 
-
-
   const [showText,setShowText] = useState(false)
   
-
   return (
-    <div onMouseLeave={()=>{setShowText(false)}} onMouseOver={()=>{setShowText(true)}} className={` rounded-[20px]   lt-sm:w-full h-[400px] ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme text-textdarktheme':'bg-white text-blacktheme'}`}>
+    <div onMouseLeave={()=>{setShowText(false)}} onMouseOver={()=>{setShowText(true)}} className={`rounded-[20px] lt-sm:w-full h-[400px] bg-white dark:bg-bgdarktheme text-blacktheme dark:text-textdarktheme`}>
       <div className='flex justify-between items-center p-4'>
         <h1 className='text-xl font-bold'>{t('overview.reviews.title')}</h1>
         
@@ -111,19 +102,17 @@ const HistoryList  = () => {
             <div className={`w-10 h-10 ${colors[index]} flex justify-center items-center rounded-full text-white`}>{item.customer.first_name.slice(0,1)}</div>
             <div>
               <h3 className='text-md'>{item.customer.first_name} {item.customer.last_name}</h3>
-              <p className={`text-[14px] ${localStorage.getItem('darkMode')==='true'? 'text-softwhitetheme':'text-subblack'}`}>
+              <p className={`text-[14px] text-subblack dark:text-softwhitetheme`}>
                 {item.description.length > 30 ? `${item.description.substring(0, 30)}...` : item.description}
               </p>
             </div>
           </div>
           <div className="flex flex-col items-end">
-            <p className={`text-[16px] font-bold ${localStorage.getItem('darkMode')==='true'? 'text-softwhitetheme':'text-subblack'}`}>{((Number(item.ambience_rating) + Number(item.food_rating) + Number(item.service_rating) + Number(item.value_for_money) )/4).toFixed(2)}</p>
-            <p className={`text-[12px] ${localStorage.getItem('darkMode')==='true'? 'text-softwhitetheme':'text-subblack'}`}>{item.created_at.slice(0,10)}</p>
+            <p className={`text-[16px] font-bold text-subblack dark:text-softwhitetheme`}>{((Number(item.ambience_rating) + Number(item.food_rating) + Number(item.service_rating) + Number(item.value_for_money) )/4).toFixed(2)}</p>
+            <p className={`text-[12px] text-subblack dark:text-softwhitetheme`}>{item.created_at.slice(0,10)}</p>
           </div>
         </div>
         ))}
-        
-
       </div>
       {showText && 
         <div className="relative flex justify-center">

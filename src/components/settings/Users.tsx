@@ -1,8 +1,9 @@
-import { BaseKey, BaseRecord, useCreate, useDelete, useList, useUpdate } from "@refinedev/core"
+import { BaseKey, BaseRecord, CanAccess, useCan, useCreate, useDelete, useList, useUpdate } from "@refinedev/core"
 import { Trash } from "lucide-react"
 import { useState, useCallback, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import BaseSelect from "../common/BaseSelect"
+import BaseBtn from "../common/BaseBtn"
 
 interface User {
   id: number
@@ -99,7 +100,7 @@ export default function Users() {
     },
   })
 
-  const { mutate: updateUser } = useUpdate({
+  const { mutate: updateUser, isLoading: loadingUpdateUser } = useUpdate({
     resource: `api/v1/bo/restaurants/users`,
     errorNotification(error, values, resource) {
       return {
@@ -117,6 +118,8 @@ export default function Users() {
   }, [usersAPIInfo])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
+  const { data: userDelete } = useCan({ resource: 'customuser', action: 'delete' });
+  const { data: userChange } = useCan({ resource: 'customuser', action: 'change' });
 
   const openModal = useCallback((user: User | null) => {
     setSelectedUser(user)
@@ -178,9 +181,9 @@ export default function Users() {
 
   const { t } = useTranslation();
 
-  const [roleSelected, setRoleSelected] = useState<string>()
+  const [roleSelected, setRoleSelected] = useState<number | null>(null)
 
-  const { mutate: updateRole } = useUpdate({
+  const { mutate: updateRole, isLoading: loadingUpdateRole } = useUpdate({
     errorNotification(error, values, resource) {
       return {
         type: 'error',
@@ -198,9 +201,7 @@ export default function Users() {
   });
   const { mutate: deleteUserMutate } = useDelete();
 
-  useEffect(() => {
-    setRoleSelected(selectedUser?.role?.id?.toString());
-  }, [openModal])
+  useEffect(() => setRoleSelected(selectedUser?.role?.id as number), [isModalOpen])
 
   const handleUserUpdate = () => {
     if (selectedUser) {
@@ -220,6 +221,11 @@ export default function Users() {
           last_name: selectedUser.last_name,
           email: selectedUser.email,
         },
+      },{
+        onSuccess(){
+          closeModal();
+          refetchUsers();
+        }
       });
     }
   };
@@ -239,6 +245,8 @@ export default function Users() {
   }
 
   const deleteUser = (id: BaseKey) => {
+    if(!userDelete?.can)
+      return;
     if (window.confirm('Are you sure you want to delete this user?')) {
       deleteUserMutate({
         resource: `api/v1/bo/restaurants/users`,
@@ -252,7 +260,7 @@ export default function Users() {
   }
 
   return (
-    <div className="w-full rounded-[10px] flex flex-col items-center p-10 dark:bg-bgdarktheme bg-white">
+    <div className="w-full rounded-[10px] flex flex-col items-center p-2 dark:bg-bgdarktheme bg-white">
       {(!isUpdating) ? (isModalOpen && (
         <div >
           <div className="overlay" onClick={closeModal}></div>
@@ -283,10 +291,7 @@ export default function Users() {
                 variant={localStorage.getItem('darkMode') === 'true'?"filled":"outlined"}
                 value={roleSelected}
                 onChange={(value) => {
-                  const selectedRole = rolesAPIInfo?.results.find((role: any) => role.id === Number(value));
-                  if (selectedUser && selectedRole) {
-                    setRoleSelected(value?.toString())
-                  }
+                  setRoleSelected(value as (number | null));
                 }}
                 options={rolesAPIInfo?.results?.map((role: any) => ({
                   label: role.name,
@@ -294,7 +299,7 @@ export default function Users() {
                 })) || []}
                 />
               <div className="flex justify-center gap-4">
-                <button onClick={handleUserUpdate} className="btn-primary">Save</button>
+                <BaseBtn onClick={()=>handleUserUpdate()} className="w-full" loading={loadingUpdateUser || loadingUpdateRole}>Save</BaseBtn>
               </div>
             </div>
           </div>
@@ -320,7 +325,12 @@ export default function Users() {
                 <td className="px-6 py-4" onClick={() => openModal(user)}>{user.email}</td>
                 <td className="px-6 py-4" onClick={() => openModal(user)}>{user.role ? user.role.name : 'no role affected'}</td>
                 <td className="px-6 py-4 flex justify-end">
-                  <button className="btn-secondary bg-softredtheme text-redtheme hover:bg-redtheme hover:text-white p-2 text-right" onClick={() => deleteUser(user.id)}><Trash size={15} /></button>
+                  <CanAccess
+                    resource="customuser"
+                    action="delete"
+                  >
+                    <button className="btn-secondary bg-softredtheme text-redtheme hover:bg-redtheme hover:text-white p-2 text-right" onClick={() => deleteUser(user.id)}><Trash size={15} /></button>
+                  </CanAccess>
                 </td>
               </tr>
             ))}

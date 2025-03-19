@@ -363,6 +363,37 @@
       box-shadow: 0 0 0 3px rgba(136, 171, 97, 0.5);
     }
 
+
+    input[aria-readonly="true"] {
+      border: 1px dashed #ccc;
+      cursor: not-allowed;
+    }
+
+    input[aria-readonly="true"]:focus {
+      outline: none;
+      box-shadow: none;
+    }
+
+    textarea[aria-readonly="true"] {
+      border: 1px dashed #ccc;
+      cursor: not-allowed;
+    }
+
+    textarea[aria-readonly="true"]:focus {
+      outline: none;
+      box-shadow: none;
+    }
+
+    select[aria-readonly="true"] {
+      border: 1px dashed #ccc;
+      cursor: not-allowed;
+    }
+
+    select[aria-readonly="true"]:focus {
+      outline: none;
+      box-shadow: none;
+    }
+
     table {
       width: 100%; /* Full width */
       border-collapse: collapse; /* Collapse borders */

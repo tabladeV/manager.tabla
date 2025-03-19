@@ -17,6 +17,7 @@ import useExportConfig from "../../components/common/config/exportConfig"
 import EditReservationModal from "../../components/reservation/EditReservationModal"
 import { ReservationSource, ReservationStatus } from "../../components/common/types/Reservation"
 import { Occasion } from "../../components/settings/Occasions"
+import { useDarkContext } from "../../context/DarkContext" // Import the dark mode context
 
 // Types and Interfaces
 export interface ReceivedTables {
@@ -389,7 +390,7 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
 
           <div className="flex items-center gap-1 font-bold">
             <Users size={14} />
-            <span>{reservation.number_of_guests} guests</span>
+            <span>{reservation.number_of_guests}</span>
           </div>
         </div>
       </td>
@@ -533,7 +534,10 @@ const ReservationsPage: React.FC = () => {
     document.title = 'Reservations | Tabla'
   }, [])
 
-  const isDarkMode = localStorage.getItem('darkMode') === 'true';
+  // Replace localStorage access with context
+  const { darkMode } = useDarkContext();
+  const isDarkMode = darkMode;
+  
   const { t } = useTranslation();
   
   // Permission check

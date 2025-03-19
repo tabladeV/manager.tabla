@@ -1,4 +1,5 @@
 import React from 'react';
+import { useDarkContext } from '../../context/DarkContext';
 
 interface DraggableItemSkeletonProps {
   count?: number;
@@ -7,10 +8,13 @@ interface DraggableItemSkeletonProps {
 
 const DraggableItemSkeleton: React.FC<DraggableItemSkeletonProps> = ({ 
   count = 1,
-  isDarkMode = false 
+  isDarkMode: propsDarkMode 
 }) => {
-  const skeletonColor = isDarkMode ? 'bg-darkthemeitems' : 'bg-gray-300';
-  const baseColor = isDarkMode ? 'bg-bgdarktheme2' : 'bg-softgreytheme';
+  const { darkMode: contextDarkMode } = useDarkContext();
+  const darkMode = propsDarkMode !== undefined ? propsDarkMode : contextDarkMode;
+  
+  const skeletonColor = darkMode ? 'bg-darkthemeitems' : 'bg-gray-300';
+  const baseColor = darkMode ? 'bg-bgdarktheme2' : 'bg-softgreytheme';
   
   return (
     <>

@@ -3,6 +3,7 @@ import { usePreview } from 'react-dnd-preview';
 import { Users, CalendarCheck } from 'lucide-react';
 import { getTextColor } from '../../utils/helpers';
 import { useTranslation } from 'react-i18next';
+import { useDarkContext } from '../../context/DarkContext';
 
 interface Item {
   width?: number;
@@ -18,6 +19,7 @@ interface Item {
 const DndPreview = () => {
   const { t } = useTranslation();
   const preview = usePreview();
+  const { darkMode } = useDarkContext();
   
   if (!preview.display) {
     return null;
@@ -70,7 +72,7 @@ const DndPreview = () => {
     return (
       <div
         style={previewStyle as React.CSSProperties}
-        className={`p-3 rounded-[10px] ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2 text-whitetheme' : 'bg-softgreytheme text-subblack'}`}
+        className={`p-3 rounded-[10px] ${darkMode ? 'bg-bgdarktheme2 text-whitetheme' : 'bg-softgreytheme text-subblack'}`}
       >
         <div className="flex items-center">
           <div className={`flex flex-col text-center items-center`}>
@@ -79,7 +81,7 @@ const DndPreview = () => {
           </div>
           <div className="border border-[#00000010] mx-2 border-solid h-full"></div>
           <div>
-            <h3 className={`font-[600] ${localStorage.getItem('darkMode') === 'true' ? 'text-whitetheme' : 'text-blacktheme'}`}>
+            <h3 className={`font-[600] ${darkMode ? 'text-whitetheme' : 'text-blacktheme'}`}>
               {item.full_name}
             </h3>
             <div className="flex gap-3">
