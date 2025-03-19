@@ -2,18 +2,17 @@ import { BaseRecord, CanAccess, useCreate, useList } from "@refinedev/core"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link, Outlet } from "react-router-dom"
+import { useDarkContext } from "../../context/DarkContext"
 
 const DesignPlacesIndex = () => {
-
   const { t } = useTranslation()
-
+  const { darkMode } = useDarkContext();
 
   const { mutate } = useCreate({
     resource: "api/v1/bo/floors/", // Updated endpoint
     mutationOptions: {
       retry: 3,
       onSuccess: (data) => {
-
         refetch();
         setShowAddPlace(false);
       }
@@ -48,14 +47,13 @@ const DesignPlacesIndex = () => {
     }
   }, [floors])
 
-
   const [showAddPlace, setShowAddPlace] = useState(false);
   return (
     <div>
       {showAddPlace && (
         <div>
           <div className='overlay' onClick={() => setShowAddPlace(false)}></div>
-          <form className={`popup gap-5 ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`} onSubmit={(e) => {
+          <form className="popup gap-5 bg-white dark:bg-bgdarktheme" onSubmit={(e) => {
             e.preventDefault()
             handleAddFloor();
           }} >
@@ -65,7 +63,7 @@ const DesignPlacesIndex = () => {
               autoFocus={true}
               id='inputPlace'
               placeholder='Place Alias'
-              className={`inputs-unique ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-textdarktheme' : 'bg-white text-black'} `}
+              className="inputs-unique bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme"
             />
             <button onSubmit={(e) => { e.preventDefault() }} onClick={(e) => {
               e.preventDefault();
@@ -83,7 +81,7 @@ const DesignPlacesIndex = () => {
           <div className='flex gap-3'>
             <CanAccess resource="floor" action="add">
               <button
-                className={`btn hover:text-greentheme hover:border-greentheme ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ''}`}
+                className="btn hover:text-greentheme hover:border-greentheme dark:text-white"
                 onClick={() => setShowAddPlace(true)}
               >
                 +
@@ -93,7 +91,7 @@ const DesignPlacesIndex = () => {
               {roofs.map((roof) => (
                 <div
                   key={roof.id}
-                  className={`btn-secondary gap-3 flex`}
+                  className="btn-secondary gap-3 flex"
                 >
                   <Link to={`/places/design/${roof.id}`} className='flex gap-3'>
                     {roof.name}
@@ -106,7 +104,6 @@ const DesignPlacesIndex = () => {
         :
         <Outlet />
       }
-
     </div>
   )
 }

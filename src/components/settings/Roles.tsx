@@ -88,8 +88,6 @@ const Roles = () => {
         }
     }, [rolesAPIInfo]);
 
-    console.log('rolesData', rolesData);
-
     const { mutate: createRole } = useCreate({
         errorNotification(error, values, resource) {
             return {
@@ -191,8 +189,6 @@ const Roles = () => {
             };
             const permissionsToBeSent = newRole.permissions.map((perm) => perm.id);
 
-            console.log('permissionsToBeSent', permissionsToBeSent);
-
             // Use the `useCreate` hook to send a POST request
             createRole({
                 resource: "api/v1/bo/roles/",
@@ -226,7 +222,6 @@ const Roles = () => {
                 },
                 {
                     onSuccess: () => {
-                        
                         console.log("Roof deleted successfully!");
                     },
                     onError: (error) => {

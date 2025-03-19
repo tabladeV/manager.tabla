@@ -1,7 +1,8 @@
-import { BaseKey, BaseRecord, useCreate, useDelete, useList, useUpdate } from "@refinedev/core"
+import { BaseKey, BaseRecord, useCreate, useDelete, useList, useUpdate, useCan, CanAccess } from "@refinedev/core"
 import { Trash } from "lucide-react"
-import { useState, useCallback, useEffect } from "react"
+import { useState, useCallback, useEffect, useContext } from "react"
 import { useTranslation } from "react-i18next"
+import { useDarkContext } from "../../context/DarkContext"
 
 // Interfaces
 export interface Occasion {
@@ -42,9 +43,10 @@ function OccasionModal({
   onInputChange,
   onInputAddChange
 }: OccasionModalProps) {
+  const { darkMode:isDarkMode } = useDarkContext();
+  
   if (!isOpen) return null;
   
-  const isDarkMode = localStorage.getItem('darkMode') === 'true';
   
   return (
     <div>
@@ -137,7 +139,11 @@ interface OccasionTableProps {
 }
 
 function OccasionTable({ occasions, onEdit, onDelete }: OccasionTableProps) {
-  const isDarkMode = localStorage.getItem('darkMode') === 'true';
+  const { darkMode:isDarkMode } = useDarkContext();
+  const { data: canDelete } = useCan({ 
+    resource: "occasion",
+    action: "delete"
+  });
   
   return (
     <div className="overflow-x-auto w-full">
@@ -164,15 +170,17 @@ function OccasionTable({ occasions, onEdit, onDelete }: OccasionTableProps) {
                 </div>
               </td>
               <td className="px-6 py-4 flex justify-end">
-                <button 
-                  className="btn-secondary bg-softredtheme text-redtheme hover:bg-redtheme hover:text-white p-2 text-right" 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete(occasion.id);
-                  }}
-                >
-                  <Trash size={15} />
-                </button>
+                {canDelete?.can && (
+                  <button 
+                    className="btn-secondary bg-softredtheme text-redtheme hover:bg-redtheme hover:text-white p-2 text-right" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete(occasion.id);
+                    }}
+                  >
+                    <Trash size={15} />
+                  </button>
+                )}
               </td>
             </tr>
           ))}
@@ -188,6 +196,10 @@ export default function Occasions() {
     document.title = 'Occasions Management | Tabla'
   }, [])
 
+  const { darkMode:isDarkMode } = useDarkContext();
+  const { data: canCreate } = useCan({ resource: "occasion", action: "create" });
+  const { data: canChange } = useCan({ resource: "occasion", action: "change" });
+  
   const [occasionsAPIInfo, setOccasionsAPIInfo] = useState<OccasionsType>()
 
   const { data, isLoading, error } = useList({
@@ -280,7 +292,7 @@ export default function Occasions() {
   const { mutate: deleteOccasionMutate } = useDelete();
 
   const handleOccasionUpdate = () => {
-    if (selectedOccasion) {
+    if (selectedOccasion && canChange?.can) {
       updateOccasion({
         resource: `api/v1/bo/occasions`,
         id: `${selectedOccasion.id}/`,
@@ -295,15 +307,17 @@ export default function Occasions() {
   };
 
   const addOccasionHandler = () => {
-    addOccasionMutate({
-      resource: `api/v1/bo/occasions/`,
-      values: {
-        name: newOccasion.name,
-        description: newOccasion.description,
-        color: newOccasion.color,
-      },
-    });
-    closeModal();
+    if (canCreate?.can) {
+      addOccasionMutate({
+        resource: `api/v1/bo/occasions/`,
+        values: {
+          name: newOccasion.name,
+          description: newOccasion.description,
+          color: newOccasion.color,
+        },
+      });
+      closeModal();
+    }
   }
 
   const deleteOccasion = (id: BaseKey) => {
@@ -327,32 +341,37 @@ export default function Occasions() {
     setIsUpdating(false)
   }, [])
 
-  const isDarkMode = localStorage.getItem('darkMode') === 'true';
-
   return (
-    <div className={`w-full rounded-[10px] flex flex-col items-center p-10 ${isDarkMode ? 'bg-bgdarktheme' : 'bg-white'}`}>
-      <OccasionModal
-        isOpen={isModalOpen}
-        isUpdating={isUpdating}
-        occasion={selectedOccasion}
-        newOccasion={newOccasion}
-        onClose={closeModal}
-        onAddOccasion={addOccasionHandler}
-        onUpdateOccasion={handleOccasionUpdate}
-        onInputChange={handleInputChange}
-        onInputAddChange={handleInputAddChange}
-      />
+    <div className={`w-full rounded-[10px] flex flex-col items-center p-2 ${isDarkMode ? 'bg-bgdarktheme' : 'bg-white'}`}>
+      <CanAccess resource="occasion" action="change">
+        <OccasionModal
+          isOpen={isModalOpen}
+          isUpdating={isUpdating}
+          occasion={selectedOccasion}
+          newOccasion={newOccasion}
+          onClose={closeModal}
+          onAddOccasion={addOccasionHandler}
+          onUpdateOccasion={handleOccasionUpdate}
+          onInputChange={handleInputChange}
+          onInputAddChange={handleInputAddChange}
+        />
+      </CanAccess>
+      
       <h1 className="text-2xl font-bold mb-3">{t('settingsPage.occasions.title', 'Occasions')}</h1>
+      
       <OccasionTable 
         occasions={occasions} 
-        onEdit={openModal}
+        onEdit={(occasion) => canChange?.can && openModal(occasion)}
         onDelete={deleteOccasion}
       />
-      <div>
-        <button className="btn-primary mt-4" onClick={addOccasion}>
-          {t('settingsPage.occasions.buttons.addOccasion', 'Add Occasion')}
-        </button>
-      </div>
+      
+      <CanAccess resource="occasion" action="create">
+        <div>
+          <button className="btn-primary mt-4" onClick={addOccasion}>
+            {t('settingsPage.occasions.buttons.addOccasion', 'Add Occasion')}
+          </button>
+        </div>
+      </CanAccess>
     </div>
   )
 }

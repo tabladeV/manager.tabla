@@ -2,12 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-
 import { useTranslation } from 'react-i18next'
 import Filter from './Filter'
 import { useList } from '@refinedev/core'
-import axios from 'axios'
+import { useDarkContext } from '../../context/DarkContext'
 
 // Mock data generator
 const generateMockData = (months: number) => {
@@ -88,7 +86,7 @@ interface range {
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className={` p-4 shadow-md rounded-md ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme2 text-textdarktheme':'bg-white text-blacktheme'}`}>
+      <div className="p-4 shadow-md rounded-md bg-white dark:bg-bgdarktheme2 text-blacktheme dark:text-textdarktheme">
         <p className="font-semibold">{label}</p>
         <p className="text-greentheme">Confirmed: {payload[0].value}</p>
         <p className="text-redtheme">Canceled: {payload[1].value}</p>
@@ -97,8 +95,6 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   }
   return null
 }
-
-
 
 export default function ReservationsChart() {
   
@@ -113,6 +109,7 @@ export default function ReservationsChart() {
   // }, [timeRange])
   
   const { t } = useTranslation()
+  const { darkMode } = useDarkContext()
   
   const { data, isLoading, error } = useList({
     resource: "api/v1/dashboard/chart",
@@ -159,17 +156,17 @@ export default function ReservationsChart() {
   
 
   return (
-    <div className={`w-full h-full mx-auto p-4  rounded-[20px] lt-sm:w-full dark:text-textdarktheme dark:bg-bgdarktheme bg-white text-blacktheme`}>
+    <div className="w-full h-full mx-auto p-4 rounded-[20px] lt-sm:w-full bg-white dark:bg-bgdarktheme text-blacktheme dark:text-textdarktheme">
       <div className="flex flex-row items-center justify-between">
         <h1 className='text-xl font-bold'>{t('overview.reservations.title')}</h1>
         <div className="flex items-center space-x-4 lt-sm:hidden">
           <div className="flex items-center space-x-2">
             <div className="w-3 h-3 rounded-full bg-greentheme"></div>
-            <span className={`text-sm  ${localStorage.getItem('darkMode')==='true'?'text-softwhitetheme':'text-gray-600'}`}>{t('overview.reservations.status.confirmed')}</span>
+            <span className="text-sm text-gray-600 dark:text-softwhitetheme">{t('overview.reservations.status.confirmed')}</span>
           </div>
           <div className="flex items-center space-x-2">
             <div className="w-3 h-3 rounded-full bg-redtheme"></div>
-            <span className={`text-sm  ${localStorage.getItem('darkMode')==='true'?'text-softwhitetheme':'text-gray-600'}`}>{t('overview.reservations.status.canceled')}</span>
+            <span className="text-sm text-gray-600 dark:text-softwhitetheme">{t('overview.reservations.status.canceled')}</span>
           </div>
 
         </div>
@@ -178,11 +175,11 @@ export default function ReservationsChart() {
       <div className="flex items-center space-x-4 justify-center lt-sm:mt-2 sm:hidden">
           <div className="flex items-center space-x-2">
             <div className="w-3 h-3 rounded-full bg-greentheme"></div>
-            <span className="text-sm text-gray-600">{t('overview.reservations.status.confirmed')}</span>
+            <span className="text-sm text-gray-600 dark:text-softwhitetheme">{t('overview.reservations.status.confirmed')}</span>
           </div>
           <div className="flex items-center space-x-2">
             <div className="w-3 h-3 rounded-full bg-redtheme"></div>
-            <span className="text-sm text-gray-600">{t('overview.reservations.status.canceled')}</span>
+            <span className="text-sm text-gray-600 dark:text-softwhitetheme">{t('overview.reservations.status.canceled')}</span>
           </div>
 
         </div>

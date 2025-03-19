@@ -5,11 +5,13 @@ import Logo from "../../components/header/Logo";
 import Alert from "../../components/common/Alert";
 import BaseInput from "../../components/common/BaseInput";
 import BaseBtn from "../../components/common/BaseBtn";
+import { useDateContext } from "../../context/DateContext";
 
 const LogIn: React.FC = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const { setUserData } = useDateContext();
 
   const { mutate: login, isLoading, error } = useCreate({
     resource: "api/v1/bo/managers/login/",
@@ -18,7 +20,6 @@ const LogIn: React.FC = () => {
     },
     mutationOptions: {
       onSuccess: (data, variables) => {
-
         if (data.data?.refresh) {
           localStorage.setItem("refresh", data.data?.refresh);
         }
@@ -31,6 +32,8 @@ const LogIn: React.FC = () => {
           localStorage.setItem("is_manager", "true");
         }
 
+        // Store user data in context
+        setUserData(data.data.user);
 
         localStorage.setItem("isLogedIn", "true");
 

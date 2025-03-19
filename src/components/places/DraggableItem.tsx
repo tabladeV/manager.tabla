@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import DraggableItemSkeleton from './DraggableItemSkeleton';
 import { ReservationStatus } from '../common/types/Reservation';
 import { Occasion } from '../settings/Occasions';
+import { useDarkContext } from '../../context/DarkContext';
 
 interface tablesType {
   id: BaseKey;
@@ -32,7 +33,7 @@ const ItemType = 'BOX';
 
 const DraggableItem = (props: DraggableItemProps) => {
   const { t } = useTranslation();
-  const darkMode = localStorage.getItem('darkMode') === 'true';
+  const { darkMode } = useDarkContext();
   // Data to pass on drop
   const { itemData } = props;
   

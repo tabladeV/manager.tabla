@@ -61,6 +61,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { notificationProvider } from "./providers/notificationProvider";
 import MessagesPage from "./_root/pages/MessagesPage";
 import RestaurantSelection from "./components/settings/RestaurantSelection";
+import BlankLayout from "./_root/BlankLayout";
 const API_HOST = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL : "https://api.dev.tabla.ma";
 function App() {
 
@@ -115,12 +116,13 @@ function App() {
                           <div>
                             <Outlet />
                             <ToastContainer
-                              position="top-right"
+                              position="bottom-right"
                               autoClose={5000}
                               hideProgressBar={false}
                               newestOnTop
                               closeOnClick
                               rtl={false}
+                              stacked
                               pauseOnFocusLoss
                               draggable
                               pauseOnHover
@@ -132,15 +134,16 @@ function App() {
 
                         {/* Public Routes */}
 
-                        <Route element={<AuthLayout />}>
-                          <Route path="/sign-in" element={<LogIn />} />
-                          <Route path="/sign-up" element={<LogIn />} />
+                        <Route element={<BlankLayout />}>
                           <Route path="/select-restaurant" element={
                             <Authenticated key="*" redirectOnFail="/sign-in">
                               <RestaurantSelection />
                             </Authenticated>
                           } />
-
+                        </Route>
+                        <Route element={<AuthLayout />}>
+                          <Route path="/sign-in" element={<LogIn />} />
+                          <Route path="/sign-up" element={<LogIn />} />
                         </Route>
                         {/* Private Routes */}
                         <Route
@@ -150,7 +153,15 @@ function App() {
                             </Authenticated>
                           }
                         >
-                          <Route index element={<Home />} />
+                          <Route index element={
+                            <CanAccess
+                              resource="dashboard"
+                              action="view"
+                              fallback="You don't have access to view dashboard"
+                            >
+                              <Home />
+                            </CanAccess>
+                            } />
 
                           {/* Reservations */}
                           <Route
@@ -334,11 +345,46 @@ function App() {
                               </CanAccess>
                             } />
                             <Route path="/settings/features" element={<Features />} />
-                            <Route path="/settings/users" element={<Users />} />
-                            <Route path="/settings/occasions" element={<Occasions />} />
+                            <Route path="/settings/users" element={
+                              <CanAccess
+                                resource="customuser"
+                                action="view"
+                                fallback="You don't have access to users"
+                              >
+                                <Users />
+                              </CanAccess>
+                            } />
+                            <Route path="/settings/occasions" element={
+                              <CanAccess
+                                resource="occasion"
+                                action="view"
+                                fallback="You don't have access"
+                              >
+                              <Occasions />
+                              </CanAccess>
+                              
+                              } />
                             <Route path="/settings/billing" element={<Billing />} />
-                            <Route path="/settings/widget/reservation" element={<Widget />} />
-                            <Route path="/settings/widget/review" element={<ReviewWidget />} />
+                            <Route path="/settings/widget/reservation" element={
+                              <CanAccess
+                                resource="widget"
+                                action="view"
+                                fallback="You don't have access"
+                              >
+                              <Widget />
+                              </CanAccess>
+                              
+                              } />
+                            <Route path="/settings/widget/review" element={
+                              <CanAccess
+                                resource="reviewwidget"
+                                action="view"
+                                fallback="You don't have access"
+                              >
+                              <ReviewWidget />
+                              </CanAccess>
+                              
+                              } />
                             <Route path="/settings/permissions" element={<Permissions />} />
                             <Route path="/settings/services" element={<Services />} />
                             <Route path="/settings/roles" element={
