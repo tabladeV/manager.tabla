@@ -28,7 +28,10 @@ const RestaurantSelection: React.FC<{showLogo?: boolean}> = ({showLogo=true}) =>
 
   
   useEffect(()=>{
-    setRestaurents(apiRestaurants?.data as RestaurantType[] || []);
+    const uniqueRestaurants = (apiRestaurants?.data as RestaurantType[] || []).filter(
+      (restaurant, index, self) => index === self.findIndex(t => t.id === restaurant.id)
+    );
+    setRestaurents(uniqueRestaurants);
   },[apiRestaurants])
 
   // Logout handler
