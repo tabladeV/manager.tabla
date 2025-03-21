@@ -3,6 +3,7 @@ import { Trash } from "lucide-react"
 import { useState, useCallback, useEffect, useContext } from "react"
 import { useTranslation } from "react-i18next"
 import { useDarkContext } from "../../context/DarkContext"
+import ActionPopup from "../popup/ActionPopup"
 
 // Interfaces
 export interface Occasion {
@@ -320,13 +321,32 @@ export default function Occasions() {
     }
   }
 
-  const deleteOccasion = (id: BaseKey) => {
-    if (window.confirm('Are you sure you want to delete this occasion?')) {
+  const [showPopup, setShowPopup] = useState(false);
+  const [action, setAction] = useState<'delete' | 'update' | 'create' | 'confirm'>('delete');
+  const [message, setMessage] = useState<string>('');
+
+  const [occasionToDelete, setOccasionToDelete] = useState<BaseKey | undefined>(undefined);
+
+  const handleDeleteRequest = (id: BaseKey) => {
+    setAction('delete');
+    setMessage('Are you sure you want to delete this occasion?');
+    setOccasionToDelete(id);
+    setShowPopup(true);
+  }
+
+  const deleteOccasion = () => {
+    // if (window.confirm('Are you sure you want to delete this occasion?')) {
       deleteOccasionMutate({
         resource: `api/v1/bo/occasions`,
-        id: `${id}/`,
-      });
-    }
+        id: `${occasionToDelete}/`,
+      },
+    {
+      onSuccess: () => {
+        setOccasionToDelete(undefined);
+        setOccasions(occasions.filter((occasion) => occasion.id !== occasionToDelete));
+      }
+    });
+    // }
   }
 
   const addOccasion = useCallback(() => {
@@ -343,6 +363,13 @@ export default function Occasions() {
 
   return (
     <div className={`w-full rounded-[10px] flex flex-col items-center p-2 ${isDarkMode ? 'bg-bgdarktheme' : 'bg-white'}`}>
+      <ActionPopup
+        action={action}
+        message={message}
+        actionFunction={() => deleteOccasion()}
+        showPopup={showPopup}
+        setShowPopup={setShowPopup}
+      />
       <CanAccess resource="occasion" action="change">
         <OccasionModal
           isOpen={isModalOpen}
@@ -362,7 +389,7 @@ export default function Occasions() {
       <OccasionTable 
         occasions={occasions} 
         onEdit={(occasion) => canChange?.can && openModal(occasion)}
-        onDelete={deleteOccasion}
+        onDelete={handleDeleteRequest}
       />
       
       <CanAccess resource="occasion" action="create">

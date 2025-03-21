@@ -3,7 +3,8 @@ import DesignCanvas from '../../components/places/design/DesignCanvas';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { BaseKey, BaseRecord, CanAccess, useCreate, useDelete, useList, useNotification, useUpdate } from '@refinedev/core';
-import { useDarkContext } from '../../context/DarkContext';
+import ActionPopup from '../../components/popup/ActionPopup';
+
 
 interface Table extends BaseRecord {
   id: BaseKey | undefined;
@@ -25,7 +26,8 @@ const DesignPlaces: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { open } = useNotification();
-  const { darkMode } = useDarkContext();
+
+  
 
   
   // API hooks
@@ -77,6 +79,8 @@ const DesignPlaces: React.FC = () => {
     }
   }, [oneFloor]);
 
+  
+
   // Memoize roofs list from all floors data
   useEffect(() => {
     if (data?.data) {
@@ -127,61 +131,95 @@ const DesignPlaces: React.FC = () => {
     setShowAddPlace(false);
   }, [mutate]);
 
-  const deleteRoof = useCallback((roofIdToDelete: BaseKey, name: string) => {
-    if (!confirm('Are you sure you want to delete this roof?')) return;
+  const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+  const [pendingRoofId, setPendingRoofId] = useState<BaseKey | null>(null);
+  const [message, setMessage] = useState<string |undefined>(undefined);
+  const [action, setAction] = useState<'delete'| 'create'| 'update'| 'confirm'>('delete');
 
-    const prevRoofs = [...roofs];
-    const deletedIndex = prevRoofs.findIndex((roof) => roof.id === roofIdToDelete);
-    
+  // Update focused floor tables when focusedRoof changes
+  const [newTables, setNewTables] = useState<Table[]>([]);
+  const [isSaved, setIsSaved] = useState<boolean>(true);
+  
+  console.log(newTables, 'new tables');
+
+  const navigationHandler = useCallback((roofId: BaseKey) => {
+    if (newTables===focusedFloorTables) {
+      navigate(`/places/design/${focusedRoof}`);
+    }else{
+      setMessage("Are you sure you want to leave this page? Changes will notbe saved.");
+      setAction("confirm");
+      setPendingRoofId(roofId);
+      setShowConfirmPopup(true);
+      
+    }
+  }
+  ,[newTables, focusedFloorTables, focusedRoof, navigate]);
+
+  const handleSave = useCallback(() => {
+    if (!roofId || !pendingRoofId) return;
+  
+    upDateFloor(
+      {
+        id: roofId + '/',
+        values: { tables: newTables },
+      },
+      {
+        onSuccess: () => {
+          setFocusedRoof(pendingRoofId);
+          navigate(`/places/design/${pendingRoofId}`);
+        },
+      }
+    );
+  }, [pendingRoofId, newTables, navigate, roofId, upDateFloor]);
+
+  const handleSecondAction = useCallback(() => {
+    navigate(`/places/design/${pendingRoofId}`);
+  }, [navigate, pendingRoofId]);
+
+
+
+  // Delete request handler
+
+  const handleDeleteRequest = (roofId: BaseKey) => {
+    setMessage("Are you sure you want to delete this roof?");
+    setAction("delete");
+    setPendingRoofId(roofId);
+    setShowConfirmPopup(true);
+  };
+
+  const deleteRoof = useCallback(async () => {
+    if (!pendingRoofId) return;
+
     mutateDeleting(
       {
-        resource: 'api/v1/bo/floors',
-        id: roofIdToDelete + '/',
-        successNotification: () => {
-          return {
-            message: `Successfully Deleted Floor ${name}.`,
-            type: "success",
-          }
-        },
-        errorNotification(error, values, resource) {
-          return {
-            type: 'error',
-            message: error?.formattedMessage,
-          };
-        },
+        resource: "api/v1/bo/floors",
+        id: pendingRoofId + "/",
+        successNotification: () => ({
+          message: "Successfully Deleted Floor.",
+          type: "success",
+        }),
+        errorNotification: (error) => ({
+          type: "error",
+          message: error?.formattedMessage,
+        }),
       },
       {
         onSuccess: () => {
           refetchFloors().then((response) => {
-            
-            const updatedRoofs = response?.data?.data || [];
-            if (focusedRoof === roofIdToDelete) {
-              if (updatedRoofs.length > 0) {
-                
-                let newFocusedRoof;
-                if (deletedIndex < updatedRoofs.length) {
-                  newFocusedRoof = updatedRoofs[deletedIndex].id;
-                } else if (deletedIndex - 1 >= 0) {
-                  newFocusedRoof = updatedRoofs[deletedIndex - 1].id;
-                }
-                setFocusedRoof(newFocusedRoof);
-                
-                navigate(`/places/design/${newFocusedRoof}`);
-              } else {
-                
-                navigate("/places/design");
-              }
-            }
-            console.log('Roof deleted successfully!');
+            console.log("Roof deleted successfully!");
           });
         },
         onError: (error) => {
-          console.error('Error deleting roof:', error);
-          alert('Failed to delete roof. Please try again.');
+          console.error("Error deleting roof:", error);
+          alert("Failed to delete roof. Please try again.");
         },
       }
     );
-  }, [roofs, focusedRoof, mutateDeleting, refetchFloors, navigate]);
+  }, [pendingRoofId, mutateDeleting, refetchFloors]);
+
+  const handleCancel = useCallback(() => {
+    setShowConfirmPopup(false);
+  }, []);
 
   const handlePlaceAdded = useCallback((e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -202,15 +240,23 @@ const DesignPlaces: React.FC = () => {
         key={roof.id}
         className={`${window.location.pathname === `/places/design/${roof.id}` ? 'btn-primary' : 'btn-secondary'} gap-3 flex`}
       >
-        <Link
-          to={`/places/design/${roof.id}`}
-          onClick={() => setFocusedRoof(roof.id)}
+        <button
+          // to={`/places/design/${roof.id}`}
+          onClick={() => {
+            if(newTables === focusedFloorTables){
+              navigate(`/places/design/${roof.id}`);
+              setFocusedRoof(roof.id);
+            }else{
+              roof.id && navigationHandler(roof.id);
+              
+            }}
+            }
           className="flex gap-3"
         >
           {roof.name}
-        </Link>
+        </button>
         <CanAccess resource="floor" action="delete">
-          <button onClick={() => roof.id && deleteRoof(roof.id, roof.name)}>
+          <button onClick={() => roof.id && handleDeleteRequest(roof.id)}>
             <svg
               width="13"
               height="13"
@@ -221,8 +267,7 @@ const DesignPlaces: React.FC = () => {
               <g clipPath="url(#clip0_412_5)">
                 <path
                   d="M6.5 13C10.0899 13 13 10.0899 13 6.5C13 2.91015 10.0899 0 6.5 0C2.91015 0 0 2.91015 0 6.5C0 10.0899 2.91015 13 6.5 13Z"
-                  fill="#e1e1e1"
-                  className="dark:fill-[#1e1e1e50]"
+                  fill={localStorage.getItem('darkMode') === 'true' ? '#1e1e1e50' : '#e1e1e1'}
                 />
                 <path
                   d="M7.06595 6.5036L8.99109 9H7.85027L6.45098 7.18705L5.14082 9H4.00891L5.93405 6.5036L4 4H5.14082L6.54902 5.82734L7.86809 4H9L7.06595 6.5036Z"
@@ -239,15 +284,26 @@ const DesignPlaces: React.FC = () => {
         </CanAccess>
       </div>
     ));
-  }, [roofs, deleteRoof]);
+  }, [roofs, handleDeleteRequest]);
 
   return (
     <div>
+      {<ActionPopup
+        action={action}
+        secondAction={action==='delete'? handleCancel: handleSecondAction}
+        secondActionText={action === 'delete' ? 'Cancel' : 'Leave'}
+        message={message}
+        actionFunction={action === 'delete' ? deleteRoof: handleSave}
+        showPopup={showConfirmPopup}
+        setShowPopup={setShowConfirmPopup}
+      />
+      
+      }
       {showAddPlace && (
         <div>
           <div className="overlay" onClick={() => setShowAddPlace(false)}></div>
           <form
-            className="popup gap-5 bg-white dark:bg-bgdarktheme"
+            className={`popup gap-5 ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}
             onSubmit={(e) => {
               e.preventDefault();
               handleAddFloor();
@@ -259,7 +315,7 @@ const DesignPlaces: React.FC = () => {
               autoFocus={true}
               type="text"
               placeholder="Place Alias"
-              className="inputs-unique bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme"
+              className={`inputs-unique ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-textdarktheme' : 'bg-white text-black'}`}
             />
             <button
               type="button"
@@ -286,7 +342,7 @@ const DesignPlaces: React.FC = () => {
       <div className="flex gap-3">
         <CanAccess resource="floor" action="add">
           <button
-            className="btn-primary dark:text-white"
+            className={`btn-primary ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ''}`}
             onClick={() => setShowAddPlace(true)}
           >
             +
@@ -301,6 +357,7 @@ const DesignPlaces: React.FC = () => {
         onSave={saveFloor}
         tables={focusedFloorTables}
         focusedRoofId={focusedRoof}
+        newTables={(tables)=>setNewTables(tables)}
       />
     </div>
   );

@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import BaseSelect from "../common/BaseSelect"
 import BaseBtn from "../common/BaseBtn"
+import ActionPopup from "../popup/ActionPopup"
 
 interface User {
   id: number
@@ -51,7 +52,7 @@ export default function Users() {
       {
         field: "page_size",
         operator: "eq",
-        value: 20
+        value: 30
       },
       {
         field: "page",
@@ -244,23 +245,44 @@ export default function Users() {
     closeModal();
   }
 
-  const deleteUser = (id: BaseKey) => {
+  const [showPopup, setShowPopup] = useState(false)
+  const [message, setMessage] = useState('')
+  const [action, setAction] = useState<'delete'| 'update' | 'create' | 'confirm'>('confirm')
+
+  
+  const [userToDelete, setUserToDelete] = useState<BaseKey | undefined>(undefined)
+
+  const deleteRequest = (id: BaseKey) => {
+    setUserToDelete(id)
+    setMessage('Are you sure you want to delete this user?')
+    setAction('delete')
+    setShowPopup(true)
+  }
+
+  const deleteUser = () => {
     if(!userDelete?.can)
       return;
-    if (window.confirm('Are you sure you want to delete this user?')) {
+    // if (window.confirm('Are you sure you want to delete this user?')) {
       deleteUserMutate({
         resource: `api/v1/bo/restaurants/users`,
-        id: `${id}/`,
+        id: `${userToDelete}/`,
       },{
         onSuccess(){
           refetchUsers();
         }
       });
-    }
+    // }
   }
 
   return (
     <div className="w-full rounded-[10px] flex flex-col items-center p-2 dark:bg-bgdarktheme bg-white">
+      <ActionPopup
+        action={action}
+        message={message}
+        actionFunction={deleteUser}
+        showPopup={showPopup}
+        setShowPopup={setShowPopup}
+      />
       {(!isUpdating) ? (isModalOpen && (
         <div >
           <div className="overlay" onClick={closeModal}></div>
@@ -329,7 +351,7 @@ export default function Users() {
                     resource="customuser"
                     action="delete"
                   >
-                    <button className="btn-secondary bg-softredtheme text-redtheme hover:bg-redtheme hover:text-white p-2 text-right" onClick={() => deleteUser(user.id)}><Trash size={15} /></button>
+                    <button className="btn-secondary bg-softredtheme text-redtheme hover:bg-redtheme hover:text-white p-2 text-right" onClick={() => {deleteRequest(user.id)}}><Trash size={15} /></button>
                   </CanAccess>
                 </td>
               </tr>
