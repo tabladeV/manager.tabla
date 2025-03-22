@@ -44,7 +44,7 @@ interface CanvasTypes {
   onSave: (table: Table[]) => void;
   isLoading: boolean;
   newTables: (table: Table[]) => void;
-  floorName: string;
+  floorName: string | undefined;
 }
 
 const DesignCanvas: React.FC<CanvasTypes> = (props) => {
