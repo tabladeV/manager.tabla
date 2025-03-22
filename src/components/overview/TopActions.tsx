@@ -90,7 +90,7 @@ export default function TopActions() {
  
 
   return (
-    <div className="bg-white dark:bg-bgdarktheme text-blacktheme dark:text-textdarktheme rounded-[20px] lt-sm:w-full overflow-hidden">
+    <div className="bg-white dark:bg-bgdarktheme text-blacktheme dark:text-textdarktheme rounded-[20px] p-2 lt-sm:w-full overflow-hidden">
       <h2 className="text-xl font-bold my-2 px-2">{t('overview.charts.topUserActions.title')}</h2>
         {/* <Filter onClick={() => setTimeRange('last_7_days')} /> */}
         <div className="px-2 flex justify-end gap-2">

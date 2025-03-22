@@ -98,7 +98,7 @@ export default function ReservationSource() {
   }
 
   return (
-    <div className="bg-white dark:bg-bgdarktheme text-blacktheme dark:text-textdarktheme rounded-[20px] lt-sm:w-full overflow-hidden">
+    <div className="bg-white p-2  dark:bg-bgdarktheme text-blacktheme dark:text-textdarktheme rounded-[20px] lt-sm:w-full overflow-hidden">
       <h2 className="text-xl font-bold my-2 px-2">{t('overview.charts.reservationsSource.title')}</h2>
       <div className="px-2 flex justify-end gap-2">
         {/* <Filter onClick={(range: string) => setTimeRange(range)} /> */}

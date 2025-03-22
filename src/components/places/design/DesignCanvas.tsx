@@ -44,6 +44,7 @@ interface CanvasTypes {
   onSave: (table: Table[]) => void;
   isLoading: boolean;
   newTables: (table: Table[]) => void;
+  floorName: string;
 }
 
 const DesignCanvas: React.FC<CanvasTypes> = (props) => {
@@ -117,6 +118,10 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
     ]
   });
 
+  // Update document title
+  useEffect(() => {
+    document.title = `Design Floor - ${props.floorName} | Tabla`;
+  }, [props.floorName])
 
 
   const [showPopup, setShowPopup] = useState(false);

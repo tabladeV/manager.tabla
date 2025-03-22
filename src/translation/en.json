@@ -405,6 +405,7 @@
                     "description": "Restaurant Description",
                     "phone": "Phone",
                     "website": "Website",
+                    "address": "Address",
                     "subdomain": "Subdomain",
                     "categories": "Categories",
                     "location": "Location",

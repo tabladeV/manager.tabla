@@ -105,6 +105,11 @@ const PlacePage: React.FC = () => {
   const { t } = useTranslation();
   const { darkMode } = useDarkContext();
 
+  // Update document title
+    useEffect(() => {
+      document.title = 'Overview - Table Management | Tabla'
+    }, [])
+
   // Manage current time (updates every minute)
   const [currentTime, setCurrentTime] = useState(new Date());
   useEffect(() => {

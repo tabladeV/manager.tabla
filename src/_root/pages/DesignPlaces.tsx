@@ -4,6 +4,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { BaseKey, BaseRecord, CanAccess, useCreate, useDelete, useList, useNotification, useUpdate } from '@refinedev/core';
 import ActionPopup from '../../components/popup/ActionPopup';
+import { set } from 'date-fns';
 
 
 interface Table extends BaseRecord {
@@ -26,9 +27,13 @@ const DesignPlaces: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { open } = useNotification();
-
   
+  // Update document title
+  useEffect(() => {
+    document.title = 'Design - Table Management | Tabla'
+  }, [])
 
+  const [floorName, setFloorName] = useState<string | undefined>(undefined);
   
   // API hooks
   const { mutate: upDateFloor } = useUpdate({
@@ -99,7 +104,13 @@ const DesignPlaces: React.FC = () => {
     upDateFloor({
       id: roofId + '/',
       values: { tables },
-    });
+    },
+    {
+      onSuccess: () => {
+        setIsSaved(true);
+      },
+    }
+  );
     console.log(tables);
   }, [roofId, upDateFloor]);
 
@@ -138,13 +149,14 @@ const DesignPlaces: React.FC = () => {
 
   // Update focused floor tables when focusedRoof changes
   const [newTables, setNewTables] = useState<Table[]>([]);
-  const [isSaved, setIsSaved] = useState<boolean>(true);
+  const [isSaved, setIsSaved] = useState<boolean>(false);
   
   console.log(newTables, 'new tables');
 
   const navigationHandler = useCallback((roofId: BaseKey) => {
-    if (newTables===focusedFloorTables) {
-      navigate(`/places/design/${focusedRoof}`);
+    if (newTables===focusedFloorTables || isSaved) {
+      navigate(`/places/design/${roofId}`);
+      setIsSaved(false);
     }else{
       setMessage("Are you sure you want to leave this page? Changes will notbe saved.");
       setAction("confirm");
@@ -153,7 +165,7 @@ const DesignPlaces: React.FC = () => {
       
     }
   }
-  ,[newTables, focusedFloorTables, focusedRoof, navigate]);
+  ,[newTables, focusedFloorTables, focusedRoof, navigate, isSaved]);
 
   const handleSave = useCallback(() => {
     if (!roofId || !pendingRoofId) return;
@@ -167,6 +179,7 @@ const DesignPlaces: React.FC = () => {
         onSuccess: () => {
           setFocusedRoof(pendingRoofId);
           navigate(`/places/design/${pendingRoofId}`);
+          setIsSaved(false);
         },
       }
     );
@@ -246,6 +259,7 @@ const DesignPlaces: React.FC = () => {
             if(newTables === focusedFloorTables){
               navigate(`/places/design/${roof.id}`);
               setFocusedRoof(roof.id);
+              setFloorName(roof.name);
             }else{
               roof.id && navigationHandler(roof.id);
               
@@ -358,6 +372,7 @@ const DesignPlaces: React.FC = () => {
         tables={focusedFloorTables}
         focusedRoofId={focusedRoof}
         newTables={(tables)=>setNewTables(tables)}
+        floorName={floorName}
       />
     </div>
   );
