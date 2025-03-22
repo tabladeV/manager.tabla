@@ -7,6 +7,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import image from '../../assets/profile.png';
 import { Trash } from 'lucide-react';
+import Pagination from '../reservation/Pagination';
+import ActionPopup from '../popup/ActionPopup';
 
 interface ClientData {
   id: string;
@@ -66,8 +68,42 @@ const ClientInterface = () => {
     },
   });
 
+  interface ReservationsAPIType{
+    results: Reservation[],
+    count: number,
+  }
+
+  const [reservationsAPI, setReservationsAPI] = useState<ReservationsAPIType>();
+  const [count, setCount] = useState<number>(0);
+
+  const [page,setPage] = useState(1);
+  const [pageSize,setPageSize] = useState(10);
+
   const {data: userReservations , isLoading: reservationLoading, error: reservationError}= useList({
     resource: `api/v1/bo/customers/${id}/reservations/`,
+    filters: [
+      {
+        field: 'ordering',
+        operator: 'eq',
+        value: '-id',
+      },
+      {
+        field: 'page',
+        operator: 'eq',
+        value: page,
+      },
+      {
+        field: 'page_size',
+        operator: 'eq',
+        value: pageSize,
+      }
+    ],
+    queryOptions: {
+      onSuccess: (data) => {
+        setReservationsAPI(data.data as unknown as ReservationsAPIType);
+        console.log(data.data);
+      }
+    }
 
   })
 
@@ -89,10 +125,11 @@ const ClientInterface = () => {
     if (data?.data) {
       setClient(data.data);
     }
-    if (userReservations?.data) {
-      setReservation(userReservations.data);
+    if (reservationsAPI) {
+      setReservation(reservationsAPI.results);
+      setCount(reservationsAPI.count);
     }
-  }, [data, reservations]);
+  }, [data, reservationsAPI]);
 
 
 
@@ -107,6 +144,7 @@ const ClientInterface = () => {
   interface Reservation{
     id: number,
     occasion: string,
+    seq_id: number,
     status: string,
     source: string,
     commenter: string,
@@ -229,32 +267,38 @@ const ClientInterface = () => {
     setEditingField(null);
   };
 
+  const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+  const [message, setMessage] = useState('');
+  const [action, setAction] = useState<'create'| 'update' | 'delete' | 'confirm'>('delete');
+
   const deleteClient = () => {
 
-    if(window.confirm('Are you sure you want to delete this client?')) {
-      deleteClientMutation(
-        {
-            resource: `api/v1/bo/customers`, 
-            id: id+'/',
-          errorNotification(error, values, resource) {
-            return {
-              type: 'error',
-              message: error?.formattedMessage,
-            };
-          }
-        },
-        {
-            onSuccess: () => {
-                
-                navigate('/clients');
-            },
-            onError: (error) => {
-                alert("Failed to delete the client. Please try again.");
-            },
+    // if(window.confirm('Are you sure you want to delete this client?')) {
+    deleteClientMutation(
+      {
+          resource: `api/v1/bo/customers`, 
+          id: id+'/',
+        errorNotification(error, values, resource) {
+          return {
+            type: 'error',
+            message: error?.formattedMessage,
+          };
         }
-      );
-    }
+      },
+      {
+          onSuccess: () => {
+              
+              navigate('/clients');
+          },
+          onError: (error) => {
+              alert("Failed to delete the client. Please try again.");
+          },
+      }
+    );
+    // }
   }
+
+
 
   const { data: customerChange } = useCan({
     resource: 'customer',
@@ -300,6 +344,18 @@ const ClientInterface = () => {
 
   return (
     <div className="overflow-y-scroll h-[calc(100vh-160px)] w-3/4 lt-sm:w-full">
+      <ActionPopup
+        showPopup={showConfirmPopup}
+        setShowPopup={(show)=>{setShowConfirmPopup(show)}}
+        message={message}
+        action={action}
+        actionFunction={() => {
+          if (action === 'delete') {
+            deleteClient();
+          }
+          // Add other action handlers if needed
+        }}
+      />
       {client && (
         <div className="">
           <div className="flex flex-col items-center">
@@ -313,7 +369,7 @@ const ClientInterface = () => {
               <h4 className={` text-[18px] font-[500] ${localStorage.getItem('darkMode')==='true'?'text-softwhitetheme':'text-subblack'}`}>{client.email}</h4>
               <h4 className={` text-[18px] font-[500] ${localStorage.getItem('darkMode')==='true'?'text-softwhitetheme':'text-subblack'}`}>{client.phone}</h4>
               <CanAccess resource="customer" action="delete">
-                <button onClick={deleteClient} className='btn-primary mt-2 bg-softredtheme text-redtheme hover:bg-redtheme hover:text-white flex items-center gap-3'><Trash size={14}/> Delete client</button>
+                <button onClick={()=>{setShowConfirmPopup(true);setMessage('Are you sure you want to delete this client?');setAction('delete')}} className='btn-primary mt-2 bg-softredtheme text-redtheme hover:bg-redtheme hover:text-white flex items-center gap-3'><Trash size={14}/> Delete client</button>
               </CanAccess>
             </div>
             <div className={`w-full p-3 gap-3 ${localStorage.getItem('darkMode')==='true'?'text-[#e1e1e160 ]':' text-subblack '} rounded-[10px]`}>
@@ -427,7 +483,7 @@ const ClientInterface = () => {
                               key={index} 
                               // className={`${ localStorage.getItem('darkMode')==='true'? (res.id % 2 === 0 ? 'bg-bgdarktheme2 border-b border-gray-800 hover:bg-black' : 'bg-bgdarktheme border-b hover:bg-black border-gray-800') :(reservation.id % 2 === 0 ? 'bg-white hover:bg-gray-100' : 'bg-gray-50 hover:bg-gray-100')}  transition-colors duration-150 ease-in-out`}
                             >
-                              <td className="p-3 ">{res.id}</td>
+                              <td className="p-3 ">{res.seq_id}</td>
                               <td className="p-3 ">{res.date}</td>
                               <td className="p-3 ">{res.time}</td>
                               <td className="p-3  flex h-full itmes-center justify-center">
@@ -451,6 +507,11 @@ const ClientInterface = () => {
                         </tbody>
                       </table>
                     </div>
+                    <Pagination 
+                      count={count}
+                      setPage={(page)=>setPage(page)}
+                      size={pageSize}
+                    />
                   </div>
                 )}
               </div>

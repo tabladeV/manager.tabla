@@ -171,14 +171,14 @@ const ReviewWidget = () => {
           onChange={(e) => setDescription(e.target.value)}
         />
       </div>
-      <div className="flex gap-3 space-x-4">
+      <div className="flex gap-3 lt-md:flex-col">
         <button
           onClick={handleSave}
           className="flex-1 py-2 bg-greentheme text-white rounded-lg hover:opacity-90 transition-opacity"
         >
           {t('settingsPage.widget.buttons.save')}
         </button>
-        <Link to={`https://${subdomain}.dev.tabla.ma/make/review/preview`} target="_blank" className="btn-secondary w-1/2 text-center">
+        <Link to={`https://${subdomain}.dev.tabla.ma/make/review/preview`} target="_blank" className="btn-secondary w-1/2 text-center lt-md:w-full">
           {t('settingsPage.widget.buttons.preview')}
         </Link>
       </div>

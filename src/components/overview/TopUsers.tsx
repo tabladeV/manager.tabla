@@ -96,7 +96,7 @@ export default function TopUsers() {
       onMouseOver={() => {
         setShowText(true);
       }}
-      className="rounded-[20px] lt-sm:w-full h-[400px] bg-white dark:bg-bgdarktheme text-blacktheme dark:text-textdarktheme"
+      className="rounded-[20px] p-2 lt-sm:w-full h-[400px] bg-white dark:bg-bgdarktheme text-blacktheme dark:text-textdarktheme"
     >
       <div className="flex justify-between items-center px-2 py-2">
         <h1 className="text-xl font-bold">{t("overview.messages.title")}</h1>

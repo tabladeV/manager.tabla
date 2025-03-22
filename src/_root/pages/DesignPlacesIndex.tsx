@@ -9,6 +9,11 @@ const DesignPlacesIndex = () => {
   const { t } = useTranslation()
   const { darkMode } = useDarkContext();
 
+  // const { pathname } = useLocation();
+  useEffect(() => {
+    document.title = "Design Floors | Taste Morocco's best ";
+  }, []);
+
   const { mutate } = useCreate({
     resource: "api/v1/bo/floors/", // Updated endpoint
     mutationOptions: {

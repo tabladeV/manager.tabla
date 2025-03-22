@@ -190,7 +190,7 @@ export default function WidgetConfig() {
 
   const [newLogo, setNewLogo] = useState<boolean>(false);
 
-  const darkModeClass = localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-white' : 'bg-white text-black';
+  const darkModeClass = 'dark:bg-bgdarktheme dark:text-white bg-white text-black';
 
   if (isLoading) return <div className="text-center">Loading...</div>;
 
@@ -320,17 +320,17 @@ export default function WidgetConfig() {
       }
       
 
-      <div className="flex gap-3 space-x-4">
+      <div className="flex lt-md:grid gap-3 lt-md:grid-cols-2">
         <button
           onClick={handleSave}
-          className="flex-1 py-2 bg-greentheme text-white rounded-lg hover:opacity-90 transition-opacity"
+          className="flex-1 py-2 bg-greentheme text-white rounded-lg hover:opacity-90 transition-opacity lt-sm:w-full lt-md:col-span-2"
         >
           {t('settingsPage.widget.buttons.save')}
         </button>
-        <Link to={`https://${subdomain}.dev.tabla.ma/make/reservation`} target="_blank" className="btn-secondary w-1/4 text-center">
+        <Link to={`https://${subdomain}.dev.tabla.ma/make/reservation`} target="_blank" className="btn-secondary w-1/4 text-center lt-md:w-full">
           {t('settingsPage.widget.buttons.preview')} Reservation
         </Link>
-        <Link to={`https://${subdomain}.dev.tabla.ma/make/modification/preview`} target="_blank" className="btn-secondary w-1/4 text-center">
+        <Link to={`https://${subdomain}.dev.tabla.ma/make/modification/preview`} target="_blank" className="btn-secondary w-1/4 text-center lt-md:w-full">
           {t('settingsPage.widget.buttons.preview')} Modification
         </Link>
       </div>

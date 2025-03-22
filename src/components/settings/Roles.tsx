@@ -6,6 +6,7 @@ import { useDarkContext } from "../../context/DarkContext";
 
 import { BaseKey, useList, useCreate, useDelete, CanAccess, BaseRecord } from "@refinedev/core";
 import Pagination from "../reservation/Pagination";
+import ActionPopup from "../popup/ActionPopup";
 
 interface PermissionType {
     id: number;
@@ -210,19 +211,33 @@ const Roles = () => {
         }
     };
 
+    const [showPopup, setShowPopup] = useState(false);
+    const [action, setAction] = useState<'delete' | 'update' | 'create' | 'confirm'>('delete');
+    const [message, setMessage] = useState<string>('');
+
+    const [roleToDelete, setRoleToDelete] = useState<BaseKey | undefined>(undefined);
+
+    const handleDeleteRequest = (role: RoleType) => {
+        setAction('delete');
+        setRoleToDelete(role.id);
+        setMessage(`Are you sure you want to delete the role: ${role.name}`);
+        setShowPopup(true);
+    }
+
     // Function to delete a role
-    const handleDeleteRole = (role: RoleType) => {
-        if (window.confirm("Are you sure you want to delete this role?")) {
+    const handleDeleteRole = () => {
+        // if (window.confirm("Are you sure you want to delete this role?")) {
             // Use the `useDelete` hook to send a DELETE request
             
             deleteRole(
                 {
                     resource: `api/v1/bo/roles`, // Correct resource for roofs
-                    id: role.id+'/',
+                    id: roleToDelete+'/',
                 },
                 {
                     onSuccess: () => {
                         console.log("Roof deleted successfully!");
+                        setSavedRoles(savedRoles.filter((item) => item.id !== roleToDelete));
                     },
                     onError: (error) => {
                         console.error("Error deleting roof:", error);
@@ -232,12 +247,18 @@ const Roles = () => {
             );
 
             // Update local state
-            setSavedRoles(savedRoles.filter((item) => item.id !== role.id));
-        }
+        // }
     };
 
     return (
         <div className="rounded-[10px] p-3 w-full bg-white dark:bg-bgdarktheme">
+            <ActionPopup
+                action={action}
+                message={message}
+                actionFunction={handleDeleteRole}
+                showPopup={showPopup}
+                setShowPopup={setShowPopup}
+            />
             <h2 className="text-center mb-3">{t("settingsPage.roles.title")}</h2>
 
             <div className="mt-4">
@@ -346,7 +367,7 @@ const Roles = () => {
                                         <Trash
                                             size={30}
                                             className="cursor-pointer text-redtheme bg-softredtheme p-2 rounded-md"
-                                            onClick={() => handleDeleteRole(role)}
+                                            onClick={() => handleDeleteRequest(role)}
                                         />
                                         </CanAccess>
                                     </div>

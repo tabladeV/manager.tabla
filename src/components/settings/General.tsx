@@ -113,6 +113,7 @@ const General = () => {
   const [formData, setFormData] = useState({
     name: restaurant?.name || '',
     email: restaurant?.email || '',
+    address: restaurant?.address || '',
     city: restaurant?.city || '',
     country: restaurant?.country || '',
     average_price: restaurant?.average_price || '',
@@ -127,6 +128,7 @@ const General = () => {
         name: restaurant.name,
         email: restaurant.email,
         city: restaurant.city,
+        address: restaurant.address,
         average_price: restaurant.average_price,
         country: restaurant.country,
         description: restaurant.description,
@@ -210,7 +212,7 @@ const General = () => {
       email: formData.email,
       website: formData.website,
       phone: formData.phone,
-      address: restaurant?.address || 'string',
+      address: formData.address || 'N/A',
       description: formData.description,
       country: formData.country,
       city: formData.city,
@@ -279,6 +281,16 @@ const General = () => {
                 </option>
               ))}
             </select>
+          </div>
+          <div className="flex gap-3">
+            <input 
+              type="text"
+              id="address"
+              placeholder={t('settingsPage.general.basicInformationForm.labels.address')}
+              className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+              value={restaurant?.address}
+              readOnly aria-readonly
+            />
           </div>
           <div className="flex gap-3">
             <textarea
@@ -374,6 +386,16 @@ const General = () => {
                 </option>
               ))}
             </select>
+          </div>
+          <div className="flex gap-3">
+            <input 
+              type="text"
+              id="address"
+              placeholder={t('settingsPage.general.basicInformationForm.labels.address')}
+              className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+              value={formData.address}
+              onChange={handleInputChange}
+            />
           </div>
           <div className="flex gap-3">
             <textarea

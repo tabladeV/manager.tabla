@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MapPin } from 'lucide-react';
 import Logo from "../../components/header/Logo";
-import { BaseKey, useCan, useList } from "@refinedev/core";
+import { BaseKey, useList } from "@refinedev/core";
 import authProvider from "../../providers/authProvider";
 import { useDateContext } from "../../context/DateContext";
 
@@ -28,7 +28,6 @@ const RestaurantSelection: React.FC<{showLogo?: boolean}> = ({showLogo=true}) =>
 
   
   useEffect(()=>{
-
     const uniqueRestaurants = (apiRestaurants?.data as RestaurantType[] || []).filter(
       (restaurant, index, self) => index === self.findIndex(t => t.id === restaurant.id)
     );

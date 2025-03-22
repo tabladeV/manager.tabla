@@ -9,7 +9,7 @@ import { Stage, Layer } from 'react-konva';
 import Rectangle from './Rectangle';
 import CircleShape from './CircleShape';
 import { useTranslation } from 'react-i18next';
-import { BaseKey, BaseRecord, useList } from '@refinedev/core';
+import { BaseKey, BaseRecord, useDelete, useList } from '@refinedev/core';
 import { generateRandomNumber } from '../../../utils/helpers';
 import Konva from 'konva';
 import ZoomControls from '../ZoomControls';
@@ -18,6 +18,7 @@ import axiosInstance from '../../../providers/axiosInstance';
 import { off } from 'process';
 import BaseBtn from '../../common/BaseBtn';
 import { useDarkContext } from '../../../context/DarkContext';
+import ActionPopup from '../../popup/ActionPopup';
 
 const MAX_ZOOM = 0.9; // maximum scale allowed
 const MIN_ZOOM = 0.4; // minimum scale allowed
@@ -42,6 +43,8 @@ interface CanvasTypes {
   tables: Table[];
   onSave: (table: Table[]) => void;
   isLoading: boolean;
+  newTables: (table: Table[]) => void;
+  floorName: string | undefined;
 }
 
 const DesignCanvas: React.FC<CanvasTypes> = (props) => {
@@ -115,31 +118,47 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
     ]
   });
 
+  // Update document title
+  useEffect(() => {
+    document.title = `Design Floor - ${props.floorName} | Tabla`;
+  }, [props.floorName])
+
+
+  const [showPopup, setShowPopup] = useState(false);
+  const [action, setAction] = useState<'delete' | 'update' | 'create'| 'confirm'>('delete');
 
   const deleteShape = useCallback(() => {
-    if (!confirm('Are you sure you want to delete this table?')) return;
+    // if (!confirm('Are you sure you want to delete this table?')) return;
+    setAction('delete');
+    setShowPopup(true);
+
+    // if (selectedId) {
+    //   setShapes((prevShapes) =>
+    //     prevShapes.filter((shape) => shape.id !== selectedId)
+    //   );
+    //   selectShape(null);
+    // }
+  }, []);
+
+  const handleDelete = useCallback(() => {
     if (selectedId) {
       setShapes((prevShapes) =>
         prevShapes.filter((shape) => shape.id !== selectedId)
       );
       selectShape(null);
     }
+    
   }, [selectedId]);
 
-  // Save if window pathname changes
   useEffect(() => {
-    if (
-      window.location.pathname !== '/places/design' &&
-      !props.isLoading &&
-      props.tables !== shapes
-    ) {
-      if (confirm('Save before switching to another floor!')) {
-        console.log('this line was causing issue with duplicate tables props.onSave(shapes as Table[])')
-        // props.onSave(shapes as Table[]);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [window.location.pathname]);
+    props.newTables(shapes);
+  }
+  , [shapes]);
+
+
+  
+
+  
 
   // Extracted changing name component to memoize its internals
   const ChangingName = useCallback(
@@ -275,6 +294,32 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
   const resetLayout = useCallback(() => {
     setShapes(props.tables);
   }, [props.tables]);
+
+
+  // Check if there are unsaved changes
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
+  useEffect(() => {
+    if (props.tables !== shapes) {
+      setHasUnsavedChanges(true);
+    } else {
+      setHasUnsavedChanges(false);
+    }
+  }, [shapes, props.tables]);
+
+  const [showConfirmNavigationPopup, setShowConfirmNavigationPopup] = useState(false);
+  const [pendingNavigationRoofId, setPendingNavigationRoofId] = useState<BaseKey | null>(null);
+
+  useEffect(() => {
+    if (pendingNavigationRoofId) {
+      setShowConfirmNavigationPopup(true);
+    }
+  }, [pendingNavigationRoofId]);
+  // if((!location.pathname.includes(props.focusedRoofId as string)) && props.tables !== shapes){
+  //   confirm('You have unsaved changes, do you want to save them?') && saveLayout();
+    
+  // }
+
 
   // --- Zoom & Pan Logic ---
   const stageRef = useRef<any>(null);
@@ -588,6 +633,15 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
 
   return (
     <>
+      
+      <ActionPopup 
+        action={action}
+        showPopup={showPopup}
+        setShowPopup={(show)=>setShowPopup(show)}
+        message='Are you sure you want to delete this table?'
+        actionFunction={handleDelete}
+      />
+      
       {showEdit && (
         <div>
           <div
