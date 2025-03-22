@@ -96,7 +96,7 @@ const DndProviderWithPreview: React.FC<{ children: React.ReactNode }> = ({ child
   return (
     <DndProvider backend={backend} options={options}>
       {children}
-      <DndPreview />
+      {isTouch && <DndPreview />}
     </DndProvider>
   );
 };

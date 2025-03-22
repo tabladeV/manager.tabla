@@ -4,6 +4,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { BaseKey, BaseRecord, CanAccess, useCreate, useDelete, useList, useNotification, useUpdate } from '@refinedev/core';
 import { useDarkContext } from '../../context/DarkContext';
+import { Plus } from 'lucide-react';
 
 interface Table extends BaseRecord {
   id: BaseKey | undefined;
@@ -289,7 +290,7 @@ const DesignPlaces: React.FC = () => {
             className="btn-primary dark:text-white"
             onClick={() => setShowAddPlace(true)}
           >
-            +
+            <Plus/>
           </button>
         </CanAccess>
         <div className="max-w-[80%] overflow-x-scroll no-scrollbar flex gap-3">
