@@ -11,7 +11,8 @@ import {
   Calendar, Clock, Users, LayoutGrid, 
   ChevronDown, ChevronUp, Info, Edit, 
   GripVertical, EyeOff, Eye,
-  Pencil
+  Pencil,
+  CalendarCheck
 } from 'lucide-react';
 import SearchBar from "../../components/header/SearchBar";
 import IntervalCalendar from "../../components/Calendar/IntervalCalendar";
@@ -25,6 +26,7 @@ import EditReservationModal from "../../components/reservation/EditReservationMo
 import { ReservationSource, ReservationStatus } from "../../components/common/types/Reservation";
 import { Occasion } from "../../components/settings/Occasions";
 import { useDarkContext } from "../../context/DarkContext";
+import { isTouchDevice } from '../../utils/isTouchDevice';
 
 // Types and Interfaces
 export interface ReceivedTables {
@@ -119,10 +121,6 @@ const DndColumnPreview = () => {
   );
 };
 
-// DnD setup - Similar to PlacePage but with our custom column preview
-function isTouchDevice() {
-  return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-}
 
 const touchBackendOptions = {
   enableMouseEvents: true, // Allow mouse events on touch devices
@@ -218,11 +216,11 @@ const DraggableColumnItem: React.FC<DraggableColumnItemProps> = ({
   return (
     <div 
       ref={ref} 
-      className={`flex items-center justify-between py-3 px-1 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} ${isDragging ? 'opacity-50' : 'opacity-100'}`}
+      className={`flex items-center justify-between py-3 px-1 border-b border-gray-200 dark:border-gray-700 ${isDragging ? 'opacity-50' : 'opacity-100'}`}
     >
       <div className="flex items-center">
         <div className="mr-2 cursor-move">
-          <GripVertical size={16} className={isDarkMode ? 'text-gray-400' : 'text-gray-500'} />
+          <GripVertical size={16} className='dark:text-gray-400 text-gray-500' />
         </div>
         <input
           type="checkbox"
@@ -238,7 +236,7 @@ const DraggableColumnItem: React.FC<DraggableColumnItemProps> = ({
       <div className="flex">
         <button
           onClick={() => toggleVisibility(column.id)}
-          className={`p-1 rounded ${isDarkMode ? 'hover:bg-gray-700 text-gray-300' : 'hover:bg-gray-200 text-gray-600'}`}
+          className={`p-1 rounded dark:hover:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 text-gray-600`}
           title={column.visible ? t('common.hide') : t('common.show')}
         >
           {column.visible ? <Eye size={16} /> : <EyeOff size={16} />}
@@ -355,8 +353,9 @@ const useColumnConfiguration = () => {
     { id: 'tables', labelKey: 'reservations.tableHeaders.tables', visible: true, order: 4 },
     { id: 'internalNote', labelKey: 'reservations.edit.informations.internalNote', visible: true, order: 5 },
     { id: 'status', labelKey: 'reservations.tableHeaders.status', visible: true, order: 6 },
-    { id: 'details', labelKey: 'reservations.tableHeaders.detailsShort', visible: false, order: 7 },
-    { id: 'review', labelKey: 'reservations.tableHeaders.review', visible: false, order: 8 }
+    { id: 'occasion', labelKey: 'reservations.occasion', visible: false, order: 7 },
+    { id: 'details', labelKey: 'reservations.tableHeaders.detailsShort', visible: false, order: 8 },
+    { id: 'review', labelKey: 'reservations.tableHeaders.review', visible: false, order: 9 }
   ];
   
   const loadColumnsFromStorage = (): ColumnConfig[] => {
@@ -779,6 +778,17 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
             {reservation.number_of_guests}
           </div>
         );
+      
+      case 'occasion':
+        return (
+          <div className="flex justify-start items-center gap-1">
+            {reservation?.occasion &&
+              <>
+              {reservation.occasion?.name}
+              </>
+            }
+          </div>
+        );
         
       default:
         return null;
@@ -798,7 +808,7 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
         return (
           <td 
             key={column.id} 
-            className={`px-3 py-2 ${column.id === 'review' ? 'whitespace-nowrap flex justify-center items-center' : column.id === 'status' ? 'whitespace-nowrap' : 'max-w-40'}`}
+            className={`px-3 py-2 ${column.id === 'client'?'max-w-[180px]':''} ${['date', 'time', 'guests'].includes(column.id)?'whitespace-nowrap':''} ${column.id === 'review' ? 'whitespace-nowrap flex justify-center items-center' : column.id === 'status' ? 'whitespace-nowrap' : 'max-w-100'}`}
             onClick={cellClickHandler}
           >
             {renderCellContent(column.id)}
@@ -1344,7 +1354,7 @@ const ReservationsPage: React.FC = () => {
       </div>
 
       {/* Reservations Table */}
-      <div className='mt-4 overflow-x-auto max-w-full'>
+      <div className='overflow-x-auto max-w-full'>
         <ReservationTable
           isLoading={isLoading}
           filteredReservations={filteredReservations}

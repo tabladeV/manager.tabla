@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next"
 import { Link, Outlet } from "react-router-dom"
 import { useDarkContext } from "../../context/DarkContext"
 import { Plus } from "lucide-react"
+import SlideGroup from "../../components/common/SlideGroup"
 
 const DesignPlacesIndex = () => {
   const { t } = useTranslation()
@@ -93,17 +94,19 @@ const DesignPlacesIndex = () => {
                 <Plus/>
               </button>
             </CanAccess>
-            <div className="max-w-[80%] overflow-x-scroll no-scrollbar flex gap-3">
+            <div className="max-w-[90%]">
+            <SlideGroup>
               {roofs.map((roof) => (
                 <div
                   key={roof.id}
-                  className="btn-secondary gap-3 flex"
+                  className="btn-secondary"
                 >
                   <Link to={`/places/design/${roof.id}`} className='flex gap-3'>
                     {roof.name}
                   </Link>
                 </div>
               ))}
+            </SlideGroup>
             </div>
           </div>
         </div>

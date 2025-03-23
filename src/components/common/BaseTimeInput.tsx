@@ -258,16 +258,17 @@ const BaseTimeInput: React.FC<TimeInputProps> = ({
   // Render time picker dropdown/dialog
   const renderTimePicker = () => {
     return (
+      <>
       <div 
         className={`
           ${isMobile 
-            ? 'fixed inset-0 z-50 flex flex-col bg-white dark:bg-darkthemeitems' 
+            ? 'fixed inset-0 z-50 flex flex-col bg-white dark:bg-darkthemeitems w-[80%] h-[60%] gt-sm:w-[70%] gt-sm:h-[50vh] m-auto rounded-[10px] shadow-lg' 
             : 'absolute mt-1 rounded-[10px] shadow-lg z-10 border border-[#88AB6130] bg-white dark:bg-darkthemeitems w-full'}
         `}
       >
         {/* Mobile header */}
         {isMobile && (
-          <div className="flex items-center justify-between p-4 border-b border-[#88AB6130]">
+          <div className="flex items-center justify-between px-2 py-1 border-b border-[#88AB6130]">
             <h2 className="text-lg font-medium text-black dark:text-textdarktheme">Select Time</h2>
             <button 
               onClick={() => setIsOpen(false)}
@@ -359,6 +360,7 @@ const BaseTimeInput: React.FC<TimeInputProps> = ({
           </div>
         )}
       </div>
+      </>
     );
   };
   
