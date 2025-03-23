@@ -17,13 +17,16 @@ import Pagination from '../../components/reservation/Pagination';
 import BlockReservationModal from '../../components/places/BlockReservationModal';
 import EditReservationModal from '../../components/reservation/EditReservationModal';
 import ReservationProcess from '../../components/reservation/ReservationProcess';
-import { Ban } from 'lucide-react';
+import { Ban, Settings2, X } from 'lucide-react';
 import DraggableItemSkeleton from '../../components/places/DraggableItemSkeleton';
 import { ReservationSource, ReservationStatus } from '../../components/common/types/Reservation';
 import { Occasion } from '../../components/settings/Occasions';
 import { Reservation } from './ReservationsPage';
 import BaseSelect from '../../components/common/BaseSelect';
 import DndPreview from '../../components/places/DndPreview';
+import SlideGroup from '../../components/common/SlideGroup';
+import BaseTimeInput from '../../components/common/BaseTimeInput';
+import { isTouchDevice } from '../../utils/isTouchDevice';
 
 interface ReservationType {
   results: Reservation[]
@@ -73,10 +76,6 @@ interface DataTypes {
   guests: number;
 }
 
-function isTouchDevice() {
-  return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-}
-
 const touchBackendOptions = {
   enableMouseEvents: true, // Allow mouse events on touch devices
   enableKeyboardEvents: true,
@@ -96,7 +95,7 @@ const DndProviderWithPreview: React.FC<{ children: React.ReactNode }> = ({ child
   return (
     <DndProvider backend={backend} options={options}>
       {children}
-      <DndPreview />
+      {isTouch && <DndPreview />}
     </DndProvider>
   );
 };
@@ -113,23 +112,17 @@ const PlacePage: React.FC = () => {
   // Manage current time (updates every minute)
   const [currentTime, setCurrentTime] = useState(new Date());
   useEffect(() => {
-    const interval = setInterval(() => setCurrentTime(new Date()), 60000);
-    return () => clearInterval(interval);
+    setCurrentTime(new Date())
   }, []);
   const currentHour = useMemo(() => format(currentTime, 'HH:00'), [currentTime]);
 
   // Time state – this can be updated when user selects a different hour.
-  const [time, setTime] = useState(currentHour);
+  const [time, setTime] = useState<string | null>(currentHour);
+  const [timeTo, setTimeTo] = useState<string | null>(null);
   useEffect(() => {
     // Reset to currentHour when it changes
     setTime(currentHour);
   }, [currentHour]);
-
-  // Derived time value for filtering (add 2 hours to current chosen time)
-  const newTimeString = useMemo(() => {
-    const parsed = parse(time.slice(0, 5), 'HH:mm', new Date());
-    return format(addHours(parsed, 2), 'HH:mm');
-  }, [time]);
 
   const { chosenDay } = useDateContext();
 
@@ -145,8 +138,8 @@ const PlacePage: React.FC = () => {
     resource: "api/v1/bo/tables/tables_reservations/",
     filters: [
       { field: "reservations__date", operator: "eq", value: format(chosenDay, 'yyyy-MM-dd') },
-      { field: "reservations__time_", operator: "gte", value: time },
-      { field: "reservations__time_", operator: "lte", value: newTimeString + ':00' },
+      { field: "reservations__time_", operator: "gte", value: time || '00:00' },
+      { field: "reservations__time_", operator: "lte", value: timeTo? timeTo : '23:59' },
     ],
     queryOptions: {
       keepPreviousData: false,
@@ -161,8 +154,8 @@ const PlacePage: React.FC = () => {
     filters: [
       { field: "page", operator: "eq", value: page },
       { field: "date", operator: "null", value: format(chosenDay, 'yyyy-MM-dd') },
-      { field: "time_", operator: "gte", value: time },
-      { field: "time_", operator: "lte", value: newTimeString },
+      { field: "time_", operator: "gte", value: time || '00:00' },
+      { field: "time_", operator: "lte", value: timeTo? timeTo : '23:59' },
     ],
     queryOptions: {
       keepPreviousData: false,
@@ -180,6 +173,7 @@ const PlacePage: React.FC = () => {
 
   // Edit Reservation Modal state
   const [showModal, setShowModal] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Reservation | null>(null);
   const [showProcess, setShowProcess] = useState(false);
   const [hasTable, setHasTable] = useState(false);
@@ -240,6 +234,8 @@ const PlacePage: React.FC = () => {
   const [lastPanPosition, setLastPanPosition] = useState<{ x: number; y: number } | null>(null);
   const [lastTouchDistance, setLastTouchDistance] = useState<number | null>(null);
   const [lastTouchCenter, setLastTouchCenter] = useState<{ x: number; y: number } | null>(null);
+  const optionsButtonRef = useRef<HTMLButtonElement>(null);
+  const optionsMenuRef = useRef<HTMLDivElement>(null);
 
   const clampScale = useCallback((s: number) => Math.min(Math.max(s, 0.3), 0.9), []);
 
@@ -381,18 +377,6 @@ const PlacePage: React.FC = () => {
     setTranslate({ x: newTranslateX, y: newTranslateY });
   }, [tables, floorId, clampScale, isLoadingTables]);
 
-  // Hours list memoized to prevent re-creation on every render
-  const hours = useMemo(() => ([
-    { id: 1, time: '00:00' }, { id: 2, time: '01:00' }, { id: 3, time: '02:00' },
-    { id: 4, time: '03:00' }, { id: 5, time: '04:00' }, { id: 6, time: '05:00' },
-    { id: 7, time: '06:00' }, { id: 8, time: '07:00' }, { id: 9, time: '08:00' },
-    { id: 10, time: '09:00' }, { id: 11, time: '10:00' }, { id: 12, time: '11:00' },
-    { id: 13, time: '12:00' }, { id: 14, time: '13:00' }, { id: 15, time: '14:00' },
-    { id: 16, time: '15:00' }, { id: 17, time: '16:00' }, { id: 18, time: '17:00' },
-    { id: 19, time: '18:00' }, { id: 20, time: '19:00' }, { id: 21, time: '20:00' },
-    { id: 22, time: '21:00' }, { id: 23, time: '22:00' }, { id: 24, time: '23:00' }
-  ]), []);
-
   // Handle edit reservation
   const handleEditReservation = (id: BaseKey) => {
     setEditingClient(id);
@@ -497,6 +481,27 @@ const PlacePage: React.FC = () => {
     }
   }, [tables, isLoadingTables, handleFocusAll]);
 
+
+  // Handle click outside to close dropdowns
+    useEffect(() => {
+      const handleClickOutside = (event: { target: any; }) => {
+        
+        // Close options menu dropdown
+        if (
+          showOptions &&
+          optionsMenuRef.current && 
+          !optionsMenuRef.current.contains(event.target) &&
+          optionsButtonRef.current && 
+          !optionsButtonRef.current.contains(event.target)
+        ) {
+          setShowOptions(false);
+        }
+      };
+  
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }, [showOptions]);
+
   return (
     <div className=''>
       {showBlockingModal && <BlockReservationModal onConfirm={(data) => console.log(data)} onClose={() => setShowBlockingModal(false)} />}
@@ -522,42 +527,85 @@ const PlacePage: React.FC = () => {
         setHasTable={setHasTable}
         isDarkMode={darkMode}
       />}
+      <div className='flex w-full justify-between mb-2 items-center gap-2'>
+        <div className='flex lt-sm:flex-wrap lt-sm:gap-2 justify-between lt-sm:hidden'>
+          {isLoading ? (
+            // Floor buttons skeleton loader
+            <div className='flex gap-2 overflow-x-scroll no-scrollbar'>
+              <div className="flex gap-2 animate-pulse">
+                {[1, 2, 3].map((_, index) => (
+                  <div
+                    key={index}
+                    className={`h-9 w-24 rounded-md ${darkMode ? 'bg-darkthemeitems' : 'bg-gray-300'}`}
+                  />
+                ))}
+              </div>
+            </div>
+          ) : (
+            <SlideGroup>
+              {roofData.map(roof => (
+                <button
+                  key={roof.id}
+                  className={`flex items-center ${focusedRoof === roof.id ? 'btn-primary' : 'btn-secondary'}`}
+                  onClick={() => setFocusedRoof(roof.id)}
+                >
+                  {roof.name}
+                </button>
+              ))}
+            </SlideGroup>
+          )}
+        </div>
+        <div className='flex gap-2 justify-end gt-sm:w-[50%] relative'>
+          <BaseTimeInput value={time} onChange={(v)=>setTime(v)} clearable={true} placeholder='Start of Day'/>
+          <BaseTimeInput value={timeTo} onChange={(v)=>setTimeTo(v)} clearable={true} placeholder='End of Day'/>
+          <button
+            ref={optionsButtonRef}
+            className="btn-primary transform transition-all duration-300 ease-in-out"
+            onClick={() => setShowOptions(prev => !prev)}
+          >
+            <div className="relative w-6 h-6 flex items-center justify-center">
+              <Settings2
+                className={`absolute transition-all duration-300 ease-in-out 
+                      ${showOptions ? 'opacity-0 rotate-90 scale-75' : 'opacity-100 rotate-0 scale-100'}`}
+              />
 
-      <div className='flex w-full justify-between mb-2'>
-        <h1 className='text-3xl font-[700]'>{t('placeManagement.title')}</h1>
-        <div className='flex gap-2'>
-          <CanAccess
-            resource="floor"
-            action="change">
-            <Link to='/places/design' className='btn-primary flex gap-2 items-center lt-sm:hidden'>
-              {t('placeManagement.buttons.designPlace')}
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <path d="M20.71 7.04c.39-.39.39-1.03 0-1.42l-2.34-2.34c-.39-.39-1.03-.39-1.42 0l-1.84 1.84 3.75 3.75zM3 17.25v3.75h3.75l11.06-11.06-3.75-3.75L3 17.25z" fill="white" />
-              </svg>
-            </Link>
-          </CanAccess>
-          <CanAccess
-            resource="reservation"
-            action="change">
-            <button className='btn-danger-outline flex gap-1 items-center' onClick={() => setShowBlockingModal(true)}>
-              <Ban size={18} />
-              Block
-            </button>
-          </CanAccess>
+              <X
+                className={`absolute transition-all duration-300 ease-in-out 
+                      ${showOptions ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-75'}`}
+              />
+            </div>
+          </button>
+          {showOptions && 
+              <div
+                ref={optionsMenuRef}
+                className={`absolute right-0 top-[50px] w-64 rounded-md shadow-lg z-50 dark:bg-bgdarktheme overflow-hidden bg-white`}
+              >
+                <CanAccess
+                  resource="reservation"
+                  action="change">
+                  <button className='btn-danger w-full flex gap-1 items-center rounded-none' onClick={() => setShowBlockingModal(true)}>
+                    <Ban size={18} />
+                    Block
+                  </button>
+                </CanAccess>
+                <CanAccess
+                  resource="floor"
+                  action="change">
+                  <Link to='/places/design' className='btn-primary rounded-none flex gap-2 items-center lt-sm:hidden'>
+                    {t('placeManagement.buttons.designPlace')}
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                      <path d="M20.71 7.04c.39-.39.39-1.03 0-1.42l-2.34-2.34c-.39-.39-1.03-.39-1.42 0l-1.84 1.84 3.75 3.75zM3 17.25v3.75h3.75l11.06-11.06-3.75-3.75L3 17.25z" fill="white" />
+                    </svg>
+                  </Link>
+                </CanAccess>
+              </div>
+            }
         </div>
       </div>
       
       {/* Replace the original DndProvider with our enhanced version */}
       <DndProviderWithPreview>
         <div className="gt-sm:flex gap-[10px]">
-          <div className='gt-sm:hidden lt-sm:mb-2'>
-            <BaseSelect
-              value={time}
-              clearable={false}
-              onChange={e => setTime(e as string)}
-              options={hours.map(hour => ({ value: hour.time, label: hour.time }))}
-            />
-          </div>
           <div className={`rounded-[10px] p-[1em] ${darkMode ? 'bg-bgdarktheme' : 'bg-white'}`}>
             <SearchBar SearchHandler={searchFilter} />
             <div className='grid grid-flow-col gap-3 font-[500] my-3 justify-between'>
@@ -592,40 +640,7 @@ const PlacePage: React.FC = () => {
             <Pagination setPage={(p: number) => setPage(p)} size={20} count={reservationAPIInfo?.count || 0} />
           </div>
 
-          <div className='w-full sm:overflow-auto'>
-            <div className='flex lt-sm:flex-wrap lt-sm:gap-2 justify-between lt-sm:hidden'>
-              <div className='flex gap-2 w-[90%] overflow-x-scroll no-scrollbar'>
-                {isLoading ? (
-                  // Floor buttons skeleton loader
-                  <div className="flex gap-2 animate-pulse">
-                    {[1, 2, 3].map((_, index) => (
-                      <div
-                        key={index}
-                        className={`h-9 w-24 rounded-md ${darkMode ? 'bg-darkthemeitems' : 'bg-gray-300'}`}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  roofData.map(roof => (
-                    <button
-                      key={roof.id}
-                      className={`flex items-center ${focusedRoof === roof.id ? 'btn-primary' : 'btn-secondary'}`}
-                      onClick={() => setFocusedRoof(roof.id)}
-                    >
-                      {roof.name}
-                    </button>
-                  ))
-                )}
-              </div>
-              <div>
-                <BaseSelect
-                  value={time}
-                  clearable={false}
-                  onChange={e => setTime(e as string)}
-                  options={hours.map(hour => ({ value: hour.time, label: hour.time }))}
-                />
-              </div>
-            </div>
+          <div className='w-full'>
 
             {/* Tables Container with Zoom and Pan */}
             <div className='lt-sm:hidden mt-1 lt-sm:overflow-x-auto overflow-hidden rounded-xl bg-whitetheme dark:bg-bgdarktheme tables-cont relative'>
@@ -686,7 +701,7 @@ const PlacePage: React.FC = () => {
                       max={table.max}
                       min={table.min}
                       reservedBy={table.current_reservations[0]}
-                      hourChosen={time}
+                      reservations={table.current_reservations}
                       onUpdateReservations={() => {
                         refreshTables();
                         refetchReservations();
