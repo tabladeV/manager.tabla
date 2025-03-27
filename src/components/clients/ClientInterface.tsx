@@ -58,15 +58,15 @@ const ClientInterface = () => {
 
   });
 
-  const {data: reservations, isLoading: isLoadingReservations, error: errorReservations} = useList({
-    resource: `api/v1/bo/reservations/${id}/`,
-    errorNotification(error, values, resource){
-      return {
-        type: 'error',
-        message: error?.formattedMessage,
-      };
-    },
-  });
+  // const {data: reservations, isLoading: isLoadingReservations, error: errorReservations} = useList({
+  //   resource: `api/v1/bo/reservations/${id}/`,
+  //   errorNotification(error, values, resource){
+  //     return {
+  //       type: 'error',
+  //       message: error?.formattedMessage,
+  //     };
+  //   },
+  // });
 
   interface ReservationsAPIType{
     results: Reservation[],
@@ -497,9 +497,10 @@ const ClientInterface = () => {
                                   res.status === 'CANCELED' ? 'bg-softredtheme text-redtheme' :
                                   res.status === 'SEATED' ? 'bg-softyellowtheme text-yellowtheme' :
                                   res.status === 'FULFILLED' ? 'bg-softpurpletheme text-purpletheme' :
+                                  res.status === 'NO_SHOW' ? 'bg-softblushtheme text-blushtheme' :
                                   'bg-softbluetheme text-bluetheme'
                                 }`}>
-                                  {res.status === 'APPROVED' ? t('clients.reservationHistorySection.statusLabels.confirmed') : res.status === 'CANCELED' ? t('clients.reservationHistorySection.statusLabels.cancelled') : res.status === 'SEATED' ? t('clients.reservationHistorySection.statusLabels.seated') : res.status === 'FULFILLED' ? t('clients.reservationHistorySection.statusLabels.fulfilled') : t('clients.reservationHistorySection.statusLabels.pending')}
+                                  {res.status === 'APPROVED' ? t('clients.reservationHistorySection.statusLabels.confirmed') : res.status === 'CANCELED' ? t('clients.reservationHistorySection.statusLabels.cancelled') : res.status === 'SEATED' ? t('clients.reservationHistorySection.statusLabels.seated') : res.status === 'FULFILLED' ? t('clients.reservationHistorySection.statusLabels.fulfilled') : res.status ==='NO_SHOW' ? t('clients.reservationHistorySection.statusLabels.noShow') : t('clients.reservationHistorySection.statusLabels.pending')}
                                 </span>
                               </td>
                             </tr>
