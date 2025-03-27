@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MapPin } from 'lucide-react';
 import Logo from "../../components/header/Logo";
-import { BaseKey, useCan, useList } from "@refinedev/core";
+import { BaseKey, useList } from "@refinedev/core";
 import authProvider from "../../providers/authProvider";
 import { useDateContext } from "../../context/DateContext";
 

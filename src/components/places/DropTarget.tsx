@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDrop } from 'react-dnd';
 import { BaseKey, useDelete, useUpdate } from '@refinedev/core';
-import { Loader2, Trash } from 'lucide-react';
+import { Clock, GripVertical, LayoutGrid, Loader2, Trash, User2, Users2 } from 'lucide-react';
 import DraggableTableReservation from './DraggableTableReservation';
 import { Occasion } from '../settings/Occasions';
 import { getTextColor } from '../../utils/helpers';
 import { useDarkContext } from '../../context/DarkContext';
+import ActionPopup from '../popup/ActionPopup';
+import { isTouchDevice } from '../../utils/isTouchDevice';
 
 // Original item type for reservations from the sidebar
 const ItemType = 'BOX';
@@ -24,7 +26,7 @@ interface DropTargetProps {
   max: number;
   min: number;
   reservedBy: currentResType;
-  hourChosen: string;
+  reservations: currentResType[];
   onUpdateReservations: () => void;
   onShowOptions: (status: boolean) => void;
 }
@@ -64,15 +66,18 @@ const DropTarget: React.FC<DropTargetProps> = ({
   x,
   y,
   reservedBy,
-  hourChosen,
+  reservations,
   onUpdateReservations,
   onShowOptions
 }) => {
   const [droppedItems, setDroppedItems] = useState<DroppedItem[]>([]);
   const [showOptions, setShowOptions] = useState(false);
+  const [showConfirmPopup, setShowConfirmPopup] = useState(false);
   const [draggedReservation, setDraggedReservation] = useState<DroppedItem | null>(null);
+  const [targetReservation, setTargetReservation] = useState<currentResType | null>(null);
   
   const optionsRef = useRef<HTMLDivElement>(null);
+  const clientsMenuRef = useRef<HTMLDivElement>(null);
 
   const { mutate: mutateReservations, isLoading: loadingMutateReservations } = useUpdate({
     resource: `api/v1/bo/tables/${id}/assign-reservation`,
@@ -115,7 +120,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
         {
           id: reservedBy.id,
           full_name: reservedBy.full_name,
-          time: hourChosen,
+          time: reservedBy?.time,
           date: reservedBy.date,
           number_of_guests: reservedBy.number_of_guests,
           occasion: '',
@@ -127,15 +132,19 @@ const DropTarget: React.FC<DropTargetProps> = ({
     } else {
       setDroppedItems([]);
     }
-  }, [reservedBy, hourChosen, id]);
+  }, [reservedBy, id]);
 
   // Handle drops from the sidebar (regular reservations)
   const [{ isOver, canDrop }, drop] = useDrop({
     accept: [ItemType, TableReservationType],
     canDrop: () => !isLoading, // Prevent dropping if loading
     drop: (item: DroppedItem) => {
+      console.log(item)
       if (isLoading) return; // Extra check to prevent drops during loading
       
+      if(item?.id && reservations?.length && reservations?.findIndex((res) => res.id === item.id) !== -1)
+        return;
+
       // Handle table-to-table reservation drag
       if (item.fromTableId && item.fromTableId !== id) {
         setDraggedReservation(item);
@@ -144,14 +153,16 @@ const DropTarget: React.FC<DropTargetProps> = ({
       }
       
       // Handle sidebar-to-table drag (original logic)
-      const isTimeAlreadyDropped = droppedItems.some(
-        (droppedItem) => droppedItem.time === item.time
+      
+      const isTimeAlreadyDropped = reservations.some(
+        (droppedItem) => {
+          console.log(droppedItem?.time === item.time, droppedItem.time, item.time)
+          return droppedItem.time === item.time
+        }
       );
+      console.log(isTimeAlreadyDropped);
       if (
-        !isTimeAlreadyDropped &&
-        droppedItems.length < 1 &&
-        item.number_of_guests <= max &&
-        item.number_of_guests >= min
+        !isTimeAlreadyDropped
       ) {
         mutateReservations({
           id: item.id+'/',
@@ -160,7 +171,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
           },
         },{
           onSuccess(){
-            setDroppedItems((prevItems) => [...prevItems, item]);
+            onUpdateReservations();
           }
         });
       }
@@ -177,7 +188,6 @@ const DropTarget: React.FC<DropTargetProps> = ({
     console.log(draggedReservation);
     switch (option) {
       case 'move': 
-      console.log({})
         moveReservation({
           resource: `api/v1/bo/tables/${draggedReservation?.fromTableId}/move-reservation/${id}`,
           id: draggedReservation.id+'/',
@@ -185,10 +195,13 @@ const DropTarget: React.FC<DropTargetProps> = ({
             target_id: id,
             reservation_id: draggedReservation.id,
           },
+        },{
+          onSuccess(){
+            onUpdateReservations();
+          }
         });
         break;
       case 'link':
-        console.log({})
         mutateReservations({
           id: draggedReservation.id+'/',
           values: {
@@ -196,13 +209,11 @@ const DropTarget: React.FC<DropTargetProps> = ({
           },
         },{
           onSuccess(){
-            // setDroppedItems((prevItems) => [...prevItems, item]);
+            onUpdateReservations();
           }
         });
         break;
     }
-    console.log(`Option selected: ${option}`);
-    console.log(`Move reservation ${draggedReservation.id} from table ${draggedReservation.fromTableId} to table ${id}`);
     
     setShowOptions(false);
     setDraggedReservation(null);
@@ -219,6 +230,10 @@ const DropTarget: React.FC<DropTargetProps> = ({
         setShowOptions(false);
         setDraggedReservation(null);
       }
+
+      if(clientsMenuRef.current && !clientsMenuRef.current.contains(event.target as Node)) {
+        setIsClients(false);
+      }
     };
     
     document.addEventListener('mousedown', handleClickOutside);
@@ -230,21 +245,18 @@ const DropTarget: React.FC<DropTargetProps> = ({
   const [isClients, setIsClients] = useState(false);
 
   const removeReservation = () => {
-    if (isLoading) return; // Prevent action if already loading
-    
-    if(!window.confirm('Are you sure you want to clear this table?'))
-      return;
+    if (isLoading || !targetReservation) return; // Prevent action if already loading
 
     deleteReservation({
         resource: `api/v1/bo/tables/${id}/delete-reservation`,
-        id: droppedItems[0]?.id+'/',
+        id: targetReservation?.id+'/',
         values: {
           reservations: [],
         }
       },
       {
         onSuccess: () => {
-          setDroppedItems([]);
+          setTargetReservation(null);
           onUpdateReservations();
         },
       }
@@ -254,13 +266,39 @@ const DropTarget: React.FC<DropTargetProps> = ({
   const { darkMode } = useDarkContext();
   return (
     <>
+      <ActionPopup
+        action={'delete'}
+        secondAction={() => setShowConfirmPopup(false)}
+        secondActionText={'Cancel'}
+        message={
+          <>
+          <h6>Are you sure you want to Delete this Reservation assignment?</h6>
+          <div
+            className={`cursor-grab p-1 flex justify-between items-center gap-2 rounded-[5px] w-full mt-1 font-semibold`}
+          >
+            <div className='flex flex-col items-start '>
+              <div className='flex items-center justify-between'>
+                <div className='flex mr-1 items-center'><Clock size={16} className='mr-1' /> <span> {targetReservation?.time?.replace(':00', '')}</span></div>
+                <div className='flex items-center'><Users2 size={16} className='mr-1' /> <span> {targetReservation?.number_of_guests}</span></div>
+              </div>
+              <div className='flex items-center'><User2 size={16} className='mr-1' /> <span>{targetReservation?.full_name}</span></div>
+            </div>
+          </div>
+          </>
+        }
+        actionFunction={() => removeReservation()}
+        showPopup={showConfirmPopup}
+        setShowPopup={setShowConfirmPopup}
+      />
     <div
-      onMouseOver={() =>{ 
+      onMouseOver={() =>{
         if(!showOptions) {
           setIsClients(true);
         }
       }}
       onMouseLeave={() => {
+        if(isTouchDevice())
+          return;
         setIsClients(false)
       }}
       ref={drop}
@@ -311,7 +349,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
       
       {/* Make the reservation draggable if the table has one */}
       {reservedBy ? (
-        <div className="absolute inset-0 z-10">
+        <div className="absolute inset-0 z-10" >
           {!isLoading && (
             <DraggableTableReservation
               type={type}
@@ -363,11 +401,11 @@ const DropTarget: React.FC<DropTargetProps> = ({
       )}
       
       {/* Options tooltip when dragging between tables */}
-      {showOptions && droppedItems.length < 1 && !isLoading && (
+      {showOptions && !isLoading && (
         <>
         <div 
           ref={optionsRef}
-          className="absolute z-[150] bg-[#F6F6F6] dark:bg-bgdarktheme2 shadow-md rounded-md overflow-hidden"
+          className="absolute z-[200] bg-[#F6F6F6] dark:bg-bgdarktheme2 shadow-md rounded-md overflow-hidden dark:text-white"
           style={{ 
             top: '50%', 
             left: '105%', 
@@ -399,27 +437,38 @@ const DropTarget: React.FC<DropTargetProps> = ({
       
       {isClients && !isLoading && (
         <div
-          className={`absolute z-[1000] text-greytheme right-[-13em] w-[13em] p-2 rounded-[10px] font-medium ${
+          ref={clientsMenuRef}
+          className={`absolute select-none z-[1000] text-greytheme right-[-13em] p-2 rounded-[10px] font-medium ${
             darkMode
               ? 'bg-bgdarktheme2 text-white'
               : 'bg-[#F6F6F6] text-greytheme'
           }`}
         >
-          {name} has {droppedItems.length} client
-          {droppedItems.slice(0, 3).map((item, index) => (
+          {name} has {reservations?.length} {reservations?.length > 1 ? 'reservations' : 'reservation'}
+          {reservations?.map((item, index) => (
             <div
-              className={`p-1 flex justify-between items-center gap-2 rounded-[5px] mt-1 font-semibold ${
+              className={`cursor-grab p-1 flex justify-between items-center gap-2 rounded-[5px] mt-1 font-semibold ${
                 darkMode
                   ? 'bg-bgdarktheme'
                   : 'bg-softgreytheme'
               }`}
               key={index}
             >
-              {item.full_name}
+              <GripVertical/>
+              <div className='flex flex-col items-start '>
+                <div className='flex items-center justify-between'>
+                  <div className='flex mr-1 items-center'><Clock size={16} className='mr-1'/> <span> {item.time?.replace(':00', '')}</span></div>
+                  <div className='flex items-center'><Users2 size={16} className='mr-1'/> <span> {item.number_of_guests}</span></div>
+                </div>
+                <div className='flex items-center'><User2 size={16} className='mr-1'/> <span>{item.full_name}</span></div>
+              </div>
               <Trash
                 size={30}
                 className="bg-softredtheme text-redtheme p-2 rounded-md cursor-pointer"
-                onClick={removeReservation}
+                onClick={()=>{
+                  setTargetReservation(item)
+                  setShowConfirmPopup(true)
+                }}
               />
             </div>
           ))}

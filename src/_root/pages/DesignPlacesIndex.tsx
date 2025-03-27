@@ -3,6 +3,8 @@ import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link, Outlet } from "react-router-dom"
 import { useDarkContext } from "../../context/DarkContext"
+import { Plus } from "lucide-react"
+import SlideGroup from "../../components/common/SlideGroup"
 
 const DesignPlacesIndex = () => {
   const { t } = useTranslation()
@@ -86,23 +88,25 @@ const DesignPlacesIndex = () => {
           <div className='flex gap-3'>
             <CanAccess resource="floor" action="add">
               <button
-                className="btn hover:text-greentheme hover:border-greentheme dark:text-white"
+                className="btn-primary"
                 onClick={() => setShowAddPlace(true)}
               >
-                +
+                <Plus/>
               </button>
             </CanAccess>
-            <div className="max-w-[80%] overflow-x-scroll no-scrollbar flex gap-3">
+            <div className="max-w-[90%]">
+            <SlideGroup>
               {roofs.map((roof) => (
                 <div
                   key={roof.id}
-                  className="btn-secondary gap-3 flex"
+                  className="btn-secondary"
                 >
                   <Link to={`/places/design/${roof.id}`} className='flex gap-3'>
                     {roof.name}
                   </Link>
                 </div>
               ))}
+            </SlideGroup>
             </div>
           </div>
         </div>

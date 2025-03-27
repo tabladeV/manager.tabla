@@ -662,7 +662,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
       )}
       <div className="flex justify-between gap-5 my-4">
         <div
-          className="p-2 flex rounded-[10px] gap-2 bg-white dark:bg-bgdarktheme text-subblack dark:text-white"
+          className="flex rounded-[10px] bg-white dark:bg-bgdarktheme text-subblack dark:text-white"
         >
           <button
             onClick={() => {
@@ -670,12 +670,12 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
               selectShape(null);
             }}
             disabled={loading}
-            className="text-lg items-center py-2 text-greentheme font-[600] px-2 rounded-[10px] border border-transparent hover:border-softgreentheme duration-200 gap-3 flex"
+            className="text-md items-center text-greentheme font-[600] px-2 rounded-[10px] border border-transparent hover:border-softgreentheme duration-200 gap-3 flex"
           >
             <div className="text-greentheme bg-softgreentheme w-[2em] h-[2em] rounded-[10px] items-center flex justify-center">
               +
             </div>
-            <p>
+            <p className='m-0'>
               {t('editPlace.buttons.addTable')}{' '}
               {showTools ? ' <' : ' >'}
             </p>
@@ -683,16 +683,12 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
 
           {/* Transition for the tools section */}
           <div
-            className={`flex gap-2 transition-all duration-300 ${showTools ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-[-10px]'
+            className={`flex gap-2 transition-all duration-300 ${showTools ? 'opacity-100 translate-x-0 ml-1' : 'opacity-0 translate-x-[-10px]'
               }`}
           >
             {showTools && (
               <>
                 <BaseBtn variant='outlined'
-                  className={`btn ${darkMode
-                      ? 'text-white'
-                      : ''
-                    }`}
                   onClick={() => addShape('RECTANGLE')}
                   disabled={loading || loadingAddShape}
                   loading={loadingAddShape}
@@ -701,10 +697,6 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
                   {t('editPlace.buttons.rectangleTable')}
                 </BaseBtn>
                 <BaseBtn variant='outlined'
-                  className={`btn ${darkMode
-                      ? 'text-white'
-                      : ''
-                    }`}
                   onClick={() => addShape('CIRCLE')}
                   disabled={loading || loadingAddShape}
                   loading={loadingAddShape}
