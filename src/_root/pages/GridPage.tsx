@@ -12,10 +12,17 @@ import { useDarkContext } from "../../context/DarkContext"
 
 const halfHours = ['00', '30']
 
+interface Occasion {
+  id: BaseKey;
+  name: string;
+  color?: string;
+}
+
 interface Reservation extends BaseRecord {
   id: BaseKey;
   email: string;
   full_name: string;
+  occasion?: Occasion;
   date: string;
   time: string;
   source: string;
@@ -68,6 +75,11 @@ const { chosenDay } = useDateContext();
         value: '23:30'
       },
     ],
+    queryOptions: {
+      onSuccess: (data) => {
+        console.log('Reservations data:', data)
+      },
+    },
     errorNotification(error, values, resource) {
       return {
         type: 'error',
@@ -260,7 +272,7 @@ const { chosenDay } = useDateContext();
                       </div>
                     </div>
                   )}
-                  <div className="flex overflow-y-scroll no-scrollbar h-[10em] flex-col p-1 gap-1 justify-start items-center">
+                  <div className="flex overflow-y-scroll no-scrollbar h-[10em] flex-col p-1 gap-2 justify-start items-center">
                     {isLoading ? (
                       <div className="flex flex-col gap-2 w-full animate-pulse">
                         <div className="w-full text-center px-[4em] py-[2em] rounded-lg bg-gray-100 dark:bg-darkthemeitems" style={{ animationDuration: '0.1s' }}></div>
@@ -272,9 +284,11 @@ const { chosenDay } = useDateContext();
                     }
                     {reservation ? (
                       reservation.map((r) => (
-                        <div key={r.name} className="w-full text-center p-2 rounded-lg border-[1px] border-solid border-subblack dark:bg-darkthemeitems dark:border-0 ${i18next.language === 'ar' && 'rtl'}">
+                        <div key={r.name} className={`w-full text-center p-2 rounded-lg border-[1px]  border-solid border-subblack  dark:border-0  dark:bg-darkthemeitems`} style={{ backgroundColor: r.occasion?.color }}>
                           <div className="font-semibold">{r.name}</div>
                           <div className="text-sm">{r.people} {t('grid.people')}</div>
+                          <div className="text-sm text-subblack dark:text-softwhitetheme">
+                            {r.occasion?.name}</div>
                         </div>
                       ))
                     ) : null}
