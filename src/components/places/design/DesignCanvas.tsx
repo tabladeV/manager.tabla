@@ -9,7 +9,7 @@ import { Stage, Layer } from 'react-konva';
 import Rectangle from './Rectangle';
 import CircleShape from './CircleShape';
 import { useTranslation } from 'react-i18next';
-import { BaseKey, BaseRecord, useDelete, useList } from '@refinedev/core';
+import { BaseKey, BaseRecord, useDelete, useList, useNotification } from '@refinedev/core';
 import { generateRandomNumber } from '../../../utils/helpers';
 import Konva from 'konva';
 import ZoomControls from '../ZoomControls';
@@ -36,6 +36,7 @@ interface Table extends BaseRecord {
   min: number;
   floor: BaseKey;
   reservations: BaseKey[];
+  blocked: boolean;
 }
 
 interface CanvasTypes {
@@ -65,7 +66,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
   // Container measurements for responsive stage
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
-  const stageHeight = 390;
+  const [containerHeight, setContainerHeight] = useState(0);
 
   const { t } = useTranslation();
 
@@ -89,9 +90,21 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
         setContainerWidth(containerRef.current.clientWidth);
       }
     };
+    const updateHeight = () => {
+      if (containerRef.current) {
+        setContainerHeight(containerRef.current.clientHeight);
+      }
+    };
     updateWidth();
-    window.addEventListener('resize', updateWidth);
-    return () => window.removeEventListener('resize', updateWidth);
+    updateHeight();
+    window.addEventListener('resize', ()=>{
+      updateWidth()
+      updateHeight()
+    });
+    return () => window.removeEventListener('resize', ()=>{
+      updateWidth()
+      updateHeight()
+    });
   }, []);
 
   // Memoize deselect callback to avoid inline recreations
@@ -157,7 +170,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
 
 
   
-
+  const { open } = useNotification();
   
 
   // Extracted changing name component to memoize its internals
@@ -174,25 +187,28 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
               const newName = (e.target as any).elements[0].value;
               const newMax = (e.target as any).elements[1].value;
               const newMin = (e.target as any).elements[2].value;
-              
-              if(newName === shape.name){
-                setShowEdit(false);
-                return;
-              }
-
-              if (
-                !!shapes.find(
-                  (s) => s.name === newName && s.id !== id
-                ) || await checkTableExists(newName)
-              ) {
-                alert('Table name already exists');
-                return;
+              const blocked = (e.target as any).elements[3].checked;
+              if(newName !== shape.name){
+                if (
+                  !!shapes.find(
+                    (s) => s.name === newName && s.id !== id
+                  ) || await checkTableExists(newName)
+                ) {
+                  // open notification
+                  open?.({
+                    type: "error",
+                    message: "Warning",
+                    description: "Table name already exists",
+                  });
+                  return;
+                } 
               }
               setShapes((prev) =>
                 prev.map((s) =>
-                  s.id === id ? { ...s, name: newName, max: newMax, min: newMin } : s
+                  s.id === id ? { ...s, name: newName, max: newMax, min: newMin, blocked: blocked } : s
                 )
               );
+              console.log(shapes.find(s => s.id === id));
               setShowEdit(false);
             }}
           >
@@ -215,6 +231,15 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
               defaultValue={shape.min}
               className="inputs-unique mt-2 bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme"
             />
+                        <label className="flex items-center my-1">
+              <input
+                type="checkbox"
+                name="blocked"
+                defaultChecked={shape.blocked}
+                className="checkbox mr-2 form-checkbox h-4 w-4 text-green-600"
+              />
+              <span className="text-md">Blocked</span>
+            </label>
             <button type="submit" className="btn-primary mt-2">
               Save
             </button>
@@ -237,12 +262,16 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
               const newName = (e.target as any).elements[0].value;
               const newMax = (e.target as any).elements[1].value;
               const newMin = (e.target as any).elements[2].value;
+              const blocked = (e.target as any).elements[3].checked;
 
               if (!!shapes.find((s) => s.name === newName ) || await checkTableExists(newName)) {
-                alert('Table name already exists');
+                open?.({
+                  type: "error",
+                  message: "Table name already exists",
+                });
                 return;
               }
-              addShape(showAdd === 'RECTANGLE'?'RECTANGLE':'CIRCLE', newName, newMax, newMin);
+              addShape(showAdd === 'RECTANGLE'?'RECTANGLE':'CIRCLE', newName, newMax, newMin, blocked);
               setShowAdd(null);
             }}
           >
@@ -264,6 +293,14 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
               defaultValue={1}
               className="inputs-unique mt-2 bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme"
             />
+            <label className="flex items-center my-1">
+              <input
+                type="checkbox"
+                name="blocked"
+                className="checkbox mr-2 form-checkbox h-4 w-4 text-green-600"
+              />
+              <span className="text-sm">Blocked</span>
+            </label>
             <button type="submit" className="btn-primary mt-2">
               Add
             </button>
@@ -424,7 +461,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
       const scaleBy = 1.2;
       let newScale = oldScale * scaleBy;
       newScale = Math.min(MAX_ZOOM, newScale);
-      const stageCenter = { x: containerWidth / 2, y: stageHeight / 2 };
+      const stageCenter = { x: containerWidth / 2, y: containerHeight / 2 };
       const mousePointTo = {
         x: (stageCenter.x - stagePosition.x) / oldScale,
         y: (stageCenter.y - stagePosition.y) / oldScale,
@@ -447,7 +484,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
       const scaleBy = 1.2;
       let newScale = oldScale / scaleBy;
       newScale = Math.max(newScale, MIN_ZOOM);
-      const stageCenter = { x: containerWidth / 2, y: stageHeight / 2 };
+      const stageCenter = { x: containerWidth / 2, y: containerHeight / 2 };
       const mousePointTo = {
         x: (stageCenter.x - stagePosition.x) / oldScale,
         y: (stageCenter.y - stagePosition.y) / oldScale,
@@ -481,7 +518,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
     if (stage) {
       const margin = 20;
       const scaleX = containerWidth / (boundingBoxWidth + margin);
-      const scaleY = stageHeight / (boundingBoxHeight + margin);
+      const scaleY = containerHeight / (boundingBoxHeight + margin);
       const newScale = Math.min(scaleX, scaleY, 1);
       const boundingBoxCenter = {
         x: (minX + maxX) / 2,
@@ -489,7 +526,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
       };
       const newPos = {
         x: containerWidth / 2 - newScale * boundingBoxCenter.x,
-        y: stageHeight / 2 - newScale * boundingBoxCenter.y,
+        y: containerHeight / 2 - newScale * boundingBoxCenter.y,
       };
       stage.scale({ x: newScale, y: newScale });
       stage.position(newPos);
@@ -509,7 +546,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
           containerWidth / 2 -
           (shape.x + shape.width / 2) * stageScale,
         y:
-          stageHeight / 2 -
+          containerHeight / 2 -
           (shape.y + shape.height / 2) * stageScale,
       };
       const tween = new Konva.Tween({
@@ -521,7 +558,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
       tween.play();
       setStagePosition(newPos);
     }
-  }, [containerWidth, stageHeight, stageScale]);
+  }, [containerWidth, containerHeight, stageScale]);
 
   // Memoize shapes rendering to avoid recalculations
   const renderedShapes = useMemo(
@@ -572,7 +609,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
 
 
   const addShape = useCallback(
-    async (type: 'RECTANGLE' | 'CIRCLE', name = '', max=null, min=null) => {
+    async (type: 'RECTANGLE' | 'CIRCLE', name = '', max=null, min=null, blocked=false) => {
       setLoadingAddShape(true);
       let counter= null;
       let tableName = '';
@@ -618,6 +655,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
         min: min || 1,
         floor: props.focusedRoofId!,
         reservations: [],
+        blocked: blocked,
       };
       setShapes((prevShapes) => {
         // Trigger stage transition on the new shape
@@ -784,7 +822,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
       </div>
       <div
         ref={containerRef}
-        className="border-[1px] rounded-xl relative"
+        className="border-[1px] rounded-xl relative h-[calc(100vh-300px)]"
         style={{ width: '100%' }}
       >
         <ZoomControls
@@ -796,7 +834,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
           name="stage"
           ref={stageRef}
           width={containerWidth}
-          height={stageHeight}
+          height={containerHeight}
           onMouseDown={checkDeselect}
           onWheel={handleWheel}
           onTouchStart={(e) => {

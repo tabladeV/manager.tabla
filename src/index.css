@@ -58,7 +58,7 @@
 }
 
 .tables-cont{
-  height: calc(100%);
+  height: calc(100vh - 180px);
 }
 
 .no-scrollbar::-webkit-scrollbar {

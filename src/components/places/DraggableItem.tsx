@@ -7,6 +7,8 @@ import DraggableItemSkeleton from './DraggableItemSkeleton';
 import { ReservationStatus } from '../common/types/Reservation';
 import { Occasion } from '../settings/Occasions';
 import { useDarkContext } from '../../context/DarkContext';
+import { format } from 'date-fns';
+import { getTextColor } from '../../utils/helpers';
 
 interface tablesType {
   id: BaseKey;
@@ -26,6 +28,7 @@ interface DraggableItemProps {
     tables: tablesType[];
     onEdit: (id: BaseKey) => void;
     loading: boolean;
+    selected: boolean;
   };
 }
 
@@ -56,6 +59,15 @@ const DraggableItem = (props: DraggableItemProps) => {
     }),
   }));
 
+  const formatDate = (date:string)=>{
+    try{
+      const jsDate = new Date(date);
+      return format(jsDate, 'MM-dd-yy');
+    }catch(e){
+      return '-- -- --'
+    }
+  }
+
   if (itemData.loading) {
     return <DraggableItemSkeleton count={1} isDarkMode={darkMode} />;
   }
@@ -63,42 +75,54 @@ const DraggableItem = (props: DraggableItemProps) => {
   return (
     <div
       ref={drag}
-      className={`cursor-grab p-3 flex flex-col rounded-[10px] mb-3 ${isDragging ? 'opacity-50' : 'opacity-100'} ${darkMode ? 'bg-bgdarktheme2 text-[#e2e2e290]' : ' bg-softgreytheme text-subblack'}`}
+      className={`overflow-hidden relative select-none mx-1 cursor-grab p-2 flex flex-col rounded-[10px] my-1 dark:bg-bgdarktheme2 dark:text-[#e2e2e290] bg-softgreytheme text-subblack ${isDragging ? 'opacity-50' : 'opacity-100'}`}
       data-testid="draggable-reservation"
     >
+      <input
+        type="checkbox"
+        name="blocked"
+        defaultChecked={itemData.selected}
+        className="absolute right-[5px] top-[5px] checkbox form-checkbox h-4 w-4 text-green-600"
+      />
       <div className='flex justify-between'>
         <div className='flex items-center'>
-          <div className={`w-[5vw] flex flex-col text-center items-center ${darkMode ? 'text-[#e2e2e290]' : ''}`}>
-            <h4 className='font-[700] text-[17px]'>{itemData.time?.replace(':00', '')}</h4>
-            <p className='font-[600] text-[12px]'>{itemData.date}</p>
+          <div className={`min-w-[50px] flex flex-col text-center items-center ${darkMode ? 'text-[#e2e2e290]' : ''}`}>
+            <h5 className='font-[700]'>{itemData.time?.replace(':00', '')}</h5>
+            <p className='font-[600] text-[12px]'>{formatDate(itemData.date)}</p>
           </div>
           <div className='border border-[#00000010] mx-2 border-solid h-full'></div>
           <div>
-            <h3 className={`font-[600] ${darkMode ? 'text-whitetheme' : 'text-blacktheme'}`}>
+            <h5 className={`font-[600] ${darkMode ? 'text-whitetheme' : 'text-blacktheme'}`}>
               {itemData.full_name}
-            </h3>
-            <div className='flex gap-3'>
+            </h5>
+            <div className='flex flex-wrap gap-1'>
               <div className='flex gap-1 items-center'>
                 <Users size={14} />
                 <p className='font-[600] text-[13px] flex flex-row w-[5em]'>
                   {itemData.number_of_guests} {t('placeManagement.reservations.guests')}
                 </p>
               </div>
-              <div className='flex gap-1 items-center'>
-                <CalendarCheck size={16} />
-                <p className='font-[600] text-[13px]'>
-                  {!itemData.occasion ? t('placeManagement.reservations.none') : itemData.occasion?.name}
-                </p>
-              </div>
+              {itemData.occasion && 
+                <div className={`flex gap-1 items-center py-1 px-2 rounded-xl ${itemData?.occasion?.color?'text-['+getTextColor(itemData?.occasion?.color || '#e5e7eb')+']':''} ${itemData.occasion?.color?'':''}`} style={{
+                  backgroundColor: itemData.occasion?.color || 'transparent',
+                }}>
+                  <CalendarCheck size={16} />
+                  <p className='font-[600] text-[13px]'>
+                    {!itemData.occasion ? t('placeManagement.reservations.none') : itemData.occasion?.name}
+                  </p>
+                </div>
+              }
             </div>
           </div>
         </div>
-        <button 
-          onClick={() => itemData.onEdit(itemData.id)}
-          className="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-full transition-colors"
-        >
-          <SquarePen color='#88AB61' />
-        </button>
+        <div className='flex flex-col gap-2 justify-end items-end'>
+          <button
+            onClick={() => itemData.onEdit(itemData.id)}
+            className="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-full transition-colors"
+          >
+            <SquarePen color='#88AB61' />
+          </button>
+        </div>
       </div>
       <div className="flex flex-wrap gap-1 max-w-full mt-1">
         {itemData.tables.map(table => (

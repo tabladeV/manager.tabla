@@ -15,6 +15,8 @@ interface TimeInputProps {
   useCurrentTime?: boolean;
   value?: string | null;
   onChange?: (value: string | null) => void;
+  min?: string | null; // Add min time constraint
+  max?: string | null; // Add max time constraint
 }
 
 const BaseTimeInput: React.FC<TimeInputProps> = ({
@@ -32,6 +34,8 @@ const BaseTimeInput: React.FC<TimeInputProps> = ({
   value,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   onChange = () => {},
+  min = null,
+  max = null,
 }) => {
   // State
   const [inputValue, setInputValue] = useState<string>(value || "");
@@ -105,6 +109,42 @@ const BaseTimeInput: React.FC<TimeInputProps> = ({
     }
   }, [isOpen, inputValue]);
   
+  // Helper functions for time validation and comparison
+  const isValidTime = (timeString: string | null): boolean => {
+    if (!timeString) return false;
+    const timeRegex = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9])$/;
+    return timeRegex.test(timeString);
+  };
+
+  const parseTime = (timeString: string | null): { hours: number, minutes: number } | null => {
+    if (!isValidTime(timeString)) return null;
+    const [hours, minutes] = timeString!.split(':').map(Number);
+    return { hours, minutes };
+  };
+
+  const compareTime = (time1: string, time2: string): number => {
+    const t1 = parseTime(time1);
+    const t2 = parseTime(time2);
+    if (!t1 || !t2) return 0;
+    
+    if (t1.hours !== t2.hours) {
+      return t1.hours - t2.hours;
+    }
+    return t1.minutes - t2.minutes;
+  };
+
+  const isTimeInRange = (timeStr: string): boolean => {
+    if (!isValidTime(timeStr)) return true;
+    
+    const minTime = parseTime(min);
+    const maxTime = parseTime(max);
+    
+    if (minTime && compareTime(timeStr, min!) < 0) return false;
+    if (maxTime && compareTime(timeStr, max!) > 0) return false;
+    
+    return true;
+  };
+  
   // Apply input mask for HH:mm format
   const formatTimeInput = (val: string): string => {
     // Remove any non-digit characters
@@ -134,9 +174,20 @@ const BaseTimeInput: React.FC<TimeInputProps> = ({
       validMinute = minuteVal <= 59 ? minute : '59';
     }
     
-    return validMinute.length > 0
-      ? `${validHour}:${validMinute}`
-      : `${validHour}${validMinute.length > 0 ? ':' + validMinute : ''}`;
+    // Add validation for min/max after formatting
+    if (validMinute.length > 0) {
+      const formattedTime = `${validHour}:${validMinute}`;
+      // If time is out of range, clamp to min/max
+      if (isValidTime(min) && compareTime(formattedTime, min!) < 0) {
+        return min!;
+      }
+      if (isValidTime(max) && compareTime(formattedTime, max!) > 0) {
+        return max!;
+      }
+      return formattedTime;
+    }
+    
+    return `${validHour}${validMinute.length > 0 ? ':' + validMinute : ''}`;
   };
   
   // Event handlers
@@ -158,12 +209,29 @@ const BaseTimeInput: React.FC<TimeInputProps> = ({
     // Complete partial input on blur
     if (inputValue.length === 1 || inputValue.length === 2) {
       const paddedHour = inputValue.padStart(2, '0');
-      const fullTime = `${paddedHour}:00`;
+      let fullTime = `${paddedHour}:00`;
+      
+      // Check if the completed time is within range
+      if (isValidTime(min) && compareTime(fullTime, min!) < 0) {
+        fullTime = min!;
+      } else if (isValidTime(max) && compareTime(fullTime, max!) > 0) {
+        fullTime = max!;
+      }
+      
       setInputValue(fullTime);
       onChange(fullTime);
     } else if (!timeRegex.test(inputValue)) {
       // Reset invalid input
       setInputValue(value || '');
+    } else if (!isTimeInRange(inputValue)) {
+      // If time is out of range, clamp to min/max
+      if (isValidTime(min) && compareTime(inputValue, min!) < 0) {
+        setInputValue(min!);
+        onChange(min);
+      } else if (isValidTime(max) && compareTime(inputValue, max!) > 0) {
+        setInputValue(max!);
+        onChange(max);
+      }
     }
   };
   
@@ -188,7 +256,20 @@ const BaseTimeInput: React.FC<TimeInputProps> = ({
       minutes = inputValue.split(':')[1];
     }
     
-    const newTime = `${hour.toString().padStart(2, '0')}:${minutes}`;
+    let newTime = `${hour.toString().padStart(2, '0')}:${minutes}`;
+    
+    // Check if the new time is within range, or adjust the minutes to make it valid
+    const minTime = parseTime(min);
+    const maxTime = parseTime(max);
+    
+    if (minTime && hour === minTime.hours && parseInt(minutes) < minTime.minutes) {
+      minutes = minTime.minutes.toString().padStart(2, '0');
+      newTime = `${hour.toString().padStart(2, '0')}:${minutes}`;
+    } else if (maxTime && hour === maxTime.hours && parseInt(minutes) > maxTime.minutes) {
+      minutes = maxTime.minutes.toString().padStart(2, '0');
+      newTime = `${hour.toString().padStart(2, '0')}:${minutes}`;
+    }
+    
     setInputValue(newTime);
     onChange(newTime);
     
@@ -208,6 +289,13 @@ const BaseTimeInput: React.FC<TimeInputProps> = ({
     }
     
     const newTime = `${hours}:${minute.toString().padStart(2, '0')}`;
+    
+    // Check if the new time is within range
+    if (!isTimeInRange(newTime)) {
+      // If out of range, do not update
+      return;
+    }
+    
     setInputValue(newTime);
     onChange(newTime);
     
@@ -221,9 +309,44 @@ const BaseTimeInput: React.FC<TimeInputProps> = ({
     setIsOpen(false);
   };
   
-  // Generate hours and minutes for picker
-  const hours = Array.from({ length: 24 }, (_, i) => i);
-  const minutes = Array.from({ length: 60 }, (_, i) => i);
+  // Generate hours and minutes for picker with filtering based on min/max
+  const getFilteredHours = (): number[] => {
+    const allHours = Array.from({ length: 24 }, (_, i) => i);
+    
+    if (!isValidTime(min) && !isValidTime(max)) return allHours;
+    
+    return allHours.filter(hour => {
+      const minTime = parseTime(min);
+      const maxTime = parseTime(max);
+      
+      // If we have a minimum time, filter out hours less than the min hour
+      if (minTime && hour < minTime.hours) return false;
+      
+      // If we have a maximum time, filter out hours greater than the max hour
+      if (maxTime && hour > maxTime.hours) return false;
+      
+      return true;
+    });
+  };
+  
+  const getFilteredMinutes = (selectedHour: number): number[] => {
+    const allMinutes = Array.from({ length: 60 }, (_, i) => i);
+    
+    if (!isValidTime(min) && !isValidTime(max)) return allMinutes;
+    
+    const minTime = parseTime(min);
+    const maxTime = parseTime(max);
+    
+    return allMinutes.filter(minute => {
+      // If hour is the min hour, filter minutes less than min minutes
+      if (minTime && selectedHour === minTime.hours && minute < minTime.minutes) return false;
+      
+      // If hour is the max hour, filter minutes greater than max minutes
+      if (maxTime && selectedHour === maxTime.hours && minute > maxTime.minutes) return false;
+      
+      return true;
+    });
+  };
   
   // Parse current hour and minute
   const getCurrentHour = (): number => {
@@ -255,6 +378,10 @@ const BaseTimeInput: React.FC<TimeInputProps> = ({
     }
   };
   
+  const hours = getFilteredHours();
+  const currentHour = getCurrentHour();
+  const minutes = getFilteredMinutes(currentHour);
+
   // Render time picker dropdown/dialog
   const renderTimePicker = () => {
     return (
