@@ -9,7 +9,7 @@ import { useDarkContext } from '../../context/DarkContext';
 import SlideGroup from '../../components/common/SlideGroup';
 
 
-interface Table extends BaseRecord {
+export interface Table extends BaseRecord {
   id: BaseKey | undefined;
   name: string;
   type: string;
@@ -22,6 +22,7 @@ interface Table extends BaseRecord {
   min: number;
   floor: BaseKey;
   reservations: BaseKey[];
+  blocked: boolean;
 }
 
 const DesignPlaces: React.FC = () => {

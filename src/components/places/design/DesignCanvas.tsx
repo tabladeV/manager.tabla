@@ -19,25 +19,10 @@ import { off } from 'process';
 import BaseBtn from '../../common/BaseBtn';
 import { useDarkContext } from '../../../context/DarkContext';
 import ActionPopup from '../../popup/ActionPopup';
+import { Table } from '../../../_root/pages/DesignPlaces';
 
 const MAX_ZOOM = 0.9; // maximum scale allowed
 const MIN_ZOOM = 0.4; // minimum scale allowed
-
-interface Table extends BaseRecord {
-  id: BaseKey | undefined;
-  rotation: number;
-  name: string;
-  type: string;
-  width: number;
-  height: number;
-  x: number;
-  y: number;
-  max: number;
-  min: number;
-  floor: BaseKey;
-  reservations: BaseKey[];
-  blocked: boolean;
-}
 
 interface CanvasTypes {
   focusedRoofId: BaseKey | undefined | null;
