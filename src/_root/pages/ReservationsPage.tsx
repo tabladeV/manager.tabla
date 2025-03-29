@@ -57,6 +57,7 @@ export interface Reservation extends BaseRecord {
   table_name?: string;
   loading?: boolean;
   seq_id?: string;
+  selected?: boolean;
 }
 
 interface DataTypes {

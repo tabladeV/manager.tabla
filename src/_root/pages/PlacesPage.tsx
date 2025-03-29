@@ -17,7 +17,7 @@ import Pagination from '../../components/reservation/Pagination';
 import BlockReservationModal from '../../components/places/BlockReservationModal';
 import EditReservationModal from '../../components/reservation/EditReservationModal';
 import ReservationProcess from '../../components/reservation/ReservationProcess';
-import { Ban, Settings2, X } from 'lucide-react';
+import { Ban, ListCollapse, Pencil, Plus, Settings2, X } from 'lucide-react';
 import DraggableItemSkeleton from '../../components/places/DraggableItemSkeleton';
 import { ReservationSource, ReservationStatus } from '../../components/common/types/Reservation';
 import { Occasion } from '../../components/settings/Occasions';
@@ -27,6 +27,7 @@ import DndPreview from '../../components/places/DndPreview';
 import SlideGroup from '../../components/common/SlideGroup';
 import BaseTimeInput from '../../components/common/BaseTimeInput';
 import { isTouchDevice } from '../../utils/isTouchDevice';
+import ReservationModal from '../../components/reservation/ReservationModal';
 
 interface ReservationType {
   results: Reservation[]
@@ -105,9 +106,9 @@ const PlacePage: React.FC = () => {
   const { darkMode } = useDarkContext();
 
   // Update document title
-    useEffect(() => {
-      document.title = 'Overview - Table Management | Tabla'
-    }, [])
+  useEffect(() => {
+    document.title = 'Overview - Table Management | Tabla'
+  }, [])
 
   // Manage current time (updates every minute)
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -119,11 +120,6 @@ const PlacePage: React.FC = () => {
   // Time state – this can be updated when user selects a different hour.
   const [time, setTime] = useState<string | null>(currentHour);
   const [timeTo, setTimeTo] = useState<string | null>(null);
-  useEffect(() => {
-    // Reset to currentHour when it changes
-    setTime(currentHour);
-  }, [currentHour]);
-
   const { chosenDay } = useDateContext();
 
   // Data fetching with useList
@@ -134,12 +130,12 @@ const PlacePage: React.FC = () => {
     }
   });
 
-  const { data: tablesData, isLoading:isLoadingTables,error: errorTables, refetch: refreshTables } = useList({
+  const { data: tablesData, isLoading: isLoadingTables, error: errorTables, refetch: refreshTables } = useList({
     resource: "api/v1/bo/tables/tables_reservations/",
     filters: [
       { field: "reservations__date", operator: "eq", value: format(chosenDay, 'yyyy-MM-dd') },
       { field: "reservations__time_", operator: "gte", value: time || '00:00' },
-      { field: "reservations__time_", operator: "lte", value: timeTo? timeTo : '23:59' },
+      { field: "reservations__time_", operator: "lte", value: timeTo ? timeTo : '23:59' },
     ],
     queryOptions: {
       keepPreviousData: false,
@@ -155,7 +151,7 @@ const PlacePage: React.FC = () => {
       { field: "page", operator: "eq", value: page },
       { field: "date", operator: "null", value: format(chosenDay, 'yyyy-MM-dd') },
       { field: "time_", operator: "gte", value: time || '00:00' },
-      { field: "time_", operator: "lte", value: timeTo? timeTo : '23:59' },
+      { field: "time_", operator: "lte", value: timeTo ? timeTo : '23:59' },
     ],
     queryOptions: {
       keepPreviousData: false,
@@ -170,10 +166,12 @@ const PlacePage: React.FC = () => {
   const [floorId, setFloorId] = useState<BaseKey | undefined>(0);
   const [reservationAPIInfo, setReservationAPIInfo] = useState<ReservationType>()
   const [showBlockingModal, setShowBlockingModal] = useState(false);
-
+  const [focusedTable, setFocuseTable] = useState<BaseKey | null>(null);
+  const [showAddReservation, setShowAddReservation] = useState<boolean>(false);
   // Edit Reservation Modal state
   const [showModal, setShowModal] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
+  const [showReservationOptions, setShowReservationOptions] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Reservation | null>(null);
   const [showProcess, setShowProcess] = useState(false);
   const [hasTable, setHasTable] = useState(false);
@@ -195,6 +193,19 @@ const PlacePage: React.FC = () => {
     }
   }, [selectedClient]);
 
+
+  // Update timeTo when time changes
+  useEffect(() => {
+    if(format(new Date (chosenDay), 'yyyy-MM-dd') === format(new Date (), 'yyyy-MM-dd')){
+      const currentHour = format(new Date(), 'HH');
+      setTime(`${currentHour}:00`);
+      setTimeTo('');
+    }else {
+      setTime('')
+      setTimeTo('')
+    }
+  }, [chosenDay]);
+
   // Mutation
   const { mutate: upDateReservation } = useUpdate({
     resource: `api/v1/bo/reservations`,
@@ -206,7 +217,7 @@ const PlacePage: React.FC = () => {
     },
   });
 
-  
+
 
   // Reservation search and filtering
   const [searchResults, setSearchResults] = useState<Reservation[]>(reservations);
@@ -231,11 +242,13 @@ const PlacePage: React.FC = () => {
   const [translate, setTranslate] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
   const [showTableOptions, setShowTableOptions] = useState(false);
+  const [expandTables, setExpandTables] = useState(false);
   const [lastPanPosition, setLastPanPosition] = useState<{ x: number; y: number } | null>(null);
   const [lastTouchDistance, setLastTouchDistance] = useState<number | null>(null);
   const [lastTouchCenter, setLastTouchCenter] = useState<{ x: number; y: number } | null>(null);
   const optionsButtonRef = useRef<HTMLButtonElement>(null);
   const optionsMenuRef = useRef<HTMLDivElement>(null);
+  const reservationOptionsMenuRef = useRef<HTMLDivElement>(null);
 
   const clampScale = useCallback((s: number) => Math.min(Math.max(s, 0.3), 0.9), []);
 
@@ -352,11 +365,59 @@ const PlacePage: React.FC = () => {
     setTranslate({ x: newTranslateX, y: newTranslateY });
   }, [scale, translate, clampScale]);
 
+  const handleTableFocus = useCallback((x: number, y: number, tableWidth = 100, tableHeight = 100) => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const containerWidth = container.clientWidth;
+    const containerHeight = container.clientHeight;
+
+    // Calculate target values
+    const targetScale = clampScale(0.6);
+    const targetTranslateX = (containerWidth / 2) - (x * targetScale) - (tableWidth * targetScale / 2);
+    const targetTranslateY = (containerHeight / 2) - (y * targetScale) - (tableHeight * targetScale / 2);
+
+    // Start with current values
+    const startScale = scale;
+    const startTranslateX = translate.x;
+    const startTranslateY = translate.y;
+
+    // Animation duration and start time
+    const duration = 500; // milliseconds
+    const startTime = Date.now();
+
+    // Animation function using requestAnimationFrame
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Easing function - easeOutQuad for smoother deceleration
+      const easeProgress = 1 - Math.pow(1 - progress, 2);
+
+      // Calculate intermediate values
+      const currentScale = startScale + (targetScale - startScale) * easeProgress;
+      const currentTranslateX = startTranslateX + (targetTranslateX - startTranslateX) * easeProgress;
+      const currentTranslateY = startTranslateY + (targetTranslateY - startTranslateY) * easeProgress;
+
+      // Update state
+      setScale(currentScale);
+      setTranslate({ x: currentTranslateX, y: currentTranslateY });
+
+      // Continue animation if not complete
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+
+    // Start animation
+    requestAnimationFrame(animate);
+  }, [clampScale, scale, translate]);
+
   // "Focus on All Tables": centers all tables of the current floor
   const handleFocusAll = useCallback(() => {
     const container = containerRef.current;
     if (!container || isLoadingTables || tables.length === 0) return;
-    
+
     const containerWidth = container.clientWidth;
     const containerHeight = container.clientHeight;
     const floorTables = tables.filter(table => table.floor === floorId);
@@ -375,7 +436,7 @@ const PlacePage: React.FC = () => {
     const newTranslateY = (containerHeight - contentHeight * newScale) / 2 - minY * newScale;
     setScale(newScale);
     setTranslate({ x: newTranslateX, y: newTranslateY });
-  }, [tables, floorId, clampScale, isLoadingTables]);
+  }, [floorId, clampScale]);
 
   // Handle edit reservation
   const handleEditReservation = (id: BaseKey) => {
@@ -423,7 +484,7 @@ const PlacePage: React.FC = () => {
           occasion: reservation.occasion?.id || reservation.occasion,
           date: reservationProgressData.reserveDate,
           time: `${reservationProgressData.time}:00`,
-          tables: reservation.tables?.length ?  reservation.tables?.map(t=>t?.id? Number(t?.id):t) : [],
+          tables: reservation.tables?.length ? reservation.tables?.map(t => t?.id ? Number(t?.id) : t) : [],
           number_of_guests: reservationProgressData.guests,
           commenter: reservation.commenter,
         }
@@ -469,41 +530,63 @@ const PlacePage: React.FC = () => {
   }, [focusedRoof, roofData]);
 
   useEffect(() => {
-    if (floorId !== undefined && tables.length > 0 && !isLoadingTables) {
+    if (focusedRoof && floorId && tables.length > 0 && !isLoadingTables) {
       handleFocusAll();
     }
-  }, [floorId, tables, isLoadingTables, handleFocusAll]);
-  
-  // Add a new effect specifically for table data changes
-  useEffect(() => {
-    if (tables.length > 0 && floorId !== undefined && !isLoadingTables) {
-      handleFocusAll();
-    }
-  }, [tables, isLoadingTables, handleFocusAll]);
+  }, [floorId, focusedRoof, handleFocusAll]);
+
+  // // Add a new effect specifically for table data changes
+  // useEffect(() => {
+  //   if (tables.length > 0 && floorId !== undefined && !isLoadingTables) {
+  //     handleFocusAll();
+  //   }
+  // }, [tables, isLoadingTables, handleFocusAll]);
 
 
   // Handle click outside to close dropdowns
-    useEffect(() => {
-      const handleClickOutside = (event: { target: any; }) => {
-        
-        // Close options menu dropdown
-        if (
-          showOptions &&
-          optionsMenuRef.current && 
-          !optionsMenuRef.current.contains(event.target) &&
-          optionsButtonRef.current && 
-          !optionsButtonRef.current.contains(event.target)
-        ) {
-          setShowOptions(false);
-        }
-      };
-  
-      document.addEventListener('click', handleClickOutside);
-      return () => document.removeEventListener('click', handleClickOutside);
-    }, [showOptions]);
+  useEffect(() => {
+    const handleClickOutside = (event: { target: any; }) => {
+
+      // Close options menu dropdown
+      if (
+        showOptions &&
+        optionsMenuRef.current &&
+        !optionsMenuRef.current.contains(event.target) &&
+        optionsButtonRef.current &&
+        !optionsButtonRef.current.contains(event.target)
+      ) {
+        setShowOptions(false);
+      }
+
+      if (
+        showReservationOptions &&
+        reservationOptionsMenuRef.current &&
+        !reservationOptionsMenuRef.current.contains(event.target)
+      ) {
+        setShowOptions(false);
+      }
+
+
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [showOptions]);
 
   return (
     <div className=''>
+
+      {/* Add Reservation Modal */}
+      {showAddReservation && (
+        <ReservationModal 
+          onClick={() => {setShowAddReservation(false)}} 
+          onSubmit={(data) => {
+            refreshTables();
+            refetchReservations();
+          }} 
+        />
+      )} 
+
       {showBlockingModal && <BlockReservationModal onConfirm={(data) => console.log(data)} onClose={() => setShowBlockingModal(false)} />}
 
       {/* Reservation Process Modal */}
@@ -527,8 +610,30 @@ const PlacePage: React.FC = () => {
         setHasTable={setHasTable}
         isDarkMode={darkMode}
       />}
-      <div className='flex w-full justify-between mb-2 items-center gap-2'>
-        <div className='flex lt-sm:flex-wrap lt-sm:gap-2 justify-between lt-sm:hidden'>
+      <div className='flex lt-lg:flex-wrap w-full justify-between mb-2 items-center gap-2'>
+        <div className='flex items-center lt-sm:hidden gt-lg:w-[50%]'>
+          <button
+            className="btn-primary transform transition-all duration-300 ease-in-out mr-1"
+            onClick={() => {
+              setExpandTables(prev => !prev)
+              setTimeout(() => {
+                handleFocusAll()
+              }, 500)
+            }}
+          >
+            <div className="relative w-5 h-6 flex items-center justify-center">
+              <ListCollapse
+                className={`absolute transition-all duration-300 ease-in-out 
+                      ${!expandTables ? 'opacity-0 rotate-90 scale-75' : 'opacity-100 rotate-0 scale-100'}`}
+              />
+
+              <X
+                className={`absolute transition-all duration-300 ease-in-out 
+                      ${!expandTables ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-75'}`}
+              />
+            </div>
+          </button>
+          <div className='lt-lg:w-full w-[80%]'>
           {isLoading ? (
             // Floor buttons skeleton loader
             <div className='flex gap-2 overflow-x-scroll no-scrollbar'>
@@ -554,10 +659,11 @@ const PlacePage: React.FC = () => {
               ))}
             </SlideGroup>
           )}
+          </div>
         </div>
-        <div className='flex gap-2 justify-end gt-sm:w-[50%] relative'>
-          <BaseTimeInput value={time} onChange={(v)=>setTime(v)} clearable={true} placeholder='Start of Day'/>
-          <BaseTimeInput value={timeTo} onChange={(v)=>setTimeTo(v)} clearable={true} placeholder='End of Day'/>
+        <div className='flex gap-2 justify-end w-[50%] lt-lg:w-full relative'>
+          <BaseTimeInput value={time} onChange={(v) => setTime(v)} clearable={true} placeholder='Start of Day' />
+          <BaseTimeInput value={timeTo} onChange={(v) => setTimeTo(v)} clearable={true} placeholder='End of Day' />
           <button
             ref={optionsButtonRef}
             className="btn-primary transform transition-all duration-300 ease-in-out"
@@ -575,40 +681,73 @@ const PlacePage: React.FC = () => {
               />
             </div>
           </button>
-          {showOptions && 
-              <div
-                ref={optionsMenuRef}
-                className={`absolute right-0 top-[50px] w-64 rounded-md shadow-lg z-50 dark:bg-bgdarktheme overflow-hidden bg-white`}
-              >
-                <CanAccess
-                  resource="reservation"
-                  action="change">
-                  <button className='btn-danger w-full flex gap-1 items-center rounded-none' onClick={() => setShowBlockingModal(true)}>
-                    <Ban size={18} />
-                    Block
-                  </button>
-                </CanAccess>
-                <CanAccess
-                  resource="floor"
-                  action="change">
-                  <Link to='/places/design' className='btn-primary rounded-none flex gap-2 items-center lt-sm:hidden'>
-                    {t('placeManagement.buttons.designPlace')}
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                      <path d="M20.71 7.04c.39-.39.39-1.03 0-1.42l-2.34-2.34c-.39-.39-1.03-.39-1.42 0l-1.84 1.84 3.75 3.75zM3 17.25v3.75h3.75l11.06-11.06-3.75-3.75L3 17.25z" fill="white" />
-                    </svg>
-                  </Link>
-                </CanAccess>
-              </div>
-            }
+          {showOptions &&
+            <div
+              ref={optionsMenuRef}
+              className={`absolute right-0 top-[50px] w-64 rounded-md shadow-lg z-50 dark:bg-bgdarktheme overflow-hidden bg-white`}
+            >
+              <CanAccess action="add" resource="reservation">
+                <button className='btn-primary flex gap-2 w-full items-center rounded-none' onClick={() => { setShowAddReservation(true) }}>
+                  <Plus size={18}/>
+                  {t('reservations.buttons.addReservation')}
+                </button>
+              </CanAccess>
+              <CanAccess
+                resource="floor"
+                action="change">
+                <Link to='/places/design' className='btn-primary rounded-none flex gap-2 items-center lt-sm:hidden'>
+                  <Pencil fill="white" strokeWidth={0} size={18}/>
+                  {t('placeManagement.buttons.designPlace')}
+                </Link>
+              </CanAccess>
+              <CanAccess
+                resource="reservation"
+                action="change">
+                <button className='btn-danger w-full flex gap-2 items-center rounded-none' onClick={() => setShowBlockingModal(true)}>
+                  <Ban size={18} />
+                  Block
+                </button>
+              </CanAccess>
+            </div>
+          }
         </div>
       </div>
-      
+
       {/* Replace the original DndProvider with our enhanced version */}
       <DndProviderWithPreview>
-        <div className="gt-sm:flex gap-[10px]">
-          <div className={`rounded-[10px] p-[1em] ${darkMode ? 'bg-bgdarktheme' : 'bg-white'}`}>
-            <SearchBar SearchHandler={searchFilter} />
-            <div className='grid grid-flow-col gap-3 font-[500] my-3 justify-between'>
+        <div className={`gt-sm:flex ${!expandTables ? 'gap-[10px]' : ''}`}>
+          <div className={`flex flex-col transition-all duration-300 ease-in-out ${!expandTables ? 'gt-sm:w-[35%] gt-sm:p-[0.5em]' : 'gt-sm:w-[0] gt-sm:p-0 gt-sm:m-0 gt-sm:overflow-hidden'} rounded-[10px] dark:bg-bgdarktheme bg-white`}>
+            <SearchBar SearchHandler={searchFilter} append={
+              <div className='relative'>
+                <button
+                  className="btn-primary transform transition-all duration-300 ease-in-out"
+                  onClick={() => {
+                    setShowReservationOptions(prev => !prev)
+                  }}
+                >
+                  <div className="relative w-3 h-4 flex items-center justify-center">
+                    <Settings2 size={16}
+                      className={`absolute transition-all duration-300 ease-in-out 
+                        ${showReservationOptions ? 'opacity-0 rotate-90 scale-75' : 'opacity-100 rotate-0 scale-100'}`}
+                    />
+
+                    <X size={16}
+                      className={`absolute transition-all duration-300 ease-in-out 
+                        ${showReservationOptions ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-75'}`}
+                    />
+                  </div>
+                </button>
+                {showReservationOptions &&
+                  <div
+                    ref={reservationOptionsMenuRef}
+                    className={`absolute right-0 top-[40px] w-64 rounded-md shadow-lg z-50 dark:bg-bgdarktheme overflow-hidden bg-white`}
+                  >
+                    some options
+                  </div>
+                }
+              </div>
+            } />
+            <SlideGroup>
               <button className={showOnly === 'SEATED' ? 'btn-primary' : 'btn-secondary'} onClick={() => setShowOnly("SEATED")}>
                 {t('placeManagement.filters.seated')}
               </button>
@@ -618,36 +757,40 @@ const PlacePage: React.FC = () => {
               <button className={showOnly === 'PENDING' ? 'btn-primary' : 'btn-secondary'} onClick={() => setShowOnly("PENDING")}>
                 {t('placeManagement.filters.pending')}
               </button>
-            </div>
-            <div className='overflow-y-auto h-[35vh] gt-sm:h-[55vh] bar-hide'>
-              
-              {isLoadingReservations?
-              <DraggableItemSkeleton count={3} isDarkMode={darkMode} />
-              :(filteredReservations.map(item => (
-                <DraggableItem
-                  itemData={{
-                    ...item,
-                    number_of_guests: parseInt(item.number_of_guests, 10),
-                    onEdit: handleEditReservation,
-                    loading: item.loading ?? false,
-                    created_at: item.created_at,
-                    tables: item.tables || []
-                  }}
-                  key={item.id}
-                />
-              )))}
-            </div>
-            <Pagination setPage={(p: number) => setPage(p)} size={20} count={reservationAPIInfo?.count || 0} />
-          </div>
+            </SlideGroup>
+            <div className='overflow-y-auto overflow-x-hidden bar-hide transition-all duration-300 ease-in-out h-[56vh]'>
 
-          <div className='w-full'>
+              {isLoadingReservations ?
+                <DraggableItemSkeleton count={3} isDarkMode={darkMode} />
+                : (filteredReservations.map(item => (
+                  <DraggableItem
+                    itemData={{
+                      ...item,
+                      number_of_guests: parseInt(item.number_of_guests, 10),
+                      onEdit: handleEditReservation,
+                      loading: item.loading ?? false,
+                      created_at: item.created_at,
+                      tables: item.tables || [],
+                      selected: item.selected || false,
+                    }}
+                    key={item.id}
+                  />
+                )))}
+            </div>
+            {((reservationAPIInfo?.count || 0) > 1 && filteredReservations?.length > 100) && (<>
+              <div className='bottom mx-auto'>
+                <Pagination setPage={(p: number) => setPage(p)} size={20} count={reservationAPIInfo?.count || 0} />
+              </div>
+            </>)}
+          </div>
+          <div className={`transition-all duration-300 ease-in-out w-full`}>
 
             {/* Tables Container with Zoom and Pan */}
-            <div className='lt-sm:hidden mt-1 lt-sm:overflow-x-auto overflow-hidden rounded-xl bg-whitetheme dark:bg-bgdarktheme tables-cont relative'>
+            <div className='lt-sm:hidden mt-1 overflow-hidden rounded-xl bg-whitetheme dark:bg-bgdarktheme tables-cont relative select-none'>
               {isLoadingTables &&
                 // Tables skeleton loader
                 <div className="w-full tables-cont min-h-[400px] flex items-center justify-center bg-white dark:bg-bgdarktheme rounded-lg" style={{
-                  position:"absolute",inset:"50%",transform: "translate(-50%, -50%)","zIndex": 5, height:"100%", opacity: 0.7
+                  position: "absolute", inset: "50%", transform: "translate(-50%, -50%)", "zIndex": 5, height: "100%", opacity: 0.7
                 }}>
                   <div className="flex flex-col items-center animate-pulse">
                     <div className={`h-10 w-10 rounded-full m-2 ${darkMode ? 'bg-darkthemeitems' : 'bg-gray-300'}`}></div>
@@ -674,9 +817,7 @@ const PlacePage: React.FC = () => {
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
-                style={{ touchAction: "none" }}
               >
-                {/* {showTableOptions && <div className='overlay absolute z-[1000]'></div>} */}
                 <ZoomControls onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} onFocusAll={handleFocusAll} />
                 <div
                   style={{
@@ -700,6 +841,9 @@ const PlacePage: React.FC = () => {
                       width={table.width}
                       max={table.max}
                       min={table.min}
+                      focusedTable={focusedTable}
+                      setFocuseTable={(id) => setFocuseTable(id)}
+                      onTableFocus={() => handleTableFocus(table.x, table.y, table.width, table.height)}
                       reservedBy={table.current_reservations[0]}
                       reservations={table.current_reservations}
                       onUpdateReservations={() => {

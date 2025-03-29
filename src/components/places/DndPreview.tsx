@@ -35,11 +35,12 @@ const DndPreview = () => {
     zIndex: 1000,
     opacity: 0.8,
     position: 'fixed',
+    borderRadius: itemType !== 'BOX' ? (item?.type === 'RECTANGLE' ? '10px' : '50%'):'',
     boxShadow: '0 5px 15px rgba(0,0,0,0.15)',
   };
   
   // Based on the item type, render different preview
-  if (itemType === 'TABLE_RESERVATION') {
+  if (itemType === 'TABLE_RESERVATION' || itemType === 'RESERVATION_LIST_ITEM') {
     // Preview for table reservation
     return (
       <div
@@ -51,9 +52,9 @@ const DndPreview = () => {
           style={{
             width: item.width || 80,
             height: item.height || 80,
-            backgroundColor: item.occasion?.color || '#FF4B4B',
+            backgroundColor: item.occasion?.color || '#88ab61',
             borderRadius: item.type === 'RECTANGLE' ? '10px' : '50%',
-            color: getTextColor(item.occasion?.color || '#FF4B4B'),
+            color: getTextColor(item.occasion?.color || '#88ab61'),
           }}
         >
           <div className="text-[14px] font-semibold truncate w-full px-2 text-center">

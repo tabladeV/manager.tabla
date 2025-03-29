@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { BaseKey, BaseRecord, useList, useForm } from "@refinedev/core";
 import SearchBar from "../../components/header/SearchBar";
 import Pagination from "../../components/reservation/Pagination";
-import { MessageSquare, User, Calendar, ArrowRight } from "lucide-react";
+import { MessageSquare, User, Calendar, ArrowRight, Reply } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import profilepic from '../../assets/profile.png';
 import { t } from "i18next";
@@ -39,20 +39,18 @@ interface MessagesType {
 interface MessageTableProps {
   isLoading: boolean;
   messages: Message[];
-  onSelectMessage: (message: Message) => void;
-  selectedMessages: Message[];
+  onReplyMessage: (message: Message) => void;
 }
 
 interface MessageRowProps {
   message: Message;
-  isSelected: boolean;
-  onSelect: () => void;
+  onReply: () => void;
 }
 
 interface NotificationModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
-  selectedMessages: Message[];
+  message: Message | null;
   onSubmit: (values: { subject: string; message: string }) => void;
   formLoading: boolean;
 }
@@ -102,7 +100,7 @@ const MessagesPage = () => {
   const [searchKeyword, setSearchKeyword] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [messagesAPIInfo, setMessagesAPIInfo] = useState<MessagesType>();
-  const [selectedMessages, setSelectedMessages] = useState<Message[]>([]);
+  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
   const [showNotificationModal, setShowNotificationModal] = useState<boolean>(false);
 
   // Fetch messages
@@ -128,25 +126,25 @@ const MessagesPage = () => {
 
   // Use Refine's useForm hook for form handling - configured for FormData
   const { onFinish, formLoading, mutationResult } = useForm({
-    resource: "api/v1/bo/notifications/",
+    resource: `bo/messages/${selectedMessage?.id}/create_response/`,
     action: "create",
     redirect: false, 
     onMutationSuccess: () => {
       setShowNotificationModal(false);
-      setSelectedMessages([]);
+      setSelectedMessage(null);
       // Refresh messages to see updates
       refetch();
     },
     errorNotification: (error, values) => {
       return {
         type: 'error',
-        message: error?.message || "An error occurred while sending notifications",
+        message: error?.message || "An error occurred while sending the message",
       };
     },
     successNotification: () => {
       return {
         type: 'success',
-        message: "Notifications sent successfully",
+        message: "Message sent successfully",
       };
     },
   });
@@ -164,47 +162,24 @@ const MessagesPage = () => {
     setSearchKeyword(keyword);
   };
 
-  const handleSelectMessage = (message: Message) => {
-    setSelectedMessages(prev => {
-      const isAlreadySelected = prev.some(m => m.id === message.id);
-      if (isAlreadySelected) {
-        return prev.filter(m => m.id !== message.id);
-      } else {
-        return [...prev, message];
-      }
-    });
-  };
-
-  const handleSelectAll = () => {
-    if (selectedMessages.length === messages.length) {
-      setSelectedMessages([]);
-    } else {
-      setSelectedMessages([...messages]);
-    }
+  const handleReplyMessage = (message: Message) => {
+    setSelectedMessage(message);
+    setShowNotificationModal(true);
   };
 
   const handleSubmitNotification = (formValues: { subject: string; message: string }) => {
+    if (!selectedMessage?.reservation?.customer?.id && !selectedMessage?.id) return;
+    
     const formData = new FormData();
-    // Get unique customer IDs from selected messages
-    const customerIds = Array.from(
-      new Set(selectedMessages.map(message => Number(message.reservation?.customer?.id || 0)).filter(Boolean))
-    ) as BaseKey[];
-    selectedMessages.map(message => {
-      if (message?.reservation?.customer?.id) {
-        formData.append('customers', message.reservation.customer.id.toString());
-      }
-    })
     
-  
-    
-    // Append customer IDs as a comma-separated string or as individual form fields
-    // formData.append('customers', JSON.stringify(customerIds.join(',')));
-    // formData.append('customers', customerIds.join(','));
+    // Add single customer ID
+    formData.append('user', String(selectedMessage?.reservation?.customer?.id));
     
     // Append other form fields
     formData.append('restaurant', localStorage.getItem('restaurant_id') || '');
     formData.append('subject', formValues.subject);
-    formData.append('message', formValues.message);
+    formData.append('message', String(selectedMessage?.id));
+    formData.append('text_massage', formValues.message);
 
     // Submit the form with FormData
     onFinish(formData as any);
@@ -217,7 +192,7 @@ const MessagesPage = () => {
         <NotificationModal
           showModal={showNotificationModal}
           setShowModal={setShowNotificationModal}
-          selectedMessages={selectedMessages}
+          message={selectedMessage}
           onSubmit={handleSubmitNotification}
           formLoading={formLoading}
         />
@@ -228,22 +203,9 @@ const MessagesPage = () => {
         <h1 className="text-3xl font-[700] text-blacktheme dark:text-whitetheme">
           {t('messages.title')}
         </h1>
-        <div className="flex gap-4 justify-end">
-          <button
-            onClick={() => setShowNotificationModal(true)}
-            disabled={selectedMessages.length === 0}
-            className={`${
-              selectedMessages.length === 0
-                ? "btn hover:border-[0px] border-[0px] cursor-not-allowed bg-softgreytheme dark:bg-subblack dark:text-softwhitetheme"
-                : "btn-primary"
-            }`}
-          >
-            Respond
-          </button>
-        </div>
       </div>
 
-      {/* Search and Action Buttons */}
+      {/* Search */}
       <div className="flex lt-xl:flex-col lt-xl:gap-2 justify-between">
         <div className="md-only:w-[50%] lg-only:w-[50%]">
           <SearchBar SearchHandler={searchFilter} />
@@ -255,8 +217,7 @@ const MessagesPage = () => {
         <MessageTable
           isLoading={isLoading}
           messages={messages}
-          onSelectMessage={handleSelectMessage}
-          selectedMessages={selectedMessages}
+          onReplyMessage={handleReplyMessage}
         />
         <Pagination
           setPage={(newPage) => {
@@ -274,19 +235,20 @@ const MessagesPage = () => {
 const MessageTable: React.FC<MessageTableProps> = ({
   isLoading,
   messages,
-  onSelectMessage,
-  selectedMessages,
+  onReplyMessage,
 }) => {
   return (
     <table className="min-w-full rounded-lg overflow-auto">
       <thead className="bg-gray-50 dark:bg-bgdarktheme2 text-gray-500 dark:text-white">
         <tr>
-          <th className="w-12 px-3 py-3"></th>
           <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
             From
           </th>
           <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
             Message
+          </th>
+          <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
+            Response
           </th>
           <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
             Received
@@ -299,7 +261,7 @@ const MessageTable: React.FC<MessageTableProps> = ({
           [...Array(5)].map((_, index) => <LoadingRow key={index} />)
         ) : messages.length === 0 ? (
           <tr>
-            <td colSpan={5} className="py-4 text-center">
+            <td colSpan={4} className="py-4 text-center">
               <p className="text-gray-500 dark:text-gray-400">
                 No messages found
               </p>
@@ -310,8 +272,7 @@ const MessageTable: React.FC<MessageTableProps> = ({
             <MessageRow
               key={message.id}
               message={message}
-              isSelected={selectedMessages.some((m) => m.id === message.id)}
-              onSelect={() => onSelectMessage(message)}
+              onReply={() => onReplyMessage(message)}
             />
           ))
         )}
@@ -321,29 +282,15 @@ const MessageTable: React.FC<MessageTableProps> = ({
 };
 
 // MessageRow Component
-const MessageRow: React.FC<MessageRowProps> = ({ message, isSelected, onSelect }) => {
+const MessageRow: React.FC<MessageRowProps> = ({ message, onReply }) => {
   const { darkMode } = useDarkContext();
   const date = new Date(message.created_at);
   const formattedDate = format(date, "dd MMM yyyy");
   const formattedTime = format(date, "HH:mm");
 
   return (
-    <tr
-      className={`transition-colors hover:bg-gray-50 dark:hover:bg-gray-800 ${
-        isSelected ? "bg-blue-50 dark:bg-gray-800" : ""
-      }`}
-    >
-      <td className="px-3 py-4 whitespace-nowrap">
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            checked={isSelected}
-            onChange={onSelect}
-            className="checkbox h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-          />
-        </div>
-      </td>
-      <td className="px-3 py-4 cursor-pointer" onClick={onSelect}>
+    <tr className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800">
+      <td className="px-3 py-4">
         <div className="flex items-center">
           <img 
             className="h-10 w-10 rounded-full object-cover" 
@@ -360,7 +307,7 @@ const MessageRow: React.FC<MessageRowProps> = ({ message, isSelected, onSelect }
           </div>
         </div>
       </td>
-      <td className="px-3 py-4 cursor-pointer" onClick={onSelect}>
+      <td className="px-3 py-4">
         <div className="flex items-start gap-2">
           <MessageSquare size={16} className="mt-1 text-gray-500 dark:text-gray-400" />
           <p className="text-sm text-gray-600 dark:text-gray-300">
@@ -368,7 +315,18 @@ const MessageRow: React.FC<MessageRowProps> = ({ message, isSelected, onSelect }
           </p>
         </div>
       </td>
-      <td className="px-3 py-4 whitespace-nowrap cursor-pointer" onClick={onSelect}>
+      <td className="px-3 py-4">
+
+        {message.response &&
+          <div className="flex items-start gap-2">
+            <MessageSquare size={16} className="mt-1 text-gray-500 dark:text-gray-400" />
+            <p className="text-sm text-gray-600 dark:text-gray-300">
+              {message.response?.text_massage?.length > 120 ? `${message.response?.text_massage?.substring(0, 120)}...` : message.response?.text_massage}
+            </p>
+          </div>
+        }
+      </td>
+      <td className="px-3 py-4 whitespace-nowrap">
         <div className="flex items-center gap-2">
           <Calendar size={16} className="text-gray-500 dark:text-gray-400" />
           <span className="text-sm text-gray-600 dark:text-gray-300">
@@ -377,16 +335,14 @@ const MessageRow: React.FC<MessageRowProps> = ({ message, isSelected, onSelect }
         </div>
       </td>
       <td className="px-3 py-4 whitespace-nowrap">
+        {!message.response && 
         <button
-          onClick={onSelect}
-          className={`p-2 rounded-full ${
-            isSelected
-              ? "bg-green-100 text-green-600"
-              : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-          }`}
+          onClick={onReply}
+          className="p-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+          title="Reply to message"
         >
-          <ArrowRight size={16} />
-        </button>
+          <Reply size={16} />
+        </button>}
       </td>
     </tr>
   );
@@ -396,9 +352,6 @@ const MessageRow: React.FC<MessageRowProps> = ({ message, isSelected, onSelect }
 const LoadingRow: React.FC = () => {
   return (
     <tr>
-      <td className="px-3 py-4 whitespace-nowrap">
-        <div className="h-4 w-4 rounded bg-gray-200 dark:bg-darkthemeitems"></div>
-      </td>
       <td className="px-3 py-4">
         <div className="flex items-center">
           <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-darkthemeitems"></div>
@@ -428,60 +381,48 @@ const LoadingRow: React.FC = () => {
 const NotificationModal: React.FC<NotificationModalProps> = ({
   showModal,
   setShowModal,
-  selectedMessages,
+  message,
   onSubmit,
   formLoading
 }) => {
   const { darkMode } = useDarkContext();
   const [subject, setSubject] = useState("");
-  const [message, setMessage] = useState("");
+  const [responseMessage, setResponseMessage] = useState("");
 
   // Reset values when modal opens/closes
   useEffect(() => {
     if (!showModal) {
       setSubject("");
-      setMessage("");
+      setResponseMessage("");
     }
   }, [showModal]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({ subject, message });
+    onSubmit({ subject, message: responseMessage });
   };
 
-  if (!showModal) return null;
+  if (!showModal || !message) return null;
+
+  const customerName = message?.reservation?.customer 
+    ? `${message.reservation.customer.first_name} ${message.reservation.customer.last_name}` 
+    : "Customer";
 
   return (
     <div>
       <div className="overlay" onClick={() => setShowModal(false)}></div>
       <div className="sidepopup h-full lt-sm:w-full overflow-y-auto lt-sm:h-[70vh] lt-sm:bottom-0 bg-white dark:bg-bgdarktheme">
         <h2 className="text-2xl font-semibold mb-6 text-blacktheme dark:text-white">
-          Respond to Message
+          Respond to {customerName}
         </h2>
+        
+        {/* Original message */}
+        <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-md">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Original message:</p>
+          <p className="text-gray-700 dark:text-gray-200">{message.text}</p>
+        </div>
+        
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="p-2 rounded-[10px] cursor-default">
-            <p className="text-greentheme font-[600] mb-2">
-              Send to
-            </p>
-            <div className="flex gap-2 flex-wrap">
-              {selectedMessages.slice(0, 4).map((message) => (
-                <div
-                  key={message.id}
-                  className="flex items-center gap-2"
-                >
-                  <p className="text-sm btn text-blacktheme dark:text-white">
-                    {`${message?.reservation?.customer?.first_name} ${message?.reservation?.customer?.last_name}` || `Customer #${message.reservation}`}
-                  </p>
-                </div>
-              ))}
-              {selectedMessages.length > 4 && (
-                <p className="text-sm btn text-blacktheme dark:text-white">
-                  and {selectedMessages.length - 4} more
-                </p>
-              )}
-            </div>
-          </div>
-
           {/* Subject */}
           <input
             type="text"
@@ -494,10 +435,10 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
 
           {/* Message */}
           <textarea
-            placeholder="Type your message here"
+            placeholder="Type your response here"
             rows={5}
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            value={responseMessage}
+            onChange={(e) => setResponseMessage(e.target.value)}
             className="inputs-unique bg-white dark:bg-bgdarktheme2 dark:focus:border-none"
             required
           ></textarea>
@@ -515,7 +456,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
             <button
               type="submit"
               className={`btn-primary ${formLoading ? 'opacity-70 cursor-wait' : ''}`}
-              disabled={!subject || !message || formLoading}
+              disabled={!subject || !responseMessage || formLoading}
             >
               {formLoading ? 'Sending...' : 'Send'}
             </button>

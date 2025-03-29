@@ -1,11 +1,14 @@
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X, Calendar, Trash2 } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, set } from 'date-fns';
 import BaseSelect from '../common/BaseSelect';
 import { useCreate, useList, useDelete } from '@refinedev/core';
 import { useDateContext } from '../../context/DateContext';
 import BaseBtn from '../common/BaseBtn';
+import ActionPopup from '../popup/ActionPopup';
+import IntervalCalendar from '../Calendar/IntervalCalendar';
+import BaseTimeInput from '../common/BaseTimeInput';
 
 interface BlockReservationModalProps {
   onClose: () => void;
@@ -18,7 +21,9 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
 }) => {
   const [floors, setFloors] = useState<any>([]);
   const [blockedReservations, setBlockedReservations] = useState<any>([]);
-
+  const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+  const [targetRule, setTargetRule] = useState<any>(null);
+  
   const {mutate: createReservationPause, isLoading: loadingCreate} = useCreate({
     errorNotification(error, values, resource) {
       return {
@@ -78,7 +83,9 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
   const [selectedTable, setSelectedTable] = useState<string[]>([]);
   const [blockOnline, setBlockOnline] = useState(true);
   const [blockInHouse, setBlockInHouse] = useState(false);
-
+  const [selectedDateRange, setSelectedDateRange] = useState<{ start: Date | null, end: Date | null }>({ start: new Date(today), end: null });
+  const [focusedDate, setFocusedDate] = useState<boolean>(false);
+  
   const mappedFloors = useCallback(()=>{
     return floors?.map((floor: any) => ({ label: floor.name, value: floor.id })) || [];
   },[floors]);
@@ -115,8 +122,12 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
   ];
 
   const handleSubmit = () => {
+    const formatedStartDate = format(new Date(selectedDateRange?.start as Date), 'yyyy-MM-dd');
+    const formatedEndDate = format(new Date(selectedDateRange?.end as Date), 'yyyy-MM-dd');
+
     const blockData = {
-      date: selectedDate,
+      start_date: formatedStartDate,
+      end_date: selectedDateRange?.end? formatedEndDate: formatedEndDate,
       start_time: startBlockTime,
       end_time: endBlockTime,
       block_type: blockType,
@@ -151,6 +162,8 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
     }, {
       onSuccess: () => {
         refetchReservationPauses();
+        setShowConfirmPopup(false);
+        setTargetRule(null);
       },
       onError: (error) => {
         console.error("Failed to delete reservation block:", error);
@@ -199,14 +212,103 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
     return '';
   };
 
+  const handleDateClick = (range: { start: Date, end: Date }): void => {
+    setSelectedDateRange(range);
+  };
+  
+  
+  const formatedStartDate = () => {
+    return format(new Date(selectedDateRange?.start || ''), 'EEEE, d MMM yyy')
+  };
+  
+  const formatedEndDate = () => {
+    return format(new Date(selectedDateRange?.end || ''), 'EEEE, d MMM yyy')
+  };
+
+  // DateSelectionModal Component
+  interface DateSelectionModalProps {
+    focusedDate: boolean;
+    setFocusedDate: (focused: boolean) => void;
+    handleDateClick: (range: { start: Date, end: Date }) => void;
+  }
+  
+  const DateSelectionModal: React.FC<DateSelectionModalProps> = ({ 
+    focusedDate, 
+    setFocusedDate, 
+    handleDateClick 
+  }) => {
+    if (!focusedDate) return null;
+    
+    return (
+      <div>
+        <div className="overlay" onClick={() => setFocusedDate(false)}></div>
+        <div className={`popup p-4 lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 dark:bg-bgdarktheme bg-white`}>
+          <IntervalCalendar onClose={()=>setFocusedDate(false)} onRangeSelect={handleDateClick} />
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div>
       {/* Overlay for clicking outside to close */}
       <div className="overlay" onClick={onClose}></div>
-      <div className={`sidepopup w-[45%] overflow-y-auto lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:overflow-y-auto h-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-white' : 'bg-white'}`}>
+      <ActionPopup
+        action={'delete'}
+        secondAction={() => setShowConfirmPopup(false)}
+        secondActionText={'Cancel'}
+        message={showConfirmPopup &&
+          <>
+            <h6>Are you sure you want to Delete this blocking rule?</h6>
+            <div
+              key={targetRule?.id}
+              className={`w-full p-2 rounded-md text-sm ${darkMode ? 'bg-darkthemeitems' : 'bg-gray-50'} flex justify-between items-center`}
+            >
+              <div className="flex-1">
+                <div className="flex justify-between">
+                  <span className="font-medium">
+                    {targetRule?.start_date}
+                  </span>
+                  {(targetRule?.end_date && targetRule?.end_date !== targetRule?.start_date )&&
+                    <span className="font-medium">
+                    - {targetRule?.start_date}
+                    </span>
+                  }
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${targetRule?.block_online && targetRule?.block_backoffice
+                      ? 'bg-red-100 text-red-800'
+                      : 'bg-yellow-100 text-yellow-800'
+                    }`}>
+                    {getReservationChannel(targetRule)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium">
+                    {targetRule?.start_time?.replace(':00', '')} - {targetRule?.end_time?.replace(':00', '')}
+                  </span>
+                </div>
+                <div className="text-xs text-gray-500 mt-1">
+                  {targetRule?.block_type === 'FLOOR' && (
+                    <>
+                      {targetRule?.floors?.length > 0 && (<span>Floors: {targetRule?.floors.map((el: { name: string }) => el.name).join(', ')}</span>)}
+                      <br />
+                      {targetRule?.tables?.length > 0 && (
+                        <span>Tables: {targetRule?.tables.map((el: { name: string }) => el.name).join(', ')}</span>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </>
+        }
+        actionFunction={() => handleDeleteBlock(targetRule?.id)}
+        showPopup={showConfirmPopup}
+        setShowPopup={setShowConfirmPopup}
+      />
+      <div className={`sidepopup w-[45%] overflow-y-auto lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:overflow-y-auto h-full dark:bg-bgdarktheme dark:text-white bg-white`}>
 
         {/* Header */}
-        <div className="flex justify-between items-center border-gray-200 mb-4">
+        <div className="flex justify-between items-center border-gray-200">
           <div className="flex items-center">
             <Calendar className="mr-2" size={20} />
             <h2 className="text-2xl font-[600]">Block reservations</h2>
@@ -220,15 +322,36 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
         </div>
 
         {/* Date selector */}
-        <div className="px-1 py-3 border-gray-200">
-          <div className="flex items-center space-x-2 text-sm font-medium">
-            <Calendar size={16} />
-            <span>
-              {
-                format(new Date(selectedDate), 'EEEE, d MMM yyy')
-              }
-            </span>
+        <div className="py-3 border-gray-200">
+          <div className='flex flex-wrap items-center justify-between'>
+            {selectedDateRange?.start && <div className="flex items-center space-x-2 text-sm font-medium">
+              {selectedDateRange?.end && formatedStartDate() !== formatedEndDate() && <span>From</span>}
+              <Calendar size={16} />
+              <span>
+                {
+                  formatedStartDate()
+                }
+              </span>
+            </div>}            
+            {selectedDateRange?.end && (formatedStartDate() !== formatedEndDate()) && <>
+            <div className="flex items-center space-x-2 text-sm font-medium">
+            <span> To </span>
+              <Calendar size={16} />
+              <span>
+                {
+                  formatedEndDate()
+                }
+              </span>
+            </div>
+                </>
+            }
           </div>
+          <button
+            onClick={() => setFocusedDate(true)}
+            className="btn-primary my-1 py-1"
+          >
+            Change date
+          </button>
         </div>
 
         {/* Block form */}
@@ -240,9 +363,8 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
           {/* Time range */}
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <BaseSelect loading={isLoadingFloors} 
+              <BaseTimeInput loading={isLoadingFloors} 
                 label='START BLOCK TIME'
-                options={startBlockHours()}
                 value={startBlockTime}
                 error={!startBlockTime}
                 hint="This field is required"
@@ -253,11 +375,11 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
               />
             </div>
             <div>
-              <BaseSelect loading={isLoadingFloors} 
+              <BaseTimeInput loading={isLoadingFloors} 
                 label='END BLOCK TIME'
-                options={endBlockHours()}
                 value={endBlockTime}
                 disabled={!startBlockTime}
+                min={startBlockTime}
                 onChange={(val) => setEndBlockTime(val as string)}
                 error={!endBlockTime}
                 hint="This field is required"
@@ -376,9 +498,16 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
                 >
                   <div className="flex-1">
                     <div className="flex justify-between">
+                      <div>
                       <span className="font-medium">
-                        {block.date}
+                        {block.start_date}
                       </span>
+                      {(block.end_date && block.end_date !== block.start_date) &&
+                        <span className="font-medium">
+                         <strong>{' To '}</strong> {block.end_date}
+                      </span>
+                      }
+                      </div>
                       <span className={`text-xs px-2 py-0.5 rounded-full ${
                         block.block_online && block.block_backoffice 
                           ? 'bg-red-100 text-red-800' 
@@ -405,7 +534,10 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
                     </div>
                   </div>
                   <button 
-                    onClick={() => handleDeleteBlock(block.id)}
+                    onClick={() => {
+                      setTargetRule(block);
+                      setShowConfirmPopup(true);
+                    }}
                     disabled={loadingDelete}
                     className="ml-2 p-1.5 text-gray-500 hover:text-red-600 rounded-full hover:bg-red-50"
                   >
@@ -417,6 +549,12 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
           )}
         </div>
       </div>
+      {/* Date Selection Modal */}
+      <DateSelectionModal
+        focusedDate={focusedDate}
+        setFocusedDate={setFocusedDate}
+        handleDateClick={handleDateClick}
+      />
     </div>
   );
 };
