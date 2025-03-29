@@ -22,6 +22,8 @@ const WidgetPage = () => {
     id: '',
   });
 
+  console.log('Widget data:', widgetData);
+
   const subdomain = getSubdomain();
   const [occasions, setOccasions] = useState<BaseRecord[]>();
 
@@ -360,6 +362,7 @@ const WidgetPage = () => {
             <div>
               <ReservationProcess
                 onClick={() => setShowProcess(false)}
+                maxGuests={widgetInfo?.max_of_guests_par_reservation}
                 getDateTime={(data: any) => setData(data)}
               />
             </div>

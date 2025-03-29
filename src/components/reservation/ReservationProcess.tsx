@@ -13,6 +13,8 @@ type SelectedData = {
 type ReservationProcessProps = {
   onClick: () => void;
   getDateTime: (data: SelectedData) => void;
+  maxGuests?: number;
+  minGuests?: number;
 };
 
 
@@ -128,7 +130,7 @@ const ReservationProcess: React.FC<ReservationProcessProps> = (props) => {
               {selectedGuests} <span className="font-semibold">guests have been selected</span>
             </div>
             <div className="flex flex-wrap justify-center gap-[10px] p-[20px] rounded-[3px]">
-              {[...Array(16)].map((_, index) => (
+              {[...Array(props.maxGuests ? props.maxGuests : 15)].map((_, index) => (
                 <button
                   className={`text-15 hover:bg-[#335a06] hover:text-white font-bold h-[65px] w-[65px] flex items-center justify-center border-solid border-[1px] border-[#335A06] ${localStorage.getItem('darkMode')==='true'?'text-white':' text-blacktheme'} ${selectedGuests === index + 1 ? 'bg-black text-white' : ''}`}
                   key={index}
