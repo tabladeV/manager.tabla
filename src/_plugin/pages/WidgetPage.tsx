@@ -22,6 +22,8 @@ const WidgetPage = () => {
     id: '',
   });
 
+  console.log('Widget data:', widgetData);
+
   const subdomain = getSubdomain();
   const [occasions, setOccasions] = useState<BaseRecord[]>();
 
@@ -97,7 +99,7 @@ const WidgetPage = () => {
       phone: e.target.phone.value,
       preferences: e.target.preferences.value,
       allergies: e.target.allergies.value,
-      occasion: e.target.occasion.value,
+      occasion: e.target.occasion.value!== 0? e.target.occasion.value: null, 
     };
     setUserInformation(updatedUserInformation);
     if (
@@ -360,6 +362,7 @@ const WidgetPage = () => {
             <div>
               <ReservationProcess
                 onClick={() => setShowProcess(false)}
+                maxGuests={widgetInfo?.max_of_guests_par_reservation}
                 getDateTime={(data: any) => setData(data)}
               />
             </div>

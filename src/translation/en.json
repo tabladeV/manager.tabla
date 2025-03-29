@@ -41,8 +41,23 @@
                 "december": "December"
             }
         },
+        "messages:": {
+            "title": "Messages",
+            "status": {
+                "confirmed": "Confirmed",
+                "cancelled": "Cancelled",
+                "noShow": "No show",
+                "rescheduled": "Rescheduled",
+                "pending": "Pending"
+            },
+            "noMessages": "No messages yet",
+            "noMessagesDesc": "You can ask your clients to leave a message after their reservation"
+        },
         "reviews": {
             "title": "Reviews",
+            "noReviews": "No reviews yet",
+            
+            "noReviewsDesc": "You can ask your clients to leave a review after their reservation",
             "status": {
                 "confirmed": "Confirmed",
                 "cancelled": "Cancelled",

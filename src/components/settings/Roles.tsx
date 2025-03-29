@@ -360,7 +360,7 @@ const Roles = () => {
                             <p>{t("settingsPage.roles.labels.noRolesSaved")}</p>
                         ) : (
                             savedRoles.map((role, index) => (
-                                <div key={index} className="mb-3 border-b-2 pb-2">
+                                <div key={index} className="mb-3 border-b-2 dark:border-[#ffffff30] pb-2">
                                     <div className="flex justify-between items-center">
                                         <h4 className="font-bold">{role.name}</h4>
                                         <CanAccess resource="role" action="delete">
@@ -371,9 +371,9 @@ const Roles = () => {
                                         />
                                         </CanAccess>
                                     </div>
-                                    <ul className="list-disc ml-5">
+                                    <ul className="list-none flex flex-wrap gap-2 ml-5">
                                         {role.permissions.map((perm, idx) => (
-                                            <li key={idx}>{perm.name}</li>
+                                            <li className="py-1 px-2 bg-softgreytheme dark:bg-darkthemeitems rounded-md" key={idx}>{perm.name}</li>
                                         ))}
                                     </ul>
                                 </div>

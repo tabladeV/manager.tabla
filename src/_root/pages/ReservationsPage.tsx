@@ -908,6 +908,15 @@ const ReservationTable: React.FC<ReservationTableProps> = ({
         </button>
       </ReservationTableHeader>
       <tbody className={`${isDarkMode ? 'bg-bgdarktheme divide-y divide-gray-800' : 'bg-white divide-y divide-gray-200'}`}>
+        {filteredReservations.length === 0 && !isLoading ? (
+          <tr>
+            <td colSpan={columns.length + 1} className="text-center py-4">
+              <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                There is no reservation to show
+              </p>
+            </td>
+          </tr>
+        ) : null}
         {isLoading ? (
           [...Array(10)].map((_, index) => (
             <LoadingRow key={index} isDarkMode={isDarkMode} columns={columns} />

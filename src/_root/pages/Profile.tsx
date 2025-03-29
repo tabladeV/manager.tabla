@@ -90,7 +90,7 @@ const Profile = () => {
     <div className='h-full w-full'>
       <h1>Profile</h1>
       <div className='h-[60vh] flex flex-col  items-center justify-center'>
-        <div className={`flex flex-col mx-auto h-fit items-start rounded-xl gap-2 lg:w-[30vw] shadow-xl shadow-[#00000008] p-5 ${localStorage.getItem('darkMode') === 'true' ? 'dark:bg-bgdarktheme' : 'bg-white'}`}>
+        <div className={`flex flex-col mx-auto h-fit items-start rounded-xl gap-2 lg:w-[30vw] lt-sm:w-full shadow-xl shadow-[#00000008] p-5 dark:bg-bgdarktheme bg-white `}>
           <h2 className="text-[1.6rem] font-[700]">Change your password</h2>
           <p className={`text-sm mb-4 mt-[-.5em]  ${localStorage.getItem('darkMode')==='true' ? 'text-softwhitetheme': 'text-subblack'} `}>You can change your password here</p>
           <div className={`inputs flex justify-between ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':''}`}>

@@ -102,6 +102,12 @@ export default function TopUsers() {
         <h1 className="text-xl font-bold">{t("overview.messages.title")}</h1>
       </div>
       <div className="cursor-default flex flex-col no-scrollbar overflow-y-scroll h-[330px] gap-4 p-2">
+        {messages.length === 0 && (
+          <div className='flex flex-col items-center justify-center text-center h-full'>
+            <h3 className='text-lg font-bold'>{t('overview.messages.noMessages')}</h3>
+            <p className={`text-subblack dark:text-softwhitetheme`}>{t('overview.messages.noMessagesDesc')}</p>
+          </div>
+        )}
         {messages.map((item, index) => (
           <div key={item.id} className="flex justify-between items-center p-1 rounded-lg hover:bg-[#00000003]">
             <div className="flex items-center gap-2">
