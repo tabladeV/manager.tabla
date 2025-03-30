@@ -389,8 +389,8 @@ const BaseTimeInput: React.FC<TimeInputProps> = ({
       <div 
         className={`
           ${isMobile 
-            ? 'fixed inset-0 z-50 flex flex-col bg-white dark:bg-darkthemeitems w-[80%] h-[60%] gt-sm:w-[70%] gt-sm:h-[50vh] m-auto rounded-[10px] shadow-lg' 
-            : 'absolute mt-1 rounded-[10px] shadow-lg z-10 border border-[#88AB6130] bg-white dark:bg-darkthemeitems w-full'}
+            ? 'fixed inset-0 z-[100] flex flex-col bg-white dark:bg-darkthemeitems w-[80%] h-[60%] gt-sm:w-[70%] gt-sm:h-[50vh] m-auto rounded-[10px] shadow-lg' 
+            : 'absolute mt-1 rounded-[10px] shadow-lg z-[100] border border-[#88AB6130] bg-white dark:bg-darkthemeitems w-full'}
         `}
       >
         {/* Mobile header */}

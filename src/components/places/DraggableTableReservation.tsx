@@ -57,16 +57,17 @@ const DraggableTableReservation: React.FC<DraggableTableReservationProps> = ({
     <div
       ref={drag}
       key={id}
-      className={`text-center text-white rounded-[10px] flex flex-col justify-center items-center cursor-grab`}
+      className={`cursor-grab border-none m-0`}
       style={{
         opacity: isDragging ? 0.5 : 1,
-        width,
-        height,
+        width:width,
+        height:height,
         backgroundColor: reservation?.occasion?.color || '#FF4B4B',
         borderRadius: type === 'RECTANGLE' ? '10px' : '50%',
         color: getTextColor((reservation?.occasion?.color || '#FF4B4B'))
       }}
     >
+      <div className='flex flex-col justify-center items-center text-center h-full w-full'>
       <h6 
         className="text-[14px] px-1 w-full text-center font-semibold"
         style={{
@@ -87,6 +88,7 @@ const DraggableTableReservation: React.FC<DraggableTableReservationProps> = ({
       >
         {max}
       </span>
+      </div>
     </div>
   );
 };

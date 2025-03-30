@@ -5,6 +5,19 @@ export const content = [
 export const darkMode = 'class';
 export const theme = {
   extend: {
+    animation: {
+      progress: 'progress 1s infinite linear',
+    },
+    keyframes: {
+      progress: {
+        '0%': { transform: ' translateX(0) scaleX(0)' },
+        '40%': { transform: 'translateX(0) scaleX(0.4)' },
+        '100%': { transform: 'translateX(100%) scaleX(0.5)' },
+      },
+    },
+    transformOrigin: {
+      'left-right': '0% 50%',
+    },
     screens: {
       // "Less than" variants
       'lt-sm': { max: '639px' },// Screens less than the default `sm` breakpoint

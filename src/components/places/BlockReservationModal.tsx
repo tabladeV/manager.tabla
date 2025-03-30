@@ -12,7 +12,7 @@ import BaseTimeInput from '../common/BaseTimeInput';
 
 interface BlockReservationModalProps {
   onClose: () => void;
-  onConfirm: (blockData: any) => void;
+  onConfirm?: (blockData: any) => void;
 }
 
 const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
@@ -151,7 +151,7 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
             console.log(error)
           },
         });
-    onConfirm(blockData);
+    onConfirm?.(blockData);
     onClose();
   };
 
