@@ -27,6 +27,7 @@ interface DropTargetProps {
   width: number;
   max: number;
   min: number;
+  blocked: boolean;
   reservedBy: currentResType;
   reservations: currentResType[];
   focusedTable: BaseKey | null;
@@ -71,6 +72,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
   type,
   x,
   y,
+  blocked,
   reservedBy,
   reservations,
   focusedTable,
@@ -159,7 +161,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
 
 
   const handleDrop = (item:DroppedItem|currentResType|null, confirmed = false)=>{
-    if (isLoading || !item) return; // Extra check to prevent drops during loading
+    if (isLoading || !item || blocked) return; // Extra check to prevent drops during loading
       
       // handle reservations guests and min max of table
       if ((item?.number_of_guests > max || item?.number_of_guests < min) && !confirmed) {
@@ -353,7 +355,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
         onDoubleClick={() => onTableFocus()}
         ref={drop}
         key={id}
-        className={`absolute text-center ${droppedItems.length > 0 ? 'text-white' : ''
+        className={`absolute text-center overflow-hidden m-0 ${isFocused()?'shadow-lg shadow-greentheme':''} ${droppedItems.length > 0 ? 'text-white' : ''
           } rounded-[10px] flex flex-col justify-center items-center border-[2px] ${isLoading
             ? 'border-blue-400'
             : isOver && canDrop
@@ -374,6 +376,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
           left: x,
           top: y,
           borderRadius: type === 'RECTANGLE' ? '10px' : '50%',
+          transform: type === 'RECTANGLE'?'translate(0px,0px)':`translate(-${width/2}px, -${height/2}px)`,
           position: 'absolute',
           color: getTextColor(reservedBy ? (reservedBy?.occasion?.color || '#88ab61') : darkMode ? '#042117' : '#F6F6F6')
         }}
@@ -397,7 +400,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
 
         {/* Make the reservation draggable if the table has one */}
         {reservations?.length ===1 ? (
-          <div className="absolute inset-0 z-10" >
+          <div className="absolute inset-0 z-10 m-0" >
             {!isLoading && (
               <DraggableTableReservation
                 type={type}
@@ -485,13 +488,13 @@ const DropTarget: React.FC<DropTargetProps> = ({
       {isFocused() && !isLoading && (
           <div
             ref={clientsMenuRef}
-            className={`shadow-md absolute select-none z-[1000] m-w-[150px] text-greytheme p-2 rounded-[10px] font-medium ${darkMode
+            className={`shadow-md absolute select-none z-[1000] min-w-[150px] text-greytheme p-2 rounded-[10px] font-medium ${darkMode
                 ? 'bg-bgdarktheme2 text-white'
                 : 'bg-[#F6F6F6] text-greytheme'
               }`}
             style={{
-              left: x + 80,
-              top: y + 50,
+              left: x + (type === 'RECTANGLE'?80:40),
+              top: y + (type === 'RECTANGLE'?50:20),
             }}
           >
             {name} has {reservations?.length} {reservations?.length > 1 ? 'reservations' : 'reservation'}

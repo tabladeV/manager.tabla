@@ -53,6 +53,7 @@ export interface TableType {
   floor_name: string,
   x: number;
   y: number;
+  blocked: boolean;
   rotation: number;
   height: number;
   width: number;
@@ -139,6 +140,7 @@ const PlacePage: React.FC = () => {
     ],
     queryOptions: {
       keepPreviousData: false,
+      enabled: false,
     }
   });
 
@@ -171,7 +173,6 @@ const PlacePage: React.FC = () => {
   // Edit Reservation Modal state
   const [showModal, setShowModal] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
-  const [showReservationOptions, setShowReservationOptions] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Reservation | null>(null);
   const [showProcess, setShowProcess] = useState(false);
   const [hasTable, setHasTable] = useState(false);
@@ -248,7 +249,6 @@ const PlacePage: React.FC = () => {
   const [lastTouchCenter, setLastTouchCenter] = useState<{ x: number; y: number } | null>(null);
   const optionsButtonRef = useRef<HTMLButtonElement>(null);
   const optionsMenuRef = useRef<HTMLDivElement>(null);
-  const reservationOptionsMenuRef = useRef<HTMLDivElement>(null);
 
   const clampScale = useCallback((s: number) => Math.min(Math.max(s, 0.3), 0.9), []);
 
@@ -340,30 +340,48 @@ const PlacePage: React.FC = () => {
     }
   }, []);
 
+  const floorTables = useMemo(():TableType[] => {
+    return roofData?.find(floor => floor.id === focusedRoof)?.tables || [];
+  },[roofData, focusedRoof]);
+
   // Zoom control buttons – using container center as focal point
+  // Helper function to animate zoom transitions
+  const animateZoom = useCallback((startScale: number, endScale: number, startTranslate: { x: number; y: number }, center: { x: number; y: number }) => {
+    const duration = 300; // duration in ms
+    const startTime = Date.now();
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // Ease-out function for smoother deceleration
+      const easeProgress = 1 - Math.pow(1 - progress, 2);
+      const currentScale = startScale + (endScale - startScale) * easeProgress;
+      const scaleFactor = currentScale / startScale;
+      const currentTranslateX = center.x - scaleFactor * (center.x - startTranslate.x);
+      const currentTranslateY = center.y - scaleFactor * (center.y - startTranslate.y);
+      setScale(currentScale);
+      setTranslate({ x: currentTranslateX, y: currentTranslateY });
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+    requestAnimationFrame(animate);
+  }, []);
+
   const handleZoomIn = useCallback(() => {
     const container = containerRef.current;
     if (!container) return;
     const center = { x: container.clientWidth / 2, y: container.clientHeight / 2 };
     const newScale = clampScale(scale + 0.1);
-    const scaleFactor = newScale / scale;
-    const newTranslateX = center.x - scaleFactor * (center.x - translate.x);
-    const newTranslateY = center.y - scaleFactor * (center.y - translate.y);
-    setScale(newScale);
-    setTranslate({ x: newTranslateX, y: newTranslateY });
-  }, [scale, translate, clampScale]);
+    animateZoom(scale, newScale, translate, center);
+  }, [scale, translate, clampScale, animateZoom]);
 
   const handleZoomOut = useCallback(() => {
     const container = containerRef.current;
     if (!container) return;
     const center = { x: container.clientWidth / 2, y: container.clientHeight / 2 };
     const newScale = clampScale(scale - 0.1);
-    const scaleFactor = newScale / scale;
-    const newTranslateX = center.x - scaleFactor * (center.x - translate.x);
-    const newTranslateY = center.y - scaleFactor * (center.y - translate.y);
-    setScale(newScale);
-    setTranslate({ x: newTranslateX, y: newTranslateY });
-  }, [scale, translate, clampScale]);
+    animateZoom(scale, newScale, translate, center);
+  }, [scale, translate, clampScale, animateZoom]);
 
   const handleTableFocus = useCallback((x: number, y: number, tableWidth = 100, tableHeight = 100) => {
     const container = containerRef.current;
@@ -413,30 +431,56 @@ const PlacePage: React.FC = () => {
     requestAnimationFrame(animate);
   }, [clampScale, scale, translate]);
 
-  // "Focus on All Tables": centers all tables of the current floor
-  const handleFocusAll = useCallback(() => {
+  // "Focus on All Tables": centers all tables of the current floor with margin
+  const handleFocusAll = () => {
     const container = containerRef.current;
     if (!container || isLoadingTables || tables.length === 0) return;
 
     const containerWidth = container.clientWidth;
     const containerHeight = container.clientHeight;
-    const floorTables = tables.filter(table => table.floor === floorId);
+    const margin = 40; // margin in pixels
+
     if (floorTables.length === 0) return;
-    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-    floorTables.forEach(table => {
-      minX = Math.min(minX, table.x);
-      minY = Math.min(minY, table.y);
-      maxX = Math.max(maxX, table.x + table.width);
-      maxY = Math.max(maxY, table.y + table.height);
+    let minX = Infinity,
+      minY = Infinity,
+      maxX = -Infinity,
+      maxY = -Infinity;
+    floorTables.forEach((table: TableType) => {
+      minX = Math.min(minX, table.x + (table.type === 'RECTANGLE' ? 0 : table.width / 2));
+      minY = Math.min(minY, table.y + (table.type === 'RECTANGLE' ? 0 : table.height / 2));
+      maxX = Math.max(maxX, table.x + (table.type === 'RECTANGLE' ? table.width : table.width / 2));
+      maxY = Math.max(maxY, table.y + (table.type === 'RECTANGLE' ? table.height : table.height / 2));
     });
     const contentWidth = maxX - minX;
     const contentHeight = maxY - minY;
-    const newScale = clampScale(Math.min(containerWidth / contentWidth, containerHeight / contentHeight));
-    const newTranslateX = (containerWidth - contentWidth * newScale) / 2 - minX * newScale;
-    const newTranslateY = (containerHeight - contentHeight * newScale) / 2 - minY * newScale;
-    setScale(newScale);
-    setTranslate({ x: newTranslateX, y: newTranslateY });
-  }, [floorId, clampScale]);
+    // Calculate new scale based on container size with margin
+    const newScale = clampScale(Math.min((containerWidth - 2 * margin) / contentWidth, (containerHeight - 2 * margin) / contentHeight)) - 0.1;
+    // Calculate translation such that the focused area is centered with margin on all sides
+    const newTranslateX = margin + ((containerWidth - 2 * margin) - contentWidth * newScale) / 2 - minX * newScale;
+    const newTranslateY = margin + ((containerHeight - 2 * margin) - contentHeight * newScale) / 2 - minY * newScale;
+
+    // Smooth transition animation over 300ms
+    const startScale = scale;
+    const startTranslate = { ...translate };
+    const duration = 300;
+    const startTime = Date.now();
+
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easeProgress = 1 - Math.pow(1 - progress, 2); // ease-out easing
+      const currentScale = startScale + (newScale - startScale) * easeProgress;
+      const currentTranslateX = startTranslate.x + (newTranslateX - startTranslate.x) * easeProgress;
+      const currentTranslateY = startTranslate.y + (newTranslateY - startTranslate.y) * easeProgress;
+      setScale(currentScale);
+      setTranslate({ x: currentTranslateX, y: currentTranslateY });
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+
+    requestAnimationFrame(animate);
+  };
 
   // Handle edit reservation
   const handleEditReservation = (id: BaseKey) => {
@@ -530,10 +574,11 @@ const PlacePage: React.FC = () => {
   }, [focusedRoof, roofData]);
 
   useEffect(() => {
-    if (focusedRoof && floorId && tables.length > 0 && !isLoadingTables) {
+    if (focusedRoof) {
+      refreshTables();
       handleFocusAll();
     }
-  }, [floorId, focusedRoof, handleFocusAll]);
+  }, [focusedRoof]);
 
   // // Add a new effect specifically for table data changes
   // useEffect(() => {
@@ -557,16 +602,6 @@ const PlacePage: React.FC = () => {
       ) {
         setShowOptions(false);
       }
-
-      if (
-        showReservationOptions &&
-        reservationOptionsMenuRef.current &&
-        !reservationOptionsMenuRef.current.contains(event.target)
-      ) {
-        setShowOptions(false);
-      }
-
-
     };
 
     document.addEventListener('click', handleClickOutside);
@@ -587,7 +622,8 @@ const PlacePage: React.FC = () => {
         />
       )} 
 
-      {showBlockingModal && <BlockReservationModal onConfirm={(data) => console.log(data)} onClose={() => setShowBlockingModal(false)} />}
+      
+      {showBlockingModal && <BlockReservationModal onClose={() => setShowBlockingModal(false)} />}
 
       {/* Reservation Process Modal */}
       {showProcess && (
@@ -610,8 +646,8 @@ const PlacePage: React.FC = () => {
         setHasTable={setHasTable}
         isDarkMode={darkMode}
       />}
-      <div className='flex lt-lg:flex-wrap w-full justify-between mb-2 items-center gap-2'>
-        <div className='flex items-center lt-sm:hidden gt-lg:w-[50%]'>
+      <div className='flex w-full justify-between mb-2 items-center gap-2'>
+        <div className='flex items-center lt-sm:hidden w-[50%]'>
           <button
             className="btn-primary transform transition-all duration-300 ease-in-out mr-1"
             onClick={() => {
@@ -633,7 +669,7 @@ const PlacePage: React.FC = () => {
               />
             </div>
           </button>
-          <div className='lt-lg:w-full w-[80%]'>
+          <div className='w-[80%]'>
           {isLoading ? (
             // Floor buttons skeleton loader
             <div className='flex gap-2 overflow-x-scroll no-scrollbar'>
@@ -661,7 +697,7 @@ const PlacePage: React.FC = () => {
           )}
           </div>
         </div>
-        <div className='flex gap-2 justify-end w-[50%] lt-lg:w-full relative'>
+        <div className='flex gap-2 justify-end w-[50%] lt-md:w-full relative'>
           <BaseTimeInput value={time} onChange={(v) => setTime(v)} clearable={true} placeholder='Start of Day' />
           <BaseTimeInput value={timeTo} onChange={(v) => setTimeTo(v)} clearable={true} placeholder='End of Day' />
           <button
@@ -717,36 +753,7 @@ const PlacePage: React.FC = () => {
       <DndProviderWithPreview>
         <div className={`gt-sm:flex ${!expandTables ? 'gap-[10px]' : ''}`}>
           <div className={`flex flex-col transition-all duration-300 ease-in-out ${!expandTables ? 'gt-sm:w-[35%] gt-sm:p-[0.5em]' : 'gt-sm:w-[0] gt-sm:p-0 gt-sm:m-0 gt-sm:overflow-hidden'} rounded-[10px] dark:bg-bgdarktheme bg-white`}>
-            <SearchBar SearchHandler={searchFilter} append={
-              <div className='relative'>
-                <button
-                  className="btn-primary transform transition-all duration-300 ease-in-out"
-                  onClick={() => {
-                    setShowReservationOptions(prev => !prev)
-                  }}
-                >
-                  <div className="relative w-3 h-4 flex items-center justify-center">
-                    <Settings2 size={16}
-                      className={`absolute transition-all duration-300 ease-in-out 
-                        ${showReservationOptions ? 'opacity-0 rotate-90 scale-75' : 'opacity-100 rotate-0 scale-100'}`}
-                    />
-
-                    <X size={16}
-                      className={`absolute transition-all duration-300 ease-in-out 
-                        ${showReservationOptions ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-75'}`}
-                    />
-                  </div>
-                </button>
-                {showReservationOptions &&
-                  <div
-                    ref={reservationOptionsMenuRef}
-                    className={`absolute right-0 top-[40px] w-64 rounded-md shadow-lg z-50 dark:bg-bgdarktheme overflow-hidden bg-white`}
-                  >
-                    some options
-                  </div>
-                }
-              </div>
-            } />
+            <SearchBar SearchHandler={searchFilter} />
             <SlideGroup>
               <button className={showOnly === 'SEATED' ? 'btn-primary' : 'btn-secondary'} onClick={() => setShowOnly("SEATED")}>
                 {t('placeManagement.filters.seated')}
@@ -768,10 +775,12 @@ const PlacePage: React.FC = () => {
                       ...item,
                       number_of_guests: parseInt(item.number_of_guests, 10),
                       onEdit: handleEditReservation,
+                      onUpdate: () => {
+                        refetchReservations();
+                      },
                       loading: item.loading ?? false,
                       created_at: item.created_at,
-                      tables: item.tables || [],
-                      selected: item.selected || false,
+                      tables: item.tables || []
                     }}
                     key={item.id}
                   />
@@ -818,7 +827,7 @@ const PlacePage: React.FC = () => {
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
               >
-                <ZoomControls onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} onFocusAll={handleFocusAll} />
+                <ZoomControls onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} onFocusAll={()=>handleFocusAll()} />
                 <div
                   style={{
                     transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`,
@@ -841,6 +850,7 @@ const PlacePage: React.FC = () => {
                       width={table.width}
                       max={table.max}
                       min={table.min}
+                      blocked={table.blocked}
                       focusedTable={focusedTable}
                       setFocuseTable={(id) => setFocuseTable(id)}
                       onTableFocus={() => handleTableFocus(table.x, table.y, table.width, table.height)}
