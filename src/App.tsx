@@ -62,7 +62,7 @@ import { notificationProvider } from "./providers/notificationProvider";
 import MessagesPage from "./_root/pages/MessagesPage";
 import RestaurantSelection from "./components/settings/RestaurantSelection";
 import BlankLayout from "./_root/BlankLayout";
-const API_HOST = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL : "https://api.dev.tabla.ma";
+const API_HOST = import.meta.env.VITE_API_URL || "https://api.dev.tabla.ma";
 function App() {
 
   useEffect(() => {
@@ -161,7 +161,7 @@ function App() {
                             >
                               <Home />
                             </CanAccess>
-                            } />
+                          } />
 
                           {/* Reservations */}
                           <Route
@@ -305,7 +305,7 @@ function App() {
                             >
                               <SettingsPage />
                             </CanAccess>
-                            }>
+                          }>
                             <Route index element={<IndexSettings />} />
                             <Route path="/settings/general" element={
                               <CanAccess
@@ -360,10 +360,10 @@ function App() {
                                 action="view"
                                 fallback="You don't have access"
                               >
-                              <Occasions />
+                                <Occasions />
                               </CanAccess>
-                              
-                              } />
+
+                            } />
                             <Route path="/settings/billing" element={<Billing />} />
                             <Route path="/settings/widget/reservation" element={
                               <CanAccess
@@ -371,20 +371,20 @@ function App() {
                                 action="view"
                                 fallback="You don't have access"
                               >
-                              <Widget />
+                                <Widget />
                               </CanAccess>
-                              
-                              } />
+
+                            } />
                             <Route path="/settings/widget/review" element={
                               <CanAccess
                                 resource="reviewwidget"
                                 action="view"
                                 fallback="You don't have access"
                               >
-                              <ReviewWidget />
+                                <ReviewWidget />
                               </CanAccess>
-                              
-                              } />
+
+                            } />
                             <Route path="/settings/permissions" element={<Permissions />} />
                             <Route path="/settings/services" element={<Services />} />
                             <Route path="/settings/roles" element={
