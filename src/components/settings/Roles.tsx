@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, Trash } from "lucide-react";
+import { ArrowLeft, ArrowRight, Edit, Pen, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import SearchBar from "../header/SearchBar";
@@ -7,6 +7,8 @@ import { useDarkContext } from "../../context/DarkContext";
 import { BaseKey, useList, useCreate, useDelete, CanAccess, BaseRecord } from "@refinedev/core";
 import Pagination from "../reservation/Pagination";
 import ActionPopup from "../popup/ActionPopup";
+import RoleModal from "../roles/roleModal";
+import { set } from "date-fns";
 
 interface PermissionType {
     id: number;
@@ -250,8 +252,17 @@ const Roles = () => {
         // }
     };
 
+    const [focusedRole, setFocusedRole] = useState<RoleType | null>(null);
+    const [showRoleModal, setShowRoleModal] = useState(false);
+
     return (
         <div className="rounded-[10px] p-3 w-full bg-white dark:bg-bgdarktheme">
+            {showRoleModal && 
+                <div >
+                    <div className="overlay " onClick={()=>setShowRoleModal(false)}/>
+                    <RoleModal role={focusedRole} availablePermissions={availablePermissions}  onClose={()=>setShowRoleModal(false)}/>
+                </div>
+            }
             <ActionPopup
                 action={action}
                 message={message}
@@ -363,18 +374,36 @@ const Roles = () => {
                                 <div key={index} className="mb-3 border-b-2 dark:border-[#ffffff30] pb-2">
                                     <div className="flex justify-between items-center">
                                         <h4 className="font-bold">{role.name}</h4>
-                                        <CanAccess resource="role" action="delete">
-                                        <Trash
-                                            size={30}
-                                            className="cursor-pointer text-redtheme bg-softredtheme p-2 rounded-md"
-                                            onClick={() => handleDeleteRequest(role)}
-                                        />
-                                        </CanAccess>
+                                        <div className="flex gap-2">
+                                            <CanAccess resource="role" action="delete">
+                                                <Trash
+                                                    size={30}
+                                                    className="cursor-pointer text-redtheme bg-softredtheme p-2 rounded-md"
+                                                    onClick={() => handleDeleteRequest(role)}
+                                                />
+                                            </CanAccess>
+                                            <CanAccess resource="role" action="update">
+                                                <Edit 
+                                                    onClick={() => {
+                                                        setFocusedRole(role);
+                                                        setIsRoles(false);
+                                                        setAvailablePermissions(permissions);
+                                                        setAffectedPermissions(role.permissions);
+                                                        setRoleName(role.name);
+                                                        setShowRoleModal(true);
+                                                    }
+                                                    }
+                                                    size={30}
+                                                    className="cursor-pointer btn-primary p-2 rounded-md"
+                                                />
+                                            </CanAccess>
+                                        </div>
                                     </div>
                                     <ul className="list-none flex flex-wrap gap-2 ml-5">
-                                        {role.permissions.map((perm, idx) => (
+                                        {role.permissions.slice(0,10).map((perm, idx) => (
                                             <li className="py-1 px-2 bg-softgreytheme dark:bg-darkthemeitems rounded-md" key={idx}>{perm.name}</li>
                                         ))}
+                                        {role.permissions.length > 10 && <li className="py-1 px-2 bg-softgreytheme dark:bg-darkthemeitems rounded-md">{`+${role.permissions.length - 10} more`}</li>}
                                     </ul>
                                 </div>
                             ))

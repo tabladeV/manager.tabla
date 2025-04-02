@@ -538,6 +538,8 @@
             "buttons": {
                 "addRole": "Add Role",
                 "saveRole": "Save Role",
+                "update": "Update Role",
+                "deleteRole": "Delete Role",
                 "affectARole": "Affect a role"
 
             }
