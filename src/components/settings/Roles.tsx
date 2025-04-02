@@ -7,7 +7,7 @@ import { useDarkContext } from "../../context/DarkContext";
 import { BaseKey, useList, useCreate, useDelete, CanAccess, BaseRecord } from "@refinedev/core";
 import Pagination from "../reservation/Pagination";
 import ActionPopup from "../popup/ActionPopup";
-import RoleModal from "../roles/roleModal";
+import RoleModal from "../roles/RoleModal";
 
 
 interface PermissionType {
