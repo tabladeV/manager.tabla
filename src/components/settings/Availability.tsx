@@ -10,7 +10,7 @@ interface SlotData {
   name: string;
   start_shift: string;
   end_shift: string;
-  max_party_size: number;
+  place_limit: number;
 }
 
 interface DayData {
@@ -24,7 +24,7 @@ const Availability = () => {
   useEffect(() => {
     document.title = 'Availability | Tabla'
   }, [])
-  
+
   const [restaurantId, setRestaurantId] = useState<string>(localStorage.getItem('restaurant_id') || '0');
   const { data: availabilityDays, isLoading, error } = useList({
     resource: `api/v1/bo/availability/days/`,
@@ -78,7 +78,7 @@ const Availability = () => {
           name: slot.name,
           start_shift: slot.start_shift,
           end_shift: slot.end_shift,
-          max_party_size: slot.max_party_size,
+          place_limit: slot.place_limit,
         })),
       }));
       setData(updatedData);
@@ -101,7 +101,7 @@ const Availability = () => {
       name: 'Lunch',
       start_shift: '09:00',
       end_shift: '12:00',
-      max_party_size: 15,
+      place_limit: 15,
     });
     setData(newData);
   };
@@ -121,7 +121,7 @@ const Availability = () => {
     const newData = [...data];
     if (field === 'name' || field === 'start_shift' || field === 'end_shift') {
       newData[dayIndex].availability_hours[slotIndex][field] = value as string;
-    } else if (field === 'max_party_size') {
+    } else if (field === 'place_limit') {
       newData[dayIndex].availability_hours[slotIndex][field] = value as number;
     }
     setData(newData);
@@ -130,7 +130,7 @@ const Availability = () => {
   const { t } = useTranslation();
   const [manageWeekly, setManageWeekly] = useState(false);
   const [weeklySlots, setWeeklySlots] = useState<SlotData[]>([
-    { name: '', start_shift: '', end_shift: '', max_party_size: 0 },
+    { name: '', start_shift: '', end_shift: '', place_limit: 0 },
   ]);
 
   const updateWeeklySlot = (index: number, field: keyof SlotData, value: string | number) => {
@@ -142,7 +142,7 @@ const Availability = () => {
   };
 
   const addWeeklySlot = () => {
-    setWeeklySlots((prev) => [...prev, { name: '', start_shift: '', end_shift: '', max_party_size: 0 }]);
+    setWeeklySlots((prev) => [...prev, { name: '', start_shift: '', end_shift: '', place_limit: 0 }]);
   };
 
   const applyWeeklyChanges = () => {
@@ -184,7 +184,7 @@ const Availability = () => {
         name: slot.name,
         start_shift: slot.start_shift,
         end_shift: slot.end_shift,
-        max_party_size: slot.max_party_size,
+        place_limit: slot.place_limit,
       }))
     }));
     const availabilitydays = newData;
@@ -248,8 +248,8 @@ const Availability = () => {
                   <div className="flex items-center gap-2">
                     <input
                       type="number"
-                      value={slot.max_party_size}
-                      onChange={(e) => updateWeeklySlot(index, 'max_party_size', parseInt(e.target.value))}
+                      value={slot.place_limit}
+                      onChange={(e) => updateWeeklySlot(index, 'place_limit', parseInt(e.target.value))}
                       className={`inputs-unique w-20 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
                     />
                     <X
@@ -261,15 +261,15 @@ const Availability = () => {
                 </div>
               </div>
             ))}
-            <button 
-              onClick={addWeeklySlot} 
+            <button
+              onClick={addWeeklySlot}
               className="hover:underline flex items-center gap-2 mb-4"
             >
               <Plus size={16} />
               {t('settingsPage.availability.addAnotherSlot')}
             </button>
-            <button 
-              onClick={applyWeeklyChanges} 
+            <button
+              onClick={applyWeeklyChanges}
               className="btn-primary w-full"
             >
               {t('settingsPage.availability.applyToWeek')}
@@ -305,9 +305,9 @@ const Availability = () => {
         {data.sort((a, b) => (a.id > b.id ? 1 : -1)).map((day, dayIndex) => (
           <div key={day.day} className="flex flex-col sm:flex-row">
             <div className={`flex items-center gap-2 w-full sm:w-20 mb-2 sm:mb-0 ${i18next.language === 'ar' && 'mt-2'}`}>
-              <CanAccess 
-                resource='availabilityday' 
-                action='change' 
+              <CanAccess
+                resource='availabilityday'
+                action='change'
                 fallback={!day.closed_day ? <CheckSquare size={20} className="text-[#88AB61]" /> : <Square size={20} className="text-[#88AB61]" />}
               >
                 <input
@@ -333,15 +333,15 @@ const Availability = () => {
                             : t('settingsPage.availability.days.saturday')}
               </span>
             </div>
-            
+
             <div className="flex-1">
               {!day.closed_day ? (
                 day.availability_hours.map((slot, slotIndex) => (
                   <div key={slotIndex} className="flex flex-col sm:flex-row sm:items-center gap-2 mb-4 sm:mb-2 border-b pb-3 sm:pb-2 sm:border-0">
                     <div className="grid grid-cols-2 sm:flex sm:flex-row gap-2 w-full sm:w-auto mb-2 sm:mb-0">
-                      <CanAccess 
-                        resource='availabilityhour' 
-                        action='change' 
+                      <CanAccess
+                        resource='availabilityhour'
+                        action='change'
                         fallback={
                           <div className="flex flex-col">
                             <label className="text-xs sm:hidden">Type</label>
@@ -365,10 +365,10 @@ const Availability = () => {
                           />
                         </div>
                       </CanAccess>
-                      
-                      <CanAccess 
-                        resource='availabilityhour' 
-                        action='change' 
+
+                      <CanAccess
+                        resource='availabilityhour'
+                        action='change'
                         fallback={
                           <div className="flex flex-col">
                             <label className="text-xs sm:hidden">From</label>
@@ -395,11 +395,11 @@ const Availability = () => {
                     </div>
 
                     <div className="hidden sm:block">-</div>
-                    
+
                     <div className="grid grid-cols-2 sm:flex sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
-                      <CanAccess 
-                        resource='availabilityhour' 
-                        action='change' 
+                      <CanAccess
+                        resource='availabilityhour'
+                        action='change'
                         fallback={
                           <div className="flex flex-col">
                             <label className="text-xs sm:hidden">To</label>
@@ -423,30 +423,30 @@ const Availability = () => {
                           />
                         </div>
                       </CanAccess>
-                      
+
                       <div className="flex flex-col">
                         <label className="text-xs sm:hidden">Place Limit</label>
                         <div className="flex items-center gap-2">
-                          <CanAccess 
-                            resource='availabilityhour' 
-                            action='change' 
+                          <CanAccess
+                            resource='availabilityhour'
+                            action='change'
                             fallback={
                               <input
                                 disabled={true}
                                 readOnly={true}
-                                value={slot.max_party_size}
+                                value={slot.place_limit}
                                 className={`inputs-unique w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
                               />
                             }
                           >
                             <input
                               type="number"
-                              value={slot.max_party_size}
-                              onChange={(e) => updateSlot(dayIndex, slotIndex, 'max_party_size', parseInt(e.target.value))}
+                              value={slot.place_limit}
+                              onChange={(e) => updateSlot(dayIndex, slotIndex, 'place_limit', parseInt(e.target.value))}
                               className={`inputs-unique w-full sm:w-16 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
                             />
                           </CanAccess>
-                          
+
                           <CanAccess resource='availabilityhour' action='remove'>
                             <button
                               onClick={() => removeSlot(dayIndex, slotIndex)}
@@ -458,7 +458,7 @@ const Availability = () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="sm:hidden mt-2">
                       <span className="text-xs text-gray-500">
                         {t('settingsPage.availability.placeLimitLabel')}
@@ -471,7 +471,7 @@ const Availability = () => {
                   {t('settingsPage.availability.unavailable')}
                 </div>
               )}
-              
+
               {!day.closed_day && (
                 <div className="mt-2">
                   <CanAccess resource='availabilityhour' action='add'>
@@ -488,7 +488,7 @@ const Availability = () => {
             </div>
           </div>
         ))}
-        
+
         <CanAccess resource='availabilityday' action='change'>
           <div className="flex flex-col sm:flex-row gap-2 mt-6 pt-4 border-t">
             <button onClick={handleSaveAvailability} className="btn-primary w-full sm:w-auto">
