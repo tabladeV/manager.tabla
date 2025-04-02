@@ -10,7 +10,7 @@ interface SlotData {
   name: string;
   start_shift: string;
   end_shift: string;
-  max_party_size: number;
+  place_limit: number;
 }
 
 interface DayData {
@@ -78,7 +78,7 @@ const Availability = () => {
           name: slot.name,
           start_shift: slot.start_shift,
           end_shift: slot.end_shift,
-          max_party_size: slot.max_party_size,
+          place_limit: slot.place_limit,
         })),
       }));
       setData(updatedData);
@@ -101,7 +101,7 @@ const Availability = () => {
       name: 'Lunch',
       start_shift: '09:00',
       end_shift: '12:00',
-      max_party_size: 15,
+      place_limit: 15,
     });
     setData(newData);
   };
@@ -121,7 +121,7 @@ const Availability = () => {
     const newData = [...data];
     if (field === 'name' || field === 'start_shift' || field === 'end_shift') {
       newData[dayIndex].availability_hours[slotIndex][field] = value as string;
-    } else if (field === 'max_party_size') {
+    } else if (field === 'place_limit') {
       newData[dayIndex].availability_hours[slotIndex][field] = value as number;
     }
     setData(newData);
@@ -130,7 +130,7 @@ const Availability = () => {
   const { t } = useTranslation();
   const [manageWeekly, setManageWeekly] = useState(false);
   const [weeklySlots, setWeeklySlots] = useState<SlotData[]>([
-    { name: '', start_shift: '', end_shift: '', max_party_size: 0 },
+    { name: '', start_shift: '', end_shift: '', place_limit: 0 },
   ]);
 
   const updateWeeklySlot = (index: number, field: keyof SlotData, value: string | number) => {
@@ -142,7 +142,7 @@ const Availability = () => {
   };
 
   const addWeeklySlot = () => {
-    setWeeklySlots((prev) => [...prev, { name: '', start_shift: '', end_shift: '', max_party_size: 0 }]);
+    setWeeklySlots((prev) => [...prev, { name: '', start_shift: '', end_shift: '', place_limit: 0 }]);
   };
 
   const applyWeeklyChanges = () => {
@@ -184,11 +184,10 @@ const Availability = () => {
         name: slot.name,
         start_shift: slot.start_shift,
         end_shift: slot.end_shift,
-        max_party_size: slot.max_party_size,
+        place_limit: slot.place_limit,
       }))
     }));
     const availabilitydays = newData;
-    console.log(data);
     updateAvailability({
       resource: "api/v1/bo/availability/days/update_all/",
       values: {
@@ -198,11 +197,11 @@ const Availability = () => {
   }
 
   return (
-    <div className={`rounded-lg p-4 md:p-6 w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}>
+    <div className={`rounded-lg p-4 md:p-6 w-full dark:bg-bgdarktheme bg-white`}>
       {manageWeekly && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setManageWeekly(false)}></div>
-          <div className={`relative rounded-lg p-4 md:p-6 w-full max-w-xl mx-4 ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}>
+          <div className={`relative rounded-lg p-4 md:p-6 w-full max-w-2xl mx-4 dark:bg-bgdarktheme bg-white`}>
             <div className="flex justify-between mb-4">
               <h2 className="text-xl font-semibold">{t('settingsPage.availability.manageWeek')}</h2>
               <button onClick={() => setManageWeekly(false)} className="text-gray-500 hover:text-gray-700">
@@ -217,7 +216,7 @@ const Availability = () => {
                     type="text"
                     value={slot.name}
                     onChange={(e) => updateWeeklySlot(index, 'name', e.target.value)}
-                    className={`inputs-unique w-full md:w-32 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                    className={`inputs-unique w-full md:w-32 dark:bg-darkthemeitems bg-white`}
                   />
                 </div>
                 <div className="flex items-center gap-2 w-full md:w-auto">
@@ -227,7 +226,7 @@ const Availability = () => {
                       type="time"
                       value={slot.start_shift}
                       onChange={(e) => updateWeeklySlot(index, 'start_shift', e.target.value)}
-                      className={`inputs w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                      className={`inputs w-full dark:bg-darkthemeitems bg-white`}
                     />
                   </div>
                   <span className="self-end mb-2">-</span>
@@ -237,7 +236,7 @@ const Availability = () => {
                       type="time"
                       value={slot.end_shift}
                       onChange={(e) => updateWeeklySlot(index, 'end_shift', e.target.value)}
-                      className={`inputs w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                      className={`inputs w-full dark:bg-darkthemeitems bg-white`}
                     />
                   </div>
                 </div>
@@ -248,15 +247,15 @@ const Availability = () => {
                   <div className="flex items-center gap-2">
                     <input
                       type="number"
-                      value={slot.max_party_size}
-                      onChange={(e) => updateWeeklySlot(index, 'max_party_size', parseInt(e.target.value))}
-                      className={`inputs-unique w-20 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                      value={slot.place_limit}
+                      onChange={(e) => updateWeeklySlot(index, 'place_limit', parseInt(e.target.value))}
+                      className={`inputs-unique w-20 dark:bg-darkthemeitems bg-white`}
                     />
-                    <X
+                    {weeklySlots?.length>1 && <X
                       size={20}
                       className="text-redtheme cursor-pointer"
                       onClick={() => setWeeklySlots((prev) => prev.filter((_, i) => i !== index))}
-                    />
+                    />}
                   </div>
                 </div>
               </div>
@@ -285,7 +284,7 @@ const Availability = () => {
           <CanAccess resource='availabilityday' action='change' fallback={duration}>
             <input
               type="string"
-              className={`inputs w-24 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+              className={`inputs w-24 dark:bg-darkthemeitems bg-white`}
               defaultValue={duration}
               onChange={(e) => setDuration(e.target.value.trim() || '')}
             />
@@ -350,7 +349,7 @@ const Availability = () => {
                               value={slot.name}
                               disabled={true}
                               readOnly={true}
-                              className={`inputs w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                              className={`inputs w-full dark:bg-darkthemeitems bg-white`}
                             />
                           </div>
                         }
@@ -361,7 +360,7 @@ const Availability = () => {
                             type="text"
                             value={slot.name}
                             onChange={(e) => updateSlot(dayIndex, slotIndex, 'name', e.target.value)}
-                            className={`inputs-unique w-full sm:w-24 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                            className={`inputs-unique w-full sm:w-24 dark:bg-darkthemeitems bg-white`}
                           />
                         </div>
                       </CanAccess>
@@ -377,7 +376,7 @@ const Availability = () => {
                               value={slot.start_shift}
                               disabled={true}
                               readOnly={true}
-                              className={`inputs w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                              className={`inputs w-full dark:bg-darkthemeitems bg-white`}
                             />
                           </div>
                         }
@@ -388,7 +387,7 @@ const Availability = () => {
                             type="time"
                             value={slot.start_shift}
                             onChange={(e) => updateSlot(dayIndex, slotIndex, 'start_shift', e.target.value)}
-                            className={`inputs w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                            className={`inputs w-full dark:bg-darkthemeitems bg-white`}
                           />
                         </div>
                       </CanAccess>
@@ -408,7 +407,7 @@ const Availability = () => {
                               value={slot.end_shift}
                               disabled={true}
                               readOnly={true}
-                              className={`inputs w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                              className={`inputs w-full dark:bg-darkthemeitems bg-white`}
                             />
                           </div>
                         }
@@ -419,13 +418,13 @@ const Availability = () => {
                             type="time"
                             value={slot.end_shift}
                             onChange={(e) => updateSlot(dayIndex, slotIndex, 'end_shift', e.target.value)}
-                            className={`inputs w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                            className={`inputs w-full dark:bg-darkthemeitems bg-white`}
                           />
                         </div>
                       </CanAccess>
                       
                       <div className="flex flex-col">
-                        <label className="text-xs sm:hidden">Place Limit</label>
+                        <label className="text-xs sm:hidden">{t('settingsPage.availability.placeLimitLabel')}</label>
                         <div className="flex items-center gap-2">
                           <CanAccess 
                             resource='availabilityhour' 
@@ -434,16 +433,16 @@ const Availability = () => {
                               <input
                                 disabled={true}
                                 readOnly={true}
-                                value={slot.max_party_size}
-                                className={`inputs-unique w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                                value={slot.place_limit}
+                                className={`inputs-unique w-full dark:bg-darkthemeitems bg-white`}
                               />
                             }
                           >
                             <input
                               type="number"
-                              value={slot.max_party_size}
-                              onChange={(e) => updateSlot(dayIndex, slotIndex, 'max_party_size', parseInt(e.target.value))}
-                              className={`inputs-unique w-full sm:w-16 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+                              value={slot.place_limit}
+                              onChange={(e) => updateSlot(dayIndex, slotIndex, 'place_limit', parseInt(e.target.value))}
+                              className={`inputs-unique w-full sm:w-16 dark:bg-darkthemeitems bg-white`}
                             />
                           </CanAccess>
                           
