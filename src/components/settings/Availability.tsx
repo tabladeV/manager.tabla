@@ -24,7 +24,7 @@ const Availability = () => {
   useEffect(() => {
     document.title = 'Availability | Tabla'
   }, [])
-  
+
   const [restaurantId, setRestaurantId] = useState<string>(localStorage.getItem('restaurant_id') || '0');
   const { data: availabilityDays, isLoading, error } = useList({
     resource: `api/v1/bo/availability/days/`,
@@ -260,15 +260,15 @@ const Availability = () => {
                 </div>
               </div>
             ))}
-            <button 
-              onClick={addWeeklySlot} 
+            <button
+              onClick={addWeeklySlot}
               className="hover:underline flex items-center gap-2 mb-4"
             >
               <Plus size={16} />
               {t('settingsPage.availability.addAnotherSlot')}
             </button>
-            <button 
-              onClick={applyWeeklyChanges} 
+            <button
+              onClick={applyWeeklyChanges}
               className="btn-primary w-full"
             >
               {t('settingsPage.availability.applyToWeek')}
@@ -304,9 +304,9 @@ const Availability = () => {
         {data.sort((a, b) => (a.id > b.id ? 1 : -1)).map((day, dayIndex) => (
           <div key={day.day} className="flex flex-col sm:flex-row">
             <div className={`flex items-center gap-2 w-full sm:w-20 mb-2 sm:mb-0 ${i18next.language === 'ar' && 'mt-2'}`}>
-              <CanAccess 
-                resource='availabilityday' 
-                action='change' 
+              <CanAccess
+                resource='availabilityday'
+                action='change'
                 fallback={!day.closed_day ? <CheckSquare size={20} className="text-[#88AB61]" /> : <Square size={20} className="text-[#88AB61]" />}
               >
                 <input
@@ -332,15 +332,15 @@ const Availability = () => {
                             : t('settingsPage.availability.days.saturday')}
               </span>
             </div>
-            
+
             <div className="flex-1">
               {!day.closed_day ? (
                 day.availability_hours.map((slot, slotIndex) => (
                   <div key={slotIndex} className="flex flex-col sm:flex-row sm:items-center gap-2 mb-4 sm:mb-2 border-b pb-3 sm:pb-2 sm:border-0">
                     <div className="grid grid-cols-2 sm:flex sm:flex-row gap-2 w-full sm:w-auto mb-2 sm:mb-0">
-                      <CanAccess 
-                        resource='availabilityhour' 
-                        action='change' 
+                      <CanAccess
+                        resource='availabilityhour'
+                        action='change'
                         fallback={
                           <div className="flex flex-col">
                             <label className="text-xs sm:hidden">Type</label>
@@ -364,10 +364,10 @@ const Availability = () => {
                           />
                         </div>
                       </CanAccess>
-                      
-                      <CanAccess 
-                        resource='availabilityhour' 
-                        action='change' 
+
+                      <CanAccess
+                        resource='availabilityhour'
+                        action='change'
                         fallback={
                           <div className="flex flex-col">
                             <label className="text-xs sm:hidden">From</label>
@@ -394,11 +394,11 @@ const Availability = () => {
                     </div>
 
                     <div className="hidden sm:block">-</div>
-                    
+
                     <div className="grid grid-cols-2 sm:flex sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
-                      <CanAccess 
-                        resource='availabilityhour' 
-                        action='change' 
+                      <CanAccess
+                        resource='availabilityhour'
+                        action='change'
                         fallback={
                           <div className="flex flex-col">
                             <label className="text-xs sm:hidden">To</label>
@@ -422,13 +422,13 @@ const Availability = () => {
                           />
                         </div>
                       </CanAccess>
-                      
+
                       <div className="flex flex-col">
                         <label className="text-xs sm:hidden">{t('settingsPage.availability.placeLimitLabel')}</label>
                         <div className="flex items-center gap-2">
-                          <CanAccess 
-                            resource='availabilityhour' 
-                            action='change' 
+                          <CanAccess
+                            resource='availabilityhour'
+                            action='change'
                             fallback={
                               <input
                                 disabled={true}
@@ -445,7 +445,7 @@ const Availability = () => {
                               className={`inputs-unique w-full sm:w-16 dark:bg-darkthemeitems bg-white`}
                             />
                           </CanAccess>
-                          
+
                           <CanAccess resource='availabilityhour' action='remove'>
                             <button
                               onClick={() => removeSlot(dayIndex, slotIndex)}
@@ -457,7 +457,7 @@ const Availability = () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="sm:hidden mt-2">
                       <span className="text-xs text-gray-500">
                         {t('settingsPage.availability.placeLimitLabel')}
@@ -470,7 +470,7 @@ const Availability = () => {
                   {t('settingsPage.availability.unavailable')}
                 </div>
               )}
-              
+
               {!day.closed_day && (
                 <div className="mt-2">
                   <CanAccess resource='availabilityhour' action='add'>
@@ -487,7 +487,7 @@ const Availability = () => {
             </div>
           </div>
         ))}
-        
+
         <CanAccess resource='availabilityday' action='change'>
           <div className="flex flex-col sm:flex-row gap-2 mt-6 pt-4 border-t">
             <button onClick={handleSaveAvailability} className="btn-primary w-full sm:w-auto">
