@@ -170,8 +170,9 @@ const DropTarget: React.FC<DropTargetProps> = ({
         return;
       }
       
-      if (item?.id && reservations?.length && reservations?.findIndex((res) => res.id === item.id) !== -1)
+      if (item?.id && reservations?.length && reservations?.findIndex((res) => res.id === item.id) !== -1){
         return;
+      }
 
       // Handle table-to-table reservation drag
       if (item?.fromTableId && item?.fromTableId !== id) {
@@ -355,7 +356,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
         onDoubleClick={() => onTableFocus()}
         ref={drop}
         key={id}
-        className={`absolute text-center overflow-hidden m-0 ${isFocused()?'shadow-lg shadow-greentheme':''} ${droppedItems.length > 0 ? 'text-white' : ''
+        className={`absolute text-center overflow-hidden m-0 ${isFocused() || showOptions?'shadow-lg shadow-greentheme':''} ${droppedItems.length > 0 ? 'text-white' : ''
           } rounded-[10px] flex flex-col justify-center items-center border-[2px] ${isLoading
             ? 'border-blue-400'
             : isOver && canDrop
@@ -449,16 +450,16 @@ const DropTarget: React.FC<DropTargetProps> = ({
             </span>
           </>
         )}
-
-        {/* Options tooltip when dragging between tables */}
-        {showOptions && !isLoading && (
+      </div>
+      {/* Options tooltip when dragging between tables */}
+      {showOptions && !isLoading && (
           <>
             <div
               ref={optionsRef}
-              className="absolute z-[200] bg-[#F6F6F6] dark:bg-bgdarktheme2 shadow-md rounded-md overflow-hidden dark:text-white"
+              className="absolute z-[1000] bg-[#F6F6F6] dark:bg-bgdarktheme2 shadow-md rounded-md overflow-hidden dark:text-white"
               style={{
-                top: '50%',
-                left: '105%',
+                left: x + (type === 'RECTANGLE'?80:40),
+                top: y + (type === 'RECTANGLE'?50:20),
                 transform: 'translateY(-50%)'
               }}
             >
@@ -484,7 +485,6 @@ const DropTarget: React.FC<DropTargetProps> = ({
             </div>
           </>
         )}
-      </div>
       {isFocused() && !isLoading && (
           <div
             ref={clientsMenuRef}

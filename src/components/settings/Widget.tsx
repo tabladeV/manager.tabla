@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Upload, Check, X, Download, Navigation, ScreenShareIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -14,6 +14,7 @@ interface Widget {
   title: string;
   restaurant: string;
   is_widget_activated: boolean;
+  max_of_guests_par_reservation: number;
   disabled_description: string;
   disabled_title: string;
   description: string;
@@ -52,8 +53,6 @@ export default function WidgetConfig() {
     resource: `api/v1/bo/restaurants/${restaurantId}/widget/`,
   });
 
-  console.log('widgetData', widgetData);
-
   
   useEffect(() => {
     document.title = 'Booking Widget Settigns | Tabla'
@@ -73,6 +72,8 @@ export default function WidgetConfig() {
     menu: true,
   });
 
+  const [maxGuestsPerReservation, setMaxGuestsPerReservation] = useState<number>(0);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const filePdfInputRef = useRef<HTMLInputElement>(null);
 
@@ -80,7 +81,8 @@ export default function WidgetConfig() {
     if (widgetData?.data) {
       const data = widgetData.data as unknown as Widget;
       setHasMenu(data.has_menu);
-      setSearchTabs((prev) => ({ ...prev, menu: data.has_menu }));
+      setMaxGuestsPerReservation(data.max_of_guests_par_reservation)
+      setSearchTabs((prev) => ({ ...prev, menu: data.has_menu}));
       setWidgetInfo(data);
       setTitle(data.title);
       setDisabledTitle(data.disabled_title);
@@ -166,6 +168,7 @@ export default function WidgetConfig() {
     }
     formData.append('disabled_title', disabledTitle);
     formData.append('disabled_description', disabledDescription);
+    formData.append('max_of_guests_par_reservation', maxGuestsPerReservation?.toString() || '0');
 
     if(file){
       formData.append('image', file);
@@ -180,8 +183,13 @@ export default function WidgetConfig() {
         id: `${restaurantId}/widget_partial_update/`,
         resource: `api/v1/bo/restaurants`,
         values: formData,
-      });
-      alert('Configuration saved successfully!');
+        successNotification(){
+          return {
+            type: 'success',
+            message: 'Configuration saved successfully!'
+          }
+        }
+      },);
     } catch (error) {
       console.error('Error updating widget:', error);
       alert('Failed to save configuration. Please try again.');
@@ -249,11 +257,21 @@ export default function WidgetConfig() {
             <div className="mb-6">
               <h2 className="text-lg font-semibold mb-2">{t('settingsPage.widget.searchTabs.title')}</h2>
               <div className="flex flex-wrap gap-4">
+              <label className="flex items-center w-full">
+              <span className='mr-2'>max guests per reservation</span>
+              <input
+                type="number"
+                value={maxGuestsPerReservation}
+                onChange={(e) => setMaxGuestsPerReservation(Number(e.target.value))}
+                className="inputs max-w-[300px] p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white"
+              />
+              </label>
                 {Object.entries(searchTabs).map(([key, value]) => (
-                  <label key={key} className="flex items-center">
+                  <React.Fragment key={key}>
+                  {key === 'menu' && <label className="flex items-center">
                     <input
                       type="checkbox"
-                      checked={hasMenu ? value : key === 'menu' && value}
+                      checked={(hasMenu ? value : key === 'menu' && value) as boolean}
                       onChange={() => setHasMenu((prev) => !prev)}
                       className="sr-only"
                     />
@@ -265,7 +283,8 @@ export default function WidgetConfig() {
                       {hasMenu && <Check size={16} className="text-white" />}
                     </span>
                     <span className="capitalize">{key}</span>
-                  </label>
+                  </label>}
+                  </React.Fragment>
                 ))}
               </div>
               {(hasMenu) && (
