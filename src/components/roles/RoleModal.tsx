@@ -1,8 +1,10 @@
 "use client"
 
+import type React from "react"
+
 import { useState } from "react"
 import { useUpdate, type BaseKey } from "@refinedev/core"
-import { ArrowDown, ArrowUp, Plus, StopCircle, Trash, Undo, X } from "lucide-react"
+import { ArrowDown, ArrowUp, Undo, X } from "lucide-react"
 import SearchBar from "../header/SearchBar"
 
 interface PermissionType {
@@ -24,101 +26,82 @@ interface RoleModalProps {
 }
 
 const RoleModal = ({ role, availablePermissions = [], onClose }: RoleModalProps) => {
-  const [currentPermissions, setCurrentPermissions] = useState<PermissionType[]>(role?.permissions || [])
-  const [availablePerms, setAvailablePerms] = useState<PermissionType[]>(
-    availablePermissions.filter((ap) => !currentPermissions.some((cp) => cp.id === ap.id)),
+  const [allPermissions, setAllPermissions] = useState<PermissionType[]>(
+    [
+      ...(role?.permissions || []),
+      ...availablePermissions.filter((ap) => !role?.permissions.some((rp) => rp.id === ap.id)),
+    ].map((perm) => ({
+      ...perm,
+      value: role?.permissions.some((rp) => rp.id === perm.id) || false,
+    })),
   )
 
-  // Function to remove a permission from the role
-  const handleRemovePermission = (permissionId: number) => {
-    const removedPermission = currentPermissions.find((p) => p.id === permissionId)
-
-    if (removedPermission) {
-      setCurrentPermissions(currentPermissions.filter((p) => p.id !== permissionId))
-      setAvailablePerms([...availablePerms, removedPermission])
-    }
-  }
-
-  // Function to add a permission to the role
-  const handleAddPermission = (permissionId: number) => {
-    const permissionToAdd = availablePerms.find((p) => p.id === permissionId)
-
-    if (permissionToAdd) {
-      setAvailablePerms(availablePerms.filter((p) => p.id !== permissionId))
-      setCurrentPermissions([...currentPermissions, permissionToAdd])
-    }
+  // Function to toggle a permission's value
+  const handleTogglePermission = (permissionId: number) => {
+    setAllPermissions(
+      allPermissions.map((permission) =>
+        permission.id === permissionId ? { ...permission, value: !permission.value } : permission,
+      ),
+    )
   }
 
   const { mutate: updateWidget } = useUpdate({
     errorNotification(error, values, resource) {
       return {
-        type: 'error',
+        type: "error",
         message: error?.formattedMessage,
-      };
+      }
     },
-  });
+  })
 
   const handleSaveChanges = () => {
     const updatedRole = {
-      permissions: currentPermissions.map((permission) => permission.id),
+      permissions: allPermissions.filter((permission) => permission.value).map((permission) => permission.id),
     }
 
     updateWidget({
       resource: "api/v1/bo/roles",
-      id: role?.id+'/',
+      id: role?.id + "/",
       values: updatedRole,
     })
     onClose?.()
   }
-
-
 
   // Function to get initials for the avatar
   const getInitials = (name: string) => {
     return name.slice(0, 1).toUpperCase()
   }
 
-    const handleSearchAvailable = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const searchTerm = e.target.value
-        if (searchTerm === "") {
-            setAvailablePerms(availablePermissions.filter((ap) => !currentPermissions.some((cp) => cp.id === ap.id)))
-        } else {
-            const filteredPermissions = availablePermissions.filter((permission) =>
-            permission.name.toLowerCase().includes(searchTerm.toLowerCase()),
-            )
-            setAvailablePerms(filteredPermissions) 
-        }
-    }
+  const [searchTerm, setSearchTerm] = useState("")
 
-    const handleSearchAffected = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const searchTerm = e.target.value
-        if (searchTerm === "") {
-            setCurrentPermissions(role?.permissions || [])
-        } else {
-            const filteredPermissions = role?.permissions.filter((permission) =>
-            permission.name.toLowerCase().includes(searchTerm.toLowerCase()),
-            )
-            setCurrentPermissions(filteredPermissions || [])
-        }
-    }
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value.toLowerCase())
+  }
 
+  const filteredPermissions = allPermissions.filter((permission) => permission.name.toLowerCase().includes(searchTerm))
 
-    // Function to reset permissions
-    const resetPermissions = () => {
-        setCurrentPermissions(role?.permissions || [])
-        setAvailablePerms(availablePermissions.filter((ap) => !currentPermissions.some((cp) => cp.id === ap.id)))
-    }
+  // Function to reset permissions
+  const resetPermissions = () => {
+    setAllPermissions(
+      [
+        ...(role?.permissions || []),
+        ...availablePermissions.filter((ap) => !role?.permissions.some((rp) => rp.id === ap.id)),
+      ].map((perm) => ({
+        ...perm,
+        value: role?.permissions.some((rp) => rp.id === perm.id) || false,
+      })),
+    )
+  }
 
-    // Function to handle all permissions to be added
-    const handleAllPermissions = () => {
-        setCurrentPermissions(availablePermissions)
-        setAvailablePerms([])
-    }
-    // Function to handle all permissions to be removed
-    const handleAllPermissionsRemove = () => {
-        setCurrentPermissions([])
-        setAvailablePerms(availablePermissions)
-    }
+  // Function to enable all permissions
+  const handleAllPermissions = () => {
+    setAllPermissions(allPermissions.map((permission) => ({ ...permission, value: true })))
+  }
+
+  // Function to disable all permissions
+  const handleAllPermissionsRemove = () => {
+    setAllPermissions(allPermissions.map((permission) => ({ ...permission, value: false })))
+  }
   return (
     <div className="flex flex-col overflow-y-auto h-full bg-white dark:bg-bgdarktheme border-l dark:border-zinc-800  sidepopup z-[360]  lt-sm:bottom-0 lt-sm:w-full rounded-[10px] shadow-lg shadow-[#00000008]">
       <div className="p-2 border-b flex justify-between items-center dark:border-zinc-800">
@@ -129,102 +112,59 @@ const RoleModal = ({ role, availablePermissions = [], onClose }: RoleModalProps)
       </div>
 
       <div className="flex flex-col no-scrollbar overflow-y-scroll">
-        {/* Current Permissions Section */}
         <div className="p-6">
-          <h2 className="text-lg font-medium mb-2">Current Permissions</h2>
-          <SearchBar SearchHandler={handleSearchAffected}  />
-          <div className="max-h-[30vh] overflow-y-auto pr-2">
+          <h2 className="text-lg font-medium mb-2">Permissions</h2>
+          <SearchBar SearchHandler={handleSearch} />
+          <div className="max-h-[60vh] overflow-y-auto pr-2">
             <div className="space-y-2">
-              {currentPermissions.length > 0 ? (
-                currentPermissions.map((permission) => (
+              {filteredPermissions.length > 0 ? (
+                filteredPermissions.map((permission) => (
                   <div
                     key={permission.id}
-                    className="flex items-center justify-between p-3 rounded-lg border dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-softredtheme transition-colors"
+                    className={`flex items-center justify-between p-3 rounded-lg border dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-${permission.value ? "softgreentheme" : "softredtheme"} transition-colors`}
                   >
                     <div className="flex items-center gap-3">
-                    
                       <span className="font-medium">{permission.name}</span>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => handleRemovePermission(permission.id)}
-                      className="p-2 rounded-full text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors"
-                      aria-label="Remove permission"
-                    >
-                      <Trash size={18} />
-                    </button>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="sr-only peer "
+                        checked={permission.value}
+                        onChange={() => handleTogglePermission(permission.id)}
+                      />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#a3d76d] dark:peer-focus:ring-[#4e6b3e] rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-[#4e6b3e] peer-checked:bg-[#8bc34a]"></div>
+                    </label>
                   </div>
                 ))
               ) : (
-                <div className="text-center py-8 text-zinc-500 dark:text-zinc-400">
-                  No permissions assigned to this role
-                </div>
+                <div className="text-center py-8 text-zinc-500 dark:text-zinc-400">No permissions found</div>
               )}
             </div>
           </div>
         </div>
-
-        <hr className="mx-6 border-t border-zinc-200 dark:border-zinc-800" />
+{/* 
         <div className="flex justify-center items-center p-3">
-            <button
-                className="btn-primary flex gap-2 items-center mt-3 mx-6"
-                onClick={() => {
-                    handleAllPermissions()
-                }}
-            >
-                All <ArrowUp size={18} />
-            </button>
-            <button
-                className="btn  flex gap-2 items-center mt-3 mx-6"
-                onClick={resetPermissions}
-            >
-                Reset <Undo size={18} />
-            </button>
-            <button
-                className="btn-danger flex gap-2 items-center mt-3 mx-6"
-                onClick={() => {
-                    handleAllPermissionsRemove()
-                }}
-            >
-                All <ArrowDown size={18} />
-            </button>
-        </div>
-        <hr className="mx-6 border-t border-zinc-200 dark:border-zinc-800" />
-
-        {/* Available Permissions Section */}
-        <div className="p-6">
-          <h2 className="text-lg font-medium mb-3">Available Permissions</h2>
-            <SearchBar SearchHandler={handleSearchAvailable}  />
-          <div className="max-h-[30vh] overflow-y-auto pr-2">
-            <div className="space-y-2">
-              {availablePerms.length > 0 ? (
-                availablePerms.map((permission) => (
-                  <div
-                    key={permission.id}
-                    className="flex items-center justify-between p-3 rounded-lg border dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-softgreentheme transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
-                      
-                      <span className="font-medium">{permission.name}</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleAddPermission(permission.id)}
-                      className="p-2 rounded-full text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors"
-                      aria-label="Add permission"
-                    >
-                      <Plus size={18} />
-                    </button>
-                  </div>
-                ))
-              ) : (
-                <div className="text-center py-8 text-zinc-500 dark:text-zinc-400">
-                  No additional permissions available
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+          <button
+            className="btn-primary flex gap-2 items-center mt-3 mx-6"
+            onClick={() => {
+              handleAllPermissions()
+            }}
+          >
+            All <ArrowUp size={18} />
+          </button>
+          <button className="btn  flex gap-2 items-center mt-3 mx-6" onClick={resetPermissions}>
+            Reset <Undo size={18} />
+          </button>
+          <button
+            className="btn-danger flex gap-2 items-center mt-3 mx-6"
+            onClick={() => {
+              handleAllPermissionsRemove()
+            }}
+          >
+            All <ArrowDown size={18} />
+          </button>
+        </div> */}
       </div>
 
       <div className="p-3 border-t dark:border-zinc-800 mt-auto">
@@ -236,11 +176,7 @@ const RoleModal = ({ role, availablePermissions = [], onClose }: RoleModalProps)
           >
             Cancel
           </button>
-          <button
-            type="button"
-            className="btn-primary transition-colors"
-            onClick={handleSaveChanges}
-          >
+          <button type="button" className="btn-primary transition-colors" onClick={handleSaveChanges}>
             Save Changes
           </button>
         </div>

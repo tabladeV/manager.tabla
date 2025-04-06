@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, Edit, Pen, Trash } from "lucide-react";
+import { ArrowLeft, ArrowRight, Edit, Pen, Plus, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import SearchBar from "../header/SearchBar";
@@ -8,6 +8,7 @@ import { BaseKey, useList, useCreate, useDelete, CanAccess, BaseRecord } from "@
 import Pagination from "../reservation/Pagination";
 import ActionPopup from "../popup/ActionPopup";
 import RoleModal from "../roles/RoleModal";
+import CreateRoleModal from "../roles/CreateRoleModal";
 
 
 interface PermissionType {
@@ -252,6 +253,8 @@ const Roles = () => {
         // }
     };
 
+
+    const [showCreateRoleModal, setShowCreateRoleModal] = useState(false);
     const [focusedRole, setFocusedRole] = useState<RoleType | null>(null);
     const [showRoleModal, setShowRoleModal] = useState(false);
 
@@ -263,6 +266,13 @@ const Roles = () => {
                     <RoleModal role={focusedRole} availablePermissions={availablePermissions}  onClose={()=>setShowRoleModal(false)}/>
                 </div>
             }
+            {
+                showCreateRoleModal &&
+                <div>
+                    <div className="overlay " onClick={()=>setShowCreateRoleModal(false)}/>
+                    <CreateRoleModal availablePermissions={availablePermissions} onClose={()=>setShowCreateRoleModal(false)}/>                
+                </div>
+            }
             <ActionPopup
                 action={action}
                 message={message}
@@ -271,8 +281,16 @@ const Roles = () => {
                 setShowPopup={setShowPopup}
             />
             <h2 className="text-center mb-3">{t("settingsPage.roles.title")}</h2>
-
+            <div className="flex justify-center items-center">
+                <CanAccess resource="role" action="create">
+                <button className="btn-primary flex items-center" onClick={() => setShowCreateRoleModal(true)}>
+                    {t("settingsPage.roles.buttons.createRole")} <Plus size={17} className="ml-2" />
+                </button>
+                </CanAccess>
+            </div>
             <div className="mt-4">
+
+            {/*
                 <label className="text-[17px]">{t("settingsPage.roles.labels.roleName")}</label>
                 <CanAccess resource="role" action="create">
                     <input
@@ -286,7 +304,6 @@ const Roles = () => {
                 </CanAccess>
 
                 <div className="mt-5 gap-4 flex justify-between w-full">
-                    {/* Available Permissions */}
                     <div className="flex w-full flex-col">
                         <label className="text-[17px]">{t("settingsPage.roles.labels.permissionsavailable")}</label>
                         <SearchBar SearchHandler={handleSearchAvailable} />
@@ -305,7 +322,6 @@ const Roles = () => {
                         </div>
                     </div>
 
-                    {/* Move Buttons */}
                     <CanAccess resource="role" action="create">
                     <div className="flex flex-col gap-3 mt-10">
                         <button
@@ -333,7 +349,6 @@ const Roles = () => {
                             <ArrowLeft size={20}/> All 
                         </button>
                     </div>
-                    {/* Affected Permissions */}
                     <div className="flex w-full flex-col">
                         <label className="text-[17px]">{t("settingsPage.roles.labels.permissionsaffected")}</label>
                         <SearchBar SearchHandler={handleSearchAffected} />
@@ -355,13 +370,13 @@ const Roles = () => {
 
                 </div>
 
-                {/* Save Role Button */}
-                
                 <CanAccess resource="role" action="create">
                 <button className="btn-primary mt-4" onClick={saveRole}>
                     {t("settingsPage.roles.buttons.saveRole")}
                 </button>
                 </CanAccess>
+                */}
+                
 
                 {/* Display Saved Roles */}
                 <div className="mt-6">
