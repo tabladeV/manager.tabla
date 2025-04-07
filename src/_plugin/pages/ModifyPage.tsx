@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Logo from '../../components/header/Logo'
 import { ArrowDown, ArrowLeft, Expand, Moon, MoveDown, Send, Sun } from 'lucide-react'
 import { BaseRecord, useCreate, useCustom, useCustomMutation, useOne, useUpdate } from '@refinedev/core';
@@ -9,6 +9,7 @@ import { getSubdomain } from '../../utils/getSubdomain';
 import { useRef } from 'react';
 import { useClickAway } from 'react-use';
 import BaseBtn from '../../components/common/BaseBtn';
+import WidgetReservationProcess from '../../components/reservation/WidgetReservationProcess';
 
 const Modify = () => {
   interface LoadingRowProps {
@@ -121,7 +122,7 @@ const Modify = () => {
   const [occasions, setOccasions] = useState<BaseRecord[]>();
 
   const { data: posts } = useCustom({
-    url: `https://api.dev.tabla.ma/api/v1/bo/restaurants/subdomain/occasions`,
+    url: `api/v1/bo/restaurants/subdomain/occasions`,
     method: "get",
   });
 
@@ -231,6 +232,10 @@ const Modify = () => {
     setShowOccasions(false);
   });
 
+  const selectedOccasion = useMemo(()=>{
+    return occasions?.find(occasion => occasion.id === updateInfo?.occasion)?.name
+  },[occasions, updateInfo])
+
   const [showOccasions, setShowOccasions] = useState(false);
 
   return (
@@ -312,12 +317,12 @@ const Modify = () => {
                         </span>
                         {reservationInfo?.allergies}
                       </p>
-                      <p className={`text-md mt-1 inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems`}>
+                      {selectedOccasion?<p className={`text-md mt-1 inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems`}>
                         <span className='font-bold mx-4'>
                           Occasion
                         </span>
-                        {occasions?.find(occasion => occasion.id === updateInfo?.occasion)?.name}
-                      </p>
+                        {selectedOccasion}
+                      </p>:<></>}
                       <p className={`text-md flex justify-around mt-1 inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems`}>
                         <p className={`text-md gap-3 dark:text-[#ffffffd5]`}>
                           <span className='font-bold mr-4'>
@@ -363,7 +368,7 @@ const Modify = () => {
                       </h3>
                       <input type='text' defaultValue={reservationInfo?.commenter} name='Special request' className={`text-md inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems`} placeholder='Special request' onChange={(e) => { setUpdateInfo({ ...updateInfo, commenter: e.target.value }) }} />
                       <input type='text' defaultValue={reservationInfo?.allergies} name='Allergies' className={`text-md inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems`} placeholder='Allergies' onChange={(e) => { setUpdateInfo({ ...updateInfo, allergies: e.target.value }) }} />
-                      <div className={`text-md cursor-pointer gap-3 inputs dark:text-[#ffffffd5] dark:bg-darkthemeitems`}>
+                      {occasions?.length || updateInfo?.occasion ? <><div className={`text-md cursor-pointer gap-3 inputs dark:text-[#ffffffd5] dark:bg-darkthemeitems`}>
                         <div className='flex justify-between items-center' onClick={() => { setShowOccasions(!showOccasions) }}>{occasions?.find(occasion => occasion.id === updateInfo?.occasion)?.name || 'Select an occasions'}
                           {!showOccasions ?
                             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -382,7 +387,7 @@ const Modify = () => {
                             <button key={occasion.id} className='text-left' onClick={() => { setUpdateInfo({ ...updateInfo, occasion: occasion.id }); setShowOccasions(false) }}>{occasion.name}</button>
                           ))}
                         </div>
-                      </div>
+                      </div></>:''}
                       <div className={`btn cursor-default text-subblack dark:bg-darkthemeitems dark:text-textdarktheme bg-white text-blacktheme rounded-[10px]`}>
                         <div onClick={() => { setShowProcess(true) }} className='cursor-pointer flex gap-10 justify-around p-1 items-center'>
                           <div className='flex gap-2'>
@@ -450,7 +455,19 @@ const Modify = () => {
           <img src={widgetInfo?.image} className='w-[300px] h-[300px] rounded-md' />
         </div>
       </div>
-      {showProcess && <div className=''><ReservationProcess onClick={() => { setShowProcess(false) }} getDateTime={(data: dataTypes) => { setData(data) }} /></div>}
+      {showProcess && 
+      <div className=''>
+          <WidgetReservationProcess
+            maxGuests={widgetInfo?.max_of_guests_par_reservation}
+            resData={{
+              reserveDate: data.reserveDate || reservationInfo?.date || '',
+              time: data.time || reservationInfo?.time.slice(0, 5) || '',
+              guests: data.guests || reservationInfo?.number_of_guests || ''
+            }}
+            onClick={() => { setShowProcess(false) }}
+            getDateTime={(data: dataTypes) => { setData(data) }}
+          />
+      </div>}
     </div>
   )
 }
