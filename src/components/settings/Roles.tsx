@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, Trash } from "lucide-react";
+import { ArrowLeft, ArrowRight, Edit, Pen, Plus, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import SearchBar from "../header/SearchBar";
@@ -7,6 +7,9 @@ import { useDarkContext } from "../../context/DarkContext";
 import { BaseKey, useList, useCreate, useDelete, CanAccess, BaseRecord } from "@refinedev/core";
 import Pagination from "../reservation/Pagination";
 import ActionPopup from "../popup/ActionPopup";
+import RoleModal from "../roles/RoleModal";
+import CreateRoleModal from "../roles/CreateRoleModal";
+
 
 interface PermissionType {
     id: number;
@@ -250,8 +253,26 @@ const Roles = () => {
         // }
     };
 
+
+    const [showCreateRoleModal, setShowCreateRoleModal] = useState(false);
+    const [focusedRole, setFocusedRole] = useState<RoleType | null>(null);
+    const [showRoleModal, setShowRoleModal] = useState(false);
+
     return (
         <div className="rounded-[10px] p-3 w-full bg-white dark:bg-bgdarktheme">
+            {showRoleModal && 
+                <div >
+                    <div className="overlay " onClick={()=>setShowRoleModal(false)}/>
+                    <RoleModal role={focusedRole} availablePermissions={availablePermissions}  onClose={()=>setShowRoleModal(false)}/>
+                </div>
+            }
+            {
+                showCreateRoleModal &&
+                <div>
+                    <div className="overlay " onClick={()=>setShowCreateRoleModal(false)}/>
+                    <CreateRoleModal availablePermissions={availablePermissions} onClose={()=>setShowCreateRoleModal(false)}/>                
+                </div>
+            }
             <ActionPopup
                 action={action}
                 message={message}
@@ -260,8 +281,16 @@ const Roles = () => {
                 setShowPopup={setShowPopup}
             />
             <h2 className="text-center mb-3">{t("settingsPage.roles.title")}</h2>
-
+            <div className="flex justify-center items-center">
+                <CanAccess resource="role" action="create">
+                <button className="btn-primary flex items-center" onClick={() => setShowCreateRoleModal(true)}>
+                    {t("settingsPage.roles.buttons.createRole")} <Plus size={17} className="ml-2" />
+                </button>
+                </CanAccess>
+            </div>
             <div className="mt-4">
+
+            {/*
                 <label className="text-[17px]">{t("settingsPage.roles.labels.roleName")}</label>
                 <CanAccess resource="role" action="create">
                     <input
@@ -275,7 +304,6 @@ const Roles = () => {
                 </CanAccess>
 
                 <div className="mt-5 gap-4 flex justify-between w-full">
-                    {/* Available Permissions */}
                     <div className="flex w-full flex-col">
                         <label className="text-[17px]">{t("settingsPage.roles.labels.permissionsavailable")}</label>
                         <SearchBar SearchHandler={handleSearchAvailable} />
@@ -294,7 +322,6 @@ const Roles = () => {
                         </div>
                     </div>
 
-                    {/* Move Buttons */}
                     <CanAccess resource="role" action="create">
                     <div className="flex flex-col gap-3 mt-10">
                         <button
@@ -322,7 +349,6 @@ const Roles = () => {
                             <ArrowLeft size={20}/> All 
                         </button>
                     </div>
-                    {/* Affected Permissions */}
                     <div className="flex w-full flex-col">
                         <label className="text-[17px]">{t("settingsPage.roles.labels.permissionsaffected")}</label>
                         <SearchBar SearchHandler={handleSearchAffected} />
@@ -344,13 +370,13 @@ const Roles = () => {
 
                 </div>
 
-                {/* Save Role Button */}
-                
                 <CanAccess resource="role" action="create">
                 <button className="btn-primary mt-4" onClick={saveRole}>
                     {t("settingsPage.roles.buttons.saveRole")}
                 </button>
                 </CanAccess>
+                */}
+                
 
                 {/* Display Saved Roles */}
                 <div className="mt-6">
@@ -363,18 +389,36 @@ const Roles = () => {
                                 <div key={index} className="mb-3 border-b-2 dark:border-[#ffffff30] pb-2">
                                     <div className="flex justify-between items-center">
                                         <h4 className="font-bold">{role.name}</h4>
-                                        <CanAccess resource="role" action="delete">
-                                        <Trash
-                                            size={30}
-                                            className="cursor-pointer text-redtheme bg-softredtheme p-2 rounded-md"
-                                            onClick={() => handleDeleteRequest(role)}
-                                        />
-                                        </CanAccess>
+                                        <div className="flex gap-2">
+                                            <CanAccess resource="role" action="delete">
+                                                <Trash
+                                                    size={30}
+                                                    className="cursor-pointer text-redtheme bg-softredtheme p-2 rounded-md"
+                                                    onClick={() => handleDeleteRequest(role)}
+                                                />
+                                            </CanAccess>
+                                            <CanAccess resource="role" action="update">
+                                                <Edit 
+                                                    onClick={() => {
+                                                        setFocusedRole(role);
+                                                        setIsRoles(false);
+                                                        setAvailablePermissions(permissions);
+                                                        setAffectedPermissions(role.permissions);
+                                                        setRoleName(role.name);
+                                                        setShowRoleModal(true);
+                                                    }
+                                                    }
+                                                    size={30}
+                                                    className="cursor-pointer btn-primary p-2 rounded-md"
+                                                />
+                                            </CanAccess>
+                                        </div>
                                     </div>
                                     <ul className="list-none flex flex-wrap gap-2 ml-5">
-                                        {role.permissions.map((perm, idx) => (
+                                        {role.permissions.slice(0,10).map((perm, idx) => (
                                             <li className="py-1 px-2 bg-softgreytheme dark:bg-darkthemeitems rounded-md" key={idx}>{perm.name}</li>
                                         ))}
+                                        {role.permissions.length > 10 && <li className="py-1 px-2 bg-softgreytheme dark:bg-darkthemeitems rounded-md">{`+${role.permissions.length - 10} more`}</li>}
                                     </ul>
                                 </div>
                             ))

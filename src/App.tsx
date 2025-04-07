@@ -62,6 +62,7 @@ import { notificationProvider } from "./providers/notificationProvider";
 import MessagesPage from "./_root/pages/MessagesPage";
 import RestaurantSelection from "./components/settings/RestaurantSelection";
 import BlankLayout from "./_root/BlankLayout";
+import FAQPage from "./_root/pages/FAQPage";
 const API_HOST = import.meta.env.VITE_API_URL || "https://api.dev.tabla.ma";
 function App() {
 
@@ -294,6 +295,9 @@ function App() {
 
                           {/* Support - not restricted */}
                           <Route path="/support" element={<SupportPage />} />
+                          
+                          {/* FAQ - not restricted */}
+                          <Route path="/faq" element={<FAQPage />} />
 
 
                           {/* Settings */}

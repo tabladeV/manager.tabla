@@ -22,7 +22,7 @@
 
 @layer components {
   .btn {
-    @apply bg-transparent border hover:border-subblack  transition duration-200 text-subblack font-[500] py-2 px-4 rounded-[10px];
+    @apply bg-transparent border hover:border-subblack  transition duration-200 text-subblack dark:text-white dark:hover:border-softwhitetheme font-[500] py-2 px-4 rounded-[10px];
   }
   .popup{
     @apply flex flex-col fixed  w-[30vw] z-[220] left-1/2 sm:top-1/2 p-[2em] -translate-x-1/2  sm:-translate-y-1/2  rounded-[20px] ;
