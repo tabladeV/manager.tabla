@@ -132,12 +132,14 @@ export default function WidgetConfig() {
     }
   };
 
+  const API_HOST = import.meta.env.VITE_API_URL || "https://api.dev.tabla.ma";
+
   const openPdfInNewTab = () => {
     if (!menuPdf) {
       alert('No menu PDF available to open.');
       return;
     }
-    const linkSource = !uploadedPdf ? `https://api.dev.tabla.ma${menuPdf}` : menuPdf;
+    const linkSource = !uploadedPdf ? `${API_HOST}${menuPdf}` : menuPdf;
     window.open(linkSource, '_blank');
   };
 
@@ -216,7 +218,7 @@ export default function WidgetConfig() {
       <div className="mb-6">
         {logo ? (
           <div className="relative w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden">
-            <img src={!newLogo ? `https://api.dev.tabla.ma${logo}` : logo} alt="Logo" className="w-full h-full object-contain" />
+            <img src={!newLogo ? `${API_HOST}${logo}` : logo} alt="Logo" className="w-full h-full object-contain" />
             <button
               onClick={() => {setLogo(null);setNewLogo(true)}}
               className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"

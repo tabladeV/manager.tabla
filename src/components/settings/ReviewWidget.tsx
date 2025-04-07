@@ -3,6 +3,7 @@ import { Upload, X } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import axiosInstance from '../../providers/axiosInstance';
 
 const ReviewWidget = () => {
 
@@ -13,7 +14,7 @@ const ReviewWidget = () => {
 
   const restaurantId = localStorage.getItem('restaurant_id');
 
-  const { mutate, isLoading: widgetLoading, data, error: widgetError } = useCustomMutation();
+  // const { mutate, isLoading: widgetLoading, data, error: widgetError } = useCustomMutation();
   
   const {data : subdomainData, isLoading: isLoadingSubdomain, error: errorSubdomain} = useList({
     resource: 'api/v1/bo/restaurants/subdomain',
@@ -99,11 +100,7 @@ const ReviewWidget = () => {
 
 
     try {
-      await     mutate({
-        url: 'https://api.dev.tabla.ma/api/v1/reviews/widget',
-        method: "patch",
-        values:newFormData,
-      })
+      await axiosInstance.patch('/api/v1/reviews/widget',newFormData)
       alert('Configuration saved successfully!');
     } catch (error) {
       console.error('Error updating widget:', error);
@@ -115,9 +112,10 @@ const ReviewWidget = () => {
     localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-white' : 'bg-white text-black';
   const { t } = useTranslation();
 
-  
   const currentUrl = window.location.href
   console.log('Current URL:', currentUrl)
+  
+  const API_HOST = import.meta.env.VITE_API_URL || "https://api.dev.tabla.ma";
 
   return (
     <div className={`w-full mx-auto p-6 rounded-[10px] ${darkModeClass}`}>
@@ -128,7 +126,7 @@ const ReviewWidget = () => {
         {logo || previewUrl ? (
           <div className="relative w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden">
             <img
-              src={!newLogo ? `https://api.dev.tabla.ma${logo ?? ''}` : previewUrl ?? undefined}
+              src={!newLogo ? `${API_HOST}${logo ?? ''}` : previewUrl ?? undefined}
               alt="Logo"
               className="w-full h-full object-contain"
             />
