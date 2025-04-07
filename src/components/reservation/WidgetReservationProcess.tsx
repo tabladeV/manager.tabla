@@ -1,0 +1,278 @@
+import React, { useState, useEffect } from 'react';
+import { format } from 'date-fns';
+import OurCalendar from '../Calendar/OurCalendar';
+import { useCustom, useList } from '@refinedev/core';
+// Import the actual useCustom hook instead of using the mock implementation
+
+
+type SelectedData = {
+  reserveDate: string;
+  time: string;
+  guests: number;
+};
+
+type ReservationProcessProps = {
+  onClick: () => void;
+  getDateTime: (data: SelectedData) => void;
+  maxGuests?: number;
+  minGuests?: number;
+  resData?: SelectedData;
+};
+
+export type AvailableDate = {
+  day: number;
+  isAvailable: boolean;
+};
+
+const SkeletonLoader = () => (
+  <div className="animate-pulse">
+    <div className="grid grid-cols-7 gap-2">
+      {[...Array(35)].map((_, index) => (
+        <div key={index} className="h-[40px] bg-gray-200 rounded-md"></div>
+      ))}
+    </div>
+  </div>
+);
+
+const TimeSkeletonLoader = () => (
+  <div className="animate-pulse flex flex-wrap justify-center gap-[10px] p-[20px]">
+    {[...Array(8)].map((_, index) => (
+      <div key={index} className="h-[65px] w-[65px] bg-gray-200 rounded-md"></div>
+    ))}
+  </div>
+);
+
+const EmptyState = ({ message }: { message: string }) => (
+  <div className="flex flex-col items-center justify-center h-[200px] p-4">
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <p className="mt-2 text-gray-500 text-center">{message}</p>
+  </div>
+);
+
+const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
+  const [activeTab, setActiveTab] = useState<'date' | 'guest' | 'time' | 'confirm' | null>('date');
+  const [selectedDate, setSelectedDate] = useState<Date | null>(props?.resData?.reserveDate ? new Date(props.resData.reserveDate) : null);
+  const [selectedTime, setSelectedTime] = useState<string | null>(props?.resData?.time as string);
+  const [selectedGuests, setSelectedGuests] = useState<number | null>(Number(props?.resData?.guests));
+  const [selectedData, setSelectedData] = useState<SelectedData>({
+    reserveDate: '',
+    time: '',
+    guests: 0,
+  });
+  const [availableDates, setAvailableDates] = useState<AvailableDate[]>([]);
+  const [availableTimes, setAvailableTimes] = useState<string[]>([]);
+  const [loadingTimes, setLoadingTimes] = useState<boolean>(false);
+  const [currentMonth, setCurrentMonth] = useState<string>(format(new Date(), 'yyyy-MM'));
+
+  // Remove the mock implementation and use the actual hook
+
+  // Fetch available dates for the current month
+  const { data: dates, isFetching: loadingDates, refetch: getAvailableDays } = useList({
+    resource: `api/v1/bo/subdomains/availability/${currentMonth}/`,
+  });
+
+  // Fetch available times when date and guests are selected
+  const { data: times, isFetching: timesLoading } = useList({
+    resource: 'api/v1/bo/subdomains/availability/time-slots/',
+    filters: [
+      {
+        field: 'date',
+        operator: 'eq',
+        value: selectedDate ? format(selectedDate, 'yyyy-MM-dd') : null,
+      },
+      {
+        field: 'number_of_guests',
+        operator: 'eq',
+        value: Number(selectedGuests || 0),
+      }
+    ],
+    queryOptions: {
+      enabled: !!(selectedDate && selectedGuests), // Only enable when date and guests are selected
+      onSuccess: (data) => {
+        setAvailableTimes(data?.data?.map(record => String(record)));
+      },
+      onError: (error) => {
+        console.error("Error fetching available times:", error);
+        setAvailableTimes([]); // Reset available times on error
+      },
+    }
+  });
+
+  useEffect(() => {
+    if (dates && !loadingDates) {
+      setAvailableDates(dates?.data as AvailableDate[]);
+    }
+  }, [dates, loadingDates]);
+  const handleDateClick = (day: Date) => {
+    setSelectedDate(day);
+    const formattedDate = format(day, 'yyyy-MM-dd');
+    setSelectedData((prev) => ({...prev, time: '', reserveDate: formattedDate }));
+    setSelectedTime(null);
+    setSelectedGuests(null);
+    setAvailableTimes([]);
+    setLoadingTimes(false);
+    setActiveTab('guest');
+  };
+
+  const handleGuestClick = (guest: number) => {
+    setSelectedGuests(guest);
+    setSelectedData((prevData) => ({ ...prevData, guests: guest }));
+    setAvailableTimes([]);
+    setSelectedTime(null);
+    setActiveTab('time');
+  };
+
+  const handleTimeClick = (time: string) => {
+    setSelectedTime(time);
+    setSelectedData((prevData) => ({ ...prevData, time }));
+    setActiveTab('confirm');
+  };
+
+  const handleConfirmClick = () => {
+    props.getDateTime(selectedData);
+    props.onClick();
+  };
+
+  const handleMonthChange = (newMonth: string) => {
+    setCurrentMonth(newMonth);
+    setAvailableDates([]);
+  };
+
+  return (
+    <div className="">
+      <div className="overlay z-[309] glassmorphism" onClick={props.onClick}></div>
+      <div className={`popup z-[360] lt-sm:h-[70vh] sm:w-[30em] lt-sm:bottom-0 lt-sm:w-full rounded-[10px] ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}>
+        <div className="flex justify-center gap-5 mt-[1em]">
+          {(
+            <span
+              className={activeTab === 'date' ? 'activetabb' : 'p-[10px]'}
+              onClick={() => setActiveTab('date')}
+              id="date"
+            >
+              Date
+            </span>
+          )}
+          {(
+            <span
+              className={activeTab === 'guest' ? 'activetabb' : 'p-[10px]'}
+              onClick={() => setActiveTab('guest')}
+              id="guest"
+            >
+              Guest
+            </span>
+          )}
+          {(
+            <span
+              className={activeTab === 'time' ? 'activetabb' : 'p-[10px]'}
+              onClick={() => setActiveTab('time')}
+              id="time"
+            >
+              Time
+            </span>
+          )}
+        </div>
+
+        {activeTab === 'date' && (
+          <div className="content">
+            <div className="text-[20px] text-left mx-[30px] mt-[1em] mb-[.5em] font-bold">
+              {selectedDate? <>{format(selectedDate, 'dd MMMM yyyy')} <span className="font-semibold">has been selected</span></>:<span className="font-semibold">Select a date</span>}
+            </div>
+            <OurCalendar 
+                forbidden={true} 
+                value={selectedDate}
+                onClick={handleDateClick} 
+                availableDays={availableDates}
+                loading={loadingDates || !availableDates?.length}
+                onMonthChange={(month)=>handleMonthChange(month)}
+              />
+          </div>
+        )}
+
+        {activeTab === 'guest' && (
+          <div className="content">
+            <div className="text-[20px] text-left mx-[30px] mt-[1em] mb-[.5em] font-bold">
+              {selectedGuests?
+              <>
+              {selectedGuests} <span className="font-semibold">guests have been selected</span>
+              </>:
+              <>
+              <span className="font-semibold">Choose number of guests</span>
+              </>
+              }
+            </div>
+            <div className="flex flex-wrap justify-center gap-[10px] p-[20px] rounded-[3px]">
+              {[...Array(props.maxGuests ? props.maxGuests : 15)].map((_, index) => (
+                <button
+                  className={`text-15 hover:bg-[#335a06] hover:text-white font-bold h-[65px] w-[65px] flex items-center justify-center border-solid border-[1px] border-[#335A06] ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ' text-blacktheme'} ${selectedGuests === index + 1 ? 'bg-black text-white' : ''}`}
+                  key={index}
+                  onClick={() => handleGuestClick(index + 1)}
+                >
+                  {index + 1}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'time' && (
+          <div className="content">
+            <div className="text-[20px] text-left mx-[30px] mt-[1em] mb-[.5em] font-bold">
+              {selectedTime? 
+              <>
+              {selectedTime} <span className="font-semibold">has been selected</span>
+              </>:
+              <>
+               <span className="font-semibold">Available Times</span>
+              </>
+              }
+            </div>
+            {timesLoading? (
+              <TimeSkeletonLoader />
+            ) : availableTimes.length === 0 ? (
+              <EmptyState message={`No available time slots for this date ${selectedDate?format(selectedDate,'dd MMMM yyyy'):''} and number of guests ${selectedGuests || ''}`} />
+            ) : (
+              <div className="flex flex-wrap min-h-[200px] overflow-y-auto justify-center gap-[10px] p-[20px] rounded-[3px]">
+                {availableTimes.map((time, index) => {
+                  const now = new Date();
+                  const isToday = selectedDate && format(selectedDate, 'yyyy-MM-dd') === format(now, 'yyyy-MM-dd');
+                  const [hour, minute] = time.split(':').map(Number);
+                  const isPastTime = isToday && (hour < now.getHours() || (hour === now.getHours() && minute < now.getMinutes()));
+                  
+                  return (
+                    <button
+                      onClick={() => !isPastTime && handleTimeClick(time)}
+                      className={`text-15 ${isPastTime ? 'bg-softwhitetheme text-subblack cursor-not-allowed' : 'hover:bg-[#335a06] hover:text-white'} font-bold h-[65px] w-[65px] flex items-center justify-center border-solid border-[1px] border-[#335A06] ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ' text-blacktheme'} ${selectedTime === time ? 'bg-black text-white' : ''}`}
+                      key={index}
+                      disabled={!!isPastTime}
+                    >
+                      {time}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'confirm' && (
+          <div className="content">
+            <div className="text-[20px] text-left mx-[30px] mt-[1em] mb-[.5em] font-bold">
+              <span className='font-[500] mr-2'>Your reservation is set for</span> {selectedDate && format(selectedDate, 'dd MMMM yyyy')} <span className="font-semibold mx-2">at</span> 
+              {selectedTime} <span className="font-semibold mx-2">for</span> 
+              {selectedGuests} <span className="font-semibold">guests</span>
+            </div>
+            <div className="flex flex-wrap justify-center gap-[10px] p-[20px] rounded-[3px]">
+              <button onClick={handleConfirmClick} className="btn-primary">
+                Confirm
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default WidgetReservationProcess;
