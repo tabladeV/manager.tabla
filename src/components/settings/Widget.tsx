@@ -155,6 +155,11 @@ export default function WidgetConfig() {
       };
     },
   });
+
+  
+  const currentUrl = window.location.href
+  console.log('Current URL:', currentUrl)
+
   const handleSave = async () => {
     if (!widgetInfo) return;
 
@@ -346,10 +351,10 @@ export default function WidgetConfig() {
         >
           {t('settingsPage.widget.buttons.save')}
         </button>
-        <Link to={`https://${subdomain}.dev.tabla.ma/make/reservation`} target="_blank" className="btn-secondary w-1/4 text-center lt-md:w-full">
+        <Link to={currentUrl.includes('dev')?`https://${subdomain}.dev.tabla.ma/make/reservation`:`https://${subdomain}.tabla.ma/make/reservation`} target="_blank" className="btn-secondary w-1/4 text-center lt-md:w-full">
           {t('settingsPage.widget.buttons.preview')} Reservation
         </Link>
-        <Link to={`https://${subdomain}.dev.tabla.ma/make/modification/preview`} target="_blank" className="btn-secondary w-1/4 text-center lt-md:w-full">
+        <Link to={currentUrl.includes('dev')?`https://${subdomain}.dev.tabla.ma/make/modification/preview`:`https://${subdomain}.tabla.ma/make/modification/preview`} target="_blank" className="btn-secondary w-1/4 text-center lt-md:w-full">
           {t('settingsPage.widget.buttons.preview')} Modification
         </Link>
       </div>

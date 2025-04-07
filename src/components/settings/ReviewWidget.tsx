@@ -115,6 +115,10 @@ const ReviewWidget = () => {
     localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-white' : 'bg-white text-black';
   const { t } = useTranslation();
 
+  
+  const currentUrl = window.location.href
+  console.log('Current URL:', currentUrl)
+
   return (
     <div className={`w-full mx-auto p-6 rounded-[10px] ${darkModeClass}`}>
       <h1 className="text-2xl font-bold text-center mb-6">
@@ -178,7 +182,7 @@ const ReviewWidget = () => {
         >
           {t('settingsPage.widget.buttons.save')}
         </button>
-        <Link to={`https://${subdomain}.dev.tabla.ma/make/review/preview`} target="_blank" className="btn-secondary w-1/2 text-center lt-md:w-full">
+        <Link to={currentUrl.includes('dev')?`https://${subdomain}.dev.tabla.ma/make/review/preview`:`https://${subdomain}.tabla.ma/make/review/preview`} target="_blank" className="btn-secondary w-1/2 text-center lt-md:w-full">
           {t('settingsPage.widget.buttons.preview')}
         </Link>
       </div>
