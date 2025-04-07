@@ -3,9 +3,10 @@ import { useLocation, useParams } from 'react-router-dom';
 import Logo from '../../components/header/Logo';
 import ReservationProcess from '../../components/reservation/ReservationProcess';
 import { LoaderCircle, ScreenShareIcon } from 'lucide-react';
-import { BaseKey, BaseRecord, useCreate, useCustom, useOne } from '@refinedev/core';
+import { BaseKey, BaseRecord, useCreate, useCustom, useList, useOne } from '@refinedev/core';
 import { format } from 'date-fns';
 import { getSubdomain } from '../../utils/getSubdomain';
+import WidgetReservationProcess from '../../components/reservation/WidgetReservationProcess';
 
 const WidgetPage = () => {
 
@@ -22,14 +23,11 @@ const WidgetPage = () => {
     id: '',
   });
 
-  console.log('Widget data:', widgetData);
-
   const subdomain = getSubdomain();
   const [occasions, setOccasions] = useState<BaseRecord[]>();
 
-  const { data: posts } = useCustom({
-    url: `https://api.dev.tabla.ma/api/v1/bo/restaurants/subdomain/occasions`,
-    method: 'get',
+  const { data: posts } = useList({
+    resource: `api/v1/bo/restaurants/subdomain/occasions`,
   });
 
   useEffect(() => {
@@ -38,6 +36,7 @@ const WidgetPage = () => {
     }
 
   }, [posts])
+
 
   
 
@@ -99,7 +98,7 @@ const WidgetPage = () => {
       phone: e.target.phone.value,
       preferences: e.target.preferences.value,
       allergies: e.target.allergies.value,
-      occasion: e.target.occasion.value!== 0? e.target.occasion.value: null, 
+      occasion: e.target.occasion?.value!== 0? e.target.occasion?.value: null, 
     };
     setUserInformation(updatedUserInformation);
     if (
@@ -269,13 +268,15 @@ const WidgetPage = () => {
                 <input id="phone" type="text" placeholder="Phone" className="inputs-unique w-full sm:w-[30em] bg-white dark:bg-bgdarktheme2" />
                 <textarea id="allergies" placeholder="Allergies" className="inputs-unique w-full sm:w-[30em] bg-white dark:bg-bgdarktheme2" />
                 <textarea id="preferences" placeholder="Preferences" className="inputs-unique w-full sm:w-[30em] bg-white dark:bg-bgdarktheme2" />
-                <select id="occasion" className="inputs-unique w-full sm:w-[30em] bg-white dark:bg-bgdarktheme2">
+                {
+                occasions?.length? <select id="occasion" className="inputs-unique w-full sm:w-[30em] bg-white dark:bg-bgdarktheme2">
                   {occasions?.map((occasion: BaseRecord) => (
                     <option key={occasion.id} value={occasion.id}>
                       {occasion.name}
                     </option>
                   ))}
-                </select>
+                </select>:<></>
+                }
                 <div className="flex w-full sm:w-[30em] gap-3 mt-1">
                   <button onClick={() => setStep(1)} className="btn w-full mt-3 text-blacktheme dark:text-white">
                     Back
@@ -319,10 +320,13 @@ const WidgetPage = () => {
                   <p className='text-subblack font-[600] dark:text-[#e1e1e1]'>Allergies:</p>
                   <p className='' >{userInfromation.allergies}</p>
                 </div>
-                <div className="flex gap-3 inputs-unique">
-                  <p className='text-subblack font-[600] dark:text-[#e1e1e1]'>Occasion:</p>
-                  <p className='' >{occasions?.find((occasion: BaseRecord) => occasion.id === Number(userInfromation.occasion))?.name}</p>
-                </div>
+                {
+                  (occasions?.length && userInfromation.occasion)?
+                  <div className="flex gap-3 inputs-unique">
+                    <p className='text-subblack font-[600] dark:text-[#e1e1e1]'>Occasion:</p>
+                    <p className='' >{occasions?.find((occasion: BaseRecord) => occasion.id === Number(userInfromation.occasion))?.name}</p>
+                  </div>:<></>
+                }
                 <div className="flex gap-3 inputs-unique">
                   <p className='text-subblack font-[600] dark:text-[#e1e1e1]'>Date:</p>
                   <p className='' >{format(data.reserveDate, 'yyyy-MM-dd')}</p>
@@ -347,7 +351,7 @@ const WidgetPage = () => {
               <p className="mt-3 text-subblack dark:text-[#e1e1e1]">
                 Your reservation has been successfully made. You will receive a confirmation email shortly.
               </p>
-              <button onClick={() => setStep(1)} className="btn-primary mt-3">
+              <button onClick={() => window.location.reload()} className="btn-primary mt-3">
                 Make another reservation
               </button>
             </div>
@@ -360,9 +364,10 @@ const WidgetPage = () => {
           )}
           {showProcess && (
             <div>
-              <ReservationProcess
+              <WidgetReservationProcess
                 onClick={() => setShowProcess(false)}
                 maxGuests={widgetInfo?.max_of_guests_par_reservation}
+                resData={data}
                 getDateTime={(data: any) => setData(data)}
               />
             </div>

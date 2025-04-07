@@ -220,7 +220,7 @@ const General = () => {
 
     if (subdomain) {
       mutate({
-        url: 'https://api.dev.tabla.ma/api/v1/bo/restaurants/subdomain',
+        url: 'api/v1/bo/restaurants/subdomain',
         method: 'patch',
         values: { subdomain: subdomain },
       });

@@ -131,7 +131,7 @@ const PlacePage: React.FC = () => {
     }
   });
 
-  const { data: tablesData, isLoading: isLoadingTables, error: errorTables, refetch: refreshTables } = useList({
+  const { data: tablesData, isFetching: isLoadingTables, error: errorTables, refetch: refreshTables } = useList({
     resource: "api/v1/bo/tables/tables_reservations/",
     filters: [
       { field: "reservations__date", operator: "eq", value: format(chosenDay, 'yyyy-MM-dd') },
@@ -140,11 +140,14 @@ const PlacePage: React.FC = () => {
     ],
     queryOptions: {
       keepPreviousData: false,
-      enabled: false,
     }
   });
 
   // We've removed the availableTablesData fetching since it's now handled inside the EditReservationModal
+
+  useEffect(()=>{
+    console.log(isLoadingTables)
+  },[isLoadingTables])
 
   const [page, setPage] = useState(1);
   const { data: reservationsData, isLoading: isLoadingReservations, error: errorReservations, refetch: refetchReservations } = useList({
@@ -434,7 +437,7 @@ const PlacePage: React.FC = () => {
   // "Focus on All Tables": centers all tables of the current floor with margin
   const handleFocusAll = () => {
     const container = containerRef.current;
-    if (!container || isLoadingTables || tables.length === 0) return;
+    if (!container || tables.length === 0) return;
 
     const containerWidth = container.clientWidth;
     const containerHeight = container.clientHeight;
