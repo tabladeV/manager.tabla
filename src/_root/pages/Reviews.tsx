@@ -357,7 +357,7 @@ const Reviews = () => {
         <div>
           <div className="overlay" onClick={() => setFocusedDate(false)}></div>
           <div className={`popup lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}>
-            <IntervalCalendar onRangeSelect={handleDateClick} />
+            <IntervalCalendar onRangeSelect={handleDateClick} onClose={() => setFocusedDate(false)} />
           </div>
         </div>
       )}
