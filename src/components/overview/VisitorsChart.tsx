@@ -203,7 +203,7 @@ export default function ReservationSource() {
         <div>
           <div className='overlay bg-transparent' onClick={()=>{setShowDay(false)}}/>
           <div className="popup lt-sm:w-full h-[50vh] lt-sm:h-[70vh] z-[250] lt-sm:bottom-0 bg-white dark:bg-bgdarktheme">
-            <IntervalCalendar onRangeSelect={handleDateClick} />
+            <IntervalCalendar onRangeSelect={handleDateClick} onClose={()=>{setShowDay(false)}} />
           </div>
         </div>
     }
