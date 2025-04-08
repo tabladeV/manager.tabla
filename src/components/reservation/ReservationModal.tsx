@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ReservationProcess from './ReservationProcess';
-import { ArrowLeft, User } from 'lucide-react';
+import { ArrowLeft, User, X } from 'lucide-react';
 import { BaseKey, BaseRecord, useCreate, useList } from '@refinedev/core';
 import BaseBtn from '../common/BaseBtn';
 import { Occasion, OccasionsType } from '../settings/Occasions';
@@ -354,11 +354,19 @@ const ReservationModal = (props: ReservationModalProps) => {
       )}
       {findClient ? (
         <form
-          className={`sm:sidepopup lt-sm:popup lt-sm:h-[70vh] lt-sm:w-full lt-sm:bottom-0 h-full gap-5 ${
+          className={`sm:sidepopup lt-sm:popup lt-sm:min-h-[70vh] lt-sm:max-h-[90vh] overflow-y-auto no-scrollbar lt-sm:w-full lt-sm:bottom-0 h-full gap-5 ${
             localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'
           }`}
         >
+          <div className='flex justify-between items-center'>
           <h1 className="text-3xl font-[700]">{t('grid.buttons.addReservation')}</h1>
+          <button
+            onClick={()=> props.onClick?.()}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            <X size={20} />
+          </button>
+          </div>
           <input
             placeholder={t('grid.placeHolders.searchClient')}
             onChange={searchFilter}
@@ -445,7 +453,7 @@ const ReservationModal = (props: ReservationModalProps) => {
         </form>
       ) : (
         <form
-          className={`sm:sidepopup lt-sm:popup lt-sm:h-[70vh] lt-sm:w-full lt-sm:bottom-0 h-full gap-5 ${
+          className={`sm:sidepopup lt-sm:popup lt-sm:min-h-[70vh] lt-sm:max-h-[90vh] overflow-y-auto no-scrollbar  lt-sm:w-full lt-sm:bottom-0 h-full gap-5 ${
             darkMode ? 'bg-bgdarktheme' : 'bg-white'
           }`}
           onSubmit={(event) => {
@@ -468,7 +476,15 @@ const ReservationModal = (props: ReservationModalProps) => {
           }}
         >
           <ArrowLeft className="cursor-pointer" onClick={() => setFindClient(true)} />
+          <div className='flex justify-between items-center'>
           <h1 className="text-3xl font-[700]">{t('grid.buttons.addReservation')}</h1>
+          <button
+            onClick={()=> props.onClick?.()}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            <X size={20} />
+          </button>
+          </div>
           <div className="flex flex-col gap-2">
             <input
               placeholder={t('grid.placeHolders.name')}
