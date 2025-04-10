@@ -85,6 +85,7 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
   const [blockInHouse, setBlockInHouse] = useState(false);
   const [selectedDateRange, setSelectedDateRange] = useState<{ start: Date | null, end: Date | null }>({ start: new Date(today), end: null });
   const [focusedDate, setFocusedDate] = useState<boolean>(false);
+  const [periodType, setPeriodType] = useState<"DATE"|"TIME">('TIME');
   
   const mappedFloors = useCallback(()=>{
     return floors?.map((floor: any) => ({ label: floor.name, value: floor.id })) || [];
@@ -127,14 +128,15 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
 
     const blockData = {
       start_date: formatedStartDate,
-      end_date: selectedDateRange?.end? formatedEndDate: formatedEndDate,
+      end_date: selectedDateRange?.end? formatedEndDate: formatedStartDate,
       start_time: startBlockTime,
       end_time: endBlockTime,
       block_type: blockType,
       floors: selectedFloor,
       tables: selectedTable,
       block_online: blockOnline,
-      block_backoffice: blockInHouse
+      block_backoffice: blockInHouse,
+      peroid_type: periodType,
     };
 
     createReservationPause({
@@ -174,8 +176,8 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
   const isValid = useCallback(
     () => {
       const isAtleastOneOptionSelected = blockOnline || blockInHouse;
-
-      if (!startBlockTime || !endBlockTime) return false;
+      if(periodType === 'TIME')
+        if (!startBlockTime || !endBlockTime) return false;
 
       if (blockType === 'ALL') {
         return isAtleastOneOptionSelected;
@@ -193,7 +195,8 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
     selectedFloor.length,
     selectedTable.length,
     startBlockTime,
-    endBlockTime
+    endBlockTime,
+    periodType
   ])
 
   // Helper to get block type label
@@ -269,14 +272,14 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
                   <span className="font-medium">
                     {targetRule?.start_date}
                   </span>
-                  {(targetRule?.end_date && targetRule?.end_date !== targetRule?.start_date )&&
+                  {(targetRule?.end_date && targetRule?.end_date !== targetRule?.start_date) &&
                     <span className="font-medium">
-                    - {targetRule?.start_date}
+                      - {targetRule?.start_date}
                     </span>
                   }
                   <span className={`text-xs px-2 py-0.5 rounded-full ${targetRule?.block_online && targetRule?.block_backoffice
-                      ? 'bg-red-100 text-red-800'
-                      : 'bg-yellow-100 text-yellow-800'
+                    ? 'bg-red-100 text-red-800'
+                    : 'bg-yellow-100 text-yellow-800'
                     }`}>
                     {getReservationChannel(targetRule)}
                   </span>
@@ -361,7 +364,34 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
           </h3>
 
           {/* Time range */}
-          <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="flex space-x-2 mb-3">
+            <button
+              type="button"
+              onClick={() => {
+                setPeriodType('TIME');
+              }}
+              className={`px-3 py-1.5 text-sm rounded-md ${periodType === 'TIME'
+                ? 'btn-primary text-white'
+                : darkMode ? 'bg-darkthemeitems' : 'bg-gray-100'
+                }`}
+            >
+              Time
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setPeriodType('DATE');
+              }}
+              className={`px-3 py-1.5 text-sm rounded-md ${periodType === 'DATE'
+                ? 'btn-primary text-white'
+                : darkMode ? 'bg-darkthemeitems' : 'bg-gray-100'
+                }`}
+            >
+              Date / Date Range
+            </button>
+          </div>
+          { periodType === 'TIME'?(
+            <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
               <BaseTimeInput loading={isLoadingFloors} 
                 label='START BLOCK TIME'
@@ -386,6 +416,7 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
               />
             </div>
           </div>
+          ):''}
 
           {/* Block type selection */}
           <div className="mb-4">
