@@ -552,7 +552,7 @@ const ReservationStatusLabel: React.FC<ReservationStatusLabelProps> = ({ status,
   return (
     <>
     {loading ? <div className={`h-4 w-[100px] rounded-full dark:bg-darkthemeitems bg-gray-300`}></div> 
-    : <span className={`${statusStyles} text-center py-[.1em] px-3 rounded-[10px]`}>
+    : <span className={`${statusStyles} cursor-pointer text-center py-[.1em] px-3 rounded-[10px]`}>
         {statusText}
       </span>}
     </>

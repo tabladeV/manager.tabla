@@ -18,7 +18,34 @@
   --toastify-color-progress-success: var(--toastify-color-success) !important;
   --toastify-color-progress-warning: var(--toastify-color-warning) !important;
   --toastify-color-progress-error: var(--toastify-color-error) !important;
+  --color-whitetheme: #ffffff;
+  --color-softwhitetheme: #ffffff77;
+  --color-greentheme: #88ab61;
+  --color-softgreentheme: #88ab611a;
+  --color-blacktheme: #1a1a1a;
+  --color-subblack: #1e1e1e80;
+  --color-softredtheme: #ff4b4b1a;
+  --color-redtheme: #ff4b4b;
+  --color-orangetheme: #ffa500;
+  --color-softorangetheme: #ffa5001a;
+  --color-purpletheme: #7b2cbf;
+  --color-softpurpletheme: #7b2cbf1a;
+  --color-blushtheme: #b75d69;
+  --color-softblushtheme: #b75d691a;
+  --color-bluetheme: #3f72af;
+  --color-softbluetheme: #3f72af1a;
+  --color-browntheme: #9c6644;
+  --color-softbrowntheme: #9c66441a;
+  --color-yellowtheme: #f09300;
+  --color-softyellowtheme: #fde0301a;
+  --color-greytheme: #1e1e1e;
+  --color-softgreytheme: #f3f3f3;
+  --color-bgdarktheme: #031911;
+  --color-bgdarktheme2: #042117;
+  --color-darkthemeitems: #05291c;
+  --color-textdarktheme: #f5f4f2;
 }
+
 
 @layer components {
   .btn {
