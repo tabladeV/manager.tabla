@@ -128,7 +128,7 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({
 
     const blockData = {
       start_date: formatedStartDate,
-      end_date: selectedDateRange?.end? formatedEndDate: formatedEndDate,
+      end_date: selectedDateRange?.end? formatedEndDate: formatedStartDate,
       start_time: startBlockTime,
       end_time: endBlockTime,
       block_type: blockType,
