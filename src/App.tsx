@@ -63,6 +63,7 @@ import MessagesPage from "./_root/pages/MessagesPage";
 import RestaurantSelection from "./components/settings/RestaurantSelection";
 import BlankLayout from "./_root/BlankLayout";
 import FAQPage from "./_root/pages/FAQPage";
+import TermsAndConditions from "./_root/pages/TermsAndConditions";
 const API_HOST = import.meta.env.VITE_API_URL || "https://api.dev.tabla.ma";
 function App() {
 
@@ -299,6 +300,7 @@ function App() {
                           {/* FAQ - not restricted */}
                           <Route path="/faq" element={<FAQPage />} />
 
+                          {/* Design Places - not restricted */}
 
                           {/* Settings */}
                           <Route path="/settings" element={
@@ -413,7 +415,11 @@ function App() {
                         <Route path="/make/reservation" element={<WidgetPage />} />
                         <Route path="/make/review/:token" element={<ReviewPage />} />
                         <Route path="/make/modification/:token" element={<ModifyPage />} />
+
+                        {/* Terms and Conditions - not restricted */}
+                        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
                       </Route>
+
                     </Routes>
 
                   )

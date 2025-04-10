@@ -1,30 +1,36 @@
-import React, { useEffect, useMemo, useState } from 'react'
-import Logo from '../../components/header/Logo'
-import { ArrowDown, ArrowLeft, Expand, Moon, MoveDown, Send, Sun } from 'lucide-react'
-import { BaseRecord, useCreate, useCustom, useCustomMutation, useOne, useUpdate } from '@refinedev/core';
-import ReservationProcess from '../../components/reservation/ReservationProcess';
-import { useLocation, useParams, useSearchParams } from 'react-router-dom';
-import { format, set } from 'date-fns';
-import { getSubdomain } from '../../utils/getSubdomain';
-import { useRef } from 'react';
-import { useClickAway } from 'react-use';
-import BaseBtn from '../../components/common/BaseBtn';
-import WidgetReservationProcess from '../../components/reservation/WidgetReservationProcess';
+"use client"
+
+import type React from "react"
+import { useEffect, useMemo, useState } from "react"
+import Logo from "../../components/header/Logo"
+import { ArrowLeft, Expand, Send } from "lucide-react"
+import { type BaseRecord, useCreate, useCustom, useCustomMutation, useOne } from "@refinedev/core"
+import { useLocation, useParams, useSearchParams } from "react-router-dom"
+import { format } from "date-fns"
+import { getSubdomain } from "../../utils/getSubdomain"
+import { useRef } from "react"
+import { useClickAway } from "react-use"
+import BaseBtn from "../../components/common/BaseBtn"
+import WidgetReservationProcess from "../../components/reservation/WidgetReservationProcess"
 
 const Modify = () => {
   interface LoadingRowProps {
-    isDarkMode: boolean;
+    isDarkMode: boolean
   }
   const LoadingComponent: React.FC<LoadingRowProps> = ({ isDarkMode }) => {
     return (
       <tr>
-        <td className="py-2">
-          <div className="flex items-center">
-            <div className="ml-0 space-y-1">
-              <div className={`h-[2.4em] w-[10em] lt-sm:w-[20vw] rounded ${isDarkMode ? "bg-bgdarktheme" : "bg-gray-200"}`}></div>
+        <td className="py-3">
+          <div className="flex items-center gap-4">
+            <div className="space-y-1">
+              <div
+                className={`h-[2.4em] w-[10em] lt-sm:w-[20vw] rounded-md ${isDarkMode ? "bg-bgdarktheme" : "bg-softgreytheme"} animate-pulse`}
+              ></div>
             </div>
-            <div className="ml-4 space-y-1">
-              <div className={`h-[2.4em] w-[25em] lt-sm:w-[60vw] rounded ${isDarkMode ? "bg-bgdarktheme" : "bg-gray-200"}`}></div>
+            <div className="space-y-1">
+              <div
+                className={`h-[2.4em] w-[25em] lt-sm:w-[60vw] rounded-md ${isDarkMode ? "bg-bgdarktheme" : "bg-softgreytheme"} animate-pulse`}
+              ></div>
             </div>
           </div>
         </td>
@@ -32,82 +38,90 @@ const Modify = () => {
     )
   }
 
-  const { token } = useParams();
-  const [widgetInfo, setWidgetInfo] = useState<BaseRecord>();
-  const [reservationInfo, setReservationInfo] = useState<BaseRecord>();
-  const { mutate, isLoading: widgetLoading, error: widgetError } = useCustomMutation();
-  const [updateInfo, setUpdateInfo] = useState<BaseRecord>();
-  const [errorPage, setErrorPage] = useState(false);
+  const { token } = useParams()
+  const [widgetInfo, setWidgetInfo] = useState<BaseRecord>()
+  const [reservationInfo, setReservationInfo] = useState<BaseRecord>()
+  const { mutate, isLoading: widgetLoading, error: widgetError } = useCustomMutation()
+  const [updateInfo, setUpdateInfo] = useState<BaseRecord>()
+  const [errorPage, setErrorPage] = useState(false)
 
-  const { data: reservation, isLoading: reservationLoading, error: reservationError } = useOne({
+  const {
+    data: reservation,
+    isLoading: reservationLoading,
+    error: reservationError,
+  } = useOne({
     resource: `api/v1/bo/subdomains/public/cutomer/reservations`,
-    id: token + '',
+    id: token + "",
     queryOptions: {
       retry: 1,
       onSuccess: (data) => {
-        setUpdateInfo(data.data);
+        setUpdateInfo(data.data)
       },
       onError: (error) => {
-        console.log(error.message, 'error')
-        if (token !== 'preview') {
+        console.log(error.message, "error")
+        if (token !== "preview") {
           setErrorPage(true)
         }
+      },
+    },
+    errorNotification(error, values, resource) {
+      return {
+        type: "error",
+        message: error?.formattedMessage,
       }
     },
-    errorNotification(error, values, resource) {
-      return {
-        type: 'error',
-        message: error?.formattedMessage,
-      };
-    },
-  });
+  })
 
-  const { mutate: cancelReservation, isLoading: cancelLoading, error: cancelError } = useCreate({
+  const {
+    mutate: cancelReservation,
+    isLoading: cancelLoading,
+    error: cancelError,
+  } = useCreate({
     errorNotification(error, values, resource) {
       return {
-        type: 'error',
+        type: "error",
         message: error?.formattedMessage,
-      };
+      }
     },
-  });
+  })
 
   const handleCancel = () => {
     cancelReservation({
       resource: `api/v1/bo/subdomains/public/cutomer/reservations/${token}/cancel`,
-      values: {}
+      values: {},
     })
     setErrorPage(true)
   }
 
   useEffect(() => {
-    console.log('updateInfo', updateInfo)
+    console.log("updateInfo", updateInfo)
   }, [updateInfo])
 
   const modifyReservation = () => {
-    console.log('updateInfo', updateInfo?.occasion)
+    console.log("updateInfo", updateInfo?.occasion)
     mutate({
       url: `api/v1/bo/subdomains/public/cutomer/reservations/${token}`,
-      method: 'patch',
+      method: "patch",
       values: {
         customer: {
           email: updateInfo?.customer?.email,
           first_name: updateInfo?.customer?.first_name,
           last_name: updateInfo?.customer?.last_name,
-          phone: updateInfo?.customer?.phone
+          phone: updateInfo?.customer?.phone,
         },
         status: updateInfo?.status,
         source: updateInfo?.source,
         commenter: updateInfo?.commenter,
         internal_note: updateInfo?.internal_note,
-        date: data.reserveDate !== '' ? format(data.reserveDate, 'yyyy-MM-dd') : updateInfo?.date,
-        time: data.time !== '' ? data.time + ':00' : updateInfo?.time,
+        date: data.reserveDate !== "" ? format(data.reserveDate, "yyyy-MM-dd") : updateInfo?.date,
+        time: data.time !== "" ? data.time + ":00" : updateInfo?.time,
         number_of_guests: data.guests !== 0 ? data.guests : updateInfo?.number_of_guests,
         allergies: updateInfo?.allergies,
         preferences: updateInfo?.preferences,
         restaurant: updateInfo?.restaurant,
         offer: 0,
-        occasion: updateInfo?.occasion
-      }
+        occasion: updateInfo?.occasion,
+      },
     })
   }
 
@@ -117,23 +131,27 @@ const Modify = () => {
     }
   }, [reservation])
 
-  const subdomain = getSubdomain();
+  const subdomain = getSubdomain()
 
-  const [occasions, setOccasions] = useState<BaseRecord[]>();
+  const [occasions, setOccasions] = useState<BaseRecord[]>()
 
   const { data: posts } = useCustom({
     url: `api/v1/bo/restaurants/subdomain/occasions`,
     method: "get",
-  });
+  })
 
-  const { data: messageAccess, isLoading: messageLoading, error: messageError } = useOne({
+  const {
+    data: messageAccess,
+    isLoading: messageLoading,
+    error: messageError,
+  } = useOne({
     resource: `api/v1/bo/subdomains/public/cutomer/reservations`,
     id: `${token}/message`,
     queryOptions: {
       retry: 1,
       onError: (error) => {
         setMessageSent(true)
-      }
+      },
     },
   })
 
@@ -143,107 +161,120 @@ const Modify = () => {
     }
   }, [posts])
 
-  const [searchParams, setSearchParams] = useSearchParams();
-  const activeTab = searchParams.get("tab") || "preview";
+  const [searchParams, setSearchParams] = useSearchParams()
+  const activeTab = searchParams.get("tab") || "preview"
 
-  const [tab, setTab] = useState('preview');
-  const [pathname] = useLocation().pathname.split('?');
+  const [tab, setTab] = useState("preview")
+  const [pathname] = useLocation().pathname.split("?")
   useEffect(() => {
-    if (tab === 'preview') {
-      document.title = "Tabla | Taste Morocco's best";
-    } else if (tab === 'modify') {
-      document.title = "Modify Your Reservation | Tabla";
-    } else if (tab === 'contact') {
-      document.title = "Contact Us | Tabla";
-    } else if (tab === 'error') {
-      document.title = "Error | Tabla";
+    if (tab === "preview") {
+      document.title = "Tabla | Taste Morocco's best"
+    } else if (tab === "modify") {
+      document.title = "Modify Your Reservation | Tabla"
+    } else if (tab === "contact") {
+      document.title = "Contact Us | Tabla"
+    } else if (tab === "error") {
+      document.title = "Error | Tabla"
     }
-  }, [tab, pathname]);
+  }, [tab, pathname])
 
   useEffect(() => {
     if (errorPage) {
-      setTab('error')
+      setTab("error")
     }
   }, [errorPage, tab])
 
-  const { data: widgetData, isLoading, error } = useOne({
+  const {
+    data: widgetData,
+    isLoading,
+    error,
+  } = useOne({
     resource: `api/v1/bo/subdomains/public/cutomer/reservations`,
-    id: ''
-  });
+    id: "",
+  })
 
   useEffect(() => {
-    setTab(activeTab);
-  }, [activeTab]);
+    setTab(activeTab)
+  }, [activeTab])
 
-  const [restaurantID, setRestaurantID] = useState<string>();
+  const [restaurantID, setRestaurantID] = useState<string>()
 
   useEffect(() => {
-    console.log(' widgetData ', widgetData)
+    console.log(" widgetData ", widgetData)
     if (widgetData) {
-      setWidgetInfo(widgetData.data);
-      setRestaurantID(widgetData.data.restaurant);
+      setWidgetInfo(widgetData.data)
+      setRestaurantID(widgetData.data.restaurant)
     }
-  }, [widgetData]);
+  }, [widgetData])
 
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false)
   const toggleDarkMode = () => {
-    setIsDarkMode((prev) => !prev);
-  };
+    setIsDarkMode((prev) => !prev)
+  }
 
-  const [showProcess, setShowProcess] = useState(false);
+  const [showProcess, setShowProcess] = useState(false)
   interface dataTypes {
-    reserveDate: string,
-    time: string,
+    reserveDate: string
+    time: string
     guests: number
   }
 
   const [data, setData] = useState<dataTypes>({
-    reserveDate: '',
-    time: '',
-    guests: 0
-  });
+    reserveDate: "",
+    time: "",
+    guests: 0,
+  })
 
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState("")
 
-  const { mutate: sendMessage, isLoading: loadingMessage, error: cancelMessage } = useCreate({
+  const {
+    mutate: sendMessage,
+    isLoading: loadingMessage,
+    error: cancelMessage,
+  } = useCreate({
     errorNotification(error, values, resource) {
       return {
-        type: 'error',
+        type: "error",
         message: error?.formattedMessage,
-      };
+      }
     },
   })
 
-  const [messageSent, setMessageSent] = useState(false);
+  const [messageSent, setMessageSent] = useState(false)
 
   const handleSendMessage = () => {
     sendMessage({
       resource: `api/v1/bo/subdomains/public/cutomer/reservations/${token}/message`,
       values: {
-        text: message
-      }
+        text: message,
+      },
     })
     setMessageSent(true)
   }
 
-  const occasionRef = useRef(null);
+  const occasionRef = useRef(null)
 
   useClickAway(occasionRef, () => {
-    setShowOccasions(false);
-  });
+    setShowOccasions(false)
+  })
 
-  const selectedOccasion = useMemo(()=>{
-    return occasions?.find(occasion => occasion.id === updateInfo?.occasion)?.name
-  },[occasions, updateInfo])
+  const selectedOccasion = useMemo(() => {
+    return occasions?.find((occasion) => occasion.id === updateInfo?.occasion)?.name
+  }, [occasions, updateInfo])
 
-  const [showOccasions, setShowOccasions] = useState(false);
+  const [showOccasions, setShowOccasions] = useState(false)
 
   return (
     <div className={`h-[100vh] dark:bg-bgdarktheme2 dark:text-white bg-white`}>
-      <div className={`h-[10vh] w-full flex items-center justify-between px-10 shadow-xl shadow-[#00000004] dark:bg-bgdarktheme bg-white`}>
-        <Logo className='horizontal' />
+      <div
+        className={`h-[10vh] w-full flex items-center justify-between px-10 shadow-md dark:shadow-[#00000020] shadow-[#00000010] dark:bg-bgdarktheme bg-white sticky top-0 z-10`}
+      >
+        <Logo className="horizontal" />
         <button
-          onClick={() => {document.documentElement.classList.toggle('dark');localStorage.setItem('darkMode', document.documentElement.classList.contains('dark') ? 'true' : 'false');}}
+          onClick={() => {
+            document.documentElement.classList.toggle("dark")
+            localStorage.setItem("darkMode", document.documentElement.classList.contains("dark") ? "true" : "false")
+          }}
           className="btn-secondary hover:bg-[#88AB6110] my-[1em] p-1 w-[40px] h-[40px] flex justify-center items-center rounded-[100%]"
         >
           <svg
@@ -275,199 +306,386 @@ const Modify = () => {
         </button>
       </div>
 
-      <div className='h-[90vh] items-center xl:max-w-[1200px] no-scrollbar mx-auto pb-[5em] overflow-y-auto w-full flex p-5 px-10 justify-between'>
-        <div className='w-[60%] lt-sm:w-full'>
-          <h1 className={`text-4xl font-bold dark:text-white`}>
-            {widgetInfo?.title}
-          </h1>
+      <div className="h-[90vh] items-start xl:max-w-[1200px] no-scrollbar mx-auto pb-[5em] overflow-y-auto w-full flex p-5 px-10 justify-between">
+        <div className="w-[60%] lt-sm:w-full">
+          <h1 className={`text-4xl font-bold dark:text-white mb-2`}>{widgetInfo?.title}</h1>
 
           <div>
-            <p className={`text-md mt-1 dark:text-[#ffffff85]`}>
-              {widgetInfo?.description}
-            </p>
+            <p className={`text-md mt-1 dark:text-[#ffffff85] text-subblack`}>{widgetInfo?.description}</p>
           </div>
-          {
-            (reservationLoading) ? <div>
+          {reservationLoading ? (
+            <div>
               {Array.from({ length: 5 }, (_, index) => (
                 <LoadingComponent key={index} isDarkMode={isDarkMode} />
               ))}
-            </div> :
-              ((errorPage) ? <div className='flex flex-col gap-2 cursor-default bg-softredtheme p-3 text-center mt-2 items-center rounded-lg'>
-                <h1 className='text-2xl text-redtheme'>You can't modify your reservation</h1>
-                <p className='text-md'>
-                  Something went wrong, you might have already fulfilled a modification or canceled your reservation
-                </p>
-              </div>
-                :
+            </div>
+          ) : errorPage ? (
+            <div className="flex flex-col gap-3 cursor-default bg-softredtheme p-5 text-center mt-4 items-center rounded-lg shadow-sm">
+              <h1 className="text-2xl font-bold text-redtheme">You can't modify your reservation</h1>
+              <p className="text-md text-blacktheme dark:text-textdarktheme">
+                Something went wrong, you might have already fulfilled a modification or canceled your reservation
+              </p>
+            </div>
+          ) : (
+            <div>
+              {tab === "preview" && (
                 <div>
-                  {tab === 'preview' && <div>
-                    <div className='flex flex-col gap-2'>
-                      <h3 className={`text-xl font-bold mt-5 dark:text-white`}>
-                        Your reservation details
-                      </h3>
-                      <p className={`text-md mt-1 inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems`}>
-                        <span className='font-bold mx-4'>
-                          Special Request
-                        </span>
+                  <div className="flex flex-col gap-2">
+                    <h3 className={`text-xl font-bold mt-6 mb-3 dark:text-white`}>Your reservation details</h3>
+                    <div className="space-y-3 mb-4">
+                      <p
+                        className={`text-md inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm transition-all hover:shadow-md`}
+                      >
+                        <span className="font-bold mx-4">Special Request</span>
                         {reservationInfo?.commenter}
                       </p>
-                      <p className={`text-md mt-1 inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems`}>
-                        <span className='font-bold mx-4'>
-                          Allergies
-                        </span>
+                      <p
+                        className={`text-md inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm transition-all hover:shadow-md`}
+                      >
+                        <span className="font-bold mx-4">Allergies</span>
                         {reservationInfo?.allergies}
                       </p>
-                      {selectedOccasion?<p className={`text-md mt-1 inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems`}>
-                        <span className='font-bold mx-4'>
-                          Occasion
-                        </span>
-                        {selectedOccasion}
-                      </p>:<></>}
-                      <p className={`text-md flex justify-around mt-1 inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems`}>
-                        <p className={`text-md gap-3 dark:text-[#ffffffd5]`}>
-                          <span className='font-bold mr-4'>
-                            Date
-                          </span>
-                          {reservationInfo?.date}
+                      {selectedOccasion ? (
+                        <p
+                          className={`text-md inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm transition-all hover:shadow-md`}
+                        >
+                          <span className="font-bold mx-4">Occasion</span>
+                          {selectedOccasion}
                         </p>
-                        <p className={`text-md gap-3 dark:text-[#ffffffd5]`}>
-                          <span className='font-bold mr-4'>
-                            Time
-                          </span>
-                          {reservationInfo?.time.slice(0, 5)}
-                        </p>
-                        <p className={`text-md gap-3 dark:text-[#ffffffd5]`}>
-                          <span className='font-bold mr-4'>
-                            Guests
-                          </span>
-                          {reservationInfo?.number_of_guests}
-                        </p>
-                      </p>
+                      ) : (
+                        <></>
+                      )}
                     </div>
-                    <div className='w-full'>
-                      <div className='flex w-full gap-2 mt-2'>
-                        <button className={`btn-secondary w-full`} onClick={() => setSearchParams('tab=modify')}>
-                          Modify
-                        </button>
-                        <BaseBtn variant="secondary" className='w-full bg-softredtheme hover:bg-redtheme text-redtheme hover:text-white' loading={cancelLoading} onClick={handleCancel}>
-                          Cancel
-                        </BaseBtn>
+                    <p
+                      className={`text-md flex justify-around mt-1 inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm p-4`}
+                    >
+                      <div className={`text-md flex flex-col items-center gap-1 dark:text-[#ffffffd5]`}>
+                        <span className="font-bold text-greentheme dark:text-greentheme">Date</span>
+                        <span className="text-lg">{reservationInfo?.date}</span>
                       </div>
-                      <div className='mt-2'>
-                        <button className={`btn-secondary w-full bg-softorangetheme hover:bg-orangetheme text-orangetheme hover:text-white`} onClick={() => { setSearchParams('tab=contact') }}>
-                          Send a message
-                        </button>
+                      <div className={`text-md flex flex-col items-center gap-1 dark:text-[#ffffffd5]`}>
+                        <span className="font-bold text-greentheme dark:text-greentheme">Time</span>
+                        <span className="text-lg">{reservationInfo?.time.slice(0, 5)}</span>
                       </div>
-                    </div>
-                  </div>}
-                  {
-                    tab === 'modify' &&
-                    <div className='flex flex-col gap-2'>
-                      <h3 className={`text-xl font-bold mt-5 dark:text-white`}>
-                        Modify your reservation
-                      </h3>
-                      <input type='text' defaultValue={reservationInfo?.commenter} name='Special request' className={`text-md inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems`} placeholder='Special request' onChange={(e) => { setUpdateInfo({ ...updateInfo, commenter: e.target.value }) }} />
-                      <input type='text' defaultValue={reservationInfo?.allergies} name='Allergies' className={`text-md inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems`} placeholder='Allergies' onChange={(e) => { setUpdateInfo({ ...updateInfo, allergies: e.target.value }) }} />
-                      {occasions?.length || updateInfo?.occasion ? <><div className={`text-md cursor-pointer gap-3 inputs dark:text-[#ffffffd5] dark:bg-darkthemeitems`}>
-                        <div className='flex justify-between items-center' onClick={() => { setShowOccasions(!showOccasions) }}>{occasions?.find(occasion => occasion.id === updateInfo?.occasion)?.name || 'Select an occasions'}
-                          {!showOccasions ?
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path fill-rule="evenodd" clip-rule="evenodd" d="M9.40755 13.4643L4.69338 8.75011L5.87171 7.57178L9.99672 11.6968L14.1217 7.57178L15.3 8.75011L10.5859 13.4643C10.4296 13.6205 10.2177 13.7083 9.99672 13.7083C9.77574 13.7083 9.56382 13.6205 9.40755 13.4643Z" fill="currentColor" />
-                            </svg>
-                            :
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path fill-rule="evenodd" clip-rule="evenodd" d="M13.4748 8.61491L19.1318 14.2719L17.7178 15.6859L12.7678 10.7359L7.81781 15.6859L6.40381 14.2719L12.0608 8.61491C12.2483 8.42744 12.5026 8.32213 12.7678 8.32213C13.033 8.32213 13.2873 8.42744 13.4748 8.61491Z" fill="currentColor" />
-                            </svg>
-                          }
-                        </div>
+                      <div className={`text-md flex flex-col items-center gap-1 dark:text-[#ffffffd5]`}>
+                        <span className="font-bold text-greentheme dark:text-greentheme">Guests</span>
+                        <span className="text-lg">{reservationInfo?.number_of_guests}</span>
                       </div>
-                      <div className='relative'>
-                        <div ref={occasionRef} className={`flex w-full z-[400] p-4 flex-col absolute gap-2 ${showOccasions ? 'block' : 'hidden'} dark:bg-darkthemeitems dark:text-textdarktheme bg-white text-blacktheme border-[1px] rounded-[10px] p-2`}>
-                          {showOccasions && occasions?.map((occasion: BaseRecord) => (
-                            <button key={occasion.id} className='text-left' onClick={() => { setUpdateInfo({ ...updateInfo, occasion: occasion.id }); setShowOccasions(false) }}>{occasion.name}</button>
-                          ))}
-                        </div>
-                      </div></>:''}
-                      <div className={`btn cursor-default text-subblack dark:bg-darkthemeitems dark:text-textdarktheme bg-white text-blacktheme rounded-[10px]`}>
-                        <div onClick={() => { setShowProcess(true) }} className='cursor-pointer flex gap-10 justify-around p-1 items-center'>
-                          <div className='flex gap-2'>
-                            <div onClick={() => { setShowProcess(true) }} className={`font-[600] dark:text-white text-bgdarktheme`}>Date </div>{(data.reserveDate === '') ? reservationInfo?.date : <span onClick={() => { setShowProcess(true) }}>{data.reserveDate}</span>}
-                          </div>
-                          <div className='flex gap-2'>
-                            <div onClick={() => { setShowProcess(true) }} className={`font-[600] dark:text-white text-bgdarktheme`}>Time </div> {(data.time === '') ? reservationInfo?.time : <span onClick={() => { setShowProcess(true) }}>{data.time}</span>}
-                          </div>
-                          <div className='flex gap-2'>
-                            <div onClick={() => { setShowProcess(true) }} className={`font-[600] dark:text-white text-bgdarktheme`}>Guests </div> {(data.guests === 0) ? reservationInfo?.number_of_guests : <span onClick={() => { setShowProcess(true) }}>{data.guests}</span>}
-                          </div>
-                        </div>
-                      </div>
-                      <BaseBtn variant="primary" className='' loading={widgetLoading} onClick={modifyReservation}>
-                        Confirm
+                    </p>
+                  </div>
+                  <div className="w-full">
+                    <div className="flex w-full gap-3 mt-5">
+                      <button
+                        className={`btn-secondary w-full py-3 rounded-lg transition-all hover:shadow-md flex items-center justify-center gap-2`}
+                        onClick={() => setSearchParams("tab=modify")}
+                      >
+                        <Expand size={18} /> Modify
+                      </button>
+                      <BaseBtn
+                        variant="secondary"
+                        className="w-full bg-softredtheme hover:bg-redtheme text-redtheme hover:text-white py-3 rounded-lg transition-all hover:shadow-md flex items-center justify-center gap-2"
+                        loading={cancelLoading}
+                        onClick={handleCancel}
+                      >
+                        Cancel
                       </BaseBtn>
-                      <button className={`btn dark:text-white`} onClick={() => setSearchParams('tab=preview')}>
+                    </div>
+                    <div className="mt-3">
+                      <button
+                        className={`btn-secondary w-full bg-softorangetheme hover:bg-orangetheme text-orangetheme hover:text-white py-3 rounded-lg transition-all hover:shadow-md flex items-center justify-center gap-2`}
+                        onClick={() => {
+                          setSearchParams("tab=contact")
+                        }}
+                      >
+                        <Send size={18} /> Send a message
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {tab === "modify" && (
+                <div className="flex flex-col gap-2">
+                  <h3 className={`text-xl font-bold mt-5 dark:text-white`}>Modify your reservation</h3>
+                  <input
+                    type="text"
+                    defaultValue={reservationInfo?.commenter}
+                    name="Special request"
+                    className={`text-md inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm focus:shadow-md focus:outline-none focus:ring-1 focus:ring-greentheme transition-all`}
+                    placeholder="Special request"
+                    onChange={(e) => {
+                      setUpdateInfo({ ...updateInfo, commenter: e.target.value })
+                    }}
+                  />
+                  <input
+                    type="text"
+                    defaultValue={reservationInfo?.allergies}
+                    name="Allergies"
+                    className={`text-md inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm focus:shadow-md focus:outline-none focus:ring-1 focus:ring-greentheme transition-all`}
+                    placeholder="Allergies"
+                    onChange={(e) => {
+                      setUpdateInfo({ ...updateInfo, allergies: e.target.value })
+                    }}
+                  />
+                  {occasions?.length || updateInfo?.occasion ? (
+                    <>
+                      <div
+                        className={`text-md cursor-pointer gap-3 inputs dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm hover:shadow-md transition-all`}
+                      >
+                        <div
+                          className="flex justify-between items-center p-3"
+                          onClick={() => {
+                            setShowOccasions(!showOccasions)
+                          }}
+                        >
+                          <span>
+                            {occasions?.find((occasion) => occasion.id === updateInfo?.occasion)?.name ||
+                              "Select an occasion"}
+                          </span>
+                          {!showOccasions ? (
+                            <svg
+                              width="20"
+                              height="20"
+                              viewBox="0 0 20 20"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                clipRule="evenodd"
+                                d="M9.40755 13.4643L4.69338 8.75011L5.87171 7.57178L9.99672 11.6968L14.1217 7.57178L15.3 8.75011L10.5859 13.4643C10.4296 13.6205 10.2177 13.7083 9.99672 13.7083C9.77574 13.7083 9.56382 13.6205 9.40755 13.4643Z"
+                                fill="currentColor"
+                              />
+                            </svg>
+                          ) : (
+                            <svg
+                              width="20"
+                              height="20"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                clipRule="evenodd"
+                                d="M13.4748 8.61491L19.1318 14.2719L17.7178 15.6859L12.7678 10.7359L7.81781 15.6859L6.40381 14.2719L12.0608 8.61491C12.2483 8.42744 12.5026 8.32213 12.7678 8.32213C13.033 8.32213 13.2873 8.42744 13.4748 8.61491Z"
+                                fill="currentColor"
+                              />
+                            </svg>
+                          )}
+                        </div>
+                      </div>
+                      <div className="relative">
+                        <div
+                          ref={occasionRef}
+                          className={`flex w-full z-[400] p-4 flex-col absolute gap-2 ${showOccasions ? "block" : "hidden"} dark:bg-darkthemeitems dark:text-textdarktheme bg-white text-blacktheme border-[1px] rounded-[10px] shadow-lg`}
+                        >
+                          {showOccasions &&
+                            occasions?.map((occasion: BaseRecord) => (
+                              <button
+                                key={occasion.id}
+                                className="text-left p-2 hover:bg-softgreentheme hover:text-greentheme rounded-md transition-colors"
+                                onClick={() => {
+                                  setUpdateInfo({ ...updateInfo, occasion: occasion.id })
+                                  setShowOccasions(false)
+                                }}
+                              >
+                                {occasion.name}
+                              </button>
+                            ))}
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    ""
+                  )}
+                  <div
+                    className={`btn cursor-default text-subblack dark:bg-darkthemeitems dark:text-textdarktheme bg-white text-blacktheme rounded-lg shadow-sm hover:shadow-md transition-all`}
+                  >
+                    <div
+                      onClick={() => {
+                        setShowProcess(true)
+                      }}
+                      className="cursor-pointer flex gap-10 justify-around p-3 items-center"
+                    >
+                      <div className="flex flex-col items-center gap-1">
+                        <div
+                          onClick={() => {
+                            setShowProcess(true)
+                          }}
+                          className={`font-[600] dark:text-greentheme text-greentheme`}
+                        >
+                          Date{" "}
+                        </div>
+                        {data.reserveDate === "" ? (
+                          <span
+                            onClick={() => {
+                              setShowProcess(true)
+                            }}
+                          >
+                            {reservationInfo?.date}
+                          </span>
+                        ) : (
+                          <span
+                            onClick={() => {
+                              setShowProcess(true)
+                            }}
+                          >
+                            {data.reserveDate}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex flex-col items-center gap-1">
+                        <div
+                          onClick={() => {
+                            setShowProcess(true)
+                          }}
+                          className={`font-[600] dark:text-greentheme text-greentheme`}
+                        >
+                          Time{" "}
+                        </div>
+                        {data.time === "" ? (
+                          <span
+                            onClick={() => {
+                              setShowProcess(true)
+                            }}
+                          >
+                            {reservationInfo?.time.slice(0, 5)}
+                          </span>
+                        ) : (
+                          <span
+                            onClick={() => {
+                              setShowProcess(true)
+                            }}
+                          >
+                            {data.time}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex flex-col items-center gap-1">
+                        <div
+                          onClick={() => {
+                            setShowProcess(true)
+                          }}
+                          className={`font-[600] dark:text-greentheme text-greentheme`}
+                        >
+                          Guests{" "}
+                        </div>
+                        {data.guests === 0 ? (
+                          <span
+                            onClick={() => {
+                              setShowProcess(true)
+                            }}
+                          >
+                            {reservationInfo?.number_of_guests}
+                          </span>
+                        ) : (
+                          <span
+                            onClick={() => {
+                              setShowProcess(true)
+                            }}
+                          >
+                            {data.guests}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <BaseBtn variant="primary" className="" loading={widgetLoading} onClick={modifyReservation}>
+                    Confirm
+                  </BaseBtn>
+                  <button className={`btn dark:text-white`} onClick={() => setSearchParams("tab=preview")}>
+                    Back
+                  </button>
+                </div>
+              )}
+              {tab === "contact" && (
+                <div>
+                  {messageLoading ? (
+                    <div>
+                      {Array.from({ length: 5 }, (_, index) => (
+                        <LoadingComponent key={index} isDarkMode={isDarkMode} />
+                      ))}
+                    </div>
+                  ) : !messageSent ? (
+                    <div className="flex flex-col gap-2">
+                      <h3 className={`text-xl font-bold mt-5 dark:text-white`}>Send a message</h3>
+                      <textarea
+                        name="Message"
+                        className={`text-md inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm focus:shadow-md focus:outline-none focus:ring-1 focus:ring-greentheme transition-all min-h-[150px] p-4`}
+                        placeholder="Type your message here..."
+                        onChange={(e) => {
+                          setMessage(e.target.value)
+                        }}
+                      />
+                      <BaseBtn variant="primary" className="" loading={loadingMessage} onClick={handleSendMessage}>
+                        Send
+                      </BaseBtn>
+                      <button
+                        className={`btn dark:text-white`}
+                        onClick={() => {
+                          setTab("preview")
+                          setSearchParams("tab=preview")
+                        }}
+                      >
                         Back
                       </button>
                     </div>
-                  }
-                  {
-                    tab === 'contact' &&
-                    <div>
-                      {
-                        messageLoading ? <div>
-                          {Array.from({ length: 5 }, (_, index) => (
-                            <LoadingComponent key={index} isDarkMode={isDarkMode} />
-                          ))}
-                        </div>
-                          :
-                          !messageSent ? <div className='flex flex-col gap-2'>
-                            <h3 className={`text-xl font-bold mt-5 dark:text-white`}>
-                              Send a message
-                            </h3>
-                            <textarea name='Message' className={`text-md inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems`} placeholder='Message' onChange={(e) => { setMessage(e.target.value) }} />
-                            <BaseBtn variant="primary" className='' loading={loadingMessage} onClick={handleSendMessage}>
-                              Send
-                            </BaseBtn>
-                            <button className={`btn dark:text-white`} onClick={() => { setTab('preview'); setSearchParams('tab=preview') }}>
-                              Back
-                            </button>
-                          </div>
-                          :
-                          <div className={`flex flex-col gap-2 items-center p-3 rounded-xl mt-4 bg-softgreentheme`}>
-                            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M12.1565 16.4058L12.1564 16.4057L10.8298 13.4212L12.6505 11.6001L12.6567 11.5939L12.6627 11.5874C12.819 11.4198 12.904 11.198 12.9 10.9688C12.8959 10.7396 12.8031 10.521 12.641 10.3589C12.479 10.1968 12.2603 10.104 12.0311 10.0999C11.802 10.0959 11.5802 10.181 11.4125 10.3372L11.4061 10.3432L11.3998 10.3494L9.57867 12.1701L6.59433 10.8436C6.5943 10.8436 6.59427 10.8436 6.59424 10.8436C6.46315 10.7851 6.47041 10.596 6.60631 10.5482C6.60633 10.5482 6.60636 10.5482 6.60638 10.5482L15.2873 7.51018C15.4131 7.46623 15.5338 7.58694 15.4898 7.71266L12.4517 16.3936C12.4517 16.3936 12.4517 16.3936 12.4517 16.3937C12.4039 16.5298 12.2146 16.5367 12.1565 16.4058Z" fill="#88AB61" stroke="#88AB61" />
-                              <circle cx="11.5" cy="11.5" r="9.5" stroke="#88AB61" stroke-width="2" />
-                            </svg>
-                            <h3 className={`text-xl font-bold text-greentheme mb-1`}>
-                              You have sent a message
-                            </h3>
-                            <button className={`btn-secondary flex gap-2 items-center`} onClick={() => { setTab('preview'); setSearchParams('tab=preview') }}>
-                              <ArrowLeft size={15} /> <span>Back</span>
-                            </button>
-                          </div>
-                      }
+                  ) : (
+                    <div className={`flex flex-col gap-4 items-center p-6 rounded-xl mt-4 bg-softgreentheme shadow-sm`}>
+                      <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                          d="M12.1565 16.4058L12.1564 16.4057L10.8298 13.4212L12.6505 11.6001L12.6567 11.5939L12.6627 11.5874C12.819 11.4198 12.904 11.198 12.9 10.9688C12.8959 10.7396 12.8031 10.521 12.641 10.3589C12.479 10.1968 12.2603 10.104 12.0311 10.0999C11.802 10.0959 11.5802 10.181 11.4125 10.3372L11.4061 10.3432L11.3998 10.3494L9.57867 12.1701L6.59433 10.8436C6.5943 10.8436 6.59427 10.8436 6.59424 10.8436C6.46315 10.7851 6.47041 10.596 6.60631 10.5482C6.60633 10.5482 6.60636 10.5482 6.60638 10.5482L15.2873 7.51018C15.4131 7.46623 15.5338 7.58694 15.4898 7.71266L12.4517 16.3936C12.4517 16.3936 12.4517 16.3936 12.4517 16.3937C12.4039 16.5298 12.2146 16.5367 12.1565 16.4058Z"
+                          fill="#88AB61"
+                          stroke="#88AB61"
+                        />
+                        <circle cx="11.5" cy="11.5" r="9.5" stroke="#88AB61" strokeWidth="2" />
+                      </svg>
+                      <h3 className={`text-2xl font-bold text-greentheme mb-2`}>Message Sent Successfully</h3>
+                      <p className="text-center text-subblack dark:text-[#ffffff85] mb-2">
+                        We've received your message and will get back to you shortly.
+                      </p>
+                      <button
+                        className={`btn-secondary flex gap-2 items-center py-3 px-5 rounded-lg transition-all hover:shadow-md`}
+                        onClick={() => {
+                          setTab("preview")
+                          setSearchParams("tab=preview")
+                        }}
+                      >
+                        <ArrowLeft size={15} /> <span>Back to Reservation</span>
+                      </button>
                     </div>
-                  }
-                  <div className='h-10'></div>
-                </div>)
-          }
+                  )}
+                </div>
+              )}
+              <div className="h-10"></div>
+            </div>
+          )}
         </div>
-        <div className='sm:w-[40%] lt-sm:hidden flex justify-center items-center'>
-          <img src={widgetInfo?.image} className='w-[300px] h-[300px] rounded-md' />
+        <div className="sm:w-[40%] lt-sm:hidden flex justify-center items-center">
+          <img
+            src={widgetInfo?.image || "/placeholder.svg"}
+            className="w-[300px] h-[300px] rounded-lg shadow-md object-cover"
+          />
         </div>
       </div>
-      {showProcess && 
-      <div className=''>
+      {showProcess && (
+        <div className="">
           <WidgetReservationProcess
             maxGuests={widgetInfo?.max_of_guests_par_reservation}
             resData={{
-              reserveDate: data.reserveDate || reservationInfo?.date || '',
-              time: data.time || reservationInfo?.time.slice(0, 5) || '',
-              guests: data.guests || reservationInfo?.number_of_guests || ''
+              reserveDate: data.reserveDate || reservationInfo?.date || "",
+              time: data.time || reservationInfo?.time.slice(0, 5) || "",
+              guests: data.guests || reservationInfo?.number_of_guests || "",
             }}
-            onClick={() => { setShowProcess(false) }}
-            getDateTime={(data: dataTypes) => { setData(data) }}
+            onClick={() => {
+              setShowProcess(false)
+            }}
+            getDateTime={(data: dataTypes) => {
+              setData(data)
+            }}
           />
-      </div>}
+        </div>
+      )}
     </div>
   )
 }
