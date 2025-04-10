@@ -100,7 +100,7 @@ const EditReservationModal = ({
   return (
     <div>
       <div className="overlay z-[100]" onClick={() => setShowModal(false)}></div>
-      <div className={`sidepopup w-[40%] overflow-y-auto lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:overflow-y-auto h-full ${isDarkMode ? 'bg-bgdarktheme text-white' : 'bg-white'} `}>
+      <div className={`sidepopup w-[40%] overflow-y-auto lt-sm:min-h-[70vh] lt-sm:max-h-[90vh] lt-sm:w-full lt-sm:bottom-0 lt-sm:overflow-y-auto h-full ${isDarkMode ? 'bg-bgdarktheme text-white' : 'bg-white'} `}>
         <h1 className="text-2xl font-[600] mb-4">
           {t('reservations.edit.title')} by <span className={`font-[800] `}>{selectedClient.full_name} </span>
           <span className={`text-sm font-[400] ${isDarkMode ? 'text-[#e1e1e1]' : 'text-subblack'}`}>

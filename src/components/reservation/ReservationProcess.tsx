@@ -127,7 +127,7 @@ const ReservationProcess: React.FC<ReservationProcessProps> = (props) => {
         {activeTab === 'guest' && (
           <div className="content">
             <div className="text-[20px] text-left mx-[30px] mt-[1em] mb-[.5em] font-bold">
-              {selectedGuests} <span className="font-semibold">guests have been selected</span>
+              {selectedGuests?<>{selectedGuests} <span className="font-semibold">guests have been selected</span></>:''}
             </div>
             <div className="flex flex-wrap justify-center gap-[10px] p-[20px] rounded-[3px]">
               {[...Array(props.maxGuests ? props.maxGuests : 15)].map((_, index) => (
@@ -139,6 +139,22 @@ const ReservationProcess: React.FC<ReservationProcessProps> = (props) => {
                   {index + 1}
                 </button>
               ))}
+              {!props.maxGuests && <>
+              <div className="text-center w-full my-2"> Or Enter number of guests </div>
+              </>}
+              {
+                !props.maxGuests && 
+                <div>
+                  <div className="flex rounded-lg">
+                  <input type="number" min={1} name='note' placeholder="Enter number of guests" value={selectedGuests as number}
+                        className='w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-s-lg bg-white dark:bg-darkthemeitems text-black dark:text-white'
+                        onChange={(e) => setSelectedGuests(Number(e.target.value))} />
+                      <button type="button" onClick={() => handleGuestClick(Number(selectedGuests))} className="btn-primary rounded-none rounded-e-lg">
+                        Confirm
+                      </button>
+                  </div>
+                </div>
+              }
             </div>
           </div>
         )}

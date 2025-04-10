@@ -182,8 +182,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
                   // open notification
                   open?.({
                     type: "error",
-                    message: "Warning",
-                    description: "Table name already exists",
+                    message: "Warning, Table name already exists",
                   });
                   return;
                 } 

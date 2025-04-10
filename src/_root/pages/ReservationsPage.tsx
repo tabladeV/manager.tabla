@@ -964,8 +964,8 @@ const DateSelectionModal: React.FC<DateSelectionModalProps> = ({
   return (
     <div>
       <div className="overlay" onClick={() => setFocusedDate(false)}></div>
-      <div className={`popup lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 ${isDarkMode ? 'bg-bgdarktheme' : 'bg-white'}`}>
-        <IntervalCalendar onRangeSelect={handleDateClick} />
+      <div className={`popup sm:w-[50%] lg:w-[30%] xl:[25%] lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 ${isDarkMode ? 'bg-bgdarktheme' : 'bg-white'}`}>
+        <IntervalCalendar onRangeSelect={handleDateClick} onClose={()=>setFocusedDate(false)} />
       </div>
     </div>
   );
