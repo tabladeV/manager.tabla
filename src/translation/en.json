@@ -456,6 +456,9 @@
             "uploadLogo": "Upload Logo",
             "uploadMenu": "Upload Menu",
             "viewMenu": "View Menu",
+            "logo": "Logo",
+            "uploadImage": "Upload Image",
+            "image": "Restaurant Image",
             "addTitlePlaceholder": "Add title here",
             "addDescriptionPlaceholder": "Add description here",
             "searchTabs": {

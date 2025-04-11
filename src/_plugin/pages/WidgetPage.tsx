@@ -225,8 +225,8 @@ const WidgetPage = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-bgdarktheme2 text-black dark:text-white">
       {/* Header */}
-      <header className="h-16 w-full flex items-center justify-between px-4 sm:px-10 shadow-md bg-white dark:bg-bgdarktheme">
-        <Logo className="horizontal" />
+      <header className="h-16 z-[300] w-full fixed flex items-center justify-between px-4 sm:px-10 shadow-md bg-white dark:bg-bgdarktheme">
+        <Logo className="horizontal" nolink={true} />
         <button
           onClick={toggleDarkMode}
           aria-label="Toggle dark mode"
@@ -260,16 +260,18 @@ const WidgetPage = () => {
           </svg>
         </button>
       </header>
+      <div className="h-16 w-full opacity-0"></div>
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row gap-8">
         {/* Left Column - Form */}
-        <div className="sm:hidden ">
+        <div className="w-full sm:w-3/5">
+        <div className=" flex items-start">
         {widgetInfo?.image ? (
             <img
               src={widgetInfo.image || "/placeholder.svg"}
               alt="Restaurant"
-              className="w-full h-[10em] object-cover rounded-lg shadow-md"
+              className="w-full h-[7em] object-scale-down "
             />
           ) : (
             <div className="w-full h-full bg-[#f5f5f5] dark:bg-[#2a2a2a] rounded-lg flex items-center justify-center">
@@ -277,9 +279,8 @@ const WidgetPage = () => {
             </div>
           )}
         </div>
-        <div className="w-full sm:w-3/5">
           {step !== 6 && (
-            <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-[#3A541C] dark:text-[#88AB61]">
+            <h1 className="text-3xl sm:text-4xl text-center font-bold mb-4 text-[#3A541C] dark:text-[#88AB61]">
               {widgetInfo?.title || "Make a Reservation"}
             </h1>
           )}
@@ -297,15 +298,15 @@ const WidgetPage = () => {
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-[#666666] dark:text-[#aaaaaa]">Date:</span>
-                    <span className="font-medium">{data.reserveDate || "Select date"}</span>
+                    <span className="font-medium">{data.reserveDate || "----/--/--"}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-[#666666] dark:text-[#aaaaaa]">Time:</span>
-                    <span className="font-medium">{data.time || "Select time"}</span>
+                    <span className="font-medium">{data.time || "--:--"}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-[#666666] dark:text-[#aaaaaa]">Guests:</span>
-                    <span className="font-medium">{data.guests || "Select guests"}</span>
+                    <span className="font-medium">{data.guests || "--"}</span>
                   </div>
                 </div>
               </div>
@@ -338,7 +339,7 @@ const WidgetPage = () => {
             <div className="bg-white dark:bg-darkthemeitems rounded-lg p-6 shadow-sm">
               <h2 className="text-xl font-semibold mb-4">Your Information</h2>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-1">
                 <div>
                   <label
                     htmlFor="firstname"
@@ -628,12 +629,12 @@ const WidgetPage = () => {
         </div>
 
         {/* Right Column - Image */}
-        <div className="hidden sm:block w-2/5">
-          {widgetInfo?.image ? (
+        <div className="hidden sm:block w-2/5 sticky top-20 h-[80vh]">
+          {widgetInfo?.image_2 ? (
             <img
-              src={widgetInfo.image || "/placeholder.svg"}
+              src={widgetInfo.image_2 || "/placeholder.svg"}
               alt="Restaurant"
-              className="w-full h-auto object-cover rounded-lg shadow-md"
+              className="w-full h-full object-cover rounded-lg shadow-md"
             />
           ) : (
             <div className="w-full h-full bg-[#f5f5f5] dark:bg-[#2a2a2a] rounded-lg flex items-center justify-center">
