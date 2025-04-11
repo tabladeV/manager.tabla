@@ -1,119 +1,121 @@
-import { useEffect, useState } from 'react';
-import logo from '../../assets/logo.png';
-import { ca } from 'date-fns/locale';
-import { useParams } from 'react-router-dom';
-import { BaseRecord, useCreate, useList, useOne } from '@refinedev/core';
-import bg from '../../assets/bg-widget.png'
-import Logo from '../../components/header/Logo';
-import BaseBtn from '../../components/common/BaseBtn';
-import { LoaderCircle } from 'lucide-react';
+"use client"
+
+import type React from "react"
+
+import { useEffect, useState } from "react"
+import { useParams } from "react-router-dom"
+import { type BaseRecord, useCreate, useList, useOne } from "@refinedev/core"
+import Logo from "../../components/header/Logo"
 
 const ReviewPage = () => {
-  const [step, setStep] = useState(1);
-  const { restaurant } = useParams();
-  const { token } = useParams();
+  const [step, setStep] = useState(1)
+  const { restaurant } = useParams()
+  const { token } = useParams()
 
   const { mutate: createReview } = useCreate({
     errorNotification(error, values, resource) {
       return {
-        type: 'error',
+        type: "error",
         message: error?.formattedMessage,
-      };
+      }
     },
-  });
+  })
 
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("")
 
-  const {data : reviewAccess, isLoading: loading, error: err} = useList({
+  const {
+    data: reviewAccess,
+    isLoading: loading,
+    error: err,
+  } = useList({
     resource: `api/v1/bo/subdomains/public/cutomer/reviews/${token}`,
     queryOptions: {
       retry: 1,
       onSuccess: (data) => {
-        console.log(data, 'data');
+        console.log(data, "data")
       },
       onError: (error) => {
-        setErrorMessage(error?.formattedMessage);
-      }
+        setErrorMessage(error?.formattedMessage)
+      },
     },
     errorNotification(error, values, resource) {
       return {
-        type: 'error',
+        type: "error",
         message: error?.formattedMessage,
-      };
-    }
-  });
+      }
+    },
+  })
 
-  const { data: res, isLoading, error } = useOne({
+  const {
+    data: res,
+    isLoading,
+    error,
+  } = useOne({
     resource: `api/v1/bo/subdomains/public/cutomer/reviews`,
-    id: '',
+    id: "",
     queryOptions: {
       onSuccess: (data) => {
-        console.log(data, 'data');
-      }
+        console.log(data, "data")
+      },
     },
     errorNotification(error, values, resource) {
       return {
-        type: 'error',
+        type: "error",
         message: error?.formattedMessage,
-      };
+      }
     },
-  });
+  })
 
   const [restaurantData, setRestaurantData] = useState<BaseRecord>()
 
   useEffect(() => {
     if (res?.data) {
-      setRestaurantData(res.data);
+      setRestaurantData(res.data)
     }
-  }, [res]);
+  }, [res])
 
-  const [brightService, setBrightService] = useState(0);
-  const [brightAmbiance, setBrightAmbiance] = useState(0);
-  const [brightFood, setBrightFood] = useState(0);
-  const [brightValueForMoney, setBrightValueForMoney] = useState(0);
+  const [brightService, setBrightService] = useState(0)
+  const [brightAmbiance, setBrightAmbiance] = useState(0)
+  const [brightFood, setBrightFood] = useState(0)
+  const [brightValueForMoney, setBrightValueForMoney] = useState(0)
 
-  const [email, setEmail] = useState('');
-  const [reviewText, setReviewText] = useState('');
+  const [email, setEmail] = useState("")
+  const [reviewText, setReviewText] = useState("")
 
   const renderStars = (count: number, activeCount: number) => {
     return Array.from({ length: 5 }, (_, i) => (
       <span key={i} className="cursor-pointer" onClick={() => setStep(i + 1)}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className={`h-6 w-6 ${i < activeCount ? 'text-yellow-500' : 'text-gray-300'}`}
+          className={`h-6 w-6 ${i < activeCount ? "text-yellow-500" : "text-gray-300"}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M5 13l4 4L19 7"
-          />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
         </svg>
       </span>
-    ));
-  };
+    ))
+  }
 
-  const handleBrightness = (num: number, category: 'ambiance' | 'service' | 'food' | 'valueForMoney') => {
-    category === 'ambiance' && setBrightAmbiance(num);
-    category === 'service' && setBrightService(num);
-    category === 'food' && setBrightFood(num);
-    category === 'valueForMoney' && setBrightValueForMoney(num);
-  };
+  const handleBrightness = (num: number, category: "ambiance" | "service" | "food" | "valueForMoney") => {
+    category === "ambiance" && setBrightAmbiance(num)
+    category === "service" && setBrightService(num)
+    category === "food" && setBrightFood(num)
+    category === "valueForMoney" && setBrightValueForMoney(num)
+  }
 
   const [reviewData, setReviewData] = useState({
-    email: '',
+    email: "",
     service: 0,
     ambiance: 0,
     food: 0,
     valueForMoney: 0,
-    reviewText: '',
-  });
+    reviewText: "",
+  })
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
     setReviewData({
       ...reviewData,
@@ -123,7 +125,7 @@ const ReviewPage = () => {
       food: brightFood,
       valueForMoney: brightValueForMoney,
       reviewText,
-    });
+    })
 
     createReview({
       resource: `api/v1/bo/reservations/review/${token}`,
@@ -134,18 +136,21 @@ const ReviewPage = () => {
         value_for_money: brightValueForMoney,
         description: reviewText,
       },
-    });
+    })
 
-    setStep(2);
-  };
+    setStep(2)
+  }
 
   return (
     <div className="h-[100vh] dark:bg-bgdarktheme2 dark:text-white bg-white">
-      <div className="h-[10vh] w-full flex items-center justify-between px-10 shadow-xl shadow-[#00000004] dark:bg-bgdarktheme bg-white">
+      <div className="h-[10vh] w-full flex items-center justify-between px-10 shadow-md border-b border-softgreytheme dark:border-darkthemeitems dark:bg-bgdarktheme bg-whitetheme">
         <Logo className="horizontal" />
         <button
-          onClick={() => {document.documentElement.classList.toggle('dark');localStorage.setItem('darkMode', document.documentElement.classList.contains('dark') ? 'true' : 'false');}}
-          className="btn-secondary hover:bg-[#88AB6110] my-[1em] p-1 w-[40px] h-[40px] flex justify-center items-center rounded-[100%]"
+          onClick={() => {
+            document.documentElement.classList.toggle("dark")
+            localStorage.setItem("darkMode", document.documentElement.classList.contains("dark") ? "true" : "false")
+          }}
+          className="hover:bg-softgreentheme transition-colors duration-200 my-[1em] p-1 w-[40px] h-[40px] flex justify-center items-center rounded-full"
         >
           <svg
             width="24"
@@ -175,179 +180,184 @@ const ReviewPage = () => {
           </svg>
         </button>
       </div>
-      {loading ? 
-        <div className="w-full flex justify-center gap-2 p-4">
-          <div className="md:w-[40%] items-center w-full pl-10 lt-md:pl-0 lt-md:p-0 mx-auto mt-10 flex flex-col gap-4 justify-center">
-            <div className="animate-pulse flex items-center justify-center w-[300px] h-[40px] rounded-md dark:bg-bgdarktheme bg-gray-300"></div>
-            <div className="animate-pulse flex items-center justify-center w-[400px] h-[30px] rounded-md dark:bg-bgdarktheme bg-gray-300"></div>
-            {Array.from({ length: 5 }, (_, index) => (
-              <div className="flex gap-4 items-center justify-start">
-                <div className="animate-pulse flex items-center justify-center lt-md:w-[150px] w-[300px] h-[40px] rounded-md dark:bg-bgdarktheme bg-gray-300"></div>
-                <div className="animate-pulse flex items-center justify-center w-[40px] h-[40px] rounded-md dark:bg-bgdarktheme bg-gray-300"></div>
-                <div className="animate-pulse flex items-center justify-center w-[40px] h-[40px] rounded-md dark:bg-bgdarktheme bg-gray-300"></div>
-                <div className="animate-pulse flex items-center justify-center w-[40px] h-[40px] rounded-md dark:bg-bgdarktheme bg-gray-300"></div>
-                <div className="animate-pulse flex items-center justify-center w-[40px] h-[40px] rounded-md dark:bg-bgdarktheme bg-gray-300"></div>
-                <div className="animate-pulse flex items-center justify-center w-[40px] h-[40px] rounded-md dark:bg-bgdarktheme bg-gray-300"></div>
-              </div>
-            ))}
-            <div className="flex gap-3">
-              <div className="animate-pulse flex items-center justify-center w-[200px] h-[50px] rounded-md dark:bg-bgdarktheme bg-gray-300"></div>
-              <div className="animate-pulse flex items-center justify-center w-[200px] h-[50px] rounded-md dark:bg-bgdarktheme bg-gray-300"></div>
+      {loading ? (
+        <div className="w-full flex justify-center gap-6 p-6">
+          <div className="md:w-[40%] items-center w-full pl-10 lt-md:pl-0 lt-md:p-0 mx-auto mt-10 flex flex-col gap-5 justify-center">
+            <div className="animate-pulse flex items-center justify-center w-[300px] h-[40px] rounded-lg dark:bg-bgdarktheme bg-softgreytheme"></div>
+            <div className="animate-pulse flex items-center justify-center w-[400px] h-[30px] rounded-lg dark:bg-bgdarktheme bg-softgreytheme"></div>
+            <div className="animate-pulse flex items-center justify-center w-full h-[200px] rounded-lg dark:bg-bgdarktheme bg-softgreytheme"></div>
+            <div className="flex gap-3 w-full">
+              <div className="animate-pulse flex items-center justify-center w-1/2 h-[50px] rounded-lg dark:bg-bgdarktheme bg-softgreytheme"></div>
+              <div className="animate-pulse flex items-center justify-center w-1/2 h-[50px] rounded-lg dark:bg-bgdarktheme bg-softgreytheme"></div>
             </div>
           </div>
           <div className="w-[40%] lt-md:hidden mx-auto mt-10 flex items-center justify-center">
-            <div className="animate-pulse mx-auto mt-10 flex items-center justify-center w-[300px] h-[300px] rounded-md dark:bg-bgdarktheme bg-gray-300"></div>
+            <div className="animate-pulse mx-auto flex items-center justify-center w-[300px] h-[300px] rounded-lg dark:bg-bgdarktheme bg-softgreytheme"></div>
           </div>
         </div>
-      :
-      (token !== 'preview' && err) ?
-        <div className="flex bg-softredtheme p-2 rounded text-redtheme flex-col gap-3 w-[60%] mx-auto text-center mt-[10vw] items-left">
+      ) : token !== "preview" && err ? (
+        <div className="flex bg-softredtheme p-4 rounded-lg text-redtheme flex-col gap-3 w-[60%] mx-auto text-center mt-[10vw]">
           <h2 className="text-2xl font-bold">Error!</h2>
           <p>{errorMessage}</p>
         </div>
-      :
-      <div className="h-[90vh] items-center xl:max-w-[1200px] no-scrollbar mx-auto pb-[5em] overflow-y-auto w-full flex p-5 px-10 justify-between">
-        <div className="w-[60%]">
-          <h1 className={`text-3xl font-bold mt-3 ${step === 1 ? 'block' : 'hidden'} dark:text-textdarktheme text-blacktheme`}>
-            {restaurantData?.title} <br />
-          </h1>
-          <p className={`w-[70%] lt-sm:w-[90%] mt-3 ${step === 1 ? 'block' : 'hidden'} dark:text-[#ffffff95] text-blacktheme`}>
-            {restaurantData?.description}
-          </p>
-          {step === 1 && <form onSubmit={handleSubmit} className="flex flex-col gap-3 items-center lg:w-[60%] sm:w-[90%] w-[100%] mt-3">
-            <div className="grid grid-cols-2 gap-3 justify-between w-full p-3 rounded-md dark:bg-darkthemeitems bg-white">
-              <div className="flex font-[500] gap-3 items-center">Service</div>
-              <div className="flex items-center gap-4">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <div
-                    key={`service-${star}`}
-                    className="cursor-pointer"
-                    onClick={() => handleBrightness(star, 'service')}
-                  >
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M9.44341 17.4783L5.11528 19.8562C4.53065 20.1774 3.80756 19.9425 3.5002 19.3316C3.37781 19.0883 3.33558 18.8096 3.38004 18.5387L4.20664 13.5023C4.27317 13.0969 4.14455 12.6833 3.86269 12.3961L0.361159 8.82936C-0.111814 8.34758 -0.121491 7.55634 0.339542 7.06208C0.523129 6.86526 0.763681 6.73717 1.02396 6.69765L5.86296 5.96285C6.25249 5.9037 6.58922 5.64804 6.76342 5.27918L8.92749 0.69694C9.2198 0.0779898 9.93691 -0.176136 10.5292 0.129334C10.7651 0.250974 10.956 0.450471 11.0724 0.69694L13.2364 5.27918C13.4106 5.64804 13.7474 5.9037 14.1369 5.96285L18.9759 6.69765C19.6295 6.7969 20.0824 7.43109 19.9874 8.11414C19.9496 8.38613 19.827 8.63751 19.6387 8.82936L16.1372 12.3961C15.8553 12.6833 15.7267 13.0969 15.7932 13.5023L16.6198 18.5387C16.7315 19.219 16.2942 19.8651 15.6433 19.9818C15.384 20.0282 15.1174 19.9841 14.8846 19.8562L10.5564 17.4783C10.208 17.2869 9.79181 17.2869 9.44341 17.4783Z"
-                        fill={brightService >= star ? "#F6B93B" : "#D9D9D9"}
-                      />
-                    </svg>
-                  </div>
-                ))}
-              </div>
-              <div className="flex font-[500] gap-3 items-center">Ambiance</div>
-              <div className="flex items-center gap-4">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <div
-                    key={`ambiance-${star}`}
-                    className="cursor-pointer"
-                    onClick={() => handleBrightness(star, 'ambiance')}
-                  >
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M9.44341 17.4783L5.11528 19.8562C4.53065 20.1774 3.80756 19.9425 3.5002 19.3316C3.37781 19.0883 3.33558 18.8096 3.38004 18.5387L4.20664 13.5023C4.27317 13.0969 4.14455 12.6833 3.86269 12.3961L0.361159 8.82936C-0.111814 8.34758 -0.121491 7.55634 0.339542 7.06208C0.523129 6.86526 0.763681 6.73717 1.02396 6.69765L5.86296 5.96285C6.25249 5.9037 6.58922 5.64804 6.76342 5.27918L8.92749 0.69694C9.2198 0.0779898 9.93691 -0.176136 10.5292 0.129334C10.7651 0.250974 10.956 0.450471 11.0724 0.69694L13.2364 5.27918C13.4106 5.64804 13.7474 5.9037 14.1369 5.96285L18.9759 6.69765C19.6295 6.7969 20.0824 7.43109 19.9874 8.11414C19.9496 8.38613 19.827 8.63751 19.6387 8.82936L16.1372 12.3961C15.8553 12.6833 15.7267 13.0969 15.7932 13.5023L16.6198 18.5387C16.7315 19.219 16.2942 19.8651 15.6433 19.9818C15.384 20.0282 15.1174 19.9841 14.8846 19.8562L10.5564 17.4783C10.208 17.2869 9.79181 17.2869 9.44341 17.4783Z"
-                        fill={brightAmbiance >= star ? "#F6B93B" : "#D9D9D9"}
-                      />
-                    </svg>
-                  </div>
-                ))}
-              </div>
-              <div className="flex font-[500] gap-3 items-center">Food</div>
-              <div className="flex items-center gap-4">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <div
-                    key={`ambiance-${star}`}
-                    className="cursor-pointer"
-                    onClick={() => handleBrightness(star, 'food')}
-                  >
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M9.44341 17.4783L5.11528 19.8562C4.53065 20.1774 3.80756 19.9425 3.5002 19.3316C3.37781 19.0883 3.33558 18.8096 3.38004 18.5387L4.20664 13.5023C4.27317 13.0969 4.14455 12.6833 3.86269 12.3961L0.361159 8.82936C-0.111814 8.34758 -0.121491 7.55634 0.339542 7.06208C0.523129 6.86526 0.763681 6.73717 1.02396 6.69765L5.86296 5.96285C6.25249 5.9037 6.58922 5.64804 6.76342 5.27918L8.92749 0.69694C9.2198 0.0779898 9.93691 -0.176136 10.5292 0.129334C10.7651 0.250974 10.956 0.450471 11.0724 0.69694L13.2364 5.27918C13.4106 5.64804 13.7474 5.9037 14.1369 5.96285L18.9759 6.69765C19.6295 6.7969 20.0824 7.43109 19.9874 8.11414C19.9496 8.38613 19.827 8.63751 19.6387 8.82936L16.1372 12.3961C15.8553 12.6833 15.7267 13.0969 15.7932 13.5023L16.6198 18.5387C16.7315 19.219 16.2942 19.8651 15.6433 19.9818C15.384 20.0282 15.1174 19.9841 14.8846 19.8562L10.5564 17.4783C10.208 17.2869 9.79181 17.2869 9.44341 17.4783Z"
-                        fill={brightFood >= star ? "#F6B93B" : "#D9D9D9"}
-                      />
-                    </svg>
-                  </div>
-                ))}
-              </div>
-              <div className="flex font-[500] gap-3 items-center">Value for money</div>
-              <div className="flex items-center gap-4">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <div
-                    key={`ambiance-${star}`}
-                    className="cursor-pointer"
-                    onClick={() => handleBrightness(star, 'valueForMoney')}
-                  >
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M9.44341 17.4783L5.11528 19.8562C4.53065 20.1774 3.80756 19.9425 3.5002 19.3316C3.37781 19.0883 3.33558 18.8096 3.38004 18.5387L4.20664 13.5023C4.27317 13.0969 4.14455 12.6833 3.86269 12.3961L0.361159 8.82936C-0.111814 8.34758 -0.121491 7.55634 0.339542 7.06208C0.523129 6.86526 0.763681 6.73717 1.02396 6.69765L5.86296 5.96285C6.25249 5.9037 6.58922 5.64804 6.76342 5.27918L8.92749 0.69694C9.2198 0.0779898 9.93691 -0.176136 10.5292 0.129334C10.7651 0.250974 10.956 0.450471 11.0724 0.69694L13.2364 5.27918C13.4106 5.64804 13.7474 5.9037 14.1369 5.96285L18.9759 6.69765C19.6295 6.7969 20.0824 7.43109 19.9874 8.11414C19.9496 8.38613 19.827 8.63751 19.6387 8.82936L16.1372 12.3961C15.8553 12.6833 15.7267 13.0969 15.7932 13.5023L16.6198 18.5387C16.7315 19.219 16.2942 19.8651 15.6433 19.9818C15.384 20.0282 15.1174 19.9841 14.8846 19.8562L10.5564 17.4783C10.208 17.2869 9.79181 17.2869 9.44341 17.4783Z"
-                        fill={brightValueForMoney >= star ? "#F6B93B" : "#D9D9D9"}
-                      />
-                    </svg>
-                  </div>
-                ))}
-              </div>
+      ) : (
+        <div className="h-[90vh] items-center  xl:max-w-[1200px] no-scrollbar mx-auto pb-[5em] overflow-y-auto w-full flex p-5 px-10 justify-between">
+          <div className="w-[60%]  lt-sm:w-full">
+            <div className="sm:hidden ">
+              {restaurantData?.logo ? (
+                <img
+                  src={restaurantData?.logo || "/placeholder.svg"}
+                  alt="Restaurant"
+                  className="w-full h-[10em] object-cover rounded-lg shadow-md"
+                />
+              ) : (
+                <div className="w-full h-full bg-[#f5f5f5] dark:bg-[#2a2a2a] rounded-lg flex items-center justify-center">
+                  <p className="text-[#888888] dark:text-[#666666]">Restaurant image</p>
+                </div>
+              )}
             </div>
-            <textarea
-              value={reviewText}
-              onChange={(e) => setReviewText(e.target.value)}
-              className="p-3 rounded-md w-full lt-sm:w-[90%] h-[6em] inputs-unique dark:bg-darkthemeitems bg-white"
-              placeholder="Write your review here"
-            />
-            <button type="submit" className="btn-primary mt-3">
-              Send
-            </button>
-          </form>}
-          {
-            step === 2 &&
-            <div className="flex flex-col gap-3 items-left mt-3">
-              <h2 className="text-2xl font-bold text-darkthemeitems dark:text-textdarktheme text-blacktheme">Thank you for your review!</h2>
-              <p className="dark:text-[#ffffff90] text-blacktheme">
-                Your review has been submitted successfully. We appreciate your feedback.
-              </p>
+            <h1
+              className={`text-3xl font-bold mt-3 ${step === 1 ? "block" : "hidden"} dark:text-textdarktheme text-blacktheme`}
+            >
+              {restaurantData?.title} <br />
+            </h1>
+            <p
+              className={`w-[70%] lt-sm:w-[90%] mt-3 ${step === 1 ? "block" : "hidden"} dark:text-softwhitetheme text-subblack`}
+            >
+              {restaurantData?.description}
+            </p>
+            {step === 1 && (
+              <form
+                onSubmit={handleSubmit}
+                className="flex flex-col gap-4 items-center lg:w-[60%] sm:w-[90%] w-[100%] mt-6"
+              >
+                <div className="grid grid-cols-2 gap-4 justify-between w-full p-5 rounded-lg shadow-sm border border-softgreytheme dark:border-darkthemeitems dark:bg-darkthemeitems bg-whitetheme">
+                  <div className="flex font-medium gap-3 items-center">Service</div>
+                  <div className="flex items-center gap-3">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <div
+                        key={`service-${star}`}
+                        className="cursor-pointer transition-transform hover:scale-110"
+                        onClick={() => handleBrightness(star, "service")}
+                      >
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            fillRule="evenodd"
+                            clipRule="evenodd"
+                            d="M9.44341 17.4783L5.11528 19.8562C4.53065 20.1774 3.80756 19.9425 3.5002 19.3316C3.37781 19.0883 3.33558 18.8096 3.38004 18.5387L4.20664 13.5023C4.27317 13.0969 4.14455 12.6833 3.86269 12.3961L0.361159 8.82936C-0.111814 8.34758 -0.121491 7.55634 0.339542 7.06208C0.523129 6.86526 0.763681 6.73717 1.02396 6.69765L5.86296 5.96285C6.25249 5.9037 6.58922 5.64804 6.76342 5.27918L8.92749 0.69694C9.2198 0.0779898 9.93691 -0.176136 10.5292 0.129334C10.7651 0.250974 10.956 0.450471 11.0724 0.69694L13.2364 5.27918C13.4106 5.64804 13.7474 5.9037 14.1369 5.96285L18.9759 6.69765C19.6295 6.7969 20.0824 7.43109 19.9874 8.11414C19.9496 8.38613 19.827 8.63751 19.6387 8.82936L16.1372 12.3961C15.8553 12.6833 15.7267 13.0969 15.7932 13.5023L16.6198 18.5387C16.7315 19.219 16.2942 19.8651 15.6433 19.9818C15.384 20.0282 15.1174 19.9841 14.8846 19.8562L10.5564 17.4783C10.208 17.2869 9.79181 17.2869 9.44341 17.4783Z"
+                            fill={brightService >= star ? "var(--color-yellowtheme)" : "var(--color-softgreytheme)"}
+                          />
+                        </svg>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex font-medium gap-3 items-center">Ambiance</div>
+                  <div className="flex items-center gap-3">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <div
+                        key={`ambiance-${star}`}
+                        className="cursor-pointer transition-transform hover:scale-110"
+                        onClick={() => handleBrightness(star, "ambiance")}
+                      >
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            fillRule="evenodd"
+                            clipRule="evenodd"
+                            d="M9.44341 17.4783L5.11528 19.8562C4.53065 20.1774 3.80756 19.9425 3.5002 19.3316C3.37781 19.0883 3.33558 18.8096 3.38004 18.5387L4.20664 13.5023C4.27317 13.0969 4.14455 12.6833 3.86269 12.3961L0.361159 8.82936C-0.111814 8.34758 -0.121491 7.55634 0.339542 7.06208C0.523129 6.86526 0.763681 6.73717 1.02396 6.69765L5.86296 5.96285C6.25249 5.9037 6.58922 5.64804 6.76342 5.27918L8.92749 0.69694C9.2198 0.0779898 9.93691 -0.176136 10.5292 0.129334C10.7651 0.250974 10.956 0.450471 11.0724 0.69694L13.2364 5.27918C13.4106 5.64804 13.7474 5.9037 14.1369 5.96285L18.9759 6.69765C19.6295 6.7969 20.0824 7.43109 19.9874 8.11414C19.9496 8.38613 19.827 8.63751 19.6387 8.82936L16.1372 12.3961C15.8553 12.6833 15.7267 13.0969 15.7932 13.5023L16.6198 18.5387C16.7315 19.219 16.2942 19.8651 15.6433 19.9818C15.384 20.0282 15.1174 19.9841 14.8846 19.8562L10.5564 17.4783C10.208 17.2869 9.79181 17.2869 9.44341 17.4783Z"
+                            fill={brightAmbiance >= star ? "var(--color-yellowtheme)" : "var(--color-softgreytheme)"}
+                          />
+                        </svg>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex font-medium gap-3 items-center">Food</div>
+                  <div className="flex items-center gap-3">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <div
+                        key={`food-${star}`}
+                        className="cursor-pointer transition-transform hover:scale-110"
+                        onClick={() => handleBrightness(star, "food")}
+                      >
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            fillRule="evenodd"
+                            clipRule="evenodd"
+                            d="M9.44341 17.4783L5.11528 19.8562C4.53065 20.1774 3.80756 19.9425 3.5002 19.3316C3.37781 19.0883 3.33558 18.8096 3.38004 18.5387L4.20664 13.5023C4.27317 13.0969 4.14455 12.6833 3.86269 12.3961L0.361159 8.82936C-0.111814 8.34758 -0.121491 7.55634 0.339542 7.06208C0.523129 6.86526 0.763681 6.73717 1.02396 6.69765L5.86296 5.96285C6.25249 5.9037 6.58922 5.64804 6.76342 5.27918L8.92749 0.69694C9.2198 0.0779898 9.93691 -0.176136 10.5292 0.129334C10.7651 0.250974 10.956 0.450471 11.0724 0.69694L13.2364 5.27918C13.4106 5.64804 13.7474 5.9037 14.1369 5.96285L18.9759 6.69765C19.6295 6.7969 20.0824 7.43109 19.9874 8.11414C19.9496 8.38613 19.827 8.63751 19.6387 8.82936L16.1372 12.3961C15.8553 12.6833 15.7267 13.0969 15.7932 13.5023L16.6198 18.5387C16.7315 19.219 16.2942 19.8651 15.6433 19.9818C15.384 20.0282 15.1174 19.9841 14.8846 19.8562L10.5564 17.4783C10.208 17.2869 9.79181 17.2869 9.44341 17.4783Z"
+                            fill={brightFood >= star ? "var(--color-yellowtheme)" : "var(--color-softgreytheme)"}
+                          />
+                        </svg>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex font-medium gap-3 items-center">Value for money</div>
+                  <div className="flex items-center gap-3">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <div
+                        key={`value-${star}`}
+                        className="cursor-pointer transition-transform hover:scale-110"
+                        onClick={() => handleBrightness(star, "valueForMoney")}
+                      >
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            fillRule="evenodd"
+                            clipRule="evenodd"
+                            d="M9.44341 17.4783L5.11528 19.8562C4.53065 20.1774 3.80756 19.9425 3.5002 19.3316C3.37781 19.0883 3.33558 18.8096 3.38004 18.5387L4.20664 13.5023C4.27317 13.0969 4.14455 12.6833 3.86269 12.3961L0.361159 8.82936C-0.111814 8.34758 -0.121491 7.55634 0.339542 7.06208C0.523129 6.86526 0.763681 6.73717 1.02396 6.69765L5.86296 5.96285C6.25249 5.9037 6.58922 5.64804 6.76342 5.27918L8.92749 0.69694C9.2198 0.0779898 9.93691 -0.176136 10.5292 0.129334C10.7651 0.250974 10.956 0.450471 11.0724 0.69694L13.2364 5.27918C13.4106 5.64804 13.7474 5.9037 14.1369 5.96285L18.9759 6.69765C19.6295 6.7969 20.0824 7.43109 19.9874 8.11414C19.9496 8.38613 19.827 8.63751 19.6387 8.82936L16.1372 12.3961C15.8553 12.6833 15.7267 13.0969 15.7932 13.5023L16.6198 18.5387C16.7315 19.219 16.2942 19.8651 15.6433 19.9818C15.384 20.0282 15.1174 19.9841 14.8846 19.8562L10.5564 17.4783C10.208 17.2869 9.79181 17.2869 9.44341 17.4783Z"
+                            fill={
+                              brightValueForMoney >= star ? "var(--color-yellowtheme)" : "var(--color-softgreytheme)"
+                            }
+                          />
+                        </svg>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <textarea
+                  value={reviewText}
+                  onChange={(e) => setReviewText(e.target.value)}
+                  className="p-4 rounded-lg border border-softgreytheme shadow-sm w-full lt-sm:w-[90%] h-[8em] focus:outline-none focus:ring-2 focus:ring-greentheme dark:bg-darkthemeitems bg-whitetheme"
+                  placeholder="Write your review here"
+                />
+                <button
+                  type="submit"
+                  className="bg-greentheme hover:bg-opacity-90 transition-colors text-whitetheme font-medium py-3 px-6 rounded-lg mt-4"
+                >
+                  Send Review
+                </button>
+              </form>
+            )}
+            {step === 2 && (
+              <div className="flex flex-col gap-4 items-left mt-8 p-6 rounded-lg border border-softgreytheme dark:border-darkthemeitems shadow-sm dark:bg-darkthemeitems bg-whitetheme">
+                <div className="flex items-center gap-3">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-.997-6l7.07-7.071-1.414-1.414-5.656 5.657-2.829-2.829-1.414 1.414L11.003 16z"
+                      fill="var(--color-greentheme)"
+                    />
+                  </svg>
+                  <h2 className="text-2xl font-bold dark:text-textdarktheme text-blacktheme">
+                    Thank you for your review!
+                  </h2>
+                </div>
+                <p className="dark:text-softwhitetheme text-subblack pl-10">
+                  Your review has been submitted successfully. We appreciate your feedback and will use it to improve
+                  our service.
+                </p>
+              </div>
+            )}
+          </div>
+          <div className="w-[40%] lt-sm:hidden flex justify-center items-start pt-10">
+            <div className="rounded-lg overflow-hidden shadow-md border border-softgreytheme dark:border-darkthemeitems">
+              <img
+                src={restaurantData?.logo || "/placeholder.svg"}
+                alt="Restaurant"
+                className="h-[300px] w-full object-cover"
+              />
             </div>
-          }
+          </div>
         </div>
-        <div className="w-[40%] lt-sm:hidden">
-          <img
-            src={restaurantData?.logo}
-            alt="logo"
-            className="h-[300px] rounded-md"
-          />
-        </div>
-      </div>
-      }
+      )}
     </div>
-  );
-};
+  )
+}
 
-export default ReviewPage;
+export default ReviewPage
