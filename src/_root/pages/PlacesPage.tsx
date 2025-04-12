@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import { addHours, format, parse } from 'date-fns';
 import { useDateContext } from '../../context/DateContext';
 import { useDarkContext } from '../../context/DarkContext';
-import { BaseKey, BaseRecord, CanAccess, useList, useUpdate } from '@refinedev/core';
+import { BaseKey, BaseRecord, CanAccess, useCan, useList, useUpdate } from '@refinedev/core';
 import DraggableItem from '../../components/places/DraggableItem';
 import DropTarget from '../../components/places/DropTarget';
 import SearchBar from '../../components/header/SearchBar';
@@ -105,6 +105,11 @@ const DndProviderWithPreview: React.FC<{ children: React.ReactNode }> = ({ child
 const PlacePage: React.FC = () => {
   const { t } = useTranslation();
   const { darkMode } = useDarkContext();
+
+  // resevration permissions
+  const { data: canChangeRes } = useCan({ resource: 'reservation', action: 'change' });
+  const { data: canAddRes } = useCan({ resource: 'reservation', action: 'add' });
+  const { data: canDeleteRes } = useCan({ resource: 'reservation', action: 'delete' });
 
   // Update document title
   useEffect(() => {
@@ -785,6 +790,8 @@ const PlacePage: React.FC = () => {
                       created_at: item.created_at,
                       tables: item.tables || []
                     }}
+                    canChangeRes={canChangeRes?.can as boolean}
+                    canDeleteRes={canDeleteRes?.can as boolean}
                     key={item.id}
                   />
                 )))}
@@ -864,6 +871,8 @@ const PlacePage: React.FC = () => {
                         refetchReservations();
                       }}
                       onShowOptions={(e) => setShowTableOptions(e)}
+                      canChangeRes={canChangeRes?.can as boolean}
+                      canDeleteRes={canDeleteRes?.can as boolean}
                     />
                   ))}
                 </div>

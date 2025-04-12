@@ -152,6 +152,7 @@
                 "date": "Date",
                 "comment": "Commentaire",
                 "tableName": "Nom de la table",
+                "addCustomer": "Ajouter le client",
                 "time": "Heure",
                 "guests": "Invités",
                 "madeBy": "Fait par",

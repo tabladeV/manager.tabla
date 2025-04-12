@@ -1,3 +1,4 @@
+import { CanAccess } from "@refinedev/core";
 import { Clock, GripVertical, Trash, User2, Users2 } from "lucide-react";
 import { useDrag } from "react-dnd";
 
@@ -13,7 +14,9 @@ const DraggableReservationItem: React.FC<any> = ({
     max,
     name,
     setTargetReservation,
-    setShowConfirmPopup
+    setShowConfirmPopup,
+    canChangeRes,
+    canDeleteRes
   }) => {
     const [{ isDragging }, drag] = useDrag(() => ({
       type: "RESERVATION_LIST_ITEM",
@@ -34,7 +37,7 @@ const DraggableReservationItem: React.FC<any> = ({
           isDragging: monitor.isDragging(),
         }
       },
-      canDrag: true,
+      canDrag: ()=> canChangeRes,
     }));
     return (
       <div
@@ -49,14 +52,16 @@ const DraggableReservationItem: React.FC<any> = ({
           </div>
           <div className='flex items-center'><User2 size={16} className='mr-1' /> <span>{reservation.full_name}</span></div>
         </div>
-        <Trash
-          size={30}
-          className="bg-softredtheme text-redtheme p-2 rounded-md cursor-pointer"
-          onClick={() => {
-            setTargetReservation(reservation)
-            setShowConfirmPopup(true)
-          }}
-        />
+        <CanAccess resource="reservation" action="delete">
+          <Trash
+            size={30}
+            className="bg-softredtheme text-redtheme p-2 rounded-md cursor-pointer"
+            onClick={() => {
+              setTargetReservation(reservation)
+              setShowConfirmPopup(true)
+            }}
+          />
+        </CanAccess>
       </div>
     )
   }

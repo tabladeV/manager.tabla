@@ -187,6 +187,7 @@
           "floor": "Floor",
           "table":"Table",
           "date": "Date",
+          "addCustomer": "Add customer",
           "comment": "Comment",
           "tableName": "Table Name",
           "time": "Time",

@@ -828,12 +828,14 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
         );
       })}
       <td className={`px-3 py-2 max-w-40 `}>
-        <button
-          onClick={() => initiateDelete(reservation.id)}
-          className=" dark:text-whitetheme btn-outline flex items-center gap-1"
-        >
-          <Trash2 size={16} className='stroke-red-600' />
-        </button>
+        <CanAccess action="delete" resource="reservation">
+          <button
+            onClick={() => initiateDelete(reservation.id)}
+            className=" dark:text-whitetheme btn-outline flex items-center gap-1"
+          >
+            <Trash2 size={16} className='stroke-red-600' />
+          </button>
+        </CanAccess>        
       </td>
     </tr>
   );
