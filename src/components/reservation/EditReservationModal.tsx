@@ -4,6 +4,8 @@ import { BaseKey, useList } from "@refinedev/core";
 import BaseSelect from "../common/BaseSelect";
 import { ReservationSource, ReservationStatus } from "../common/types/Reservation";
 import { TableType as OriginalTableType } from "../../_root/pages/PlacesPage";
+import ActionPopup from "../popup/ActionPopup";
+import { Clock, User2, Users2, Calendar } from "lucide-react";
 
 interface TableType extends OriginalTableType {
   id: number;
@@ -47,6 +49,7 @@ const EditReservationModal = ({
   const [selectedTables, setSelectedTables] = useState<number[]>([]);
   const [selectedClient, setSelectedClient] = useState<Reservation | null>(null);
   const [selectedOccasion, setSelectedOccasion] = useState<number | null>(null);
+  const [showConfirmPopup, setShowConfirmPopup] = useState(false);
 
   const [occasions, setOccasions] = useState<Occasion[]>([])
   const [occasionsAPIInfo, setOccasionsAPIInfo] = useState<OccasionsType>()
@@ -96,6 +99,15 @@ const EditReservationModal = ({
   
   if (!showModal || !selectedClient) return null;
 
+  const handleSave = () => {
+    setShowConfirmPopup(true);
+  };
+
+  const confirmUpdate = () => {
+    upDateHandler(selectedClient);
+    setShowConfirmPopup(false);
+    setShowModal(false);
+  };
   
   return (
     <div>
@@ -246,10 +258,82 @@ const EditReservationModal = ({
             >
               {t('reservations.edit.buttons.cancel')}
             </button>
-            <button onClick={()=>{upDateHandler(selectedClient)}} className="btn-primary">
+            <button onClick={handleSave} className="btn-primary">
               {t('reservations.edit.buttons.save')}
             </button>
           </div>
+
+          {/* Enhanced Confirmation Popup */}
+          <ActionPopup
+            action="update"
+            message={
+              <>
+                <h6 className="mb-3">{t('reservations.edit.confirmationMessage')}</h6>
+                
+                {/* Reservation Details Card - Based on DraggableReservationItem */}
+                <div className={`p-3 flex flex-col gap-2 rounded-[5px] w-full mb-4 font-medium ${isDarkMode ? 'bg-bgdarktheme' : 'bg-softgreytheme'}`}>
+                  {/* Reservation ID and Name */}
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center">
+                      <User2 size={18} className="mr-2" />
+                      <span className="font-semibold">{selectedClient?.full_name}</span>
+                    </div>
+                    <div className="text-xs dark:bg-darkthemeitems bg-white py-1 px-2 rounded-md">
+                      #{selectedClient?.seq_id || selectedClient?.id}
+                    </div>
+                  </div>
+                  
+                  {/* Date, Time, and Guests */}
+                  <div className="flex justify-between items-center w-full">
+                    <div className="flex items-center">
+                      <Calendar size={16} className="mr-1" />
+                      <span>{reservationProgressData.reserveDate}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Clock size={16} className="mr-1" />
+                      <span>{reservationProgressData.time}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Users2 size={16} className="mr-1" />
+                      <span>{reservationProgressData.guests}</span>
+                    </div>
+                  </div>
+                  
+                  {/* Tables */}
+                  {selectedTables && selectedTables.length > 0 && (
+                    <div className="mt-1 text-sm">
+                      <span className="opacity-75">Tables: </span>
+                      {selectedClient?.tables?.map(t => t.name).join(', ')}
+                    </div>
+                  )}
+                  
+                  {/* Status */}
+                  <div className="flex justify-between items-center mt-1">
+                    <span className="text-sm opacity-75">Status: </span>
+                    <div className={`text-sm ${
+                      selectedClient?.status === 'APPROVED' ? 'text-greentheme' :
+                      selectedClient?.status === 'SEATED' ? 'text-orangetheme' :
+                      selectedClient?.status === 'PENDING' ? 'text-bluetheme' :
+                      selectedClient?.status === 'FULFILLED' ? 'text-purpletheme' :
+                      selectedClient?.status === 'NO_SHOW' ? 'text-blushtheme' :
+                      'text-redtheme'
+                    }`}>
+                      {selectedClient?.status === 'APPROVED' ? t('reservations.statusLabels.confirmed') :
+                       selectedClient?.status === 'SEATED' ? t('reservations.statusLabels.seated') :
+                       selectedClient?.status === 'PENDING' ? t('reservations.statusLabels.pending') :
+                       selectedClient?.status === 'FULFILLED' ? t('reservations.statusLabels.fulfilled') :
+                       selectedClient?.status === 'NO_SHOW' ? t('reservations.statusLabels.noShow') :
+                       t('reservations.statusLabels.cancelled')}
+                    </div>
+                  </div>
+                </div>
+              </>
+            }
+            actionFunction={confirmUpdate}
+            showPopup={showConfirmPopup}
+            setShowPopup={setShowConfirmPopup}
+            secondActionText={t('reservations.edit.buttons.cancel')}
+          />
         </div>
       </div>
     </div>
