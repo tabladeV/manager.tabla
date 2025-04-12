@@ -269,7 +269,7 @@ const Modify = () => {
       <div
         className={`h-[10vh] w-full flex items-center justify-between px-10 shadow-md dark:shadow-[#00000020] shadow-[#00000010] dark:bg-bgdarktheme bg-white sticky top-0 z-10`}
       >
-        <Logo className="horizontal" />
+        <Logo className="horizontal" nolink={true}/>
         <button
           onClick={() => {
             document.documentElement.classList.toggle("dark")
