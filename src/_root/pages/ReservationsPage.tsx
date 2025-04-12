@@ -31,6 +31,9 @@ import { Occasion } from "../../components/settings/Occasions";
 import { useDarkContext } from "../../context/DarkContext";
 import { isTouchDevice } from '../../utils/isTouchDevice';
 import ActionPopup from "../../components/popup/ActionPopup";
+import DraggableItemSkeleton from '../../components/places/DraggableItemSkeleton';
+import DraggableItem from '../../components/places/DraggableItem';
+import ResevrationCard from '../../components/places/ResevrationCard';
 
 // Types and Interfaces
 export interface ReceivedTables {
@@ -533,7 +536,7 @@ interface ReservationStatusLabelProps {
   loading: boolean;
 }
 
-const ReservationStatusLabel: React.FC<ReservationStatusLabelProps> = ({ status, loading }) => {
+export const ReservationStatusLabel: React.FC<ReservationStatusLabelProps> = ({ status, loading }) => {
   const { t } = useTranslation();
   const statusStyles = statusStyle(status)
   let statusText = ''
@@ -828,12 +831,14 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
         );
       })}
       <td className={`px-3 py-2 max-w-40 `}>
-        <button
-          onClick={() => initiateDelete(reservation.id)}
-          className=" dark:text-whitetheme btn-outline flex items-center gap-1"
-        >
-          <Trash2 size={16} className='stroke-red-600' />
-        </button>
+        <CanAccess action="delete" resource="reservation">
+          <button
+            onClick={() => initiateDelete(reservation.id)}
+            className=" dark:text-whitetheme btn-outline flex items-center gap-1"
+          >
+            <Trash2 size={16} className='stroke-red-600' />
+          </button>
+        </CanAccess>        
       </td>
     </tr>
   );
@@ -1476,7 +1481,6 @@ const ReservationsPage: React.FC = () => {
           columns={reservationsExportConfig.columns}
           customFields={reservationsExportConfig.customFields}
           onExport={(format, selectedColumns, customFields) => {
-            console.log(format, selectedColumns, customFields);
             setShowExportModal(false);
           }}
           onClose={() => setShowExportModal(false)}
@@ -1556,8 +1560,36 @@ const ReservationsPage: React.FC = () => {
         />
       </div>
 
+      {/* Reservation cards for mobile */}
+      <div className='gt-sm:hidden overflow-x-auto max-w-full rounded-lg bg-white px-2 py-3 mt-2 min-h-[40vh]'>
+        {(isLoading || isFirstLoad) ?
+          <DraggableItemSkeleton count={3} isDarkMode={darkMode} />
+          : (filteredReservations.map(item => (
+            <ResevrationCard
+              itemData={{
+                ...item,
+                number_of_guests: parseInt(item.number_of_guests, 10),
+                onEdit: EditClient,
+                onUpdate: () => {
+                  refetchReservations();
+                },
+                loading: item.loading ?? false,
+                created_at: item.created_at,
+                tables: item.tables || []
+              }}
+              key={item.id}
+              handleStatus={statusHandler}
+              showStatusModification={setIdStatusModification}
+            />
+          )))}
+        {((reservationAPIInfo?.count || 0) > 1 && filteredReservations?.length > 10) && (<>
+          <div className='bottom mx-auto w-full'>
+            <Pagination setPage={(p: number) => setPage(p)} size={20} count={reservationAPIInfo?.count || 0} />
+          </div>
+        </>)}
+      </div>
       {/* Reservations Table */}
-      <div className='overflow-x-auto max-w-full'>
+      <div className='lt-sm:hidden overflow-x-auto max-w-full'>
         <ReservationTable
           isLoading={isLoading || isFirstLoad}
           filteredReservations={filteredReservations}

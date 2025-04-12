@@ -18,6 +18,7 @@ interface DraggableTableReservationProps {
   max: number;
   min?: number;
   hourChosen?: string;
+  canChangeRes: boolean;
 }
 
 const ItemType = 'TABLE_RESERVATION';
@@ -32,7 +33,8 @@ const DraggableTableReservation: React.FC<DraggableTableReservationProps> = ({
   x,
   y,
   height,
-  width 
+  width,
+  canChangeRes
 }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemType,
@@ -48,6 +50,7 @@ const DraggableTableReservation: React.FC<DraggableTableReservationProps> = ({
       max,
       name
     },
+    canDrag: () => canChangeRes,
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),

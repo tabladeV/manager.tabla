@@ -35,6 +35,8 @@ interface DropTargetProps {
   onTableFocus: () => void;
   onUpdateReservations: (data?: any) => void;
   onShowOptions: (status: boolean) => void;
+  canChangeRes: boolean; 
+  canDeleteRes: boolean; 
 }
 
 export interface currentResType {
@@ -76,6 +78,8 @@ const DropTarget: React.FC<DropTargetProps> = ({
   reservedBy,
   reservations,
   focusedTable,
+  canChangeRes,
+  canDeleteRes,
   setFocuseTable,
   onUpdateReservations,
   onTableFocus,
@@ -149,7 +153,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
   // Handle drops from the sidebar (regular reservations)
   const [{ isOver, canDrop }, drop] = useDrop({
     accept: [ItemType, TableReservationType, RreservationItemType],
-    canDrop: (item: DroppedItem) => !isLoading && item?.fromTableId !== id && reservations?.findIndex((res) => res.id === item.id || res.time === item.time) === -1,
+    canDrop: (item: DroppedItem) => (!isLoading && item?.fromTableId !== id && reservations?.findIndex((res) => res.id === item.id || res.time === item.time) === -1 && canChangeRes),
     drop: (item: DroppedItem) => {
       handleDrop(item);
     },
@@ -414,6 +418,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
                 max={max}
                 reservation={reservations[0]}
                 fromTableId={id}
+                canChangeRes={canChangeRes}
               />
             )}
             {isLoading && (
@@ -509,6 +514,8 @@ const DropTarget: React.FC<DropTargetProps> = ({
                 id={id}
                 name={name}
                 max={max}
+                canChangeRes={canChangeRes}
+                canDeleteRes={canDeleteRes}
                 reservation={item}
                 fromTableId={id}
                 setTargetReservation={setTargetReservation}
