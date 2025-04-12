@@ -32,7 +32,6 @@ interface DraggableItemProps {
     loading: boolean;
   };
   canChangeRes: boolean;
-  canDeleteRes: boolean;
 }
 
 const ItemType = 'BOX';

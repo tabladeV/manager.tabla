@@ -791,7 +791,6 @@ const PlacePage: React.FC = () => {
                       tables: item.tables || []
                     }}
                     canChangeRes={canChangeRes?.can as boolean}
-                    canDeleteRes={canDeleteRes?.can as boolean}
                     key={item.id}
                   />
                 )))}
