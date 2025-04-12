@@ -10,6 +10,26 @@ import { format } from "date-fns"
 import { getSubdomain } from "../../utils/getSubdomain"
 import WidgetReservationProcess from "../../components/reservation/WidgetReservationProcess"
 
+interface QuillPreviewProps {
+  content: string
+  className?: string
+}
+
+export function QuillPreview({ content, className = "" }: QuillPreviewProps) {
+  // Import Quill styles on the client side for proper rendering
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      import("quill/dist/quill.core.css")
+    }
+  }, [])
+
+  return (
+    <div className={`quill-preview ${className}`}>
+      <div className="prose max-w-none overflow-auto" dangerouslySetInnerHTML={{ __html: content }} />
+    </div>
+  )
+}
+
 const WidgetPage = () => {
   const { pathname } = useLocation()
   useEffect(() => {
@@ -260,12 +280,12 @@ const WidgetPage = () => {
           </svg>
         </button>
       </header>
-      <div className="h-16 w-full opacity-0"></div>
+      <div className="h-16 w-full z-[0] opacity-0"></div>
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row gap-8">
         {/* Left Column - Form */}
-        <div className="w-full sm:w-3/5">
+      <div className="w-full sm:w-3/5">
         <div className=" flex items-start">
         {widgetInfo?.image ? (
             <img
@@ -280,32 +300,36 @@ const WidgetPage = () => {
           )}
         </div>
           {step !== 6 && (
-            <h1 className="text-3xl sm:text-4xl text-center font-bold mb-4 text-[#3A541C] dark:text-[#88AB61]">
+            <h1 className="text-3xl sm:text-4xl text-center font-bold mb-4 text-black dark:text-white">
               {widgetInfo?.title || "Make a Reservation"}
             </h1>
           )}
 
           {step === 1 && (
             <>
-              <p className="text-lg mb-6 text-[#333333] dark:text-[#e1e1e1]">
+              {/* <p className="text-lg mb-6 text-[#333333] dark:text-[#e1e1e1]">
                 {widgetInfo?.description || "Reserve your table at our restaurant."}
-              </p>
+              </p> */}
+              <QuillPreview
+                content={widgetInfo?.content || ""}
+                className="mb-6 text-[#333333] dark:text-[#e1e1e1]"
+              />
 
-              <div className="bg-[#f9f9f9] dark:bg-darkthemeitems rounded-lg p-4 mb-6 shadow-sm">
+              <div className="bg-[#f9f9f9] dark:bg-darkthemeitems rounded-lg  mb-6 shadow-sm">
                 <div
                   onClick={() => setShowProcess(true)}
-                  className="flex justify-between items-center cursor-pointer p-2 hover:bg-[#f0f0f0] dark:hover:bg-bgdarktheme2 rounded-md transition-colors"
+                  className="flex justify-between items-center cursor-pointer p-6 hover:border-softgreentheme border-2 border-[#00000000] hover:bg-[#f0f0f0] dark:hover:bg-bgdarktheme2 rounded-md transition-colors"
                 >
                   <div className="flex items-center gap-2">
-                    <span className="text-[#666666] dark:text-[#aaaaaa]">Date:</span>
+                    <span className="font-[600] dark:text-greentheme text-greentheme">Date</span>
                     <span className="font-medium">{data.reserveDate || "----/--/--"}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[#666666] dark:text-[#aaaaaa]">Time:</span>
+                    <span className="font-[600] dark:text-greentheme text-greentheme">Time</span>
                     <span className="font-medium">{data.time || "--:--"}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[#666666] dark:text-[#aaaaaa]">Guests:</span>
+                    <span className="font-[600] dark:text-greentheme text-greentheme">Guests</span>
                     <span className="font-medium">{data.guests || "--"}</span>
                   </div>
                 </div>
@@ -450,7 +474,7 @@ const WidgetPage = () => {
                   </div>
                 )}
 
-                <div className="flex items-start mt-4">
+                <div className="flex items-start pt-2">
                   <input
                     type="checkbox"
                     id="terms"
@@ -459,9 +483,9 @@ const WidgetPage = () => {
                     className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]"
                   />
                   
-                  <label htmlFor="terms" className="ml-2 block text-sm text-[#555555] dark:text-[#cccccc]">
+                  <label htmlFor="terms" className="ml-2  block text-sm text-[#555555] dark:text-[#cccccc]">
                     I agree to{" "}
-                    <Link to="/terms-and-conditions" className="underline font-medium text-[#88AB61]">
+                    <Link to="/terms-and-conditions" className="underline font-medium text-[#88AB61]" target="_blank">
                       the terms and conditions
                     </Link>
                   </label>
@@ -498,34 +522,34 @@ const WidgetPage = () => {
               <div className="space-y-4 mb-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <h3 className="text-sm font-medium text-[#666666] dark:text-[#aaaaaa]">Name</h3>
+                    <h3 className="text-sm font-medium font-[600] dark:text-greentheme text-greentheme">Name</h3>
                     <p className="text-base">
                       {userInformation.firstname} {userInformation.lastname}
                     </p>
                   </div>
                   <div>
-                    <h3 className="text-sm font-medium text-[#666666] dark:text-[#aaaaaa]">Email</h3>
+                    <h3 className="text-sm font-medium font-[600] dark:text-greentheme text-greentheme">Email</h3>
                     <p className="text-base">{userInformation.email}</p>
                   </div>
                   <div>
-                    <h3 className="text-sm font-medium text-[#666666] dark:text-[#aaaaaa]">Phone</h3>
+                    <h3 className="text-sm font-medium font-[600] dark:text-greentheme text-greentheme">Phone</h3>
                     <p className="text-base">{userInformation.phone}</p>
                   </div>
                   <div>
-                    <h3 className="text-sm font-medium text-[#666666] dark:text-[#aaaaaa]">Date & Time</h3>
+                    <h3 className="text-sm font-medium font-[600] dark:text-greentheme text-greentheme">Date & Time</h3>
                     <p className="text-base">
                       {format(data.reserveDate, "MMMM d, yyyy")} at {data.time}
                     </p>
                   </div>
                   <div>
-                    <h3 className="text-sm font-medium text-[#666666] dark:text-[#aaaaaa]">Guests</h3>
+                    <h3 className="text-sm font-medium font-[600] dark:text-greentheme text-greentheme">Guests</h3>
                     <p className="text-base">
                       {data.guests} {data.guests === 1 ? "person" : "people"}
                     </p>
                   </div>
                   {userInformation.occasion &&  (
                     <div>
-                      <h3 className="text-sm font-medium text-[#666666] dark:text-[#aaaaaa]">Occasion</h3>
+                      <h3 className="text-sm font-medium font-[600] dark:text-greentheme text-greentheme">Occasion</h3>
                       <p className="text-base">
                         {
                           occasions?.find((occasion: BaseRecord) => occasion.id === Number(userInformation.occasion))
@@ -538,14 +562,14 @@ const WidgetPage = () => {
 
                 {userInformation.allergies && (
                   <div>
-                    <h3 className="text-sm font-medium text-[#666666] dark:text-[#aaaaaa]">Allergies</h3>
+                    <h3 className="text-sm font-medium font-[600] dark:text-greentheme text-greentheme">Allergies</h3>
                     <p className="text-base">{userInformation.allergies}</p>
                   </div>
                 )}
 
                 {userInformation.preferences && (
                   <div>
-                    <h3 className="text-sm font-medium text-[#666666] dark:text-[#aaaaaa]">Preferences</h3>
+                    <h3 className="text-sm font-medium font-[600] dark:text-greentheme text-greentheme">Preferences</h3>
                     <p className="text-base">{userInformation.preferences}</p>
                   </div>
                 )}
@@ -590,7 +614,7 @@ const WidgetPage = () => {
                 </svg>
               </div>
               <h2 className="text-2xl font-semibold mb-2">Reservation Confirmed!</h2>
-              <p className="text-[#666666] dark:text-[#aaaaaa] mb-6">
+              <p className="font-[600] dark:text-greentheme text-greentheme mb-6">
                 Your reservation has been successfully made. You will receive a confirmation email shortly.
               </p>
               <button
@@ -607,7 +631,7 @@ const WidgetPage = () => {
               <h2 className="text-2xl font-semibold mb-4">
                 {widgetInfo?.disabled_title || "Reservations Unavailable"}
               </h2>
-              <p className="text-[#666666] dark:text-[#aaaaaa]">
+              <p className="font-[600] dark:text-greentheme text-greentheme">
                 {widgetInfo?.disabled_description ||
                   "Online reservations are currently unavailable. Please contact the restaurant directly."}
               </p>

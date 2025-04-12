@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next"
 import BaseSelect from "../common/BaseSelect"
 import BaseBtn from "../common/BaseBtn"
 import ActionPopup from "../popup/ActionPopup"
+import Pagination from "../reservation/Pagination"
 
 interface User {
   id: number
@@ -74,18 +75,23 @@ export default function Users() {
 
   const [usersAPIInfo, setUsersAPIInfo] = useState<UsersType>()
 
+  const [page, setPage] = useState(1)
+  const [size, setSize] = useState(10)
+  const [count, setCount] = useState(0)
+
+
   const { data, isLoading, error, refetch: refetchUsers } = useList({
     resource: 'api/v1/bo/restaurants/users/',
     filters: [
       {
         field: "page_size",
         operator: "eq",
-        value: 10
+        value: size
       },
       {
         field: "page",
         operator: "eq",
-        value: 1
+        value: page
       }
     ],
     queryOptions: {
@@ -115,6 +121,7 @@ export default function Users() {
   useEffect(() => {
     if (usersAPIInfo) {
       setUsers(usersAPIInfo.results as User[])
+      setCount(usersAPIInfo.count)
     }
   }, [usersAPIInfo])
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -328,6 +335,9 @@ export default function Users() {
         </div>
       )}
       <h1 className="text-2xl font-bold mb-3">{t('settingsPage.users.title')}</h1>
+      <div>
+        <button className="btn-primary mt-4" onClick={addUser}>{t('settingsPage.users.buttons.addUser')}</button>
+      </div>
       <div className="overflow-x-auto w-full">
         <table className="w-full border-collapse text-left text-sm dark:bg-bgdarktheme2 bg-white text-gray-500">
           <thead className="dark:bg-bgdarktheme bg-white text-gray-900 dark:text-gray-400">
@@ -358,10 +368,10 @@ export default function Users() {
             ))}
           </tbody>
         </table>
+        
       </div>
-      <div>
-        <button className="btn-primary mt-4" onClick={addUser}>{t('settingsPage.users.buttons.addUser')}</button>
-      </div>
+      <Pagination setPage={(page: number) => { setPage(page) }} size={size} count={count} />
+      
     </div>
   )
 }

@@ -3,184 +3,192 @@
 import Logo from "../../components/header/Logo"
 
 export default function TermsAndConditions() {
+  const sections = [
+    {
+      title: "Objet de la plateforme",
+      content:
+        "Tabla est un service en ligne permettant aux utilisateurs de réserver une table dans les établissements partenaires (restaurants, cafés, hôtels…). Nous mettons en relation les clients avec les établissements via une interface fluide et intuitive.",
+    },
+    {
+      title: "Collecte et utilisation des données personnelles",
+      subsections: [
+        {
+          subtitle: "Données collectées",
+          items: [
+            "Nom",
+            "Prénom",
+            "Numéro de téléphone",
+            "Adresse email",
+            "Informations de réservation (nombre de personnes, date, heure…)",
+          ],
+        },
+        {
+          subtitle: "Finalités de l'utilisation",
+          items: [
+            "Transmission des données au restaurant concerné afin d'assurer une réservation fluide et confirmée dans les meilleures conditions.",
+            "Envoi d'emails transactionnels liés à votre réservation : confirmation, rappels, demandes d'avis, questionnaires de satisfaction.",
+            "Inscription à nos listes d'emailing pour vous tenir informé de nos services, de nos nouveautés, et d'éventuelles campagnes marketing ou CRM pertinentes.",
+          ],
+        },
+      ],
+    },
+    {
+      title: "Respect de la vie privée et confidentialité",
+      content:
+        "Tabla s'engage à ne jamais partager, vendre ou transmettre vos données personnelles à des tiers non autorisés, en dehors des établissements auprès desquels vous effectuez une réservation. Vos données sont utilisées uniquement dans le cadre de votre interaction avec la plateforme et les établissements partenaires.",
+    },
+    {
+      title: "Désabonnement et gestion des préférences",
+      items: [
+        "Vous désabonner de nos communications marketing via le lien prévu à cet effet dans nos emails.",
+        "Demander la suppression ou la modification de vos données personnelles en nous contactant à l'adresse : contact@tabla.ma",
+      ],
+    },
+    {
+      title: "Sécurité des données",
+      content:
+        "Nous mettons en œuvre tous les moyens techniques et organisationnels nécessaires pour garantir la sécurité et la confidentialité de vos données. Nos serveurs sont protégés et les accès à vos données sont strictement encadrés.",
+    },
+    {
+      title: "Modification des CGU et politique de confidentialité",
+      content:
+        "Tabla se réserve le droit de modifier à tout moment les présentes conditions générales. Les utilisateurs seront informés de toute modification importante par email ou via notre site.",
+    },
+    {
+      title: "Mentions légales",
+      content: "Vous trouverez toutes les mentions légales de Tabla sur la page Mentions légales",
+    },
+    {
+      title: "Contact",
+      content:
+        "Pour toute question concernant ces CGU-CGP ou vos données personnelles, vous pouvez nous contacter par email à : contact@tabla.ma",
+    },
+  ]
+
   return (
-    <div className="h-[100vh] bg-white dark:bg-bgdarktheme2 text-black dark:text-white">
-      <div className="h-[10vh] w-full flex items-center justify-between px-4 sm:px-10 shadow-xl shadow-[#00000004] bg-white dark:bg-bgdarktheme">
-        <Logo className="horizontal" />
-        <button
-          onClick={() => {
-            document.documentElement.classList.toggle("dark")
-            localStorage.setItem("darkMode", document.documentElement.classList.contains("dark") ? "true" : "false")
-          }}
-          className="btn-secondary hover:bg-[#88AB6110] my-[1em] p-1 w-[40px] h-[40px] flex justify-center items-center rounded-[100%]"
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="dark:hidden"
+    <div className="min-h-screen bg-softgreytheme dark:bg-bgdarktheme2 text-blacktheme dark:text-textdarktheme">
+      {/* Header */}
+      <header className="sticky top-0 z-10 bg-whitetheme dark:bg-bgdarktheme shadow-sm">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-1 flex items-center justify-between">
+          <Logo className="horizontal" nolink={true} />
+          <button
+            onClick={() => {
+              document.documentElement.classList.toggle("dark")
+              localStorage.setItem("darkMode", document.documentElement.classList.contains("dark") ? "true" : "false")
+            }}
+            className="p-2 rounded-full hover:bg-softgreentheme dark:hover:bg-darkthemeitems transition-colors"
+            aria-label="Toggle dark mode"
           >
-            <path
-              d="M12 7C9.24 7 7 9.24 7 12C7 14.76 9.24 17 12 17C14.76 17 17 14.76 17 12C17 9.24 14.76 7 12 7ZM11 1V5H13V1H11ZM11 19V23H13V19H11ZM23 11H19V13H23V11ZM5 11H1V13H5V11ZM16.24 17.66L18.71 20.13L20.12 18.72L17.65 16.25L16.24 17.66ZM3.87 5.28L6.34 7.75L7.75 6.34L5.28 3.87L3.87 5.28ZM6.34 16.24L3.87 18.71L5.28 20.12L7.75 17.65L6.34 16.24ZM18.72 3.87L16.25 6.34L17.66 7.75L20.13 5.28L18.72 3.87Z"
-              fill="#88AB61"
-            />
-          </svg>
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="hidden dark:block "
-          >
-            <path
-              d="M12.0581 20C9.83544 20 7.94644 19.2223 6.39111 17.667C4.83577 16.1117 4.05811 14.2227 4.05811 12C4.05811 9.97401 4.71811 8.21734 6.03811 6.73001C7.35811 5.24267 8.99277 4.36467 10.9421 4.09601C10.9961 4.09601 11.0491 4.09801 11.1011 4.10201C11.1531 4.10601 11.2041 4.11167 11.2541 4.11901C10.9168 4.58967 10.6498 5.11301 10.4531 5.68901C10.2564 6.26501 10.1581 6.86867 10.1581 7.50001C10.1581 9.27801 10.7801 10.789 12.0241 12.033C13.2681 13.277 14.7794 13.8993 16.5581 13.9C17.1921 13.9 17.7964 13.8017 18.3711 13.605C18.9458 13.4083 19.4618 13.1413 19.9191 12.804C19.9271 12.854 19.9328 12.905 19.9361 12.957C19.9394 13.009 19.9414 13.062 19.9421 13.116C19.6861 15.0647 18.8144 16.699 17.3271 18.019C15.8398 19.339 14.0841 19.9993 12.0581 20Z"
-              fill="#88AB61"
-            />
-          </svg>
-        </button>
-      </div>
-      <div className="container max-w-4xl mx-auto py-12 px-4 md:px-6">
-        <div className="space-y-6">
-          <div className="space-y-2 text-center">
-            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl dark:text-white">
-              Terms and Conditions
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="dark:hidden"
+            >
+              <path
+                d="M12 7C9.24 7 7 9.24 7 12C7 14.76 9.24 17 12 17C14.76 17 17 14.76 17 12C17 9.24 14.76 7 12 7ZM11 1V5H13V1H11ZM11 19V23H13V19H11ZM23 11H19V13H23V11ZM5 11H1V13H5V11ZM16.24 17.66L18.71 20.13L20.12 18.72L17.65 16.25L16.24 17.66ZM3.87 5.28L6.34 7.75L7.75 6.34L5.28 3.87L3.87 5.28ZM6.34 16.24L3.87 18.71L5.28 20.12L7.75 17.65L6.34 16.24ZM18.72 3.87L16.25 6.34L17.66 7.75L20.13 5.28L18.72 3.87Z"
+                fill="#88AB61"
+              />
+            </svg>
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="hidden dark:block"
+            >
+              <path
+                d="M12.0581 20C9.83544 20 7.94644 19.2223 6.39111 17.667C4.83577 16.1117 4.05811 14.2227 4.05811 12C4.05811 9.97401 4.71811 8.21734 6.03811 6.73001C7.35811 5.24267 8.99277 4.36467 10.9421 4.09601C10.9961 4.09601 11.0491 4.09801 11.1011 4.10201C11.1531 4.10601 11.2041 4.11167 11.2541 4.11901C10.9168 4.58967 10.6498 5.11301 10.4531 5.68901C10.2564 6.26501 10.1581 6.86867 10.1581 7.50001C10.1581 9.27801 10.7801 10.789 12.0241 12.033C13.2681 13.277 14.7794 13.8993 16.5581 13.9C17.1921 13.9 17.7964 13.8017 18.3711 13.605C18.9458 13.4083 19.4618 13.1413 19.9191 12.804C19.9271 12.854 19.9328 12.905 19.9361 12.957C19.9394 13.009 19.9414 13.062 19.9421 13.116C19.6861 15.0647 18.8144 16.699 17.3271 18.019C15.8398 19.339 14.0841 19.9993 12.0581 20Z"
+                fill="#88AB61"
+              />
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-3xl mx-auto">
+          {/* Title */}
+          <div className="text-center mb-10">
+            <h1 className="text-3xl sm:text-4xl font-bold text-blacktheme dark:text-textdarktheme mb-4">
+              Les conditions générales d'utilisation
             </h1>
-            <p className="text-gray-500 dark:text-gray-400">Last updated: April 8, 2025</p>
+            <div className="h-1 w-20 bg-greentheme mx-auto rounded-full"></div>
           </div>
 
-          <div className="h-[60vh] overflow-y-auto rounded-md border p-6 dark:border-gray-700 dark:bg-gray-800/30">
-            <div className="space-y-8">
-              <section className="space-y-3">
-                <h2 className="text-2xl font-bold dark:text-white">1. Introduction</h2>
-                <p className="dark:text-gray-300">
-                  Welcome to our website. By accessing and using this website, you accept and agree to be bound by the
-                  terms and provisions of this agreement. If you do not agree to abide by the above, please do not use
-                  this service.
-                </p>
-              </section>
+          {/* Introduction */}
+          <div className="bg-whitetheme dark:bg-darkthemeitems rounded-xl shadow-sm p-6 mb-8">
+            <p className="text-blacktheme dark:text-textdarktheme leading-relaxed">
+              Bienvenue sur Tabla.ma, la plateforme de réservation de tables dans les restaurants, cafés, hôtels et
+              centres de loisirs au Maroc.
+            </p>
+            <p className="text-blacktheme dark:text-textdarktheme leading-relaxed mt-4">
+              L'accès et l'utilisation de nos services impliquent l'acceptation pleine et entière des présentes
+              Conditions Générales d'Utilisation et de Confidentialité (CGU-CGP). Nous vous invitons à les lire
+              attentivement.
+            </p>
+          </div>
 
-              <section className="space-y-3">
-                <h2 className="text-2xl font-bold dark:text-white">2. Intellectual Property Rights</h2>
-                <p className="dark:text-gray-300">
-                  Unless otherwise stated, we own the intellectual property rights for all material on this website. All
-                  intellectual property rights are reserved. You may view and/or print pages from the website for your
-                  own personal use subject to restrictions set in these terms and conditions.
-                </p>
-                <p className="dark:text-gray-300">You must not:</p>
-                <ul className="list-disc pl-6 space-y-1 dark:text-gray-300">
-                  <li>Republish material from this website</li>
-                  <li>Sell, rent, or sub-license material from this website</li>
-                  <li>Reproduce, duplicate, or copy material from this website</li>
-                  <li>Redistribute content from this website</li>
-                </ul>
-              </section>
+          {/* Terms Content */}
+          <div className="bg-whitetheme dark:bg-darkthemeitems rounded-xl shadow-sm overflow-hidden">
+            <div className="max-h-[600px] overflow-y-auto p-6 custom-scrollbar">
+              <div className="space-y-8">
+                {sections.map((section, index) => (
+                  <section key={index} className="pb-6 border-b border-softgreytheme dark:border-bgdarktheme last:border-0">
+                    <h2 className="text-xl font-semibold text-blacktheme dark:text-textdarktheme mb-4 flex items-center">
+                      <span className="inline-block w-6 h-6 bg-greentheme rounded-full mr-3 flex-shrink-0"></span>
+                      {section.title}
+                    </h2>
 
-              <section className="space-y-3">
-                <h2 className="text-2xl font-bold dark:text-white">3. User Content</h2>
-                <p className="dark:text-gray-300">
-                  In these terms and conditions, "User Content" means material (including without limitation text,
-                  images, audio material, video material, and audio-visual material) that you submit to this website,
-                  for whatever purpose.
-                </p>
-                <p className="dark:text-gray-300">
-                  You grant to us a worldwide, irrevocable, non-exclusive, royalty-free license to use, reproduce,
-                  adapt, publish, translate, and distribute your User Content in any existing or future media. You also
-                  grant to us the right to sub-license these rights, and the right to bring an action for infringement
-                  of these rights.
-                </p>
-              </section>
+                    {section.content && (
+                      <p className="text-blacktheme dark:text-textdarktheme leading-relaxed pl-9">{section.content}</p>
+                    )}
 
-              <section className="space-y-3">
-                <h2 className="text-2xl font-bold dark:text-white">4. Limitations of Liability</h2>
-                <p className="dark:text-gray-300">
-                  We will not be liable to you in relation to the contents of, or use of, or otherwise in connection
-                  with, this website:
-                </p>
-                <ul className="list-disc pl-6 space-y-1 dark:text-gray-300">
-                  <li>For any indirect, special, or consequential loss; or</li>
-                  <li>
-                    For any business losses, loss of revenue, income, profits, or anticipated savings, loss of contracts
-                    or business relationships, loss of reputation or goodwill, or loss or corruption of information or
-                    data.
-                  </li>
-                </ul>
-              </section>
+                    {section.items && (
+                      <ul className="list-disc pl-14 space-y-2 mt-3 text-blacktheme dark:text-textdarktheme">
+                        {section.items.map((item, i) => (
+                          <li key={i} className="leading-relaxed">
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
 
-              <section className="space-y-3">
-                <h2 className="text-2xl font-bold dark:text-white">5. Indemnity</h2>
-                <p className="dark:text-gray-300">
-                  You hereby indemnify us and undertake to keep us indemnified against any losses, damages, costs,
-                  liabilities, and expenses (including without limitation legal expenses and any amounts paid by us to a
-                  third party in settlement of a claim or dispute on the advice of our legal advisers) incurred or
-                  suffered by us arising out of any breach by you of any provision of these terms and conditions.
-                </p>
-              </section>
-
-              <section className="space-y-3">
-                <h2 className="text-2xl font-bold dark:text-white">6. Breaches of These Terms and Conditions</h2>
-                <p className="dark:text-gray-300">
-                  Without prejudice to our other rights under these terms and conditions, if you breach these terms and
-                  conditions in any way, we may take such action as we deem appropriate to deal with the breach,
-                  including suspending your access to the website, prohibiting you from accessing the website, blocking
-                  computers using your IP address from accessing the website, contacting your internet service provider
-                  to request that they block your access to the website, and/or bringing court proceedings against you.
-                </p>
-              </section>
-
-              <section className="space-y-3">
-                <h2 className="text-2xl font-bold dark:text-white">7. Variation</h2>
-                <p className="dark:text-gray-300">
-                  We may revise these terms and conditions from time to time. Revised terms and conditions will apply to
-                  the use of this website from the date of the publication of the revised terms and conditions on this
-                  website. Please check this page regularly to ensure you are familiar with the current version.
-                </p>
-              </section>
-
-              <section className="space-y-3">
-                <h2 className="text-2xl font-bold dark:text-white">8. Assignment</h2>
-                <p className="dark:text-gray-300">
-                  We may transfer, sub-contract, or otherwise deal with our rights and/or obligations under these terms
-                  and conditions without notifying you or obtaining your consent.
-                </p>
-                <p className="dark:text-gray-300">
-                  You may not transfer, sub-contract, or otherwise deal with your rights and/or obligations under these
-                  terms and conditions.
-                </p>
-              </section>
-
-              <section className="space-y-3">
-                <h2 className="text-2xl font-bold dark:text-white">9. Severability</h2>
-                <p className="dark:text-gray-300">
-                  If a provision of these terms and conditions is determined by any court or other competent authority
-                  to be unlawful and/or unenforceable, the other provisions will continue in effect. If any unlawful
-                  and/or unenforceable provision would be lawful or enforceable if part of it were deleted, that part
-                  will be deemed to be deleted, and the rest of the provision will continue in effect.
-                </p>
-              </section>
-
-              <section className="space-y-3">
-                <h2 className="text-2xl font-bold dark:text-white">10. Entire Agreement</h2>
-                <p className="dark:text-gray-300">
-                  These terms and conditions constitute the entire agreement between you and us in relation to your use
-                  of this website and supersede all previous agreements in respect of your use of this website.
-                </p>
-              </section>
-
-              <section className="space-y-3">
-                <h2 className="text-2xl font-bold dark:text-white">11. Governing Law and Jurisdiction</h2>
-                <p className="dark:text-gray-300">
-                  These terms and conditions will be governed by and construed in accordance with the laws of [YOUR
-                  JURISDICTION], and any disputes relating to these terms and conditions will be subject to the
-                  exclusive jurisdiction of the courts of [YOUR JURISDICTION].
-                </p>
-              </section>
+                    {section.subsections && (
+                      <div className="space-y-4 mt-4 pl-9">
+                        {section.subsections.map((sub, i) => (
+                          <div key={i}>
+                            <h3 className="text-lg font-medium text-blacktheme dark:text-textdarktheme mb-2">
+                              {sub.subtitle}
+                            </h3>
+                            <ul className="list-disc pl-5 space-y-2 text-blacktheme dark:text-textdarktheme">
+                              {sub.items.map((item, j) => (
+                                <li key={j} className="leading-relaxed">
+                                  {item}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </section>
+                ))}
+              </div>
             </div>
           </div>
+
+          {/* Footer */}
+          <div className="mt-8 text-center text-subblack dark:text-textdarktheme text-sm">
+            <p>© {new Date().getFullYear()} Tabla. Tous droits réservés.</p>
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   )
 }
+
