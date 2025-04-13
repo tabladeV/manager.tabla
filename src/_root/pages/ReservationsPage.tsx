@@ -12,12 +12,15 @@ import {
   ChevronDown, ChevronUp, Info, Edit, 
   GripVertical, EyeOff, Eye,
   Pencil,
-  CalendarCheck
+  CalendarCheck,
+  User2,
+  Trash,
+  Trash2
 } from 'lucide-react';
 import SearchBar from "../../components/header/SearchBar";
 import IntervalCalendar from "../../components/Calendar/IntervalCalendar";
 import ReservationModal from "../../components/reservation/ReservationModal";
-import { BaseKey, BaseRecord, CanAccess, useCan, useCreate, useList, useUpdate } from "@refinedev/core";
+import { BaseKey, BaseRecord, CanAccess, useCan, useCreate, useDelete, useList, useUpdate } from "@refinedev/core";
 import ReservationProcess from "../../components/reservation/ReservationProcess";
 import Pagination from "../../components/reservation/Pagination";
 import ExportModal from "../../components/common/ExportModal";
@@ -27,6 +30,10 @@ import { ReservationSource, ReservationStatus } from "../../components/common/ty
 import { Occasion } from "../../components/settings/Occasions";
 import { useDarkContext } from "../../context/DarkContext";
 import { isTouchDevice } from '../../utils/isTouchDevice';
+import ActionPopup from "../../components/popup/ActionPopup";
+import DraggableItemSkeleton from '../../components/places/DraggableItemSkeleton';
+import DraggableItem from '../../components/places/DraggableItem';
+import ResevrationCard from '../../components/places/ResevrationCard';
 
 // Types and Interfaces
 export interface ReceivedTables {
@@ -498,21 +505,26 @@ const StatusModifier: React.FC<StatusModifierProps> = ({
     <div className="relative">
       <div className="overlay left-0 top-0 w-full h-full opacity-0" onClick={() => setShowStatus(false)}></div>
       <ul className={`absolute z-[400] p-2 rounded-md shadow-md ${isDarkMode ? 'text-white bg-darkthemeitems' : 'bg-white text-subblack'}`}>
+        {reservation.status!=='PENDING' && 
         <li className={`py-1 px-2 text-bluetheme cursor-pointer`} onClick={() => statusHandler('PENDING')}>
           {t('reservations.statusLabels.pending')}
-        </li>
+        </li>}
+        {reservation.status!=='APPROVED' && 
         <li className="py-1 px-2 text-greentheme cursor-pointer" onClick={() => statusHandler('APPROVED')}>
           {t('reservations.statusLabels.confirmed')}
-        </li>
+        </li>}
+        {reservation.status!=='CANCELED' && 
         <li className="py-1 px-2 text-redtheme cursor-pointer" onClick={() => statusHandler('CANCELED')}>
           {t('reservations.statusLabels.cancelled')}
-        </li>
+        </li>}
+        {reservation.status!=='NO_SHOW' && 
         <li className="py-1 px-2 text-blushtheme cursor-pointer" onClick={() => statusHandler('NO_SHOW')}>
           {t('reservations.statusLabels.noShow')}
-        </li>
+        </li>}
+        {reservation.status!=='SEATED' && 
         <li className="py-1 px-2 text-orangetheme cursor-pointer" onClick={() => statusHandler('SEATED')}>
           {t('reservations.statusLabels.seated')}
-        </li>
+        </li>}
       </ul>
     </div>
   )
@@ -524,7 +536,7 @@ interface ReservationStatusLabelProps {
   loading: boolean;
 }
 
-const ReservationStatusLabel: React.FC<ReservationStatusLabelProps> = ({ status, loading }) => {
+export const ReservationStatusLabel: React.FC<ReservationStatusLabelProps> = ({ status, loading }) => {
   const { t } = useTranslation();
   const statusStyles = statusStyle(status)
   let statusText = ''
@@ -626,6 +638,7 @@ interface ReservationRowProps {
   statusHandler: (status: string) => void;
   setShowStatus: (show: boolean) => void;
   sendReview: (id: BaseKey) => void;
+  initiateDelete: (id: BaseKey) => void;
   isDarkMode: boolean;
   columns: ColumnConfig[];
 }
@@ -639,6 +652,7 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
   statusHandler,
   setShowStatus,
   sendReview,
+  initiateDelete,
   isDarkMode,
   columns
 }) => {
@@ -746,14 +760,14 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
       
       case 'review':
         return (
-          <>
+          <div className="flex items-center">
             {reservation.status !== 'SEATED' ? '' : 
               <span onClick={() => {sendReview(reservation.id)}} 
                     className="cursor-pointer text-greentheme items-center flex justify-center w-7 h-7 rounded-md p-1 hover:bg-softgreentheme">
                 <Send size={20} />
               </span>
             }
-          </>
+          </div>
         );
         
       case 'date':
@@ -809,7 +823,7 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
         return (
           <td 
             key={column.id} 
-            className={`px-3 py-2 ${column.id === 'client'?'max-w-[180px]':''} ${['date', 'time', 'guests'].includes(column.id)?'whitespace-nowrap':''} ${column.id === 'review' ? 'whitespace-nowrap flex justify-center items-center' : column.id === 'status' ? 'whitespace-nowrap' : 'max-w-100'}`}
+            className={`px-3 py-2 ${column.id === 'client'?'max-w-[180px]':''} ${['date', 'time', 'guests'].includes(column.id)?'whitespace-nowrap':''} ${column.id === 'review' ? 'whitespace-nowrap flex justify-center items-center h-full' : column.id === 'status' ? 'whitespace-nowrap' : 'max-w-100'}`}
             onClick={cellClickHandler}
           >
             {renderCellContent(column.id)}
@@ -817,7 +831,14 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
         );
       })}
       <td className={`px-3 py-2 max-w-40 `}>
-
+        <CanAccess action="delete" resource="reservation">
+          <button
+            onClick={() => initiateDelete(reservation.id)}
+            className=" dark:text-whitetheme btn-outline flex items-center gap-1"
+          >
+            <Trash2 size={16} className='stroke-red-600' />
+          </button>
+        </CanAccess>        
       </td>
     </tr>
   );
@@ -863,6 +884,7 @@ const LoadingRow: React.FC<LoadingRowProps> = ({ isDarkMode, columns }) => {
           {renderLoadingCell(column.id)}
         </td>
       ))}
+      <td className="px-6 py-4 whitespace-nowrap"></td>
     </tr>
   );
 };
@@ -879,6 +901,7 @@ interface ReservationTableProps {
   setShowStatus: (show: boolean) => void;
   setShowColumnCustomization: (show: boolean) => void;
   sendReview: (id: BaseKey) => void;
+  initiateDelete: (id: BaseKey) => void;
   isDarkMode: boolean;
   columns: ColumnConfig[];
 }
@@ -894,6 +917,7 @@ const ReservationTable: React.FC<ReservationTableProps> = ({
   setShowStatus,
   sendReview,
   isDarkMode,
+  initiateDelete,
   columns,
   setShowColumnCustomization
 }) => {
@@ -935,6 +959,7 @@ const ReservationTable: React.FC<ReservationTableProps> = ({
                 statusHandler={statusHandler}
                 setShowStatus={setShowStatus}
                 sendReview={sendReview}
+                initiateDelete={initiateDelete}
                 isDarkMode={isDarkMode}
                 columns={columns}
               />
@@ -1017,6 +1042,11 @@ const ReservationsPage: React.FC = () => {
   const [filteredReservations, setFilteredReservations] = useState<Reservation[]>(reservations);
   const [floorId, setFloorId] = useState<BaseKey>();
   const [showAddReservation, setShowAddReservation] = useState<boolean>(false);
+  const [showStatusConfirm, setShowStatusConfirm] = useState<boolean>(false);
+  const [pendingStatus, setPendingStatus] = useState<string>('');
+  // Add state for delete confirmation
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
+  const [reservationToDelete, setReservationToDelete] = useState<BaseKey>('');
   
   // Reservation progress data
   const [reservationProgressData, setReservationProgressData] = useState<DataTypes>({
@@ -1031,7 +1061,7 @@ const ReservationsPage: React.FC = () => {
   }, [columns]);
   
   // Data fetching
-  const { data, isLoading, error, refetch: refetchReservations } = useList({
+  const { data, isRefetching:isLoading, isLoading: isFirstLoad, error, refetch: refetchReservations } = useList({
     resource: "api/v1/bo/reservations/",
     filters: [
       { field: "page", operator: "eq", value: page },
@@ -1051,6 +1081,8 @@ const ReservationsPage: React.FC = () => {
       }
     }
   });
+
+  const {mutate: deleteReservation, isLoading: loadingDelete} = useDelete();
 
   // Fetch floors and tables
   const { data: floorsData } = useList({
@@ -1228,6 +1260,12 @@ const ReservationsPage: React.FC = () => {
   };
 
   const statusHandler = (status: string): void => {
+    setPendingStatus(status);
+    setShowStatusConfirm(true);
+    setShowStatus(false);
+  };
+
+  const confirmStatusUpdate = async (): Promise<void> => {
     setReservations(reservations.map(r => 
       r.id === idStatusModification ? {...r, loading: true} : r
     ));
@@ -1235,12 +1273,12 @@ const ReservationsPage: React.FC = () => {
     upDateReservation({
       id: `${idStatusModification}/`,
       values: {
-        status: status
+        status: pendingStatus
       }
     },{
       onSuccess(){
         setReservations(reservations.map(r => 
-          r.id === idStatusModification ? {...r, status: status as ReservationStatus, loading: false} : r
+          r.id === idStatusModification ? {...r, status: pendingStatus as ReservationStatus, loading: false} : r
         ));
       },
       onError(){
@@ -1275,15 +1313,174 @@ const ReservationsPage: React.FC = () => {
     setToBeReviewedRes(id);
   };
 
+  const handleDeleteReservation = (id: string) => {
+    deleteReservation({
+      resource: `api/v1/bo/reservations`,
+      id: id+'/',
+    }, {
+      onSuccess: () => {
+        refetchReservations();
+      },
+      onError: (error) => {
+        console.error("Failed to delete reservation: ", error);
+      }
+    });
+  };
+
+  const initiateDelete = (id: BaseKey): void => {
+    if (!id) return;
+    setReservationToDelete(id);
+    setShowDeleteConfirm(true);
+  };
+
+  // Helper function to get status label
+  const getStatusLabel = (status: string): string => {
+    switch (status) {
+      case 'APPROVED': return t('reservations.statusLabels.confirmed');
+      case 'PENDING': return t('reservations.statusLabels.pending');
+      case 'SEATED': return t('reservations.statusLabels.seated');
+      case 'FULFILLED': return t('reservations.statusLabels.fulfilled');
+      case 'NO_SHOW': return t('reservations.statusLabels.noShow');
+      case 'CANCELED': return t('reservations.statusLabels.cancelled');
+      default: return status;
+    }
+  };
+
   return (
     <div className="relative">
+      {/* Status Update Confirmation Popup */}
+      <ActionPopup
+        action={'update'}
+        secondAction={() => setShowStatusConfirm(false)}
+        secondActionText={t('reservations.edit.buttons.cancel')}
+        message={
+          <>
+            <h6 className="mb-3">{t('reservations.statusChange.confirmMessage')}</h6>
+            
+            {/* Reservation Details Card - Inspired by DraggableReservationItem */}
+            {(() => {
+              const currentReservation = reservations.find(r => r.id === idStatusModification);
+              return currentReservation ? (
+                <div className="p-2 mb-4 flex flex-col items-start rounded-[5px] dark:bg-bgdarktheme bg-softgreytheme w-full">
+                  <div className="flex items-center mb-2 w-full justify-between">
+                    <div className="flex items-center">
+                      <User2 size={16} className="mr-1" /> 
+                      <span className="font-semibold">{currentReservation.full_name}</span>
+                    </div>
+                    <div className="text-xs dark:bg-darkthemeitems bg-white py-1 px-2 rounded-md">
+                      #{currentReservation.seq_id}
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-between w-full">
+                    <div className="flex items-center">
+                      <Clock size={16} className="mr-1" /> 
+                      <span>{currentReservation.time?.replace(':00', '')}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Users size={16} className="mr-1" /> 
+                      <span>{currentReservation.number_of_guests}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Calendar size={16} className="mr-1" /> 
+                      <span>{currentReservation.date}</span>
+                    </div>
+                  </div>
+                  
+                  {currentReservation.tables && currentReservation.tables.length > 0 && (
+                    <div className="mt-2 text-sm">
+                      <span className="opacity-75">Tables:</span> {currentReservation.tables.map(t => t.name).join(', ')}
+                    </div>
+                  )}
+                </div>
+              ) : null;
+            })()}
+            
+            <div className={`w-full p-3 rounded-md text-sm ${isDarkMode ? 'bg-darkthemeitems' : 'bg-gray-50'} mb-2`}>
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-gray-500">{t('reservations.statusChange.from')}:</span>
+                <span className={`${statusStyle(reservations.find(r => r.id === idStatusModification)?.status || '')} px-2 py-1 rounded-md`}>
+                  {getStatusLabel(reservations.find(r => r.id === idStatusModification)?.status || '')}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-500">{t('reservations.statusChange.to')}:</span>
+                <span className={`${statusStyle(pendingStatus)} px-2 py-1 rounded-md`}>
+                  {getStatusLabel(pendingStatus)}
+                </span>
+              </div>
+            </div>
+          </>
+        }
+        actionFunction={confirmStatusUpdate}
+        showPopup={showStatusConfirm}
+        setShowPopup={setShowStatusConfirm}
+      />
+
+      {/* Delete Confirmation Popup */}
+      <ActionPopup
+        action={'delete'}
+        secondAction={() => setShowDeleteConfirm(false)}
+        secondActionText={t('reservations.edit.buttons.cancel')}
+        message={
+          <>
+            <h6 className="mb-3">{t('reservations.deleteConfirm.message')}</h6>
+            
+            {/* Reservation Details Card */}
+            {(() => {
+              const currentReservation = reservations.find(r => r.id === reservationToDelete);
+              return currentReservation ? (
+                <div className="p-2 mb-4 flex flex-col items-start rounded-[5px] dark:bg-bgdarktheme bg-softgreytheme w-full">
+                  <div className="flex items-center mb-2 w-full justify-between">
+                    <div className="flex items-center">
+                      <User2 size={16} className="mr-1" /> 
+                      <span className="font-semibold">{currentReservation.full_name}</span>
+                    </div>
+                    <div className="text-xs dark:bg-darkthemeitems bg-white py-1 px-2 rounded-md">
+                      #{currentReservation.seq_id}
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-between w-full">
+                    <div className="flex items-center">
+                      <Clock size={16} className="mr-1" /> 
+                      <span>{currentReservation.time?.replace(':00', '')}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Users size={16} className="mr-1" /> 
+                      <span>{currentReservation.number_of_guests}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Calendar size={16} className="mr-1" /> 
+                      <span>{currentReservation.date}</span>
+                    </div>
+                  </div>
+                  
+                  {currentReservation.tables && currentReservation.tables.length > 0 && (
+                    <div className="mt-2 text-sm">
+                      <span className="opacity-75">Tables:</span> {currentReservation.tables.map(t => t.name).join(', ')}
+                    </div>
+                  )}
+                  
+                  <div className={`mt-2 px-2 py-1 rounded ${statusStyle(currentReservation.status)}`}>
+                    {getStatusLabel(currentReservation.status)}
+                  </div>
+                </div>
+              ) : null;
+            })()}
+          </>
+        }
+        actionFunction={() => handleDeleteReservation(reservationToDelete.toString())}
+        showPopup={showDeleteConfirm}
+        setShowPopup={setShowDeleteConfirm}
+      />
+
       {/* Export Modal */}
       {showExportModal && (
         <ExportModal
           columns={reservationsExportConfig.columns}
           customFields={reservationsExportConfig.customFields}
           onExport={(format, selectedColumns, customFields) => {
-            console.log(format, selectedColumns, customFields);
             setShowExportModal(false);
           }}
           onClose={() => setShowExportModal(false)}
@@ -1363,10 +1560,38 @@ const ReservationsPage: React.FC = () => {
         />
       </div>
 
+      {/* Reservation cards for mobile */}
+      <div className='gt-sm:hidden overflow-x-auto max-w-full rounded-lg bg-white px-2 py-3 mt-2 min-h-[40vh]'>
+        {(isLoading || isFirstLoad) ?
+          <DraggableItemSkeleton count={3} isDarkMode={darkMode} />
+          : (filteredReservations.map(item => (
+            <ResevrationCard
+              itemData={{
+                ...item,
+                number_of_guests: parseInt(item.number_of_guests, 10),
+                onEdit: EditClient,
+                onUpdate: () => {
+                  refetchReservations();
+                },
+                loading: item.loading ?? false,
+                created_at: item.created_at,
+                tables: item.tables || []
+              }}
+              key={item.id}
+              handleStatus={statusHandler}
+              showStatusModification={setIdStatusModification}
+            />
+          )))}
+        {((reservationAPIInfo?.count || 0) > 1 && filteredReservations?.length > 10) && (<>
+          <div className='bottom mx-auto w-full'>
+            <Pagination setPage={(p: number) => setPage(p)} size={20} count={reservationAPIInfo?.count || 0} />
+          </div>
+        </>)}
+      </div>
       {/* Reservations Table */}
-      <div className='overflow-x-auto max-w-full'>
+      <div className='lt-sm:hidden overflow-x-auto max-w-full'>
         <ReservationTable
-          isLoading={isLoading}
+          isLoading={isLoading || isFirstLoad}
           filteredReservations={filteredReservations}
           EditClient={EditClient}
           showStatusModification={showStatusModification}
@@ -1375,6 +1600,7 @@ const ReservationsPage: React.FC = () => {
           statusHandler={statusHandler}
           setShowStatus={setShowStatus}
           sendReview={sendReview}
+          initiateDelete={initiateDelete}
           isDarkMode={isDarkMode}
           columns={columns}
           setShowColumnCustomization={setShowColumnCustomization}

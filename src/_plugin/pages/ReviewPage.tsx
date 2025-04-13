@@ -144,7 +144,7 @@ const ReviewPage = () => {
   return (
     <div className="h-[100vh] dark:bg-bgdarktheme2 dark:text-white bg-white">
       <div className="h-[10vh] w-full flex items-center justify-between px-10 shadow-md border-b border-softgreytheme dark:border-darkthemeitems dark:bg-bgdarktheme bg-whitetheme">
-        <Logo className="horizontal" />
+        <Logo className="horizontal" nolink={true}/>
         <button
           onClick={() => {
             document.documentElement.classList.toggle("dark")

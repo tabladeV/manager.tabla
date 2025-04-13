@@ -13,6 +13,27 @@ import { useClickAway } from "react-use"
 import BaseBtn from "../../components/common/BaseBtn"
 import WidgetReservationProcess from "../../components/reservation/WidgetReservationProcess"
 
+interface QuillPreviewProps {
+  content: string
+  className?: string
+}
+
+export function QuillPreview({ content, className = "" }: QuillPreviewProps) {
+  // Import Quill styles on the client side for proper rendering
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      import("quill/dist/quill.core.css")
+    }
+  }, [])
+
+  return (
+    <div className={`quill-preview ${className}`}>
+      <div className="prose max-w-none overflow-auto" dangerouslySetInnerHTML={{ __html: content }} />
+    </div>
+  )
+}
+
+
 const Modify = () => {
   interface LoadingRowProps {
     isDarkMode: boolean
@@ -210,6 +231,8 @@ const Modify = () => {
   const [isDarkMode, setIsDarkMode] = useState(false)
   const toggleDarkMode = () => {
     setIsDarkMode((prev) => !prev)
+    document.documentElement.classList.toggle("dark")
+    localStorage.setItem("darkMode", document.documentElement.classList.contains("dark") ? "true" : "false")
   }
 
   const [showProcess, setShowProcess] = useState(false)
@@ -265,17 +288,14 @@ const Modify = () => {
   const [showOccasions, setShowOccasions] = useState(false)
 
   return (
-    <div className={`h-[100vh] dark:bg-bgdarktheme2 dark:text-white bg-white`}>
-      <div
-        className={`h-[10vh] w-full flex items-center justify-between px-10 shadow-md dark:shadow-[#00000020] shadow-[#00000010] dark:bg-bgdarktheme bg-white sticky top-0 z-10`}
-      >
-        <Logo className="horizontal" />
+    <div className="min-h-screen bg-white  dark:bg-bgdarktheme2 text-black dark:text-white">
+      {/* Header */}
+      <header className="h-16 z-[300] w-full fixed flex items-center justify-between px-4 sm:px-10 shadow-md bg-white dark:bg-bgdarktheme">
+        <Logo className="horizontal" nolink={true} />
         <button
-          onClick={() => {
-            document.documentElement.classList.toggle("dark")
-            localStorage.setItem("darkMode", document.documentElement.classList.contains("dark") ? "true" : "false")
-          }}
-          className="btn-secondary hover:bg-[#88AB6110] my-[1em] p-1 w-[40px] h-[40px] flex justify-center items-center rounded-[100%]"
+          onClick={toggleDarkMode}
+          aria-label="Toggle dark mode"
+          className="p-2 rounded-full hover:bg-[#f5f5f5] dark:hover:bg-[#333333] transition-colors"
         >
           <svg
             width="24"
@@ -296,7 +316,7 @@ const Modify = () => {
             viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="hidden dark:block "
+            className="hidden dark:block"
           >
             <path
               d="M12.0581 20C9.83544 20 7.94644 19.2223 6.39111 17.667C4.83577 16.1117 4.05811 14.2227 4.05811 12C4.05811 9.97401 4.71811 8.21734 6.03811 6.73001C7.35811 5.24267 8.99277 4.36467 10.9421 4.09601C10.9961 4.09601 11.0491 4.09801 11.1011 4.10201C11.1531 4.10601 11.2041 4.11167 11.2541 4.11901C10.9168 4.58967 10.6498 5.11301 10.4531 5.68901C10.2564 6.26501 10.1581 6.86867 10.1581 7.50001C10.1581 9.27801 10.7801 10.789 12.0241 12.033C13.2681 13.277 14.7794 13.8993 16.5581 13.9C17.1921 13.9 17.7964 13.8017 18.3711 13.605C18.9458 13.4083 19.4618 13.1413 19.9191 12.804C19.9271 12.854 19.9328 12.905 19.9361 12.957C19.9394 13.009 19.9414 13.062 19.9421 13.116C19.6861 15.0647 18.8144 16.699 17.3271 18.019C15.8398 19.339 14.0841 19.9993 12.0581 20Z"
@@ -304,14 +324,27 @@ const Modify = () => {
             />
           </svg>
         </button>
-      </div>
+      </header>
+      <div className="h-16 w-full opacity-0"></div>
 
-      <div className="h-[90vh] items-start xl:max-w-[1200px] no-scrollbar mx-auto pb-[5em] overflow-y-auto w-full flex p-5 px-10 justify-between">
-        <div className="w-[60%] lt-sm:w-full">
-          <h1 className={`text-4xl font-bold dark:text-white mb-2`}>{widgetInfo?.title}</h1>
+      <div className="h-[90vh] items-start xl:max-w-[1200px] no-scrollbar mx-auto  overflow-y-auto w-full flex p-5 gap-8 px-10 justify-between">
+        <div className="w-full sm:w-3/5">
+          {widgetInfo?.image ? (
+            <img
+              src={widgetInfo.image || "/placeholder.svg"}
+              alt="Restaurant"
+              className="w-full h-[7em] object-scale-down "
+            />
+          ) : (
+            <div className="w-full h-full bg-[#f5f5f5] dark:bg-[#2a2a2a] rounded-lg flex items-center justify-center">
+              <p className="text-[#888888] dark:text-[#666666]">Restaurant image</p>
+            </div>
+          )}
+          <h1 className={`text-4xl text-center font-bold dark:text-white mb-2`}>{widgetInfo?.title}</h1>
 
           <div>
-            <p className={`text-md mt-1 dark:text-[#ffffff85] text-subblack`}>{widgetInfo?.description}</p>
+            {/* <p className={`text-md mt-1 dark:text-[#ffffff85] text-subblack`}>{widgetInfo?.description}</p> */}
+            <QuillPreview content={widgetInfo?.content} className="mt-2" />
           </div>
           {reservationLoading ? (
             <div>
@@ -332,7 +365,7 @@ const Modify = () => {
                 <div>
                   <div className="flex flex-col gap-2">
                     <h3 className={`text-xl font-bold mt-6 mb-3 dark:text-white`}>Your reservation details</h3>
-                    <div className="space-y-3 mb-4">
+                    <div className="space-y-3 mb-1">
                       <p
                         className={`text-md inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm transition-all hover:shadow-md`}
                       >
@@ -357,17 +390,17 @@ const Modify = () => {
                       )}
                     </div>
                     <p
-                      className={`text-md flex justify-around mt-1 inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm p-4`}
+                      className={`text-md flex justify-around  inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm p-4`}
                     >
-                      <div className={`text-md flex flex-col items-center gap-1 dark:text-[#ffffffd5]`}>
+                      <div className={`text-md flex  gap-2 items-center  dark:text-[#ffffffd5]`}>
                         <span className="font-bold text-greentheme dark:text-greentheme">Date</span>
                         <span className="text-lg">{reservationInfo?.date}</span>
                       </div>
-                      <div className={`text-md flex flex-col items-center gap-1 dark:text-[#ffffffd5]`}>
+                      <div className={`text-md flex  gap-2 items-center  dark:text-[#ffffffd5]`}>
                         <span className="font-bold text-greentheme dark:text-greentheme">Time</span>
                         <span className="text-lg">{reservationInfo?.time.slice(0, 5)}</span>
                       </div>
-                      <div className={`text-md flex flex-col items-center gap-1 dark:text-[#ffffffd5]`}>
+                      <div className={`text-md flex  gap-2 items-center  dark:text-[#ffffffd5]`}>
                         <span className="font-bold text-greentheme dark:text-greentheme">Guests</span>
                         <span className="text-lg">{reservationInfo?.number_of_guests}</span>
                       </div>
@@ -499,15 +532,15 @@ const Modify = () => {
                     ""
                   )}
                   <div
-                    className={`btn cursor-default text-subblack dark:bg-darkthemeitems dark:text-textdarktheme bg-white text-blacktheme rounded-lg shadow-sm hover:shadow-md transition-all`}
+                    className={`bg-[#f9f9f9] dark:bg-darkthemeitems rounded-lg mb-2 shadow-sm`}
                   >
                     <div
                       onClick={() => {
                         setShowProcess(true)
                       }}
-                      className="cursor-pointer flex gap-10 justify-around p-3 items-center"
+                      className="flex justify-between items-center cursor-pointer p-6 hover:border-softgreentheme border-2 border-[#00000000] hover:bg-[#f0f0f0] dark:hover:bg-bgdarktheme2 rounded-md transition-colors"
                     >
-                      <div className="flex flex-col items-center gap-1">
+                      <div className="flex gap-2 items-center ">
                         <div
                           onClick={() => {
                             setShowProcess(true)
@@ -534,7 +567,7 @@ const Modify = () => {
                           </span>
                         )}
                       </div>
-                      <div className="flex flex-col items-center gap-1">
+                      <div className="flex gap-2 items-center ">
                         <div
                           onClick={() => {
                             setShowProcess(true)
@@ -561,7 +594,7 @@ const Modify = () => {
                           </span>
                         )}
                       </div>
-                      <div className="flex flex-col items-center gap-1">
+                      <div className="flex gap-2 items-center ">
                         <div
                           onClick={() => {
                             setShowProcess(true)
@@ -657,15 +690,21 @@ const Modify = () => {
                   )}
                 </div>
               )}
-              <div className="h-10"></div>
             </div>
           )}
         </div>
-        <div className="sm:w-[40%] lt-sm:hidden flex justify-center items-center">
-          <img
-            src={widgetInfo?.image || "/placeholder.svg"}
-            className="w-[300px] h-[300px] rounded-lg shadow-md object-cover"
-          />
+        <div className="hidden sm:block w-2/5 sticky top-0 h-[83vh]">
+          {widgetInfo?.image_2 ? (
+            <img
+              src={widgetInfo.image_2 || "/placeholder.svg"}
+              alt="Restaurant"
+              className="w-full h-full object-cover rounded-lg shadow-md"
+            />
+          ) : (
+            <div className="w-full h-full bg-[#f5f5f5] dark:bg-[#2a2a2a] rounded-lg flex items-center justify-center">
+              <p className="text-[#888888] dark:text-[#666666]">Restaurant image</p>
+            </div>
+          )}
         </div>
       </div>
       {showProcess && (

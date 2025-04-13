@@ -284,7 +284,7 @@ const Roles = () => {
             <div className="flex justify-center items-center">
                 <CanAccess resource="role" action="create">
                 <button className="btn-primary flex items-center" onClick={() => setShowCreateRoleModal(true)}>
-                    {t("settingsPage.roles.buttons.createRole")} <Plus size={17} className="ml-2" />
+                    {t("settingsPage.roles.buttons.createRole")}
                 </button>
                 </CanAccess>
             </div>

@@ -385,13 +385,6 @@ export default function Occasions() {
       </CanAccess>
       
       <h1 className="text-2xl font-bold mb-3">{t('settingsPage.occasions.title', 'Occasions')}</h1>
-      
-      <OccasionTable 
-        occasions={occasions} 
-        onEdit={(occasion) => canChange?.can && openModal(occasion)}
-        onDelete={handleDeleteRequest}
-      />
-      
       <CanAccess resource="occasion" action="create">
         <div>
           <button className="btn-primary mt-4" onClick={addOccasion}>
@@ -399,6 +392,13 @@ export default function Occasions() {
           </button>
         </div>
       </CanAccess>
+      <OccasionTable 
+        occasions={occasions} 
+        onEdit={(occasion) => canChange?.can && openModal(occasion)}
+        onDelete={handleDeleteRequest}
+      />
+      
+      
     </div>
   )
 }

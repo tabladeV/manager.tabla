@@ -124,6 +124,14 @@
       "title": "Reservations",
       "searchPlaceholder": "Search...",
       "occasion": "Occasion",
+      "deleteConfirm": {
+        "message": "Are you sure you want to delete this reservation?"
+      },
+      "statusChange":{
+        "confirmMessage": "Are you sure you to change the status of this reservation?",
+        "from": "From",
+        "to": "To"
+      },
       "filters": {
         "fulfilled": "Fulfilled",
         "seated": "Seated",
@@ -169,6 +177,7 @@
         "title": "Edit Reservation",
         "headline": "Edit Reservation",
         "subtitle": "Edit your reservation",
+        "confirmationMessage": "Are you sure you want to edit this reservation?",
         "informations": {
           "title": "Informations",
           "name": "Full Name",
@@ -178,6 +187,7 @@
           "floor": "Floor",
           "table":"Table",
           "date": "Date",
+          "addCustomer": "Add customer",
           "comment": "Comment",
           "tableName": "Table Name",
           "time": "Time",
@@ -456,6 +466,11 @@
             "uploadLogo": "Upload Logo",
             "uploadMenu": "Upload Menu",
             "viewMenu": "View Menu",
+            "logo": "Logo",
+            "name": "Restaurant Name",
+            "description": "Restaurant Description",
+            "uploadImage": "Upload Image",
+            "image": "Restaurant Image",
             "addTitlePlaceholder": "Add title here",
             "addDescriptionPlaceholder": "Add description here",
             "searchTabs": {

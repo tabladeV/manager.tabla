@@ -2,10 +2,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Upload, Check, X, Download, Navigation, ScreenShareIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import 'draft-js/dist/Draft.css';
+import { Editor, EditorState, convertToRaw, convertFromRaw } from 'draft-js';
 import { BaseKey, useList, useUpdate } from '@refinedev/core';
-import { Document, Page } from "react-pdf";
-import { set } from 'date-fns';
-import { is } from 'date-fns/locale';
+
 
 
 interface Widget {
@@ -16,11 +16,144 @@ interface Widget {
   is_widget_activated: boolean;
   max_of_guests_par_reservation: number;
   disabled_description: string;
+  image_2: string;
   disabled_title: string;
+  content: string;
   description: string;
   menu_file: string;
   has_menu: boolean;
 }
+
+
+interface QuillEditorProps {
+  value: string
+  onChange: (value: string) => void
+  placeholder?: string
+  className?: string
+  readOnly?: boolean
+  modules?: Record<string, any>
+}
+
+export function QuillEditor({
+  value,
+  onChange,
+  placeholder = "Write something...",
+  className = "",
+  readOnly = false,
+  modules = {},
+  ...props
+}: QuillEditorProps) {
+  const [isMounted, setIsMounted] = useState(false)
+  const [quill, setQuill] = useState<any>(null)
+  const editorRef = useRef<HTMLDivElement>(null)
+  const toolbarRef = useRef<HTMLDivElement>(null)
+
+  // Initialize Quill on the client side only
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      // Dynamically import Quill
+      import("quill").then((Quill) => {
+        if (!quill && editorRef.current && toolbarRef.current) {
+          const editor = new Quill.default(editorRef.current, {
+            modules: {
+              toolbar: toolbarRef.current,
+              ...modules,
+            },
+            placeholder,
+            readOnly,
+            theme: "snow",
+          })
+
+          // Set initial content
+          if (value) {
+            editor.clipboard.dangerouslyPasteHTML(value)
+          }
+
+          // Handle content changes
+          editor.on("text-change", () => {
+            const html = editorRef.current?.querySelector(".ql-editor")?.innerHTML
+            if (html) {
+              onChange(html)
+            }
+          })
+
+          setQuill(editor)
+        }
+      })
+    }
+    setIsMounted(true)
+  }, [])
+
+  // Update content when value prop changes
+  useEffect(() => {
+    if (quill && value !== quill.root.innerHTML) {
+      quill.clipboard.dangerouslyPasteHTML(value)
+    }
+  }, [quill, value])
+
+  // Import Quill styles on the client side
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      import("quill/dist/quill.snow.css")
+    }
+  }, [])
+
+  if (!isMounted) {
+    return null
+  }
+
+  return (
+    <div className={`quill-editor ${className}`} {...props}>
+      <div ref={toolbarRef}>
+        <span className="ql-formats">
+          <select className="ql-font"></select>
+          <select className="ql-size"></select>
+        </span>
+        <span className="ql-formats">
+          <button className="ql-bold"></button>
+          <button className="ql-italic"></button>
+          <button className="ql-underline"></button>
+          <button className="ql-strike"></button>
+        </span>
+        <span className="ql-formats">
+          <select className="ql-color"></select>
+          <select className="ql-background"></select>
+        </span>
+        <span className="ql-formats">
+          <button className="ql-script" value="sub"></button>
+          <button className="ql-script" value="super"></button>
+        </span>
+        <span className="ql-formats">
+          <button className="ql-header" value="1"></button>
+          <button className="ql-header" value="2"></button>
+          <button className="ql-blockquote"></button>
+          <button className="ql-code-block"></button>
+        </span>
+        <span className="ql-formats">
+          <button className="ql-list" value="ordered"></button>
+          <button className="ql-list" value="bullet"></button>
+          <button className="ql-indent" value="-1"></button>
+          <button className="ql-indent" value="+1"></button>
+        </span>
+        <span className="ql-formats">
+          <button className="ql-direction" value="rtl"></button>
+          <select className="ql-align"></select>
+        </span>
+        <span className="ql-formats">
+          <button className="ql-link"></button>
+          <button className="ql-image"></button>
+          <button className="ql-video"></button>
+        </span>
+        <span className="ql-formats">
+          <button className="ql-clean"></button>
+        </span>
+      </div>
+      <div ref={editorRef} className="min-h-[200px]" />
+    </div>
+  )
+}
+
+
 
 const base64ToBlob = (base64: string, mimeType: string) => {
   const byteCharacters = atob(base64.split(',')[1]);
@@ -61,6 +194,7 @@ export default function WidgetConfig() {
 
   const [widgetInfo, setWidgetInfo] = useState<Widget>();
   const [logo, setLogo] = useState<string | null>(null);
+  const [image, setImage] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [hasMenu, setHasMenu] = useState<boolean>();
   const [description, setDescription] = useState('');
@@ -75,6 +209,7 @@ export default function WidgetConfig() {
   const [maxGuestsPerReservation, setMaxGuestsPerReservation] = useState<number>(0);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRefImage = useRef<HTMLInputElement>(null);
   const filePdfInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -86,9 +221,10 @@ export default function WidgetConfig() {
       setWidgetInfo(data);
       setTitle(data.title);
       setDisabledTitle(data.disabled_title);
+      setImage(data.image_2);
       setDisabledDescription(data.disabled_description);
       setIsWidgetActivated(data.is_widget_activated);
-      setDescription(data.description);
+      setDescription(data.content);
       setMenuPdf(data.menu_file || null);
       setLogo(data.image || null);
       // if(logo === null){
@@ -104,6 +240,20 @@ export default function WidgetConfig() {
   const [filePDF, setFilePDF] = useState<File | null>(null);
   const [previewUrlPDF, setPreviewUrlPDF] = useState<string | null>(null);
 
+  const [previewImage, setPreviewImage] = useState<string |null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const selectedFile = event.target.files[0];
+      setImageFile(selectedFile);
+
+      // Generate a temporary preview URL
+      const objectUrl = URL.createObjectURL(selectedFile);
+      setPreviewImage(objectUrl);
+      setImage(objectUrl);
+    }
+  };
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const selectedFile = event.target.files[0];
@@ -139,7 +289,7 @@ export default function WidgetConfig() {
       alert('No menu PDF available to open.');
       return;
     }
-    const linkSource = !uploadedPdf ? `${API_HOST}${menuPdf}` : menuPdf;
+    const linkSource = menuPdf;
     window.open(linkSource, '_blank');
   };
 
@@ -167,18 +317,23 @@ export default function WidgetConfig() {
 
     const formData = new FormData();
     formData.append('title', title);
-    formData.append('description', description);
+    // formData.append('description', description);
     if(hasMenu){
       formData.append('has_menu', 'true');
     }else{
       formData.append('has_menu', 'false');
     }
+    formData.append('content', JSON.stringify(description));
     formData.append('disabled_title', disabledTitle);
     formData.append('disabled_description', disabledDescription);
     formData.append('max_of_guests_par_reservation', maxGuestsPerReservation?.toString() || '0');
 
     if(file){
       formData.append('image', file);
+    }
+
+    if (imageFile) {
+      formData.append('image_2', imageFile);
     }
 
     if (filePDF && searchTabs.menu) {
@@ -216,6 +371,7 @@ export default function WidgetConfig() {
       </h1>
 
       <div className="mb-6">
+        <h2 className="text-lg font-semibold mb-2">{t('settingsPage.widget.logo')}</h2>
         {logo ? (
           <div className="relative w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden">
             <img src={ logo} alt="Logo" className="w-full h-full object-contain" />
@@ -235,6 +391,26 @@ export default function WidgetConfig() {
             {t('settingsPage.widget.uploadLogo')}
           </button>
         )}
+        <h2 className="text-lg font-semibold mt-2">{t('settingsPage.widget.image')}</h2>
+        {image ? (
+          <div className="relative w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden">
+            <img src={image} alt="Image" className="w-full h-full object-contain" />
+            <button
+              onClick={() => {setImage(null);setNewLogo(true)}}
+              className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => fileInputRefImage.current?.click()}
+            className="w-full py-4 border-2 border-dashed border-gray-300 dark:border-darkthemeitems rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-darkthemeitems transition-colors"
+          >
+            <Upload className="mr-2" size={20} />
+            {t('settingsPage.widget.uploadImage')}
+          </button>
+        )}
         <input
           type="file"
           ref={fileInputRef}
@@ -242,10 +418,19 @@ export default function WidgetConfig() {
           accept="image/*"
           className="hidden"
         />
+        <input
+          type="file"
+          ref={fileInputRefImage}
+          onChange={handleImageChange}
+          accept="image/*"
+          className="hidden"
+        />
       </div>
       {isWidgetActivated ? (
           <div>
-            <div className="space-y-4 mb-6">
+            <div className="space-y-2 mb-6">
+              <h2 className="text-lg font-semibold mt-2">{t('settingsPage.widget.name')}</h2>
+
               <input
                 type="text"
                 placeholder={t('settingsPage.widget.addTitlePlaceholder')}
@@ -253,11 +438,12 @@ export default function WidgetConfig() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
               />
-              <textarea
-                placeholder={t('settingsPage.widget.addDescriptionPlaceholder')}
-                className="w-full inputs p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white lt-sm:w-full h-24 resize-none"
+              <h2 className="text-lg font-semibold mt-2">{t('settingsPage.widget.description')}</h2>
+              <QuillEditor
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={setDescription}
+                placeholder={t('settingsPage.widget.addDescriptionPlaceholder')}
+                
               />
             </div>
 
