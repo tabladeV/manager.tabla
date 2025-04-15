@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { BaseKey, useCreate, useUpdate } from '@refinedev/core';
+import { BaseKey, CanAccess, useCreate, useUpdate } from '@refinedev/core';
 import { CalendarCheck, EllipsisVertical, Settings2, SquarePen, Users, X } from 'lucide-react';
 import { useDrag } from 'react-dnd';
 import { useTranslation } from 'react-i18next';
@@ -31,6 +31,7 @@ interface DraggableItemProps {
     onUpdate: () => void;
     loading: boolean;
   };
+  canChangeRes: boolean;
 }
 
 const ItemType = 'BOX';
@@ -94,8 +95,8 @@ const DraggableItem = (props: DraggableItemProps) => {
   }, [showReservationOptions]);
 
   const canDrag = useCallback(() => {
-    return itemData.status === 'APPROVED' && !showReservationOptions;
-  }, [itemData, showReservationOptions]);
+    return itemData.status === 'APPROVED' && !showReservationOptions && props.canChangeRes;
+  }, [itemData, showReservationOptions, props.canChangeRes]);
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemType,
@@ -167,17 +168,19 @@ const DraggableItem = (props: DraggableItemProps) => {
         data-testid="draggable-reservation"
       >
         <div className='absolute top-[4px] right-[4px]'>
-          <button
-            ref={reservationOptionsBtnRef}
-            className="btn-secondary px-0 py-1 z-10  transform transition-all duration-300 ease-in-out"
-            onClick={() => {
-              if(loadingUpdateReservation || loadingReview) return;
+          <CanAccess resource='reservation' action='change'>
+            <button
+              ref={reservationOptionsBtnRef}
+              className="btn-secondary px-0 py-1 z-10  transform transition-all duration-300 ease-in-out"
+              onClick={() => {
+                if (loadingUpdateReservation || loadingReview) return;
 
-              setShowReservationOptions(prev => !prev)
-            }}
-          >
-            <EllipsisVertical size={16} />
-          </button>
+                setShowReservationOptions(prev => !prev)
+              }}
+            >
+              <EllipsisVertical size={16} />
+            </button>
+          </CanAccess>
         </div>
         <div className='flex justify-between'>
           <div className='flex flex-col gap-1 justify-start items-start'>
@@ -230,12 +233,14 @@ const DraggableItem = (props: DraggableItemProps) => {
             </div>
           </div>
           <div className={`flex flex-col gap-1 items-end ${itemData.tables?.length?'justify-center':'justify-end'}`}>
-            <button
-              onClick={() => itemData.onEdit(itemData.id)}
-              className="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-full transition-colors"
-            >
-              <SquarePen color='#88AB61' />
-            </button>
+            <CanAccess resource='reservation' action='change'>
+              <button
+                onClick={() => itemData.onEdit(itemData.id)}
+                className="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-full transition-colors"
+              >
+                <SquarePen color='#88AB61' />
+              </button>
+            </CanAccess>
           </div>
         </div>
       </div>
