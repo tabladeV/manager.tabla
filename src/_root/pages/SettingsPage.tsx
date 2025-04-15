@@ -20,13 +20,13 @@ const SettingsPage = () => {
     "text-greentheme underline font-[500] text-[17px] py-2";
 
   return (
-    <div>
+    <div className="">
       <div>
         <h1>{t("settingsPage.title")}</h1>
       </div>
-      <div className="flex gap-4">
+      <div className="h-[calc(100vh-160px)] no-scrollbar flex gap-4">
         <div
-          className={`h-[calc(100vh-160px)] overflow-y-auto flex flex-col w-1/5 rounded-[10px] px-6 py-4 gap-4 lt-sm:w-full lt-sm:h-fit ${localStorage.getItem("preferredLanguage") === "ar"
+          className={`h-[calc(100vh-160px)] overflow-y-auto  flex flex-col w-1/5 rounded-[10px] px-6 py-4 gap-4 lt-sm:w-full lt-sm:h-fit ${localStorage.getItem("preferredLanguage") === "ar"
               ? "text-right"
               : ""
             } ${pathname === "/settings" ? "" : "lt-sm:hidden"} 
@@ -122,7 +122,7 @@ const SettingsPage = () => {
           {/* <Link to='/settings/permissions' className={`hover:underline ${pathname === '/settings/permissions' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.permissions')}</Link> */}
           {/* <Link to='/settings/services' className={`hover:underline ${pathname === '/settings/services' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.services')}</Link> */}
         </div>
-        <div className={`w-full overflow-y-auto ${pathname === '/settings' ? 'lt-sm:hidden' : ''}`}>
+        <div className={`w-full h-calc(100vh-160px)  overflow-y-auto ${pathname === '/settings' ? 'lt-sm:hidden' : ''}`}>
           <Outlet />
         </div>
       </div>

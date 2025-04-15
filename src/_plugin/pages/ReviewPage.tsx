@@ -180,6 +180,7 @@ const ReviewPage = () => {
           </svg>
         </button>
       </div>
+      {/* <div className="h-[100px] w-full flex items-center justify-between px-10 shadow-md border-b border-softgreytheme dark:border-darkthemeitems dark:bg-bgdarktheme bg-whitetheme"></div> */}
       {loading ? (
         <div className="w-full flex justify-center gap-6 p-6">
           <div className="md:w-[40%] items-center w-full pl-10 lt-md:pl-0 lt-md:p-0 mx-auto mt-10 flex flex-col gap-5 justify-center">
