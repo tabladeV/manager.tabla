@@ -1224,7 +1224,6 @@ const ReservationsPage: React.FC = () => {
   };
 
   const EditClient = (id: BaseKey): void => {
-    if (!changeRes?.can) return;
 
     setEditingClient(id);
     if (!id) return;

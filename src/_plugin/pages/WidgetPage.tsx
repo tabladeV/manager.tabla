@@ -186,6 +186,8 @@ const WidgetPage = () => {
 
   const [serverError, setServerError] = useState<string>()
 
+  const [chosenTitle, setChosenTitle] = useState<'Mr'| 'Mrs'| 'Ms'>()
+
   const handleConfirmation = () => {
     setIsLoading(true)
     setServerError("")
@@ -206,6 +208,7 @@ const WidgetPage = () => {
           occasion: Number(userInformation.occasion) || null,
           source: "WIDGET",
           status: "PENDING",
+          title: chosenTitle,
           allergies: userInformation.allergies,
           preferences: userInformation.preferences,
           commenter: userInformation.preferences,
@@ -242,8 +245,10 @@ const WidgetPage = () => {
     }
   }, [])
 
+  
+
   return (
-    <div className="min-h-screen bg-white dark:bg-bgdarktheme2 text-black dark:text-white">
+    <div className="min-h-screen h-[100vh] overflow-y-auto  bg-white dark:bg-bgdarktheme2 text-black dark:text-white">
       {/* Header */}
       <header className="h-16 z-[300] w-full fixed flex items-center justify-between px-4 sm:px-10 shadow-md bg-white dark:bg-bgdarktheme">
         <Logo className="horizontal" nolink={true} />
@@ -364,6 +369,23 @@ const WidgetPage = () => {
               <h2 className="text-xl font-semibold mb-4">Your Information</h2>
 
               <form onSubmit={handleSubmit} className="space-y-1">
+                <div className="flex items-center gap-2 mb-4">
+                  <p className="text-sm font-bold text-[#555555] dark:text-[#cccccc]">
+                    Title 
+                  </p>
+                  <label htmlFor="Mr" className="text-sm font-medium text-[#555555] dark:text-[#cccccc]">
+                    Mr.
+                  </label>
+                  <input type="checkbox" id="Mr" className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]" checked={chosenTitle === "Mr"} onChange={() => setChosenTitle("Mr")} />
+                  <label htmlFor="Mrs" className="text-sm font-medium text-[#555555] dark:text-[#cccccc]">
+                    Mrs.
+                  </label>
+                  <input type="checkbox" id="Mrs" className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]" checked={chosenTitle === "Mrs"} onChange={() => setChosenTitle("Mrs")} />
+                  <label htmlFor="Ms" className="text-sm font-medium text-[#555555] dark:text-[#cccccc]">
+                    Ms.
+                  </label>
+                  <input type="checkbox" id="Ms" className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]" checked={chosenTitle === "Ms"} onChange={() => setChosenTitle("Ms")} />
+                </div>
                 <div>
                   <label
                     htmlFor="firstname"
@@ -569,7 +591,7 @@ const WidgetPage = () => {
 
                 {userInformation.preferences && (
                   <div>
-                    <h3 className="text-sm font-medium font-[600] dark:text-greentheme text-greentheme">Preferences</h3>
+                    <h3 className="text-sm  font-[600] dark:text-greentheme text-greentheme">Preferences</h3>
                     <p className="text-base">{userInformation.preferences}</p>
                   </div>
                 )}

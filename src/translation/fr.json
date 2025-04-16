@@ -160,7 +160,8 @@
             },
             "buttons": {
                 "save": "Enregistrer",
-                "cancel": "Annuler"
+                "cancel": "Annuler",
+                "close": "Fermer"
             }
         }
     },
