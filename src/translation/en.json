@@ -197,7 +197,8 @@
         },
         "buttons": {
           "save": "Save",
-          "cancel": "Cancel"
+          "cancel": "Cancel",
+          "close": "Close"
         }
       }
     },
