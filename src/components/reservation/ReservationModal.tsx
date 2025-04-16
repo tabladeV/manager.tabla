@@ -295,6 +295,7 @@ const ReservationModal = (props: ReservationModalProps) => {
     phone: '',
     source: '',
     note: '',
+    title: 'mr',
   });
 
 
@@ -332,6 +333,7 @@ const ReservationModal = (props: ReservationModalProps) => {
         customer: {
           first_name: reservationData.first_name,
           last_name: reservationData.last_name,
+          title: newCustomerData.title,
           email: reservationData.email,
           phone: reservationData.phone,
         },
@@ -343,7 +345,6 @@ const ReservationModal = (props: ReservationModalProps) => {
       }
     }
     );
-    setDisabledButton(true);
   }
 
   const handleAddReservationWithoutCustomer = (): void => {
@@ -352,6 +353,7 @@ const ReservationModal = (props: ReservationModalProps) => {
       values: {
         first_name: newCustomerData.first_name,
         last_name: newCustomerData.last_name,
+        title: newCustomerData.title,
         number_of_guests: data.guests ? data.guests.toString() : '',
         date: data.reserveDate || '',
         time: data.time || '',
@@ -436,6 +438,41 @@ const ReservationModal = (props: ReservationModalProps) => {
             ) : (
               <div>
                 <div className='mt-6 flex flex-col gap-4'>
+                  <div className='flex gap-1 items-center'>
+                  <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="title"
+                        value="mr"
+                        checked={newCustomerData?.title === "mr"}
+                        onChange={(e) => setNewCustomerData({ ...newCustomerData, title: e.target.value })}
+                        className="radio mr-2"
+                      />
+                      Mr
+                    </label>
+                  <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="title"
+                        value="mrs"
+                        checked={newCustomerData?.title === "mrs"}
+                        onChange={(e) => setNewCustomerData({ ...newCustomerData, title: e.target.value })}
+                        className="radio mr-2"
+                      />
+                      Mrs
+                    </label>
+                  <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="title"
+                        value="ms"
+                        checked={newCustomerData?.title === "ms"}
+                        onChange={(e) => setNewCustomerData({ ...newCustomerData, title: e.target.value })}
+                        className="radio mr-2"
+                      />
+                      Ms
+                    </label>
+                  </div>
                   <input type='text' name='first_name' placeholder={t('grid.placeHolders.firstname')} className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' onChange={(e) => setNewCustomerData({ ...newCustomerData, first_name: e.target.value })} required />
                   <input type='text' name='last_name' placeholder={t('grid.placeHolders.lastname')} className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' onChange={(e) => setNewCustomerData({ ...newCustomerData, last_name: e.target.value })} required />
                   <label className="flex items-center">
@@ -508,7 +545,6 @@ const ReservationModal = (props: ReservationModalProps) => {
               occasion: selectedOccasion,
             };
             handleAddReservation(event, reservationData);
-            setDisabledButton2(true);
           }}
         >
           <ArrowLeft className="cursor-pointer" onClick={() => setFindClient(true)} />
