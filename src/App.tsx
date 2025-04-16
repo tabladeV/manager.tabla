@@ -184,7 +184,7 @@ function App() {
                             path="/places"
                             element={
                               <CanAccess
-                                resource="restaurant"
+                                resource="floor"
                                 action="view"
                                 fallback="You don't have access to places"
                               >
