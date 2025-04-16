@@ -198,14 +198,12 @@ const ResevrationCard = (props: ReservationCardProps) => {
                         </div>
                     </div>
                     <div className={`flex flex-col gap-1 items-end justify-center`}>
-                        <CanAccess resource='reservation' action='change'>
-                            <button
-                                onClick={() => itemData.onEdit(itemData.id)}
-                                className="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-full transition-colors"
-                            >
-                                <SquarePen color='#88AB61' />
-                            </button>
-                        </CanAccess>
+                        <button
+                            onClick={() => itemData.onEdit(itemData.id)}
+                            className="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded-full transition-colors"
+                        >
+                            <SquarePen color='#88AB61' />
+                        </button>
                     </div>
                 </div>
             </div>
