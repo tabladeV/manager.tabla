@@ -315,7 +315,7 @@ const WidgetPage = () => {
                 className="mb-6 text-[#333333] dark:text-[#e1e1e1]"
               />
 
-              <div className="bg-[#f9f9f9] dark:bg-darkthemeitems rounded-lg  mb-6 shadow-sm">
+              <div className="bg-[#f9f9f9]  dark:bg-darkthemeitems rounded-lg  mb-6 shadow-sm">
                 <div
                   onClick={() => setShowProcess(true)}
                   className="flex justify-between items-center cursor-pointer p-6 hover:border-softgreentheme border-2 border-[#00000000] hover:bg-[#f0f0f0] dark:hover:bg-bgdarktheme2 rounded-md transition-colors"

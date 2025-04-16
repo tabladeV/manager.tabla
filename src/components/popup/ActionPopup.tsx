@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 interface ConfirmPopupProps {
-  action: "delete" | "update" | "create" | "confirm";
+  action: "delete" | "update" | "create" | "confirm"| "cancel" ;
   message?: string | React.ReactNode;
   actionFunction: () => Promise<void> | void; // Supports async actions
   showPopup: boolean;
@@ -89,13 +89,14 @@ const ActionPopup: React.FC<ConfirmPopupProps> = ({
       case "update": return "Update";
       case "create": return "Create";
       case "confirm": return "Confirm";
+      case "cancel": return "Cancel";
       default: return "Confirm";
     }
   };
 
   // Get button class based on action type
   const getButtonClass = () => {
-    return action === "delete" ? "btn-danger" : "btn-primary";
+    return (action === "delete"||action==="cancel") ? "btn-danger" : "btn-primary";
   };
 
   // Check if dark mode is enabled
@@ -144,7 +145,7 @@ const ActionPopup: React.FC<ConfirmPopupProps> = ({
               className={getButtonClass()}
               onClick={handleConfirm}
             >
-              {getActionText()}
+              {getActionText() || 'Confirm'}
             </button>
           </div>
         </div>

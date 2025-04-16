@@ -180,7 +180,7 @@ const ReviewWidget = () => {
         >
           {t('settingsPage.widget.buttons.save')}
         </button>
-        <Link to={currentUrl.includes('dev')?`https://${subdomain}.dev.tabla.ma/make/review/preview`:`https://${subdomain}.tabla.ma/make/review/preview`} target="_blank" className="btn-secondary w-1/2 text-center lt-md:w-full">
+        <Link to={currentUrl.includes('dev')?`https://${subdomain}.dev.tabla.ma/make/review/preview`:currentUrl.includes('localhost')? `http://${subdomain}.localhost:5173/make/review/preview` : `https://${subdomain}.tabla.ma/make/review/preview`} target="_blank" className="btn-secondary w-1/2 text-center lt-md:w-full">
           {t('settingsPage.widget.buttons.preview')}
         </Link>
       </div>

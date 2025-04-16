@@ -126,6 +126,7 @@
   align-items: center;
 }
 
+
 .overlay{
   width: 100vw;
   height: 100vh;
@@ -156,6 +157,10 @@
   
   all:unset;
   
+}
+
+html{
+  overflow: hidden;
 }
 
 .inputs{
@@ -442,4 +447,35 @@
     }
     
 
+}
+
+.quill-container .ql-editor {
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+  padding: 12px 15px;
+}
+
+.quill-container .ql-toolbar {
+  font-family: inherit;
+}
+
+.quill-container .ql-editor.ql-blank::before {
+  color: #94a3b8;
+  font-style: normal;
+  left: 15px;
+}
+
+.dark .quill-container {
+  border-color: #334155;
+}
+
+.dark .quill-container .ql-toolbar {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.dark .quill-container .ql-editor {
+  background: #1e293b;
+  color: #f8fafc;
 }

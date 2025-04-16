@@ -31,6 +31,7 @@ import { Occasion } from "../../components/settings/Occasions";
 import { useDarkContext } from "../../context/DarkContext";
 import { isTouchDevice } from '../../utils/isTouchDevice';
 import ActionPopup from "../../components/popup/ActionPopup";
+import { useDateContext } from '../../context/DateContext';
 import DraggableItemSkeleton from '../../components/places/DraggableItemSkeleton';
 import DraggableItem from '../../components/places/DraggableItem';
 import ResevrationCard from '../../components/places/ResevrationCard';
@@ -416,6 +417,7 @@ interface ReservationFiltersProps {
   setFocusedDate: (focused: boolean) => void;
   setDefaultFilter: () => void;
   isDarkMode: boolean;
+  filterDate: boolean;
 }
 
 const ReservationFilters: React.FC<ReservationFiltersProps> = ({ 
@@ -424,7 +426,8 @@ const ReservationFilters: React.FC<ReservationFiltersProps> = ({
   selectingDay, 
   setFocusedDate, 
   setDefaultFilter,
-  isDarkMode 
+  isDarkMode ,
+  filterDate
 }) => {
   const { t } = useTranslation();
   return (
@@ -453,7 +456,7 @@ const ReservationFilters: React.FC<ReservationFiltersProps> = ({
       >
         {t('reservations.filters.date')}
       </button>
-      <button onClick={setDefaultFilter} className={`${isDarkMode ? 'text-whitetheme' : ''} ${(focusedFilter === '') && (selectingDay === '') ? 'btn-primary' : 'btn'}`}>
+      <button onClick={setDefaultFilter} className={` ${isDarkMode ? 'text-whitetheme' : ''} ${(!filterDate && focusedFilter === '') && (selectingDay === '') ? 'btn-primary' : 'btn'}`}>
         {t('reservations.filters.all')}
       </button>
     </div>
@@ -809,6 +812,9 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
         return null;
     }
   };
+
+  
+  
   
   return (
     <tr key={reservation.id} className="opacity-80 hover:opacity-100">
@@ -1060,6 +1066,10 @@ const ReservationsPage: React.FC = () => {
     saveColumnsToStorage(columns);
   }, [columns]);
   
+  const { chosenDay } = useDateContext();
+
+  const [filterDate, setFilterDate] = useState<boolean>(true);
+
   // Data fetching
   const { data, isRefetching:isLoading, isLoading: isFirstLoad, error, refetch: refetchReservations } = useList({
     resource: "api/v1/bo/reservations/",
@@ -1067,8 +1077,8 @@ const ReservationsPage: React.FC = () => {
       { field: "page", operator: "eq", value: page },
       { field: "page_size", operator: "eq", value: 20 },
       { field: "status", operator: "eq", value: focusedFilter },
-      { field: "date_", operator: "gte", value: selectedDateRange.start ? format(selectedDateRange.start, 'yyyy-MM-dd') : '' },
-      { field: "date_", operator: "lte", value: selectedDateRange.end ? format(selectedDateRange.end, 'yyyy-MM-dd') : '' },
+      { field: "date_", operator: "gte", value: selectedDateRange.start ? format(selectedDateRange.start, 'yyyy-MM-dd') : filterDate? format(chosenDay,'yyyy-MM-dd') : '' },
+      { field: "date_", operator: "lte", value: selectedDateRange.end ? format(selectedDateRange.end, 'yyyy-MM-dd') : filterDate? format(chosenDay,'yyyy-MM-dd') : '' },
       { field: "search", operator: "eq", value: searchKeyWord },
       { field: "ordering", operator: "eq", value: "-id" }
     ],
@@ -1204,6 +1214,7 @@ const ReservationsPage: React.FC = () => {
   const setDefaultFilter = (): void => {
     setFocusedFilter('');
     setSelectingDay('');
+    setFilterDate(!filterDate)
     setSelectedDateRange({ start: null, end: null });
   };
 
@@ -1557,6 +1568,7 @@ const ReservationsPage: React.FC = () => {
           setFocusedDate={setFocusedDate}
           setDefaultFilter={setDefaultFilter}
           isDarkMode={isDarkMode}
+          filterDate={filterDate}
         />
       </div>
 

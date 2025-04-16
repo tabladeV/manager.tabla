@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import 'draft-js/dist/Draft.css';
 import { Editor, EditorState, convertToRaw, convertFromRaw } from 'draft-js';
 import { BaseKey, useList, useUpdate } from '@refinedev/core';
+import QuillEditor from './widgetComp/QuillEditor';
 
 
 
@@ -25,133 +26,6 @@ interface Widget {
 }
 
 
-interface QuillEditorProps {
-  value: string
-  onChange: (value: string) => void
-  placeholder?: string
-  className?: string
-  readOnly?: boolean
-  modules?: Record<string, any>
-}
-
-export function QuillEditor({
-  value,
-  onChange,
-  placeholder = "Write something...",
-  className = "",
-  readOnly = false,
-  modules = {},
-  ...props
-}: QuillEditorProps) {
-  const [isMounted, setIsMounted] = useState(false)
-  const [quill, setQuill] = useState<any>(null)
-  const editorRef = useRef<HTMLDivElement>(null)
-  const toolbarRef = useRef<HTMLDivElement>(null)
-
-  // Initialize Quill on the client side only
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      // Dynamically import Quill
-      import("quill").then((Quill) => {
-        if (!quill && editorRef.current && toolbarRef.current) {
-          const editor = new Quill.default(editorRef.current, {
-            modules: {
-              toolbar: toolbarRef.current,
-              ...modules,
-            },
-            placeholder,
-            readOnly,
-            theme: "snow",
-          })
-
-          // Set initial content
-          if (value) {
-            editor.clipboard.dangerouslyPasteHTML(value)
-          }
-
-          // Handle content changes
-          editor.on("text-change", () => {
-            const html = editorRef.current?.querySelector(".ql-editor")?.innerHTML
-            if (html) {
-              onChange(html)
-            }
-          })
-
-          setQuill(editor)
-        }
-      })
-    }
-    setIsMounted(true)
-  }, [])
-
-  // Update content when value prop changes
-  useEffect(() => {
-    if (quill && value !== quill.root.innerHTML) {
-      quill.clipboard.dangerouslyPasteHTML(value)
-    }
-  }, [quill, value])
-
-  // Import Quill styles on the client side
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      import("quill/dist/quill.snow.css")
-    }
-  }, [])
-
-  if (!isMounted) {
-    return null
-  }
-
-  return (
-    <div className={`quill-editor ${className}`} {...props}>
-      <div ref={toolbarRef}>
-        <span className="ql-formats">
-          <select className="ql-font"></select>
-          <select className="ql-size"></select>
-        </span>
-        <span className="ql-formats">
-          <button className="ql-bold"></button>
-          <button className="ql-italic"></button>
-          <button className="ql-underline"></button>
-          <button className="ql-strike"></button>
-        </span>
-        <span className="ql-formats">
-          <select className="ql-color"></select>
-          <select className="ql-background"></select>
-        </span>
-        <span className="ql-formats">
-          <button className="ql-script" value="sub"></button>
-          <button className="ql-script" value="super"></button>
-        </span>
-        <span className="ql-formats">
-          <button className="ql-header" value="1"></button>
-          <button className="ql-header" value="2"></button>
-          <button className="ql-blockquote"></button>
-          <button className="ql-code-block"></button>
-        </span>
-        <span className="ql-formats">
-          <button className="ql-list" value="ordered"></button>
-          <button className="ql-list" value="bullet"></button>
-          <button className="ql-indent" value="-1"></button>
-          <button className="ql-indent" value="+1"></button>
-        </span>
-        <span className="ql-formats">
-          <button className="ql-direction" value="rtl"></button>
-          <select className="ql-align"></select>
-        </span>
-        <span className="ql-formats">
-          <button className="ql-link"></button>
-          <button className="ql-image"></button>
-          <button className="ql-video"></button>
-        </span>
-        <span className="ql-formats">
-          <button className="ql-clean"></button>
-        </span>
-      </div>
-      <div ref={editorRef} className="min-h-[200px]" />
-    </div>
-  )
-}
 
 
 
@@ -370,47 +244,51 @@ export default function WidgetConfig() {
         {t('settingsPage.widget.title')} for <span className='italic font-[600]'>{widgetInfo?.restaurant}</span>
       </h1>
 
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-2">{t('settingsPage.widget.logo')}</h2>
-        {logo ? (
-          <div className="relative w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden">
-            <img src={ logo} alt="Logo" className="w-full h-full object-contain" />
+      <div className="mb-6 flex gap-5 justify-between items-start">
+        <div className='flex w-1/2 flex-col gap-2'>
+          <h2 className="text-lg font-semibold mb-2">{t('settingsPage.widget.logo')}</h2>
+          {logo ? (
+            <div className="relative w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden">
+              <img src={ logo} alt="Logo" className="w-full h-full object-contain" />
+              <button
+                onClick={() => {setLogo(null);setNewLogo(true)}}
+                className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          ) : (
             <button
-              onClick={() => {setLogo(null);setNewLogo(true)}}
-              className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full py-4 border-2 border-dashed border-gray-300 dark:border-darkthemeitems rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-darkthemeitems transition-colors"
             >
-              <X size={16} />
+              <Upload className="mr-2" size={20} />
+              {t('settingsPage.widget.uploadLogo')}
             </button>
-          </div>
-        ) : (
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="w-full py-4 border-2 border-dashed border-gray-300 dark:border-darkthemeitems rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-darkthemeitems transition-colors"
-          >
-            <Upload className="mr-2" size={20} />
-            {t('settingsPage.widget.uploadLogo')}
-          </button>
-        )}
-        <h2 className="text-lg font-semibold mt-2">{t('settingsPage.widget.image')}</h2>
-        {image ? (
-          <div className="relative w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden">
-            <img src={image} alt="Image" className="w-full h-full object-contain" />
+          )}
+        </div>
+        <div className='flex w-1/2 flex-col gap-2'>
+          <h2 className="text-lg font-semibold mt-2">{t('settingsPage.widget.image')}</h2>
+          {image ? (
+            <div className="relative w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden">
+              <img src={image} alt="Image" className="w-full h-full object-contain" />
+              <button
+                onClick={() => {setImage(null);setNewLogo(true)}}
+                className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          ) : (
             <button
-              onClick={() => {setImage(null);setNewLogo(true)}}
-              className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
+              onClick={() => fileInputRefImage.current?.click()}
+              className="w-full py-4 border-2 border-dashed border-gray-300 dark:border-darkthemeitems rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-darkthemeitems transition-colors"
             >
-              <X size={16} />
+              <Upload className="mr-2" size={20} />
+              {t('settingsPage.widget.uploadImage')}
             </button>
-          </div>
-        ) : (
-          <button
-            onClick={() => fileInputRefImage.current?.click()}
-            className="w-full py-4 border-2 border-dashed border-gray-300 dark:border-darkthemeitems rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-darkthemeitems transition-colors"
-          >
-            <Upload className="mr-2" size={20} />
-            {t('settingsPage.widget.uploadImage')}
-          </button>
-        )}
+          )}
+        </div>
         <input
           type="file"
           ref={fileInputRef}
@@ -539,10 +417,10 @@ export default function WidgetConfig() {
         >
           {t('settingsPage.widget.buttons.save')}
         </button>
-        <Link to={currentUrl.includes('dev')?`https://${subdomain}.dev.tabla.ma/make/reservation`:`https://${subdomain}.tabla.ma/make/reservation`} target="_blank" className="btn-secondary w-1/4 text-center lt-md:w-full">
+        <Link to={currentUrl.includes('dev')?`https://${subdomain}.dev.tabla.ma/make/reservation`: currentUrl.includes('localhost') ? `http://italiana.localhost:5173/make/reservation`: `https://${subdomain}.tabla.ma/make/reservation`} target="_blank" className="btn-secondary w-1/4 text-center lt-md:w-full">
           {t('settingsPage.widget.buttons.preview')} Reservation
         </Link>
-        <Link to={currentUrl.includes('dev')?`https://${subdomain}.dev.tabla.ma/make/modification/preview`:`https://${subdomain}.tabla.ma/make/modification/preview`} target="_blank" className="btn-secondary w-1/4 text-center lt-md:w-full">
+        <Link to={currentUrl.includes('dev')?`https://${subdomain}.dev.tabla.ma/make/modification/preview`: currentUrl.includes('localhost') ? `http://${subdomain}.localhost:5173/make/modification/preview`:`https://${subdomain}.tabla.ma/make/modification/preview`} target="_blank" className="btn-secondary w-1/4 text-center lt-md:w-full">
           {t('settingsPage.widget.buttons.preview')} Modification
         </Link>
       </div>

@@ -4,7 +4,7 @@ import type React from "react"
 import { useEffect, useMemo, useState } from "react"
 import Logo from "../../components/header/Logo"
 import { ArrowLeft, Expand, Send } from "lucide-react"
-import { type BaseRecord, useCreate, useCustom, useCustomMutation, useOne } from "@refinedev/core"
+import { BaseKey, type BaseRecord, useCreate, useCustom, useCustomMutation, useOne } from "@refinedev/core"
 import { useLocation, useParams, useSearchParams } from "react-router-dom"
 import { format } from "date-fns"
 import { getSubdomain } from "../../utils/getSubdomain"
@@ -12,6 +12,7 @@ import { useRef } from "react"
 import { useClickAway } from "react-use"
 import BaseBtn from "../../components/common/BaseBtn"
 import WidgetReservationProcess from "../../components/reservation/WidgetReservationProcess"
+import ActionPopup from "../../components/popup/ActionPopup"
 
 interface QuillPreviewProps {
   content: string
@@ -107,11 +108,7 @@ const Modify = () => {
   })
 
   const handleCancel = () => {
-    cancelReservation({
-      resource: `api/v1/bo/subdomains/public/cutomer/reservations/${token}/cancel`,
-      values: {},
-    })
-    setErrorPage(true)
+    setShowConfirmPopup(true)
   }
 
   useEffect(() => {
@@ -287,8 +284,29 @@ const Modify = () => {
 
   const [showOccasions, setShowOccasions] = useState(false)
 
+    const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+    
+    const confirmCancel = () => {
+      cancelReservation({
+        resource: `api/v1/bo/subdomains/public/cutomer/reservations/${token}/cancel`,
+        values: {},
+      })
+      setErrorPage(true)
+      setShowConfirmPopup(false)
+    }
+
   return (
     <div className="min-h-screen bg-white  dark:bg-bgdarktheme2 text-black dark:text-white">
+      {<ActionPopup
+        action="cancel"
+        secondActionText="No, keep reservation"
+        message="Are you sure you want to cancel this reservation? This action cannot be undone."
+        actionFunction={confirmCancel}
+        showPopup={showConfirmPopup}
+        setShowPopup={setShowConfirmPopup}
+      />
+
+      }
       {/* Header */}
       <header className="h-16 z-[300] w-full fixed flex items-center justify-between px-4 sm:px-10 shadow-md bg-white dark:bg-bgdarktheme">
         <Logo className="horizontal" nolink={true} />
