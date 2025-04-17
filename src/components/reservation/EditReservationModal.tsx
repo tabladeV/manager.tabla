@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from 'react-i18next';
 import { BaseKey, CanAccess, useList } from "@refinedev/core";
 import BaseSelect from "../common/BaseSelect";
@@ -51,6 +51,7 @@ const EditReservationModal = ({
   const [selectedOccasion, setSelectedOccasion] = useState<number | null>(null);
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
 
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [occasions, setOccasions] = useState<Occasion[]>([])
   const [occasionsAPIInfo, setOccasionsAPIInfo] = useState<OccasionsType>()
 
@@ -62,7 +63,12 @@ const EditReservationModal = ({
       }
     }
   })
-
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [selectedClient?.internal_note]);
   
   useEffect(() => {
     if (occasionsAPIInfo) {
@@ -275,12 +281,13 @@ const EditReservationModal = ({
 
             <div>
               <label className="block text-sm font-medium ">{t('reservations.edit.informations.internalNote')}</label>
-              <input
-                type="text"
+              <textarea
+                ref={textareaRef}
                 name="internal_note"
+                rows={2}
                 value={selectedClient.internal_note}
                 onChange={(e) => setSelectedClient({ ...selectedClient, internal_note: e.target.value })}
-                className={`w-full rounded-md p-2 ${isDarkMode ? 'bg-darkthemeitems text-whitetheme' : 'bg-softgreytheme text-subblack'}`}
+                className={`w-full resize-none rounded-md p-2 dark:bg-darkthemeitems dark:text-whitetheme bg-softgreytheme text-subblack`}
               />
             </div>
 
@@ -292,7 +299,7 @@ const EditReservationModal = ({
                 onChange={(e) => {
                   setSelectedClient({ ...selectedClient, status: e.target.value as ReservationStatus });
                 }}
-                className={`w-full rounded-md p-2 ${isDarkMode ? 'bg-darkthemeitems text-whitetheme' : 'bg-softgreytheme text-subblack'}`}
+                className={`w-full rounded-md p-2 dark:bg-darkthemeitems dark:text-whitetheme bg-softgreytheme text-subblack`}
               >
                 <option value="PENDING">{t('reservations.statusLabels.pending')}</option>
                 <option value="APPROVED">{t('reservations.statusLabels.confirmed')}</option>
