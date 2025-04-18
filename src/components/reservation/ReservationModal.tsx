@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ReservationProcess from './ReservationProcess';
 import { ArrowLeft, User, X } from 'lucide-react';
@@ -169,8 +169,17 @@ const ReservationModal = (props: ReservationModalProps) => {
   const [newClient, setNewClient] = useState(false);
   const [findClient, setFindClient] = useState(true);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const newTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [formData?.comment]);
 
   useEffect(() => {
     if (clientsForAPI) {
@@ -202,7 +211,7 @@ const ReservationModal = (props: ReservationModalProps) => {
     setFindClient(false);
   };
 
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
@@ -297,6 +306,13 @@ const ReservationModal = (props: ReservationModalProps) => {
     note: '',
     title: 'mr',
   });
+
+  useEffect(() => {
+    if (newTextareaRef.current) {
+      newTextareaRef.current.style.height = 'auto';
+      newTextareaRef.current.style.height = `${newTextareaRef.current.scrollHeight}px`;
+    }
+  }, [newCustomerData?.note]);
 
 
   const handleNewReservationNewCustomer = () => {
@@ -490,7 +506,11 @@ const ReservationModal = (props: ReservationModalProps) => {
                       <input type='tel' name='phone' placeholder={t('grid.placeHolders.phone')} className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' onChange={(e) => setNewCustomerData({ ...newCustomerData, phone: e.target.value })} required />
                     </>
                   )}
-                  <input type="text" name='note' placeholder={t('grid.placeHolders.internalNote')} className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' onChange={(e) => setNewCustomerData({ ...newCustomerData, note: e.target.value })} />
+                  
+                  <textarea ref={newTextareaRef} rows={2} name='note' placeholder={t('grid.placeHolders.internalNote')} 
+                  className='w-full resize-none rounded-md p-2 border dark:bg-darkthemeitems dark:text-whitebg-white border-gray-300 dark:border-darkthemeitems' 
+                  onChange={(e) => setNewCustomerData({ ...newCustomerData, note: e.target.value })} />
+                  
                   <BaseSelect
                     placeholder={t('reservations.occasion')}
                     options={occasions.map(occasion => ({
@@ -512,8 +532,7 @@ const ReservationModal = (props: ReservationModalProps) => {
                   </select>
                   <div
                     onClick={() => setShowProcess(true)}
-                    className={`btn flex justify-around cursor-pointer ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'
-                      }`}
+                    className={`btn flex justify-around cursor-pointer ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'}`}
                   >
                     {data.reserveDate === '' ? <div>Date</div> : <span>{data.reserveDate}</span>}
                     {data.time === '' ? <div>Time</div> : <span>{data.time}</span>}
@@ -604,11 +623,11 @@ const ReservationModal = (props: ReservationModalProps) => {
                 loading={loadingOccasions}
               />
             </div>
-            <input
+            <textarea
+              ref={textareaRef}
+              rows={2}
               placeholder={t('grid.placeHolders.intern')}
-              type="text"
-              className={`inputs-unique ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'
-                }`}
+              className={`w-full resize-none rounded-md p-2 border border-gray-300 dark:border-darkthemeitems dark:bg-darkthemeitems dark:text-whitebg-white`}
               id="comment"
               value={formData.comment}
               onChange={handleFormChange}
