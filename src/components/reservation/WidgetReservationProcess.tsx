@@ -98,7 +98,7 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
       enabled: !!(selectedDate && selectedGuests), // Only enable when date and guests are selected
       onSuccess: (data) => {
         // Handle the new grouped time slots format
-        setAvailableTimes(data?.data as GroupedTimeSlots);
+        setAvailableTimes(data?.data as unknown as GroupedTimeSlots);
       },
       onError: (error) => {
         console.error("Error fetching available times:", error);
@@ -126,7 +126,7 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
   const handleGuestClick = (guest: number) => {
     setSelectedGuests(guest);
     setSelectedData((prevData) => ({ ...prevData, guests: guest }));
-    setAvailableTimes([]);
+    setAvailableTimes({});
     setSelectedTime(null);
     setActiveTab('time');
   };
