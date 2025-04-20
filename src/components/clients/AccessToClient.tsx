@@ -9,6 +9,7 @@ interface AccessToClientProps {
     id: BaseKey| undefined,
     onClick: MouseEventHandler<HTMLDivElement>;
     checked?: boolean;
+    title?:string;
 }
 
 
@@ -30,7 +31,7 @@ const AccessToClient = (props:AccessToClientProps) => {
       <Link to={`/clients/${props.id}`} className={`flex gap-3 w-full cursor-pointer  hover:opacity-80 justify-start  items-center ${pathname=== '/clients/'+urlId ? 'opacity-100':'opacity-25 lt-sm:opacity-100'}`}>
         <img className="w-12 h-12 object-cover rounded-full" src={props.image}/>
         <div className="h-12 border-[1px] border-[#00000010] w-0 "></div>
-        <h3 className="">{props.name}</h3>
+        <h3 className="">{props.title? props.title.charAt(0).toUpperCase() + props.title.slice(1)+'.':''} {props.name}</h3>
       </Link>
       <input type="checkbox" className="flex checkbox " checked={props.checked} onClick={props.onClick}  />
     </div>

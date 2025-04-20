@@ -225,7 +225,7 @@ const ClientInterface = () => {
 
   
   useEffect(() => {
-    document.title = client?.full_name+ (isProfile ? ' - Profile': ' - Booking History') || 'Client';
+    document.title = (client?.title? client.title.charAt(0).toUpperCase() + client.title.slice(1)+'.':'')+' '+client?.full_name+ (isProfile ? ' - Profile': ' - Booking History') || 'Client';
   }, [client, isProfile]);
 
   const [editingField, setEditingField] = useState<keyof ClientData | null>(null);
@@ -365,7 +365,7 @@ const ClientInterface = () => {
                 src={image}
                 alt="client"
               />
-              <h1>{client.full_name}</h1>
+              <h1>{client.title? client.title.charAt(0).toUpperCase() + client.title.slice(1)+'.':''} {client.full_name}</h1>
               <h4 className={` text-[18px] font-[500] ${localStorage.getItem('darkMode')==='true'?'text-softwhitetheme':'text-subblack'}`}>{client.email}</h4>
               <h4 className={` text-[18px] font-[500] ${localStorage.getItem('darkMode')==='true'?'text-softwhitetheme':'text-subblack'}`}>{client.phone}</h4>
               <CanAccess resource="customer" action="delete">
