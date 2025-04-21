@@ -17,6 +17,7 @@ interface ClientData {
   email: string;
   phone: string;
   alternatePhone?: string; // Optional property
+  title: string;
   image: string;
   lifetime: {
     upcoming: number;
@@ -163,6 +164,9 @@ const ClientInterface = () => {
   
   const [reservationHistory,setReservationHistory] = useState<Reservation[]>();
 
+  const [chosenTitle, setChosenTitle] = useState<string>(client?.title || '');
+
+
   useEffect(()=>{
     if(reservation){
       setReservationHistory(reservation as Reservation[])
@@ -262,6 +266,21 @@ const ClientInterface = () => {
 
     });
   };
+
+  const handleTitleChange = (title:string) => {
+    updateClient({
+      resource: 'api/v1/bo/customers',
+      values: {
+        title: title,
+      },
+      id: id+'/',
+
+    },
+    );
+    setChosenTitle(title);
+    client && setClient((prev) => ({ ...prev, title: title }));
+}
+
 
   const handleBlur = () => {
     setEditingField(null);
@@ -426,6 +445,25 @@ const ClientInterface = () => {
                     <div className="px-2 py-1 rounded-[10px] mt-2">
                       <table className="w-full  border-collapse">
                         <tbody>
+                          <tr className='border border-gray-300'>
+                            <td className="font-medium p-2">{t('clients.profileSection.fields.title')}</td>
+                            <td className="p-2 ">
+                              <span className='flex gap-3 w-full px-3 py-2 rounded cursor-pointer  transition-colors dark:bg-bgdarktheme  bg-gray-100 items-start '>
+                                <label htmlFor="Mr" className="text-sm font-medium text-[#555555] dark:text-[#cccccc]">
+                                  Mr.
+                                </label>
+                                <input type="checkbox" id="Mr" className="checkbox mr-5 w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]" checked={client.title === "mr"} onChange={() => handleTitleChange("mr")} />
+                                <label htmlFor="Mrs" className="text-sm font-medium text-[#555555] dark:text-[#cccccc]">
+                                  Mrs.
+                                </label>
+                                <input type="checkbox" id="Mrs" className="checkbox mr-5 w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]" checked={client.title === "mrs"} onChange={() => handleTitleChange("mrs")} />
+                                <label htmlFor="Ms" className="text-sm font-medium text-[#555555] dark:text-[#cccccc]">
+                                  Ms.
+                                </label>
+                                <input type="checkbox" id="Ms" className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]" checked={client.title === "ms"} onChange={() => handleTitleChange("ms")} />
+                              </span>
+                            </td>
+                          </tr>
                           <tr className="border border-gray-300">
                             <td className="font-medium p-2">{t('clients.profileSection.fields.firstName')}</td>
                             {renderCell('first_name')}
@@ -435,7 +473,7 @@ const ClientInterface = () => {
                             {renderCell('last_name', 3)}
                           </tr>
                           <tr className="border border-gray-300">
-                            <td className="font-medium p-2 w-1/4 border-l border-gray-300 lt-sm:hidden">{t('clients.profileSection.fields.email')}</td>
+                            <td className="font-medium p-2 w-1/4 border-l border-gray-300 ">{t('clients.profileSection.fields.email')}</td>
                             {renderCell('email')}
                           </tr>
                           {/* <tr className='sm:hidden border border-gray-300'>
