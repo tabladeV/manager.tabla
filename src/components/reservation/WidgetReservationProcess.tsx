@@ -42,7 +42,7 @@ const SkeletonLoader = () => (
 const TimeSkeletonLoader = () => (
   <div className="animate-pulse flex flex-wrap justify-center gap-[10px] p-[20px]">
     {[...Array(8)].map((_, index) => (
-      <div key={index} className="h-[65px] w-[65px] bg-gray-200 rounded-md"></div>
+      <div key={index} className="h-[65px] w-[65px] bg-gray-200 dark:bg-darkthemeitems rounded-md"></div>
     ))}
   </div>
 );

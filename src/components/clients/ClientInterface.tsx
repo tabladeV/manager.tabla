@@ -443,12 +443,12 @@ const ClientInterface = () => {
                   <div>
                     <h4 className="m-2 text-greytheme font-[500]">{t('clients.profileSection.title')}</h4>
                     <div className="px-2 py-1 rounded-[10px] mt-2">
-                      <table className="w-full  border-collapse">
+                      <table className="w-full border-gray-300 dark:border-gray-700 border-collapse">
                         <tbody>
-                          <tr className='border border-gray-300'>
+                          <tr className='border border-gray-300 '>
                             <td className="font-medium p-2">{t('clients.profileSection.fields.title')}</td>
                             <td className="p-2 ">
-                              <span className='flex gap-3 w-full px-3 py-2 rounded cursor-pointer  transition-colors dark:bg-bgdarktheme  bg-gray-100 items-start '>
+                              <span className='flex gap-3 w-full px-3 py-2 rounded cursor-pointer  transition-colors dark:bg-bgdarktheme2  bg-gray-100 items-start '>
                                 <label htmlFor="Mr" className="text-sm font-medium text-[#555555] dark:text-[#cccccc]">
                                   Mr.
                                 </label>
