@@ -103,12 +103,14 @@ const MessagesPage = () => {
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
   const [showNotificationModal, setShowNotificationModal] = useState<boolean>(false);
 
+  const [size, setSize] = useState<number>(16);
   // Fetch messages
   const { data, isLoading, error, refetch } = useList({
     resource: "bo/messages/",
+
     filters: [
       { field: "page", operator: "eq", value: page },
-      { field: "page_size", operator: "eq", value: 20 },
+      { field: "page_size", operator: "eq", value: size },
       { field: "search", operator: "eq", value: searchKeyword },
     ],
     queryOptions: {
@@ -223,7 +225,7 @@ const MessagesPage = () => {
           setPage={(newPage) => {
             setPage(newPage);
           }}
-          size={20}
+          size={size}
           count={messagesAPIInfo?.count || 0}
         />
       </div>
@@ -289,7 +291,7 @@ const MessageRow: React.FC<MessageRowProps> = ({ message, onReply }) => {
   const formattedTime = format(date, "HH:mm");
 
   return (
-    <tr className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800">
+    <tr className="transition-colors hover:bg-gray-50 dark:hover:bg-darkthemeitems">
       <td className="px-3 py-4">
         <div className="flex items-center">
           <img 

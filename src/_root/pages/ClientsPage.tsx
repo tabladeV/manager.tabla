@@ -422,6 +422,7 @@ console.log(searchKeyword);
                 image={image}
                 checked={selectedClient.some((selected) => selected.id === client.id)}
                 name={client.full_name}
+                title={client.title}
                 id={client.id}
               />
             ))}

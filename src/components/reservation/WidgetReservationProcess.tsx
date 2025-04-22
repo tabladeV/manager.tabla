@@ -24,6 +24,11 @@ export type AvailableDate = {
   isAvailable: boolean;
 };
 
+// Add a new type for grouped time slots
+type GroupedTimeSlots = {
+  [category: string]: string[];
+};
+
 const SkeletonLoader = () => (
   <div className="animate-pulse">
     <div className="grid grid-cols-7 gap-2">
@@ -37,7 +42,7 @@ const SkeletonLoader = () => (
 const TimeSkeletonLoader = () => (
   <div className="animate-pulse flex flex-wrap justify-center gap-[10px] p-[20px]">
     {[...Array(8)].map((_, index) => (
-      <div key={index} className="h-[65px] w-[65px] bg-gray-200 rounded-md"></div>
+      <div key={index} className="h-[65px] w-[65px] bg-gray-200 dark:bg-darkthemeitems rounded-md"></div>
     ))}
   </div>
 );
@@ -62,7 +67,8 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
     guests: 0,
   });
   const [availableDates, setAvailableDates] = useState<AvailableDate[]>([]);
-  const [availableTimes, setAvailableTimes] = useState<string[]>([]);
+  // Update available times to use the new grouped structure
+  const [availableTimes, setAvailableTimes] = useState<GroupedTimeSlots>({});
   const [loadingTimes, setLoadingTimes] = useState<boolean>(false);
   const [currentMonth, setCurrentMonth] = useState<string>(format(new Date(), 'yyyy-MM'));
 
@@ -91,11 +97,12 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
     queryOptions: {
       enabled: !!(selectedDate && selectedGuests), // Only enable when date and guests are selected
       onSuccess: (data) => {
-        setAvailableTimes(data?.data?.map(record => String(record)));
+        // Handle the new grouped time slots format
+        setAvailableTimes(data?.data as unknown as GroupedTimeSlots);
       },
       onError: (error) => {
         console.error("Error fetching available times:", error);
-        setAvailableTimes([]); // Reset available times on error
+        setAvailableTimes({}); // Reset available times on error
       },
     }
   });
@@ -111,7 +118,7 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
     setSelectedData((prev) => ({...prev, time: '', reserveDate: formattedDate }));
     setSelectedTime(null);
     setSelectedGuests(null);
-    setAvailableTimes([]);
+    setAvailableTimes({});
     setLoadingTimes(false);
     setActiveTab('guest');
   };
@@ -119,7 +126,7 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
   const handleGuestClick = (guest: number) => {
     setSelectedGuests(guest);
     setSelectedData((prevData) => ({ ...prevData, guests: guest }));
-    setAvailableTimes([]);
+    setAvailableTimes({});
     setSelectedTime(null);
     setActiveTab('time');
   };
@@ -230,27 +237,34 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
             </div>
             {timesLoading? (
               <TimeSkeletonLoader />
-            ) : availableTimes.length === 0 ? (
+            ) : Object.keys(availableTimes).length === 0 ? (
               <EmptyState message={`No available time slots for this date ${selectedDate?format(selectedDate,'dd MMMM yyyy'):''} and number of guests ${selectedGuests || ''}`} />
             ) : (
-              <div className="flex flex-wrap min-h-[200px] overflow-y-auto justify-center gap-[10px] p-[20px] rounded-[3px]">
-                {availableTimes.map((time, index) => {
-                  const now = new Date();
-                  const isToday = selectedDate && format(selectedDate, 'yyyy-MM-dd') === format(now, 'yyyy-MM-dd');
-                  const [hour, minute] = time.split(':').map(Number);
-                  const isPastTime = isToday && (hour < now.getHours() || (hour === now.getHours() && minute < now.getMinutes()));
-                  
-                  return (
-                    <button
-                      onClick={() => !isPastTime && handleTimeClick(time)}
-                      className={`text-15 ${isPastTime ? 'bg-softwhitetheme text-subblack cursor-not-allowed' : 'hover:bg-[#335a06] hover:text-white'} font-bold h-[65px] w-[65px] flex items-center justify-center border-solid border-[1px] border-[#335A06] ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ' text-blacktheme'} ${selectedTime === time ? 'bg-black text-white' : ''}`}
-                      key={index}
-                      disabled={!!isPastTime}
-                    >
-                      {time}
-                    </button>
-                  );
-                })}
+              <div className="flex flex-col min-h-[200px] overflow-y-auto max-h-[400px] p-[20px] rounded-[3px]">
+                {Object.entries(availableTimes).map(([category, times]) => (
+                  <div key={category} className="mb-4">
+                    <h3 className="text-left text-lg font-semibold mb-2 text-[#335A06] border-b border-[#335A06] pb-1">{category}</h3>
+                    <div className="flex flex-wrap justify-start gap-[10px]">
+                      {times.map((time, index) => {
+                        const now = new Date();
+                        const isToday = selectedDate && format(selectedDate, 'yyyy-MM-dd') === format(now, 'yyyy-MM-dd');
+                        const [hour, minute] = time.split(':').map(Number);
+                        const isPastTime = isToday && (hour < now.getHours() || (hour === now.getHours() && minute < now.getMinutes()));
+                        
+                        return (
+                          <button
+                            onClick={() => !isPastTime && handleTimeClick(time)}
+                            className={`text-15 ${isPastTime ? 'bg-softwhitetheme text-subblack cursor-not-allowed' : 'hover:bg-[#335a06] hover:text-white'} font-bold h-[65px] w-[65px] flex items-center justify-center border-solid border-[1px] border-[#335A06] ${localStorage.getItem('darkMode') === 'true' ? 'text-white' : ' text-blacktheme'} ${selectedTime === time ? 'bg-black text-white' : ''}`}
+                            key={index}
+                            disabled={!!isPastTime}
+                          >
+                            {time}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>

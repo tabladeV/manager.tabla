@@ -312,6 +312,7 @@
                 "firstName": "First Name",
                 "lastName": "Last Name",
                 "email": "Email",
+                "title": "Title",
                 "phoneNumber": "Phone number",
                 "alternatePhone": "Alternate phone",
                 "organization": "Organization",

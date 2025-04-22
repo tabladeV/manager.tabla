@@ -69,7 +69,7 @@ const OurCalendar = (props) => {
     return (
       <>
         <div className='text-[20px] items-center mb-2 flex justify-between'>
-          <div className='font-bold w-28 h-7 bg-gray-200 animate-pulse rounded'></div>
+          <div className='font-bold w-28 h-7 bg-gray-200 dark:bg-darkthemeitems animate-pulse rounded'></div>
           {/* <div className='flex'>
             <div className='w-[35px] h-[35px] bg-gray-200 animate-pulse rounded-full mx-1'></div>
             <div className='w-[35px] h-[35px] bg-gray-200 animate-pulse rounded-full mx-1'></div>
@@ -94,13 +94,13 @@ const OurCalendar = (props) => {
         <div className='mx-auto'>
           <div className='grid mx-auto grid-cols-7'>
             {Array(7).fill(0).map((_, index) => (
-              <div key={index} className='font-bold ml-3 w-[30px] h-[30px] bg-gray-200 animate-pulse rounded-[6px] mb-2'></div>
+              <div key={index} className='font-bold ml-3 w-[30px] h-[30px] bg-gray-200 dark:bg-darkthemeitems animate-pulse rounded-[6px] mb-2'></div>
             ))}
           </div>
           <div className='mx-auto grid grid-cols-7 justify-around'>
             {Array(35).fill(0).map((_, index) => (
               <div key={index} className='py-1.5'>
-                <div className='mx-auto h-8 w-8 bg-gray-200 animate-pulse rounded-full'></div>
+                <div className='mx-auto h-8 w-8 bg-gray-200 dark:bg-darkthemeitems animate-pulse rounded-full'></div>
               </div>
             ))}
           </div>
@@ -160,7 +160,7 @@ const OurCalendar = (props) => {
                         isSameDay(day, actualSelectedDay) && !isToday(day) && 'bg-gray-900',
                         !isSameDay(day, actualSelectedDay) && isAvailable && 'hover:bg-softgreentheme',
                         (isSameDay(day, actualSelectedDay) || isToday(day)) && 'font-semibold',
-                        !isAvailable && 'bg-gray-100 cursor-not-allowed',
+                        !isAvailable && 'bg-gray-100 dark:bg-softredtheme cursor-not-allowed',
                         'mx-auto flex h-8 w-8 items-center justify-center rounded-full'
                       )}
                     >

@@ -186,7 +186,7 @@ const WidgetPage = () => {
 
   const [serverError, setServerError] = useState<string>()
 
-  const [chosenTitle, setChosenTitle] = useState<'Mr'| 'Mrs'| 'Ms'>()
+  const [chosenTitle, setChosenTitle] = useState<'mr'| 'mrs'| 'ms'>()
 
   const handleConfirmation = () => {
     setIsLoading(true)
@@ -197,6 +197,7 @@ const WidgetPage = () => {
         resource: `api/v1/bo/subdomains/public/cutomer/reservations/`,
         values: {
           customer: {
+            title: chosenTitle,
             email: userInformation.email,
             first_name: userInformation.firstname,
             last_name: userInformation.lastname,
@@ -208,7 +209,6 @@ const WidgetPage = () => {
           occasion: Number(userInformation.occasion) || null,
           source: "WIDGET",
           status: "PENDING",
-          title: chosenTitle,
           allergies: userInformation.allergies,
           preferences: userInformation.preferences,
           commenter: userInformation.preferences,
@@ -376,15 +376,15 @@ const WidgetPage = () => {
                   <label htmlFor="Mr" className="text-sm font-medium text-[#555555] dark:text-[#cccccc]">
                     Mr.
                   </label>
-                  <input type="checkbox" id="Mr" className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]" checked={chosenTitle === "Mr"} onChange={() => setChosenTitle("Mr")} />
+                  <input type="checkbox" id="Mr" className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]" checked={chosenTitle === "mr"} onChange={() => setChosenTitle("mr")} />
                   <label htmlFor="Mrs" className="text-sm font-medium text-[#555555] dark:text-[#cccccc]">
                     Mrs.
                   </label>
-                  <input type="checkbox" id="Mrs" className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]" checked={chosenTitle === "Mrs"} onChange={() => setChosenTitle("Mrs")} />
+                  <input type="checkbox" id="Mrs" className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]" checked={chosenTitle === "mrs"} onChange={() => setChosenTitle("mrs")} />
                   <label htmlFor="Ms" className="text-sm font-medium text-[#555555] dark:text-[#cccccc]">
                     Ms.
                   </label>
-                  <input type="checkbox" id="Ms" className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]" checked={chosenTitle === "Ms"} onChange={() => setChosenTitle("Ms")} />
+                  <input type="checkbox" id="Ms" className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]" checked={chosenTitle === "ms"} onChange={() => setChosenTitle("ms")} />
                 </div>
                 <div>
                   <label
@@ -546,7 +546,7 @@ const WidgetPage = () => {
                   <div>
                     <h3 className="text-sm font-medium font-[600] dark:text-greentheme text-greentheme">Name</h3>
                     <p className="text-base">
-                      {userInformation.firstname} {userInformation.lastname}
+                      {chosenTitle? chosenTitle+'. ':''}{userInformation.firstname} {userInformation.lastname}
                     </p>
                   </div>
                   <div>
