@@ -68,17 +68,22 @@ export default function SupportPage() {
         <div className="mt-12 flex flex-col items-center justify-center space-y-4 animate-fadeIn">
           <div className="bg-whitetheme dark:bg-bgdarktheme p-6 rounded-lg shadow-sm border border-softgreytheme dark:border-darkthemeitems w-full max-w-md">
             <p className="text-center font-medium mb-4 text-blacktheme dark:text-textdarktheme">Contact us at:</p>
-            <div className="relative group">
-              <button
-                className="w-full flex items-center justify-center gap-2 py-6 text-lg border border-softgreytheme text-greentheme rounded-md hover:bg-softgreentheme dark:border-darkthemeitems dark:hover:bg-darkthemeitems transition-colors"
-                onClick={copyEmailToClipboard}
-              >
-                <Mail size={20} className=" mr-2 text-greentheme dark:text-greentheme" />
-                contact@tabla.ma
-                <Copy size={18} className="ml-2 opacity-70" />
-              </button>
-              <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-blacktheme dark:bg-darkthemeitems text-whitetheme px-3 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                Click to copy email address
+              <div className="flex items-center justify-between gap-3">
+
+              <a href="mailto:contact@tabla.ma" className="btn-secondary flex gap-3 w-full items-center justify-center h-[50px]">
+                  <Mail size={20} />
+                  contact@tabla.ma
+              </a>
+              <div className="relative group h-[50px] flex items-center justify-center">
+                <button
+                  className="btn h-[50px] w-[50px] "
+                  onClick={copyEmailToClipboard}
+                >
+                  <Copy size={18} className="opacity-70" />
+                </button>
+                <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-blacktheme dark:bg-darkthemeitems text-whitetheme px-3 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none w-max max-w-[200px] text-center">
+                  Click to copy email address
+                </div>
               </div>
             </div>
           </div>
