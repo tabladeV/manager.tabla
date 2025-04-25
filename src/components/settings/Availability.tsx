@@ -302,7 +302,7 @@ const Availability = () => {
 
       <div className="space-y-6">
         {data.sort((a, b) => (a.id > b.id ? 1 : -1)).map((day, dayIndex) => (
-          <div key={day.day} className="flex flex-col sm:flex-row">
+          <div key={day.day} className="flex flex-col  sm:flex-row ">
             <div className={`flex items-center gap-2 w-full sm:w-20 mb-2 sm:mb-0 ${i18next.language === 'ar' && 'mt-2'}`}>
               <CanAccess
                 resource='availabilityday'
@@ -316,7 +316,7 @@ const Availability = () => {
                   className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]"
                 />
               </CanAccess>
-              <span className="font-medium">
+              <span className="font-medium ">
                 {day.day === 'SUN'
                   ? t('settingsPage.availability.days.sunday')
                   : day.day === 'MON'

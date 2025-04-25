@@ -55,7 +55,7 @@ const BaseBtn: React.FC<ButtonProps> = ({
                 <LoaderCircle className="animate-spin absolute inset-0 m-auto" size={20} />
         </span>
       )}
-      <div className={`${loading?'invisible':''}`}>{children}</div>
+      <div className={`${loading?'invisible':' flex gap-2 items-center'}`}>{children}</div>
     </button>
   );
 };

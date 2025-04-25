@@ -35,6 +35,7 @@ import { useDateContext } from '../../context/DateContext';
 import DraggableItemSkeleton from '../../components/places/DraggableItemSkeleton';
 import DraggableItem from '../../components/places/DraggableItem';
 import ResevrationCard from '../../components/places/ResevrationCard';
+import WidgetReservationProcess from '../../components/reservation/WidgetReservationProcess';
 
 // Types and Interfaces
 export interface ReceivedTables {
@@ -1508,10 +1509,15 @@ const ReservationsPage: React.FC = () => {
 
       {/* Reservation Process Modal */}
       {showProcess && (
-        <ReservationProcess 
-          onClick={() => {setShowProcess(false)}} 
-          getDateTime={(data) => {setReservationProgressData(data)}}
-        />
+        <div className="fixed inset-0 bg-black/50 z-[300] flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#222222] rounded-lg max-w-2xl w-full max-h-[90vh] overflow-auto">
+            <WidgetReservationProcess
+              onClick={() => setShowProcess(false)}
+              resData={reservationProgressData}
+              getDateTime={(data: any) => setReservationProgressData(data)}
+            />
+          </div>
+        </div>
       )}
 
       {/* Add Reservation Modal */}

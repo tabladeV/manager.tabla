@@ -1,6 +1,10 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 export default function FAQPage() {
+
+    useEffect(() => {
+        document.title = "FAQ Page"
+    }, [])
 
     const [faqs, setFaqs] = useState([
         {

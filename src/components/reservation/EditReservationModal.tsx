@@ -235,7 +235,7 @@ const EditReservationModal = ({
           <h1 className="text-2xl font-[600] mb-4">
             {t('reservations.edit.title')} by <span className={`font-[800] `}>{selectedClient.full_name} </span>
             <span className={`text-sm font-[400] ${isDarkMode ? 'text-[#e1e1e1]' : 'text-subblack'}`}>
-              {`(Reservation id: ${selectedClient.id})`}
+              {`(Reservation id: ${selectedClient.seq_id})`}
             </span>
           </h1>
 

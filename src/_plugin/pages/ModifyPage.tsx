@@ -3,7 +3,7 @@
 import type React from "react"
 import { useEffect, useMemo, useState } from "react"
 import Logo from "../../components/header/Logo"
-import { ArrowLeft, Expand, Send } from "lucide-react"
+import { ArrowLeft, Edit, Edit2, Expand, MessageCircle, MessageCircleOff, Send, SendHorizonalIcon, X, XCircle } from "lucide-react"
 import { BaseKey, type BaseRecord, useCreate, useCustom, useCustomMutation, useOne } from "@refinedev/core"
 import { useLocation, useParams, useSearchParams } from "react-router-dom"
 import { format } from "date-fns"
@@ -46,12 +46,12 @@ const Modify = () => {
           <div className="flex items-center gap-4">
             <div className="space-y-1">
               <div
-                className={`h-[2.4em] w-[10em] lt-sm:w-[20vw] rounded-md ${isDarkMode ? "bg-bgdarktheme" : "bg-softgreytheme"} animate-pulse`}
+                className={`h-[2.4em] w-[10em] lt-sm:w-[20vw] rounded-md dark:bg-bgdarktheme bg-softgreytheme animate-pulse`}
               ></div>
             </div>
             <div className="space-y-1">
               <div
-                className={`h-[2.4em] w-[25em] lt-sm:w-[60vw] rounded-md ${isDarkMode ? "bg-bgdarktheme" : "bg-softgreytheme"} animate-pulse`}
+                className={`h-[2.4em] w-[25em] lt-sm:w-[60vw] rounded-md dark:bg-bgdarktheme bg-softgreytheme  animate-pulse`}
               ></div>
             </div>
           </div>
@@ -430,15 +430,15 @@ const Modify = () => {
                         className={`btn-secondary w-full py-3 rounded-lg transition-all hover:shadow-md flex items-center justify-center gap-2`}
                         onClick={() => setSearchParams("tab=modify")}
                       >
-                        <Expand size={18} /> Modify
+                        <Edit size={18} /> Modify
                       </button>
                       <BaseBtn
                         variant="secondary"
-                        className="w-full bg-softredtheme hover:bg-redtheme text-redtheme hover:text-white py-3 rounded-lg transition-all hover:shadow-md flex items-center justify-center gap-2"
+                        className="w-full  bg-softredtheme hover:bg-redtheme text-redtheme hover:text-white py-3 rounded-lg transition-all hover:shadow-md flex items-center justify-center gap-2"
                         loading={cancelLoading}
                         onClick={handleCancel}
                       >
-                        Cancel
+                        <XCircle size={18}/> Cancel
                       </BaseBtn>
                     </div>
                     <div className="mt-3">
@@ -448,7 +448,7 @@ const Modify = () => {
                           setSearchParams("tab=contact")
                         }}
                       >
-                        <Send size={18} /> Send a message
+                        {messageSent?<MessageCircleOff size={18}/> :<MessageCircle size={18} />} Send a message {messageSent? <span className="text-xs font-light">{'(you already sent a message)'}</span>:''}
                       </button>
                     </div>
                   </div>

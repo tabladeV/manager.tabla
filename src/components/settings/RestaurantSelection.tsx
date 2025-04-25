@@ -17,6 +17,11 @@ interface RestaurantType {
 interface IdentityType {is_manager: boolean, permissions: string[]}
 
 const RestaurantSelection: React.FC<{showLogo?: boolean}> = ({showLogo=true}) => {
+  
+  useEffect(() => {
+    document.title = "Restaurant Selection";
+  }, []);
+
   const navigate = useNavigate();
   const [hoveredId, setHoveredId] = useState<BaseKey | null>(null);
   const [restaurants, setRestaurents] = useState<RestaurantType[]>([]);
