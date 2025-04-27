@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { BaseKey, CanAccess, useCreate, useUpdate } from '@refinedev/core';
-import { CalendarCheck, EllipsisVertical, SquarePen, Users } from 'lucide-react';
+import { CalendarCheck, EllipsisVertical, Mail, Phone, SquarePen, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import DraggableItemSkeleton from './DraggableItemSkeleton';
 import { ReservationStatus } from '../common/types/Reservation';
@@ -20,6 +20,8 @@ interface ReservationCardProps {
     itemData: {
         id: BaseKey;
         full_name: string;
+        email: string;
+        phone: string;
         time: string;
         date: string;
         status: ReservationStatus;
@@ -161,6 +163,17 @@ const ResevrationCard = (props: ReservationCardProps) => {
                                             {itemData.number_of_guests} {t('placeManagement.reservations.guests')}
                                         </p>
                                     </div>
+                                    {(itemData.email || itemData.phone) && <div className="flex flex-col mt-1 gap-x-4 gap-y-1 text-sm lt-md:flex-col">
+                                        {itemData.email &&  <div className="flex items-center gap-1 text-gray-500">
+                                            <Mail size={14} className={'dark:text-gray-400 text-gray-500'} />
+                                            <span>{itemData.email}</span>
+                                        </div>}
+
+                                        {itemData.phone &&  <div className="flex items-center gap-1 text-gray-500">
+                                            <Phone size={14} className={'dark:text-gray-400 text-gray-500'} />
+                                            <span>{itemData.phone || 'N/A'}</span>
+                                        </div>}
+                                    </div>}
                                     {itemData.occasion &&
                                         <div className={`flex gap-1 items-center py-1 px-2 rounded-xl ${itemData?.occasion?.color ? 'text-[' + getTextColor(itemData?.occasion?.color || '#e5e7eb') + ']' : ''} ${itemData.occasion?.color ? '' : ''}`} style={{
                                             backgroundColor: itemData.occasion?.color || 'transparent',
