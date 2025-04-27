@@ -256,7 +256,7 @@
         "title": "Grid",
         "buttons": {
             "addReservation": "Add Reservation",
-            "navigate": "Navigate to Agenda",
+            "navigate": "View Month Calendar ",
             "addNewClient": "Add new client",
             "selectAClient": "Select a client",
             "newClient": "Affect a reservation to a new client",
@@ -265,7 +265,9 @@
         "meals": {
             "breakfast": "Breakfast",
             "lunch": "Lunch",
-            "dinner": "Dinner"
+            "dinner": "Dinner",
+            "available" : "Available",
+            "unavailable" : "Unavailable"
         },
         "people": "People",
         "placeHolders":{
@@ -409,10 +411,11 @@
         "chooseSettingPrompt": "Choose a setting to modify",
         "menuItems": {
             "general": "General",
-            "availability": "Availability",
+            "availability": "Online Availability",
             "tags": "Tags",
             "reviewWidget": "Review Widget",
             "menu": "Menu",
+            "workingHours": "Working Hours",
             "photos": "Photos",
             "messaging": "Messaging",
             "features": "Features",
@@ -565,7 +568,7 @@
             }
         },
         "availability": {
-            "title": "Availability",
+            "title": "Online Availability",
             "manageWeek": "Manage your week",
             "days": {
                 "monday": "MON",
@@ -587,8 +590,29 @@
             "applyToWeek": "Apply to weekly",
             "placeLimitLabel": "Place limit Online"
         },
+        "workingHours": {
+            "title": "Working Hours",
+            "days": {
+                "monday": "MON",
+                "tuesday": "TUE",
+                "wednesday": "WED",
+                "thursday": "THU",
+                "friday": "FRI",
+                "saturday": "SAT",
+                "sunday": "SUN"
+            },
+            "unavailable": "Unavailable",
+            "type":"Type",
+            "from": "From",
+            "cancel":"Cancel",
+            "save":"Save",
+            "puffer": "Reservation Duration",
+            "addAnotherSlot": "Add another slot",
+            "to": "To"
+        },
         "tags":{
             "title": "Tags",
+            "deleteTag": "Are you sure you want to delete this tag?",
             "placeHolder":"Ex : Vegetarian, Vegan, Gluten Free",
             "label":"Add a tag",
             "buttons": {

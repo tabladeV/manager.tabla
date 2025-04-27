@@ -64,6 +64,8 @@ import RestaurantSelection from "./components/settings/RestaurantSelection";
 import BlankLayout from "./_root/BlankLayout";
 import FAQPage from "./_root/pages/FAQPage";
 import TermsAndConditions from "./_root/pages/TermsAndConditions";
+import CalendarGrid from "./_root/pages/CalendarGrid";
+import WorkingHours from "./components/settings/WorkingHours";
 const API_HOST = import.meta.env.VITE_API_URL || "https://api.dev.tabla.ma";
 function App() {
 
@@ -226,6 +228,14 @@ function App() {
                               <AgendaPage />
                             </CanAccess>
                           } />
+                          <Route path="/agenda/calendar" element={
+                            <CanAccess resource="reservation"
+                              action="view"
+                              fallback="You don't have access to this page"
+                            >
+                              <CalendarGrid />
+                            </CanAccess>
+                          } />
                           <Route path="/agenda/grid" element={
                             <CanAccess resource="reservation"
                               action="view"
@@ -330,6 +340,15 @@ function App() {
                                 fallback="You don't have access to Tags"
                               >
                                 <Availability />
+                              </CanAccess>
+                            } />
+                            <Route path="/settings/workinghours" element={
+                              <CanAccess
+                                resource="availabilityday"
+                                action="view"
+                                fallback="You don't have access to working hours"
+                              >
+                                <WorkingHours />
                               </CanAccess>
                             } />
                             <Route path="/settings/tags" element={
