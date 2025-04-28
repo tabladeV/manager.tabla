@@ -3,7 +3,7 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import { CanAccess } from "@refinedev/core";
 import { useEffect, useState } from "react";
 import { useDarkContext } from "../../context/DarkContext";
-import { Book, BookImageIcon, CalendarClock, ChevronLeft, ChevronRight, Clock, Computer, DollarSign, ExternalLink, Laptop, PartyPopper, PcCase, Settings, Star, Tag, UserCheck, Users } from "lucide-react";
+import { Book, BookImageIcon, CalendarClock, ChevronLeft, ChevronRight, Clock, Computer, DollarSign, ExternalLink, Laptop, PartyPopper, PcCase, Settings, Star, Tag, TimerReset, UserCheck, Users } from "lucide-react";
 
 const SettingsPage = () => {
   const { darkMode } = useDarkContext();
@@ -37,7 +37,7 @@ const SettingsPage = () => {
       </div>
       <div className="h-[calc(100vh-160px)]  no-scrollbar flex gap-4">
         <div
-          className={`h-[calc(100vh-160px)] overflow-y-auto no-scrollbar flex flex-col transition-all duration-500 ease-in-out ${
+          className={`h-[calc(100vh-160px)] overflow-y-auto overflow-x-hidden no-scrollbar flex flex-col transition-all duration-500 ease-in-out ${
             expanded ? "w-64 sm:w-1/4" : "w-16"
           } rounded-[10px] px-6 py-4 gap-4 lt-sm:w-full lt-sm:h-fit ${
             localStorage.getItem("preferredLanguage") === "ar" ? "text-right" : ""
@@ -61,27 +61,27 @@ const SettingsPage = () => {
                 {/* Top line */}
                 <span
                   className={`
-                    absolute top-0 left-0 w-4 h-[0.1em] bg-orangetheme 
+                    absolute top-0 left-0 rounded w-4 h-[0.17em] bg-orangetheme 
                     transform transition-all duration-500 ease-in-out
-                    ${expanded ? "rotate-45 translate-y-2 w-5 bg-redtheme" : ""}
+                    ${expanded ? "rotate-45 translate-y-[.78em] w-[.8em] -translate-x-[1.8px] bottom-0 bg-redtheme" : ""}
                   `}
                 ></span>
                 
                 {/* Middle line */}
                 <span
                   className={`
-                    absolute top-2 left-0 w-5 h-[0.1em] bg-orangetheme 
+                    absolute top-2 left-0 w-5 rounded h-[0.17em] bg-orangetheme 
                     transition-all duration-500 ease-in-out
-                    ${expanded ? "opacity-0 bg-redtheme" : "opacity-100 w-5"}
+                    ${expanded ? " bg-redtheme" : "opacity-100 w-3"}
                   `}
                 ></span>
                 
                 {/* Bottom line */}
                 <span
                   className={`
-                    absolute top-4 left-0 w-3 h-[0.1em] bg-orangetheme 
+                    absolute top-4 left-0 w-3 rounded h-[0.17em] bg-orangetheme 
                     transform transition-all duration-500 ease-in-out
-                    ${expanded ? "-rotate-45 -translate-y-2 w-5 bg-redtheme" : ""}
+                    ${expanded ? "-rotate-45 -translate-y-3 w-[.8em] -translate-x-[2px] bg-redtheme" : ""}
                   `}
                 ></span>
               </div>
@@ -126,27 +126,11 @@ const SettingsPage = () => {
                 : normalMenuClass
               }`}
             >
-              <Clock size={22}/>
+              <TimerReset size={22}/>
               {expanded && t("settingsPage.menuItems.workingHours")}
             </Link>
           </CanAccess>
 
-          {/* General - no permission yet, so left open*/}
-          <CanAccess
-            resource="customuser"
-            action="view"
-          >
-            <Link
-              to="/settings/users"
-              className={` flex items-center gap-3 ${pathname === "/settings/users"
-                ? navigatedMenuClass
-                : normalMenuClass
-                }`}
-            >
-              <Users size={22}/>
-              {expanded && t("settingsPage.menuItems.users")}
-            </Link>
-          </CanAccess>
 
           {/* Widget - not restricted */}
           <CanAccess
@@ -203,6 +187,24 @@ const SettingsPage = () => {
               {expanded &&  t("settingsPage.menuItems.roles")}
             </Link>
           </CanAccess>
+
+          {/* General - no permission yet, so left open*/}
+          <CanAccess
+            resource="customuser"
+            action="view"
+          >
+            <Link
+              to="/settings/users"
+              className={` flex items-center gap-3 ${pathname === "/settings/users"
+                ? navigatedMenuClass
+                : normalMenuClass
+                }`}
+            >
+              <Users size={22}/>
+              {expanded && t("settingsPage.menuItems.users")}
+            </Link>
+          </CanAccess>
+
           <CanAccess 
             resource="tags"
             action="view"

@@ -10,12 +10,14 @@ import i18n from 'i18next';
 import { useDarkContext } from "../context/DarkContext";
 import { Fullscreen } from "lucide-react";
 
-import confirm from '../assets/confirm-icon.png';
-import cancel from '../assets/Cancel-icon.png';
-import pending from '../assets/pending-icon.png';
-import confirmDark from '../assets/confirm-icon-dark.png';
-import cancelDark from '../assets/Cancel-icon-dark.png';
-import pendingDark from '../assets/pending-icon-dark.png';
+import confirm from '../assets/confirmedNew.png';
+import cancel from '../assets/canceledNew.png';
+import pending from '../assets/pendingNew.png';
+import seated from '../assets/seatedNew.png';
+import seatedDark from '../assets/seatedNewDark.png';
+import confirmDark from '../assets/confirmedNewDark.png';
+import cancelDark from '../assets/canceledNewDARK.png';
+import pendingDark from '../assets/pendingNewDark.png';
 
 import { Helmet } from "react-helmet-async";
 import { useList } from "@refinedev/core";
@@ -40,6 +42,11 @@ const RootLayout = () => {
         value: (format(chosenDay, 'yyyy-MM-dd')),
       },
     ],
+    queryOptions:{
+      onSuccess: (data) => {
+        console.log('Data fetched successfully:', data);
+      }
+    }
   });
 
   interface ReservationAction {
@@ -60,6 +67,14 @@ const RootLayout = () => {
       action: "cancelled",
       count: 0,
     },
+    {
+      action: "fulfilled",
+      count: 0
+    },
+    {
+      action: "seated",
+      count: 0
+    }
   ]);
 
   useEffect(() => {
@@ -126,7 +141,48 @@ const RootLayout = () => {
       <div className={`transition-all duration-300 ease-in-out lt-sm:w-full ${stateOfSideBar ? 'gt-sm:w-[calc(100%-300px)]' : 'gt-sm:w-[calc(100%-100px)]'}`}>
         <header className='h-[80px] items-center flex justify-between gap-1 px-6 lt-sm:px-2'>
           <div className="sm:hidden"><Logo /></div>
-          <button className={`lt-sm:hidden z-10 p-2 rounded-md hover:bg-softgreytheme dark:hover:bg-subblack`} onClick={() => { setStateOfSideBar(!stateOfSideBar) }}>
+          <button
+              className={`
+                lt-sm:hidden flex items-center justify-center
+                transition-all duration-500 ease-in-out
+                group
+              `}
+              onClick={() => {
+                setStateOfSideBar(!stateOfSideBar)
+              }}
+              aria-label={stateOfSideBar ? "Collapse sidebar" : "Expand sidebar"}
+            >
+              {/* Animated hamburger/arrow button */}
+              <div className="relative w-5 h-5">
+                {/* Top line */}
+                <span
+                  className={`
+                    absolute top-0 left-0 rounded w-4 h-[0.17em] bg-greentheme 
+                    transform transition-all duration-500 ease-in-out
+                    ${stateOfSideBar ? "rotate-45 translate-y-[.78em] w-[.8em] -translate-x-[1.8px] bottom-0 bg-redtheme" : ""}
+                  `}
+                ></span>
+                
+                {/* Middle line */}
+                <span
+                  className={`
+                    absolute top-2 left-0 w-5 rounded h-[0.17em] bg-greentheme 
+                    transition-all duration-500 ease-in-out
+                    ${stateOfSideBar ? " bg-redtheme" : "opacity-100 w-3"}
+                  `}
+                ></span>
+                
+                {/* Bottom line */}
+                <span
+                  className={`
+                    absolute top-4 left-0 w-3 rounded h-[0.17em] bg-greentheme 
+                    transform transition-all duration-500 ease-in-out
+                    ${stateOfSideBar ? "-rotate-45 -translate-y-3 w-[.8em] -translate-x-[2px] bg-redtheme" : ""}
+                  `}
+                ></span>
+              </div>
+            </button>
+          {/* <button className={`lt-sm:hidden z-10 p-2 rounded-md hover:bg-softgreytheme dark:hover:bg-subblack`} onClick={() => { setStateOfSideBar(!stateOfSideBar) }}>
             {stateOfSideBar ?
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={strokeColor}>
                 <path d="M12 12L19 19M12 12L5 5M12 12L5 19M12 12L19 5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -136,7 +192,7 @@ const RootLayout = () => {
                 <path d="M3 6H21M3 12H21M3 18H21" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             }
-          </button>
+          </button> */}
           <div className="flex gap-1 gt-md:gap-2 lt-sm:hidden">
             <div className="flex items-center gap-2 btn border-softbluetheme cursor-default hover:border-bluetheme text-bluetheme">
               <img src={pending} alt="pending" className="size-4 lt-lg:size-3 block dark:hidden" />
@@ -152,6 +208,11 @@ const RootLayout = () => {
               <img src={cancel} alt="cancel" className="size-4 lt-lg:size-3 block dark:hidden" />
               <img src={cancelDark} alt="cancel" className="size-4 lt-lg:size-3 hidden dark:block" />
               <span className="text-[1.2rem] lt-lg:text-[1rem] font-[600]">{actions[2].count}</span>
+            </div>
+            <div className="flex items-center gap-2 btn border-softyellowtheme cursor-default hover:border-yellowtheme text-yellowtheme">
+              <img src={seated} alt="cancel" className="size-4 lt-lg:size-3 block dark:hidden" />
+              <img src={seatedDark} alt="cancel" className="size-4 lt-lg:size-3 hidden dark:block" />
+              <span className="text-[1.2rem] lt-lg:text-[1rem] font-[600]">{actions[4].count}</span>
             </div>
           </div>
 

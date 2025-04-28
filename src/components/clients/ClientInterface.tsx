@@ -317,6 +317,30 @@ const ClientInterface = () => {
     // }
   }
 
+  const [allTags, setAllTags] = useState([
+    { id: 1, name: 'VIP' },
+    { id: 2, name: 'Regular' },
+    { id: 3, name: 'New' },
+    { id: 4, name: 'Loyal' },
+    { id: 5, name: 'Frequent' },
+    { id: 6, name: 'Occasional' },
+    { id: 7, name: 'Inactive' },
+    { id: 8, name: 'VIP+1' },
+    { id: 9, name: 'VIP+2' },
+    { id: 10, name: 'VIP+3' },
+    { id: 11, name: 'VIP+4' },
+    { id: 12, name: 'VIP+5' },
+
+  ]);
+
+  const [tags, setTags] = useState([
+    { id: 1, name: 'VIP' },
+    { id: 2, name: 'Regular' },
+    { id: 4, name: 'Loyal' },
+    { id: 5, name: 'Frequent' },
+  ]);
+
+
 
 
   const { data: customerChange } = useCan({
@@ -387,6 +411,13 @@ const ClientInterface = () => {
               <h1>{client.title? client.title.charAt(0).toUpperCase() + client.title.slice(1)+'.':''} {client.full_name}</h1>
               <h4 className={` text-[18px] font-[500] ${localStorage.getItem('darkMode')==='true'?'text-softwhitetheme':'text-subblack'}`}>{client.email}</h4>
               <h4 className={` text-[18px] font-[500] ${localStorage.getItem('darkMode')==='true'?'text-softwhitetheme':'text-subblack'}`}>{client.phone}</h4>
+              <div className="flex gap-2 mt-[0em] mb-1">
+                {tags.map((tag) => (
+                  <span key={tag.id} className={`text-[12px] font-[500] px-2 py-1 rounded-md mt-2 bg-softgreentheme text-greentheme`}>
+                    {tag.name}
+                  </span>
+                ))}
+              </div>
               <CanAccess resource="customer" action="delete">
                 <button onClick={()=>{setShowConfirmPopup(true);setMessage('Are you sure you want to delete this client?');setAction('delete')}} className='btn-primary mt-2 bg-softredtheme text-redtheme hover:bg-redtheme hover:text-white flex items-center gap-3'><Trash size={14}/> Delete client</button>
               </CanAccess>
@@ -493,6 +524,25 @@ const ClientInterface = () => {
                           <tr className="border border-gray-300">
                             <td className="font-medium p-2">{t('clients.profileSection.fields.guestNotes')}</td>
                             {renderCell('internal_note', 3)}
+                          </tr>
+                          <tr className="border border-gray-300">
+                            <td className="font-medium p-2">{t('clients.profileSection.fields.tags')}</td>
+                            <td className="p-2 ">
+                              <span className='flex flex-wrap gap-3 w-full px-3 py-2 rounded cursor-pointer  transition-colors dark:bg-bgdarktheme2  bg-gray-100 items-start '>
+                                {allTags.map((tag) => (
+                                    <span
+                                    key={tag.id}
+                                    className={`text-[12px] font-[500] px-2 py-1 rounded-md mt-2 ${
+                                      tags.some((t) => t.id === tag.id)
+                                      ? 'bg-greentheme text-white'
+                                      : 'bg-softgreentheme text-greentheme'
+                                    }`}
+                                    >
+                                    {tag.name}
+                                    </span>
+                                ))}
+                              </span>
+                            </td>
                           </tr>
                         </tbody>
                       </table>

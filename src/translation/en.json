@@ -314,6 +314,7 @@
                 "firstName": "First Name",
                 "lastName": "Last Name",
                 "email": "Email",
+                "tags": "Tags",
                 "title": "Title",
                 "phoneNumber": "Phone number",
                 "alternatePhone": "Alternate phone",
@@ -601,6 +602,8 @@
                 "saturday": "SAT",
                 "sunday": "SUN"
             },
+            "manageWeek": "Manage the whole week",
+            "applyToWeek": "Apply to weekly",
             "unavailable": "Unavailable",
             "type":"Type",
             "from": "From",

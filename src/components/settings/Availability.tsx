@@ -302,7 +302,7 @@ const Availability = () => {
 
       <div className="space-y-6">
         {data.sort((a, b) => (a.id > b.id ? 1 : -1)).map((day, dayIndex) => (
-          <div key={day.day} className="flex flex-col  sm:flex-row ">
+          <div key={day.day} className="flex flex-col border-b-2 dark:border-darkthemeitems sm:flex-row ">
             <div className={`flex items-center gap-2 w-full sm:w-20 mb-2 sm:mb-0 ${i18next.language === 'ar' && 'mt-2'}`}>
               <CanAccess
                 resource='availabilityday'
@@ -336,7 +336,7 @@ const Availability = () => {
             <div className="flex-1">
               {!day.closed_day ? (
                 day.availability_hours.map((slot, slotIndex) => (
-                  <div key={slotIndex} className="flex flex-col sm:flex-row sm:items-center gap-2 mb-4 sm:mb-2 border-b pb-3 sm:pb-2 sm:border-0">
+                  <div key={slotIndex} className="flex flex-col  sm:flex-row sm:items-center gap-2 mb-4 sm:mb-2 border-b pb-3 sm:pb-2 sm:border-0">
                     <div className="grid grid-cols-2 sm:flex sm:flex-row gap-2 w-full sm:w-auto mb-2 sm:mb-0">
                       <CanAccess
                         resource='availabilityhour'
@@ -360,7 +360,7 @@ const Availability = () => {
                             type="text"
                             value={slot.name}
                             onChange={(e) => updateSlot(dayIndex, slotIndex, 'name', e.target.value)}
-                            className={`inputs-unique w-full sm:w-24 dark:bg-darkthemeitems bg-white`}
+                            className={`inputs-unique w-full sm:w-32 lg:w-72 dark:bg-darkthemeitems bg-white`}
                           />
                         </div>
                       </CanAccess>
