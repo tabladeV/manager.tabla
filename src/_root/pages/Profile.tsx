@@ -97,7 +97,7 @@ const Profile = () => {
             <input type={eyeOldPswrd ? 'text' : 'password'}  ref={oldPswrdRef} placeholder="Old password"  onChange={handleChange} className='w-full focus:border-0 focus:ring-0 focus:outline-none bg-transparent'/>
             <button onClick={() => setEyeOldPswrd(!eyeOldPswrd)} className={ ` transition-colors ${localStorage.getItem('darkMode')==='true'?'text-white':'text-[#00000080] hover:text-[#000000]'}`}>
               {eyeOldPswrd ? <EyeOff size={20}/> : <Eye size={20}/>} 
-          </button>
+            </button>
           </div>  
           <div className={`inputs flex justify-between ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':''}`}>
             <input type={eyeNewPswrd ? 'text' : 'password'}  ref={newPswrdRef} placeholder="New password"  onChange={handleChange} className='w-full focus:border-0 focus:ring-0 focus:outline-none bg-transparent'/>
