@@ -179,7 +179,7 @@ export default function WidgetConfig() {
   }, [showToast])
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(`${API_HOST}/make/reservation/${widgetInfo?.id}`);
+    navigator.clipboard.writeText(currentUrl.includes('dev')?`https://${subdomain}.dev.tabla.ma/make/reservation`: currentUrl.includes('localhost') ? `http://italiana.localhost:5173/make/reservation`: `https://${subdomain}.tabla.ma/make/reservation`);
     setShowToast(true)
   };
 
