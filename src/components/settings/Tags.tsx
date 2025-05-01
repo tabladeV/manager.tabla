@@ -119,10 +119,9 @@ const Tags = () => {
       setTags(tags.map((tag) => (tag.id === editTagId ? { ...tag, name: inputValue.trim() } : tag)))
       updateTag({
         resource: "api/v1/bo/tags",
-        id: editTagId,
+        id: editTagId+'/',
         values: {
           name: inputValue.trim(),
-          grouping_field: 'default_group', // add this
         },
       })
       setEditTagId(null)
@@ -169,7 +168,7 @@ const Tags = () => {
       setTags(tags.filter((tag) => tag.id !== tagIndex))
       deleteTag({
         resource: "api/v1/bo/tags",
-        id: tagIndex,
+        id: tagIndex+'/',
         metaData: {
           action: "delete",
         }

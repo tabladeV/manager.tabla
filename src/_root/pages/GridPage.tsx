@@ -11,6 +11,7 @@ import ReservationForGrid from "../../components/reservation/ReservationForGrid"
 import { useDarkContext } from "../../context/DarkContext"
 import { Link } from "react-router-dom"
 import { ChevronRight } from "lucide-react"
+import { DevOnly } from "../../components/DevOnly"
 
 const halfHours = ['00', '30']
 
@@ -252,7 +253,9 @@ const GridPage = () => {
       }
       <div className="flex mb-4 justify-between items-center">
         <h1 className="">{t('grid.title')}</h1>
-        <Link to="/agenda/calendar" className="flex items-center gap-2  text-greentheme hover:text-greentheme dark:hover:text-greentheme transition-colors">{t('grid.buttons.navigate')}  <ChevronRight  size={18}/></Link>
+        <DevOnly>
+          <Link to="/agenda/calendar" className="flex items-center gap-2  text-greentheme hover:text-greentheme dark:hover:text-greentheme transition-colors">{t('grid.buttons.navigate')}  <ChevronRight  size={18}/></Link>
+        </DevOnly>
       </div>
       <div
         className="overflow-x-scroll w-[90vw] border-softgreytheme dark:border-darkthemeitems ltr mx-auto cursor-grab no-scrollbar bg-white dark:bg-bgdarktheme text-blacktheme dark:text-textdarktheme"

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Upload, Check, X, Download, Navigation, ScreenShareIcon } from 'lucide-react';
+import { Upload, Check, X, Download, Navigation, ScreenShareIcon, Copy } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import 'draft-js/dist/Draft.css';
@@ -167,6 +167,25 @@ export default function WidgetConfig() {
     window.open(linkSource, '_blank');
   };
 
+  const [showToast, setShowToast] = useState(false)
+
+  useEffect(() => {
+    if (showToast) {
+      const timer = setTimeout(() => {
+        setShowToast(false)
+      }, 2000)
+      return () => clearTimeout(timer)
+    }
+  }, [showToast])
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(currentUrl.includes('dev')?`https://${subdomain}.dev.tabla.ma/make/reservation`: currentUrl.includes('localhost') ? `http://italiana.localhost:5173/make/reservation`: `https://${subdomain}.tabla.ma/make/reservation`);
+    setShowToast(true)
+  };
+
+
+
+
   
 
   const handleSearchTabChange = (tab: keyof typeof searchTabs) => {
@@ -238,11 +257,29 @@ export default function WidgetConfig() {
 
   if (isLoading) return <div className="text-center">Loading...</div>;
 
+  
+
   return (
     <div className={`w-full mx-auto p-6 rounded-[10px] ${darkModeClass}`}>
-      <h1 className="text-2xl font-bold text-center mb-6">
-        {t('settingsPage.widget.title')} for <span className='italic font-[600]'>{widgetInfo?.restaurant}</span>
-      </h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-center mb-6">
+          {t('settingsPage.widget.title')} for <span className='italic font-[600]'>{widgetInfo?.restaurant}</span>
+        </h1>
+        <div className="relative group h-[50px] flex items-center justify-center">
+          <button
+            className="btn  flex items-center justify-center gap-2"
+            onClick={handleCopy}
+          >
+            <span className="">
+              Copy Reservation Widget URL
+            </span>
+            <Copy size={18} className="opacity-70" />
+          </button>
+          <div className="absolute -bottom-10  transform -translate-x-1/2 bg-blacktheme dark:bg-darkthemeitems text-whitetheme px-3 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none w-max max-w-[200px] text-center">
+            Click to copy url address for reservation widget
+          </div>
+        </div>
+      </div>
 
       <div className="mb-6 flex gap-5 justify-between items-start">
         <div className='flex w-1/2 flex-col gap-2'>
@@ -424,6 +461,20 @@ export default function WidgetConfig() {
           {t('settingsPage.widget.buttons.preview')} Modification
         </Link>
       </div>
+      {/* Custom Toast Notification */}
+      {showToast && (
+        <div className="fixed bottom-4 right-4 bg-whitetheme dark:bg-bgdarktheme2 border border-softgreytheme dark:border-darkthemeitems shadow-lg rounded-lg p-4 flex items-center gap-3 animate-slideUp z-50">
+          <div className="h-8 w-8 bg-softgreentheme dark:bg-softgreentheme rounded-full flex items-center justify-center">
+            <Check className="h-4 w-4 text-greentheme dark:text-greentheme" />
+          </div>
+          <div>
+            <h3 className="font-medium text-blacktheme dark:text-textdarktheme">Link copied!</h3>
+            <p className="text-subblack dark:text-textdarktheme/80 text-sm">
+             {currentUrl.includes('dev')?`https://${subdomain}.dev.tabla.ma/make/reservation`: currentUrl.includes('localhost') ? `http://italiana.localhost:5173/make/reservation`: `https://${subdomain}.tabla.ma/make/reservation`} copied to clipboard
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

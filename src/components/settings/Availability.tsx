@@ -476,7 +476,7 @@ const Availability = () => {
                   <CanAccess resource='availabilityhour' action='add'>
                     <button
                       onClick={() => addSlot(dayIndex)}
-                      className="flex items-center text-[#88AB61] hover:text-[#6A8A43]"
+                      className="flex items-center mb-3 text-[#88AB61] hover:text-[#6A8A43]"
                     >
                       <Plus size={16} />
                       <span className="ml-1 text-sm">Add slot</span>
@@ -489,7 +489,7 @@ const Availability = () => {
         ))}
 
         <CanAccess resource='availabilityday' action='change'>
-          <div className="flex flex-col sm:flex-row gap-2 mt-6 pt-4 border-t">
+          <div className="flex flex-col sm:flex-row gap-2 mt-6 pt-4">
             <button onClick={handleSaveAvailability} className="btn-primary w-full sm:w-auto">
               {t('settingsPage.availability.save')}
             </button>
