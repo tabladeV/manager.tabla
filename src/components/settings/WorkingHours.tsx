@@ -20,14 +20,14 @@ interface DayData {
   availability_hours: SlotData[];
 }
 
-const Availability = () => {
+const WorkingHours = () => {
   useEffect(() => {
-    document.title = 'Availability | Tabla'
+    document.title = 'Working Hours | Tabla'
   }, [])
 
   const [restaurantId, setRestaurantId] = useState<string>(localStorage.getItem('restaurant_id') || '0');
   const { data: availabilityDays, isLoading, error } = useList({
-    resource: `api/v1/bo/availability/days/`,
+    resource: `api/v1/bo/availability/work-shift-days/`,
   });
 
   const { mutate: updateAvailability } = useCreate({
@@ -189,7 +189,7 @@ const Availability = () => {
     }));
     const availabilitydays = newData;
     updateAvailability({
-      resource: "api/v1/bo/availability/days/update_all/",
+      resource: "api/v1/bo/availability/work-shift-days/update_all/",
       values: {
         availability_days: availabilitydays
       },
@@ -203,7 +203,7 @@ const Availability = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setManageWeekly(false)}></div>
           <div className={`relative rounded-lg p-4 md:p-6 w-full max-w-2xl mx-4 dark:bg-bgdarktheme bg-white`}>
             <div className="flex justify-between mb-4">
-              <h2 className="text-xl font-semibold">{t('settingsPage.availability.manageWeek')}</h2>
+              <h2 className="text-xl font-semibold">{t('settingsPage.workingHours.manageWeek')}</h2>
               <button onClick={() => setManageWeekly(false)} className="text-gray-500 hover:text-gray-700">
                 <X size={20} />
               </button>
@@ -211,17 +211,17 @@ const Availability = () => {
             {weeklySlots.map((slot, index) => (
               <div key={index} className="flex flex-col md:flex-row md:items-center gap-2 mb-4">
                 <div className="flex flex-col w-full md:w-auto">
-                  <label className="text-sm">{t('settingsPage.availability.type')}</label>
+                  <label className="text-sm">{t('settingsPage.workingHours.type')}</label>
                   <input
                     type="text"
                     value={slot.name}
                     onChange={(e) => updateWeeklySlot(index, 'name', e.target.value)}
-                    className={`inputs-unique w-full md:w-32 dark:bg-darkthemeitems bg-white`}
+                    className={`inputs-unique w-full md:w-72 dark:bg-darkthemeitems bg-white`}
                   />
                 </div>
                 <div className="flex items-center gap-2 w-full md:w-auto">
                   <div className="flex flex-col flex-1">
-                    <label className="text-sm">{t('settingsPage.availability.from')}</label>
+                    <label className="text-sm">{t('settingsPage.workingHours.from')}</label>
                     <input
                       type="time"
                       value={slot.start_shift}
@@ -231,7 +231,7 @@ const Availability = () => {
                   </div>
                   <span className="self-end mb-2">-</span>
                   <div className="flex flex-col flex-1">
-                    <label className="text-sm">{t('settingsPage.availability.to')}</label>
+                    <label className="text-sm">{t('settingsPage.workingHours.to')}</label>
                     <input
                       type="time"
                       value={slot.end_shift}
@@ -241,16 +241,16 @@ const Availability = () => {
                   </div>
                 </div>
                 <div className="flex flex-col w-full md:w-auto">
-                  <label className="text-sm">
-                    {t('settingsPage.availability.placeLimitLabel')}
-                  </label>
+                  {/* <label className="text-sm">
+                    {t('settingsPage.workingHours.placeLimitLabel')}
+                  </label> */}
                   <div className="flex items-center gap-2">
-                    <input
+                    {/* <input
                       type="number"
                       value={slot.place_limit}
                       onChange={(e) => updateWeeklySlot(index, 'place_limit', parseInt(e.target.value))}
                       className={`inputs-unique w-20 dark:bg-darkthemeitems bg-white`}
-                    />
+                    /> */}
                     {weeklySlots?.length>1 && <X
                       size={20}
                       className="text-redtheme cursor-pointer"
@@ -265,22 +265,22 @@ const Availability = () => {
               className="hover:underline flex items-center gap-2 mb-4"
             >
               <Plus size={16} />
-              {t('settingsPage.availability.addAnotherSlot')}
+              {t('settingsPage.workingHours.addAnotherSlot')}
             </button>
             <button
               onClick={applyWeeklyChanges}
               className="btn-primary w-full"
             >
-              {t('settingsPage.availability.applyToWeek')}
+              {t('settingsPage.workingHours.applyToWeek')}
             </button>
           </div>
         </div>
       )}
 
       <div className="flex flex-col md:flex-row md:justify-between mb-4 gap-4 items-start md:items-center">
-        <h2 className="text-xl md:text-2xl font-bold">{t('settingsPage.availability.title')}</h2>
-        <div className="flex items-center gap-2">
-          <label className="text-sm whitespace-nowrap">{t('settingsPage.availability.puffer')}</label>
+        <h2 className="text-xl md:text-2xl font-bold">{t('settingsPage.workingHours.title')}</h2>
+        {/* <div className="flex items-center gap-2">
+          <label className="text-sm whitespace-nowrap">{t('settingsPage.workingHours.puffer')}</label>
           <CanAccess resource='availabilityday' action='change' fallback={duration}>
             <input
               type="string"
@@ -289,7 +289,7 @@ const Availability = () => {
               onChange={(e) => setDuration(e.target.value.trim() || '')}
             />
           </CanAccess>
-        </div>
+        </div> */}
       </div>
 
       <CanAccess resource='availabilityday' action='change'>
@@ -318,25 +318,25 @@ const Availability = () => {
               </CanAccess>
               <span className="font-medium ">
                 {day.day === 'SUN'
-                  ? t('settingsPage.availability.days.sunday')
+                  ? t('settingsPage.workingHours.days.sunday')
                   : day.day === 'MON'
-                    ? t('settingsPage.availability.days.monday')
+                    ? t('settingsPage.workingHours.days.monday')
                     : day.day === 'TUE'
-                      ? t('settingsPage.availability.days.tuesday')
+                      ? t('settingsPage.workingHours.days.tuesday')
                       : day.day === 'WED'
-                        ? t('settingsPage.availability.days.wednesday')
+                        ? t('settingsPage.workingHours.days.wednesday')
                         : day.day === 'THU'
-                          ? t('settingsPage.availability.days.thursday')
+                          ? t('settingsPage.workingHours.days.thursday')
                           : day.day === 'FRI'
-                            ? t('settingsPage.availability.days.friday')
-                            : t('settingsPage.availability.days.saturday')}
+                            ? t('settingsPage.workingHours.days.friday')
+                            : t('settingsPage.workingHours.days.saturday')}
               </span>
             </div>
 
             <div className="flex-1">
               {!day.closed_day ? (
                 day.availability_hours.map((slot, slotIndex) => (
-                  <div key={slotIndex} className="flex flex-col  sm:flex-row sm:items-center gap-2 mb-4 sm:mb-2 border-b pb-3 sm:pb-2 sm:border-0">
+                  <div key={slotIndex} className="flex flex-col sm:flex-row sm:items-center gap-2 mb-4 sm:mb-2 border-b pb-3 sm:pb-2 sm:border-0">
                     <div className="grid grid-cols-2 sm:flex sm:flex-row gap-2 w-full sm:w-auto mb-2 sm:mb-0">
                       <CanAccess
                         resource='availabilityhour'
@@ -360,7 +360,7 @@ const Availability = () => {
                             type="text"
                             value={slot.name}
                             onChange={(e) => updateSlot(dayIndex, slotIndex, 'name', e.target.value)}
-                            className={`inputs-unique w-full sm:w-32 lg:w-72 dark:bg-darkthemeitems bg-white`}
+                            className={`inputs-unique w-full sm:w-50 lg:w-72 dark:bg-darkthemeitems bg-white`}
                           />
                         </div>
                       </CanAccess>
@@ -424,9 +424,9 @@ const Availability = () => {
                       </CanAccess>
 
                       <div className="flex flex-col">
-                        <label className="text-xs sm:hidden">{t('settingsPage.availability.placeLimitLabel')}</label>
+                        {/* <label className="text-xs sm:hidden">{t('settingsPage.workingHours.placeLimitLabel')}</label> */}
                         <div className="flex items-center gap-2">
-                          <CanAccess
+                          {/* <CanAccess
                             resource='availabilityhour'
                             action='change'
                             fallback={
@@ -444,7 +444,7 @@ const Availability = () => {
                               onChange={(e) => updateSlot(dayIndex, slotIndex, 'place_limit', parseInt(e.target.value))}
                               className={`inputs-unique w-full sm:w-16 dark:bg-darkthemeitems bg-white`}
                             />
-                          </CanAccess>
+                          </CanAccess> */}
 
                           <CanAccess resource='availabilityhour' action='remove'>
                             <button
@@ -458,16 +458,16 @@ const Availability = () => {
                       </div>
                     </div>
 
-                    <div className="sm:hidden mt-2">
+                    {/* <div className="sm:hidden mt-2">
                       <span className="text-xs text-gray-500">
-                        {t('settingsPage.availability.placeLimitLabel')}
+                        {t('settingsPage.workingHours.placeLimitLabel')}
                       </span>
-                    </div>
+                    </div> */}
                   </div>
                 ))
               ) : (
                 <div className="py-2">
-                  {t('settingsPage.availability.unavailable')}
+                  {t('settingsPage.workingHours.unavailable')}
                 </div>
               )}
 
@@ -491,10 +491,10 @@ const Availability = () => {
         <CanAccess resource='availabilityday' action='change'>
           <div className="flex flex-col sm:flex-row gap-2 mt-6 pt-4 border-t">
             <button onClick={handleSaveAvailability} className="btn-primary w-full sm:w-auto">
-              {t('settingsPage.availability.save')}
+              {t('settingsPage.workingHours.save')}
             </button>
             <button onClick={() => { setData(fetchedData) }} className="btn-secondary w-full sm:w-auto">
-              {t('settingsPage.availability.cancel')}
+              {t('settingsPage.workingHours.cancel')}
             </button>
           </div>
         </CanAccess>
@@ -503,4 +503,4 @@ const Availability = () => {
   );
 };
 
-export default Availability;
+export default WorkingHours;

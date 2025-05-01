@@ -6,6 +6,7 @@ import { BaseKey, BaseRecord, useCreate, useList } from '@refinedev/core';
 import BaseBtn from '../common/BaseBtn';
 import { Occasion, OccasionsType } from '../settings/Occasions';
 import BaseSelect from '../common/BaseSelect';
+import WidgetReservationProcess from './WidgetReservationProcess';
 
 interface Reservation extends BaseRecord {
   id?: BaseKey;
@@ -394,10 +395,15 @@ const ReservationModal = (props: ReservationModalProps) => {
     <div>
       <div className="overlay" onClick={props.onClick}></div>
       {showProcess && (
-        <ReservationProcess
-          onClick={() => setShowProcess(false)}
-          getDateTime={(data: dataTypes) => setData(data)}
-        />
+        <div className="fixed inset-0 bg-black/50 z-[300] flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#222222] rounded-lg max-w-2xl w-full max-h-[90vh] overflow-auto">
+            <ReservationProcess
+              onClick={() => setShowProcess(false)}
+              resData={data}
+              getDateTime={(data: any) => setData(data)}
+            />
+          </div>
+        </div>
       )}
       {findClient ? (
         <form
