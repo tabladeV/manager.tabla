@@ -4,6 +4,7 @@ import { CanAccess } from "@refinedev/core";
 import { useEffect, useState } from "react";
 import { useDarkContext } from "../../context/DarkContext";
 import { Book, BookImageIcon, CalendarClock, ChevronLeft, ChevronRight, Clock, Computer, DollarSign, ExternalLink, Laptop, PartyPopper, PcCase, Settings, Star, Tag, TimerReset, UserCheck, Users } from "lucide-react";
+import { DevOnly } from "../../components/DevOnly";
 
 const SettingsPage = () => {
   const { darkMode } = useDarkContext();
@@ -161,15 +162,18 @@ const SettingsPage = () => {
               {expanded && t('settingsPage.menuItems.reviewWidget')}
             </Link>
           </CanAccess>
-          <CanAccess
-            resource="billing"
-            action="view"
-          >
-            <Link to='/settings/billing' className={`hover:underline flex items-center gap-3 ${pathname === '/settings/billing' ? navigatedMenuClass : normalMenuClass}`}>
-              <DollarSign size={22}/>
-              {expanded && t('settingsPage.menuItems.billing')}
-            </Link>
-          </CanAccess>
+
+          <DevOnly>
+            <CanAccess
+              resource="billing"
+              action="view"
+            >
+              <Link to='/settings/billing' className={`hover:underline flex items-center gap-3 ${pathname === '/settings/billing' ? navigatedMenuClass : normalMenuClass}`}>
+                <DollarSign size={22}/>
+                {expanded && t('settingsPage.menuItems.billing')}
+              </Link>
+            </CanAccess>
+          </DevOnly>
 
           {/* Roles - check for view_role */}
           <CanAccess
@@ -205,20 +209,21 @@ const SettingsPage = () => {
             </Link>
           </CanAccess>
 
-          <CanAccess 
-            resource="tags"
-            action="view"
-            >
-              <Link to='/settings/tags' 
-              className={`flex items-center gap-3 ${pathname === "/settings/tags"
-                ? navigatedMenuClass
-                : normalMenuClass
-              }`}>
-                <Tag size={22}/>
-                {expanded && t('settingsPage.menuItems.tags')}
-              </Link>
-          </CanAccess>
-
+          <DevOnly>
+            <CanAccess 
+              resource="tags"
+              action="view"
+              >
+                <Link to='/settings/tags' 
+                className={`flex items-center gap-3 ${pathname === "/settings/tags"
+                  ? navigatedMenuClass
+                  : normalMenuClass
+                }`}>
+                  <Tag size={22}/>
+                  {expanded && t('settingsPage.menuItems.tags')}
+                </Link>
+            </CanAccess>
+          </DevOnly>
           {/* to be restored after */}
           {/* 
           <Link to='/settings/menu' className={`hover:underline ${pathname === '/settings/menu' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.menu')}</Link>

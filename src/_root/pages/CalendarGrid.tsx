@@ -20,6 +20,7 @@ import { useDarkContext } from "../../context/DarkContext"
 import { Link, useNavigate } from "react-router-dom"
 import { Book, BookA, ChevronRight, Tickets, TicketsPlane, Users } from "lucide-react"
 import { BaseRecord, useList } from "@refinedev/core"
+import { DevOnly } from "../../components/DevOnly"
 
 // Mock data for demonstration - replace with your actual data structure
 const MOCK_AVAILABLE_DAYS = Array(31).fill(null).map((_, i) => ({
@@ -177,6 +178,7 @@ const CalendarGrid = () => {
   )
 
   return (
+    <DevOnly>
     <div className="select-none flex flex-col">
       <div className="flex mb-4 justify-between items-center">
         <h1 className="text-blacktheme dark:text-textdarktheme">{t("calendar.title", "Calendar Grid")}</h1>
@@ -335,6 +337,7 @@ const CalendarGrid = () => {
         </div>
       </div>
     </div>
+    </DevOnly>
   )
 }
 
