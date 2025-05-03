@@ -205,11 +205,11 @@ const CalendarGrid = () => {
 
                     {isAvailable  ? (
                       <div className="flex items-center gap-1 bg-softgreentheme rounded-xl py-1 px-2 text-greentheme text-sm">
-                        Open <Clock size={13} />
+                        <span className="lt-sm:hidden block"> Open </span> <Clock size={13} />
                       </div>
                     ) : (
                       <div className="flex items-center gap-1 bg-softredtheme rounded-xl py-1 px-2 text-redtheme text-sm">
-                        Closed <Clock size={13} />
+                        <span className="lt-sm:hidden block">Closed</span> <Clock size={13} />
                       </div>
                     )}
                   </div>
