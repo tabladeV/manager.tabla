@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
-import i18n from 'i18next';
-import { Fullscreen, LogOut, Moon, Minimize, Settings, Sun, User, Store } from 'lucide-react';
+import i18n, { t } from 'i18next';
+import { Fullscreen, LogOut, Moon, Minimize, Settings, Sun, User, Store, RefreshCw } from 'lucide-react';
 
 // Import assets
 import profilepic from '../../assets/profile.png';
@@ -258,6 +258,11 @@ const UserBar = () => {
               {restaurantData.address && (
                 <div className="text-sm text-gray-500 mt-1 pl-6">{restaurantData.address}</div>
               )}
+              <div className='mt-1'>
+              <Link to='/change-restaurant' className='btn-primary px-2 py-1'>
+                <span className='text-xs'>{t('header.buttons.changeRestaurant')}</span>
+              </Link>
+              </div>
             </div>
           )}
           

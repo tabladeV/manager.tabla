@@ -4,7 +4,8 @@
         "buttons": {
             "notifications": "Notifications",
             "profile": "Profil",
-            "logout": "Déconnexion"
+            "logout": "Déconnexion",
+            "changeRestaurant": "Changer de restaurant"
         },
         "date": {
             "today": "Aujourd'hui",
