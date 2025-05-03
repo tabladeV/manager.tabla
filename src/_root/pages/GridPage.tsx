@@ -59,7 +59,7 @@ const GridPage = () => {
   const [timeSlots, setTimeSlots] = useState<BaseRecord>()
 
   const {data: timeSlotData, isFetching: loadingTimeSlots} = useList({
-    resource: 'api/v1/bo/subdomains/availability/time-slots/',
+    resource: 'api/v1/bo/availability/work-shifts/time-slots/',
     filters: [
       {
         field: 'date',
