@@ -224,9 +224,15 @@ export default function WidgetConfig() {
     if(file){
       formData.append('image', file);
     }
+    if(deleteLogo){
+      formData.append('clear_image', 'true');
+    }
 
     if (imageFile) {
       formData.append('image_2', imageFile);
+    }
+    if(deleteImage){
+      formData.append('clear_image_2', 'true');
     }
 
     if (filePDF && searchTabs.menu) {
@@ -251,6 +257,9 @@ export default function WidgetConfig() {
     }
   };
 
+  const [deleteLogo, setDeleteLogo] = useState<boolean>(false);
+  const [deleteImage, setDeleteImage] = useState<boolean>(false);
+
   const [newLogo, setNewLogo] = useState<boolean>(false);
 
   const darkModeClass = 'dark:bg-bgdarktheme dark:text-white bg-white text-black';
@@ -261,7 +270,7 @@ export default function WidgetConfig() {
 
   return (
     <div className={`w-full mx-auto p-6 rounded-[10px] ${darkModeClass}`}>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex lt-sm:flex-col items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-center mb-6">
           {t('settingsPage.widget.title')} for <span className='italic font-[600]'>{widgetInfo?.restaurant}</span>
         </h1>
@@ -288,7 +297,7 @@ export default function WidgetConfig() {
             <div className="relative w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden">
               <img src={ logo} alt="Logo" className="w-full h-full object-contain" />
               <button
-                onClick={() => {setLogo(null);setNewLogo(true)}}
+                onClick={() => {setLogo(null);setNewLogo(true);setDeleteLogo(true)}}
                 className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
               >
                 <X size={16} />
@@ -296,7 +305,7 @@ export default function WidgetConfig() {
             </div>
           ) : (
             <button
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => {fileInputRef.current?.click();setDeleteLogo(false)}}
               className="w-full py-4 border-2 border-dashed border-gray-300 dark:border-darkthemeitems rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-darkthemeitems transition-colors"
             >
               <Upload className="mr-2" size={20} />
@@ -310,7 +319,7 @@ export default function WidgetConfig() {
             <div className="relative w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden">
               <img src={image} alt="Image" className="w-full h-full object-contain" />
               <button
-                onClick={() => {setImage(null);setNewLogo(true)}}
+                onClick={() => {setImage(null);setNewLogo(true);setDeleteImage(true)}}
                 className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
               >
                 <X size={16} />
@@ -318,7 +327,7 @@ export default function WidgetConfig() {
             </div>
           ) : (
             <button
-              onClick={() => fileInputRefImage.current?.click()}
+              onClick={() => {fileInputRefImage.current?.click();setDeleteImage(false)}}
               className="w-full py-4 border-2 border-dashed border-gray-300 dark:border-darkthemeitems rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-darkthemeitems transition-colors"
             >
               <Upload className="mr-2" size={20} />

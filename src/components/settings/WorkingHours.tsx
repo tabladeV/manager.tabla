@@ -489,12 +489,12 @@ const WorkingHours = () => {
         ))}
 
         <CanAccess resource='availabilityday' action='change'>
-          <div className="flex flex-col sm:flex-row gap-2 mt-6 pt-4 ">
-            <button onClick={handleSaveAvailability} className="btn-primary w-full sm:w-auto">
-              {t('settingsPage.workingHours.save')}
-            </button>
-            <button onClick={() => { setData(fetchedData) }} className="btn-secondary w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row gap-2 mt-6 pt-4 justify-center">
+            <button onClick={() => { setData(fetchedData) }} className="btn-secondary w-full sm:w-1/4">
               {t('settingsPage.workingHours.cancel')}
+            </button>
+            <button onClick={handleSaveAvailability} className="btn-primary w-full sm:w-1/4">
+              {t('settingsPage.workingHours.save')}
             </button>
           </div>
         </CanAccess>

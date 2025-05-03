@@ -18,15 +18,7 @@ const Tags = () => {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const [tags, setTags] = useState<Tag[]>([
-    { id: 1, name: "Restaurant" },
-    { id: 2, name: "Terrace" },
-    { id: 3, name: "Bar" },
-    { id: 4, name: "Cafe" },
-    { id: 5, name: "Club" },
-    { id: 6, name: "Lounge" },
-    { id: 7, name: "Pub" },
-    { id: 8, name: "Rooftop" },
-    { id: 9, name: "Garden" },
+    
   ])
 
   interface TagsAPI {

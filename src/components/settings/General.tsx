@@ -12,6 +12,7 @@ import {
   CanAccess,
 } from '@refinedev/core';
 import loading from '../../assets/loading.png';
+import BaseBtn from '../common/BaseBtn';
 
 interface Restaurant {
   id: BaseKey;
@@ -202,7 +203,23 @@ const General = () => {
     },
   });
 
-  const { mutate } = useCustomMutation();
+  const { mutate, isLoading } = useCustomMutation();
+
+  const handleSubDomainChange = () => {
+    mutate({
+      url: 'api/v1/bo/restaurants/subdomain',
+      method: 'patch',
+      values: { subdomain: subdomain },
+      successNotification: {
+        type: 'success',
+        message: t('settingsPage.general.basicInformationForm.notifications.subdomainUpdated'),
+      },
+      errorNotification: {
+        type: 'error',
+        message: t('settingsPage.general.basicInformationForm.notifications.subdomainUpdateFailed'),
+      },
+    });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -218,13 +235,7 @@ const General = () => {
       city: formData.city,
     };
 
-    if (subdomain) {
-      mutate({
-        url: 'api/v1/bo/restaurants/subdomain',
-        method: 'patch',
-        values: { subdomain: subdomain },
-      });
-    }
+    
 
     updateRestaurant({
       resource: 'api/v1/bo/restaurants',
@@ -342,7 +353,32 @@ const General = () => {
     >
       <div className={`rounded-[10px] p-3 w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}>
         <h2 className="text-center mb-3">{t('settingsPage.general.basicInformationForm.title')}</h2>
+        <div className="flex flex-col gap-2 mb-4">
+          <p>{t('settingsPage.general.basicInformationForm.labels.subdomain')}</p>
+          <div className="flex gap-3 lt-sm:flex-col items-center">
+            <input
+              type="text"
+              id="subdomain"
+              placeholder={t('settingsPage.general.basicInformationForm.labels.subdomain')}
+              className={`inputs dark:bg-darkthemeitems bg-white `}
+              value={subdomain}
+              onChange={(e) => setSubdomain(e.target.value)}
+            />
+            <BaseBtn
+              variant="primary"
+              type="submit"
+              loading={isLoading}
+              className=" w-1/4 py-[10px] lt-sm:w-full "
+              onClick={handleSubDomainChange}
+            >
+              {t('settingsPage.general.basicInformationForm.buttons.saveSubdomain')}
+            </BaseBtn>
+          </div>
+        </div>
         <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
+          <p className="">
+            {t('settingsPage.general.basicInformationForm.labels.restaurantInformations')}
+          </p>
           <div className="flex flex-row gap-3">
             <input
               type="text"
@@ -424,25 +460,15 @@ const General = () => {
               onChange={handleInputChange}
             />
           </div>
-          <div className="flex flex-col gap-2 mt-2">
-            <p>{t('settingsPage.general.basicInformationForm.labels.subdomain')}</p>
-            <input
-              type="text"
-              id="subdomain"
-              placeholder={t('settingsPage.general.basicInformationForm.labels.subdomain')}
-              className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
-              value={subdomain}
-              onChange={(e) => setSubdomain(e.target.value)}
-            />
-          </div>
+          
           <div className="flex w-full justify-center gap-4">
             <button
               type="reset"
-              className={`btn ${localStorage.getItem('darkMode') === 'true' ? 'border-white text-white hover:border-redtheme hover:text-redtheme' : ''}`}
+              className={`btn lt-sm:w-1/2 w-[200px] border border-softgreytheme dark:border-darkthemeitems dark:bg-darkthemeitems dark:text-textdarktheme hover:bg-softgreytheme hover:dark:bg-darkthemeitems`}
             >
               {t('settingsPage.general.basicInformationForm.buttons.cancel')}
             </button>
-            <button type="submit" className="btn-primary">
+            <button type="submit" className="btn-primary lt-sm:w-1/2 w-[200px]">
               {t('settingsPage.general.basicInformationForm.buttons.save')}
             </button>
           </div>

@@ -10,6 +10,7 @@ import { Trash } from 'lucide-react';
 import Pagination from '../reservation/Pagination';
 import ActionPopup from '../popup/ActionPopup';
 import { DevOnly } from '../DevOnly';
+import { set } from 'date-fns';
 
 interface ClientData {
   id: string;
@@ -78,6 +79,60 @@ const ClientInterface = () => {
   const [reservationsAPI, setReservationsAPI] = useState<ReservationsAPIType>();
   const [count, setCount] = useState<number>(0);
 
+  interface Tag {
+    id: number
+    name: string
+  }
+  const [allTags, setAllTags] = useState<Tag[]>([
+      
+  ])
+  
+    interface TagsAPI {
+      results: Tag[]
+      count: number
+    }
+    const [tagsAPI, setTagsAPI] = useState<TagsAPI>()
+  
+    const { data: tagsDada, isLoading:tagsLoading, error:tagsError } = useList({
+        resource: "api/v1/bo/tags/",
+        filters: [
+          {
+            field: "page",
+            operator: "eq",
+            value: 1,
+          },
+          {
+            field: "page_size",
+            operator: "eq",
+            value: 50,
+          },
+        ],
+        queryOptions:{
+            onSuccess(data){
+                console.log('tags data',data)
+                setTagsAPI(data.data as unknown as TagsAPI)
+            },
+            onError(error){
+                console.log(error)
+            }
+  
+        },
+        errorNotification(error, values, resource) {
+            return {
+              type: 'error',
+              message: error?.formattedMessage,
+            };
+          },
+    });
+
+    useEffect(() => {
+      if (tagsAPI) {
+        setAllTags(tagsAPI.results);
+        console.log('tags data',tagsAPI.results)
+
+      }
+    }, [tagsAPI]);
+
   const [page,setPage] = useState(1);
   const [pageSize,setPageSize] = useState(10);
 
@@ -122,10 +177,13 @@ const ClientInterface = () => {
   const [reservation, setReservation] = useState<BaseRecord[]>([]);
 
   const [client, setClient] = useState<BaseRecord | null>(null);
+  const [tags, setTags] = useState<Tag[]>([]);
 
   useEffect(() => {
     if (data?.data) {
       setClient(data.data);
+      setTags(client?.tags || []);
+      console.log('client data',data.data);
     }
     if (reservationsAPI) {
       setReservation(reservationsAPI.results);
@@ -318,28 +376,25 @@ const ClientInterface = () => {
     // }
   }
 
-  const [allTags, setAllTags] = useState([
-    { id: 1, name: 'VIP' },
-    { id: 2, name: 'Regular' },
-    { id: 3, name: 'New' },
-    { id: 4, name: 'Loyal' },
-    { id: 5, name: 'Frequent' },
-    { id: 6, name: 'Occasional' },
-    { id: 7, name: 'Inactive' },
-    { id: 8, name: 'VIP+1' },
-    { id: 9, name: 'VIP+2' },
-    { id: 10, name: 'VIP+3' },
-    { id: 11, name: 'VIP+4' },
-    { id: 12, name: 'VIP+5' },
+  const handleAddDropTag = (tagId: BaseKey) => {
+    const tagExists = tags.some((tag) => tag.id === tagId);
+    const updatedTags = tagExists
+      ? tags.filter((tag) => tag.id !== tagId) // Remove tag if it exists
+      : [...tags, allTags.find((tag) => tag.id === tagId)!]; // Add tag if it doesn't exist
 
-  ]);
+    setTags(updatedTags);
 
-  const [tags, setTags] = useState([
-    { id: 1, name: 'VIP' },
-    { id: 2, name: 'Regular' },
-    { id: 4, name: 'Loyal' },
-    { id: 5, name: 'Frequent' },
-  ]);
+    updateClient({
+      resource: 'api/v1/bo/customers',
+      values: {
+        tags: updatedTags.map((tag) => tag.id), // Send only tag IDs to the API
+      },
+      id: id + '/',
+    });
+  };
+
+ 
+  
 
 
 
@@ -536,13 +591,7 @@ const ClientInterface = () => {
                                   {allTags.map((tag) => (
                                       <span
                                       key={tag.id}
-                                      onClick={() => {
-                                        if (tags.some((t) => t.id === tag.id)) {
-                                          setTags(tags.filter((t) => t.id !== tag.id));
-                                        } else {
-                                          setTags([...tags, tag]);
-                                        }
-                                      }}
+                                      onClick={() => {handleAddDropTag(tag.id)}}
                                       className={`text-[12px] font-[500] hover:bg-greentheme/50 px-2 py-1 rounded-md mt-2 ${
                                         tags.some((t) => t.id === tag.id)
                                         ? 'bg-greentheme text-white'
