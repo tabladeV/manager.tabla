@@ -121,7 +121,7 @@ const RoleModal = ({ role, availablePermissions = [], onClose }: RoleModalProps)
                 filteredPermissions.map((permission) => (
                   <div
                     key={permission.id}
-                    className={`flex items-center justify-between p-3 rounded-lg border dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-${permission.value ? "softgreentheme" : "softredtheme"} transition-colors`}
+                    className={`flex items-center justify-between p-3 rounded-lg border dark:border-zinc-800 dark:hover:bg-softgreytheme/10 hover:bg-softgreytheme transition-colors`}
                   >
                     <div className="flex items-center gap-3">
                       <span className="font-medium">{permission.name}</span>

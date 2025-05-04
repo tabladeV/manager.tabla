@@ -132,6 +132,8 @@ const UserBar = () => {
   const userInitials = userData ? 
     `${userData.first_name?.[0] || ''}${userData.last_name?.[0] || ''}`.toUpperCase() : 'U';
 
+
+    const [showShortCut,setShowShortCut]=useState<boolean>(false)
   return (
     <div className="relative">
       {/* Language Selector Dropdown */}
@@ -303,17 +305,19 @@ const UserBar = () => {
           {/* Added Fullscreen Toggle in Dropdown */}
           <button 
             onClick={toggleFullscreen}
+            onMouseOver={()=>{setShowShortCut(true)}}
+            onMouseLeave={()=>{setShowShortCut(false)}}
             className="flex w-full items-center px-4 py-2 text-sm text-left hover:bg-gray-100 dark:hover:bg-gray-700"
           >
             {isFullScreen ? (
               <>
                 <Minimize size={18} className="mr-2" />
-                <span>Exit Fullscreen</span>
+                <span>Exit Fullscreen</span>{ showShortCut&& <span className='ml-3 flex items-center gap-1 lt-sm:hidden'><span className='text-[10px]  text-white/80 py-[0px] px-2 btn rounded-md'>Ctrl</span><span className='text-[10px]  text-white/80 py-[0px] px-2 btn rounded-md'>M</span> </span>}
               </>
             ) : (
               <>
                 <Fullscreen size={18} className="mr-2" />
-                <span>Enter Fullscreen</span>
+                <span>Enter Fullscreen </span>{ showShortCut&& <span className='ml-3 flex items-center gap-1 lt-sm:hidden'><span className='text-[10px]  text-white/80 py-[0px] px-2 btn rounded-md'>Ctrl</span><span className='text-[10px]  text-white/80 py-[0px] px-2 btn rounded-md'>M</span> </span>}
               </>
             )}
           </button>

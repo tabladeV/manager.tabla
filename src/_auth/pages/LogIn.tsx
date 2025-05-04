@@ -11,6 +11,12 @@ import image from "../../assets/login-image2.png";
 import circle from "../../assets/circle.png";
 
 const LogIn: React.FC = () => {
+  
+  useEffect(() => {
+    document.title = "Log In | Tabla.ma Admin";
+  }
+  , []);
+  
   const navigate = useNavigate();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");

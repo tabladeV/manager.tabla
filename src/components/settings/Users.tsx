@@ -339,8 +339,8 @@ export default function Users() {
         <button className="btn-primary mt-4" onClick={addUser}>{t('settingsPage.users.buttons.addUser')}</button>
       </div>
       <div className="overflow-x-auto w-full">
-        <table className="w-full border-collapse text-left text-sm dark:bg-bgdarktheme2 bg-white text-gray-500">
-          <thead className="dark:bg-bgdarktheme bg-white text-gray-900 dark:text-gray-400">
+        <table className="w-full border-collapse  text-left text-sm dark:bg-bgdarktheme2 bg-white text-gray-500">
+          <thead className="dark:bg-bgdarktheme bg-white text-gray-900 dark:text-gray-100">
             <tr>
               <th scope="col" className="px-6 py-4 font-medium">{t('settingsPage.users.tableHeaders.id')}</th>
               <th scope="col" className="px-6 py-4 font-medium">{t('settingsPage.users.tableHeaders.name')}</th>
@@ -349,9 +349,9 @@ export default function Users() {
               <th scope="col" className="px-6 py-4 font-medium flex justify-end">{t('settingsPage.users.tableHeaders.actions')}</th>
             </tr>
           </thead>
-          <tbody className="divide-y border-t dark:border-darkthemeitems border-gray-200">
+          <tbody className="divide-y border-t  dark:border-darkthemeitems border-gray-200">
             {users.map((user) => (
-              <tr key={user.id} className="cursor-pointer dark:hover:bg-bgdarktheme hover:bg-gray-50">
+              <tr key={user.id} className="cursor-pointer dark:text-gray-200 dark:hover:bg-bgdarktheme dark:border-greentheme/40 hover:bg-gray-50">
                 <td className="px-6 py-4 font-medium" onClick={() => openModal(user)}>{user.id}</td>
                 <td className="px-6 py-4" onClick={() => openModal(user)}>{user.first_name} {user.last_name}</td>
                 <td className="px-6 py-4" onClick={() => openModal(user)}>{user.email}</td>
