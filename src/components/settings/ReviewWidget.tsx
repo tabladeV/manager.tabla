@@ -69,6 +69,7 @@ const ReviewWidget = () => {
   // Initialize form with data from API
   useEffect(() => {
     if (reviewData?.data) {
+      console.log("Review data:", reviewData.data)
       const data = reviewData.data as unknown as ReviewSettings
       setReviewSettings(data)
       setTitle(data.title || "")
