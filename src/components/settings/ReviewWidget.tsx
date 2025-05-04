@@ -186,7 +186,7 @@ const ReviewWidget = () => {
         {logo || previewUrl ? (
           <div className="relative w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden border border-gray-200 dark:border-darkthemeitems">
             <img
-              src={previewUrl || (logo ? `${API_HOST}${logo}` : "")}
+              src={previewUrl || (logo ? `${logo}` : "")}
               alt="Logo"
               className="w-full h-full object-contain"
             />
