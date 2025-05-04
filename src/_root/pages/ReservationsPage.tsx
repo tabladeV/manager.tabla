@@ -15,7 +15,8 @@ import {
   CalendarCheck,
   User2,
   Trash,
-  Trash2
+  Trash2,
+  Tags
 } from 'lucide-react';
 import SearchBar from "../../components/header/SearchBar";
 import IntervalCalendar from "../../components/Calendar/IntervalCalendar";
@@ -35,7 +36,7 @@ import { useDateContext } from '../../context/DateContext';
 import DraggableItemSkeleton from '../../components/places/DraggableItemSkeleton';
 import DraggableItem from '../../components/places/DraggableItem';
 import ResevrationCard from '../../components/places/ResevrationCard';
-import WidgetReservationProcess from '../../components/reservation/WidgetReservationProcess';
+import { Tag } from 'react-konva';
 
 // Types and Interfaces
 export interface ReceivedTables {
@@ -680,15 +681,30 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
             
             {/* Contact info */}
             <div className="flex flex-col mt-1 gap-x-4 gap-y-1 text-sm lt-md:flex-col">
-              <div className="flex items-center gap-1 text-gray-500">
-                <Mail size={14} className={isDarkMode ? 'text-gray-400' : 'text-gray-500'} />
-                <span>{reservation.email}</span>
-              </div>
-              
-              <div className="flex items-center gap-1 text-gray-500">
-                <Phone size={14} className={isDarkMode ? 'text-gray-400' : 'text-gray-500'} />
-                <span>{reservation.phone || 'N/A'}</span>
-              </div>
+              {reservation.email &&
+                <div className="flex items-center gap-1 text-gray-500">
+                  <Mail size={14} className='dark:text-gray-400text-gray-500' />
+                  <span>{reservation.email}</span>
+                </div>
+              }
+              {reservation.phone &&
+                <div className="flex items-center gap-1 text-gray-500">
+                  <Phone size={14} className='dark:text-gray-400text-gray-500' />
+                  <span>{reservation.phone || 'N/A'}</span>
+                </div>
+              }      
+              {reservation.tags?.length > 0 &&
+                <div className="flex gap-1 items-center gap-1 text-gray-500">
+                  <Tags size={14} className='dark:text-gray-400text-gray-500' />
+                  <div className="flex gap-2 flex-wrap">
+                    {reservation.tags.map((tag: string, index: React.Key | null | undefined) => (
+                      <div key={index} className="bg-softgreentheme text-greentheme dark:text-textdarktheme dark:bg-greentheme rounded-lg px-2 text-xs flex items-center">
+                        {tag}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              }
             </div>
             
             {/* Comment if available */}
@@ -1511,7 +1527,7 @@ const ReservationsPage: React.FC = () => {
       {showProcess && (
         <div className="fixed inset-0 bg-black/50 z-[300] flex items-center justify-center p-4">
           <div className="bg-white dark:bg-[#222222] rounded-lg max-w-2xl w-full max-h-[90vh] overflow-auto">
-            <WidgetReservationProcess
+            <ReservationProcess
               onClick={() => setShowProcess(false)}
               resData={reservationProgressData}
               getDateTime={(data: any) => setReservationProgressData(data)}

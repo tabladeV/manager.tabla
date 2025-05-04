@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import OurCalendar from '../Calendar/OurCalendar';
 import { useCustom, useList } from '@refinedev/core';
+import BaseBtn from '../common/BaseBtn';
 // Import the actual useCustom hook instead of using the mock implementation
 
 
@@ -80,7 +81,7 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
   });
 
   // Fetch available times when date and guests are selected
-  const { data: times, isFetching: timesLoading } = useList({
+  const { data: times, isFetching: timesLoading, isLoading: isLoadingTimes } = useList({
     resource: 'api/v1/bo/availability/work-shifts/time-slots/',
     filters: [
       {
@@ -124,9 +125,11 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
   };
 
   const handleGuestClick = (guest: number) => {
+    if(timesLoading || isLoadingTimes)
+        return;
+
     setSelectedGuests(guest);
     setSelectedData((prevData) => ({ ...prevData, guests: guest }));
-    setAvailableTimes({});
     setSelectedTime(null);
     setActiveTab('time');
   };
@@ -230,9 +233,9 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
                   <input type="number" min={1} name='note' placeholder="Enter number of guests" value={selectedGuests as number}
                     className='w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-s-lg bg-white dark:bg-darkthemeitems text-black dark:text-white'
                     onChange={(e) => setSelectedGuests(Number(e.target.value))} />
-                  <button type="button" onClick={() => handleGuestClick(Number(selectedGuests))} className="btn-primary rounded-none rounded-e-lg">
-                    Confirm
-                  </button>
+                    <BaseBtn onClick={() => handleGuestClick(Number(selectedGuests))} className="rounded-none rounded-e-lg" loading={timesLoading || isLoadingTimes}>
+                      Confirm
+                    </BaseBtn>
                 </div>
               </div>
             }
