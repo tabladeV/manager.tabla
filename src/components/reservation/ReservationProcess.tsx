@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { format } from 'date-fns';
+import { format, set } from 'date-fns';
 import OurCalendar from '../Calendar/OurCalendar';
 import { useCustom, useList } from '@refinedev/core';
 import BaseBtn from '../common/BaseBtn';
@@ -61,7 +61,8 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
   const [activeTab, setActiveTab] = useState<'date' | 'guest' | 'time' | 'confirm' | null>('date');
   const [selectedDate, setSelectedDate] = useState<Date | null>(props?.resData?.reserveDate ? new Date(props.resData.reserveDate) : null);
   const [selectedTime, setSelectedTime] = useState<string | null>(props?.resData?.time as string);
-  const [selectedGuests, setSelectedGuests] = useState<number | null>(Number(props?.resData?.guests));
+  const [selectedGuests, setSelectedGuests] = useState<any>(props?.resData?.guests as number | null);
+  const [numberGuests, setNumberGuests] = useState<any>(props?.resData?.guests as number | null);
   const [selectedData, setSelectedData] = useState<SelectedData>({
     reserveDate: '',
     time: '',
@@ -81,7 +82,7 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
   });
 
   // Fetch available times when date and guests are selected
-  const { data: times, isFetching: timesLoading, isLoading: isLoadingTimes } = useList({
+  const { data: times, isFetching: timesLoading, isLoading: isLoadingTimes, refetch: refetchTimes } = useList({
     resource: 'api/v1/bo/availability/work-shifts/time-slots/',
     filters: [
       {
@@ -119,16 +120,17 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
     setSelectedData((prev) => ({ ...prev, time: '', reserveDate: formattedDate }));
     setSelectedTime(null);
     setSelectedGuests(null);
+    setNumberGuests(null);
     setAvailableTimes({});
-    setLoadingTimes(false);
     setActiveTab('guest');
   };
 
   const handleGuestClick = (guest: number) => {
-    if(timesLoading || isLoadingTimes)
+    if(timesLoading)
         return;
-
+    setAvailableTimes({});
     setSelectedGuests(guest);
+    setNumberGuests(guest);
     setSelectedData((prevData) => ({ ...prevData, guests: guest }));
     setSelectedTime(null);
     setActiveTab('time');
@@ -167,7 +169,7 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
           {(
             <span
               className={activeTab === 'guest' ? 'activetabb' : 'p-[10px]'}
-              onClick={() => setActiveTab('guest')}
+              onClick={() => selectedDate && setActiveTab('guest')}
               id="guest"
             >
               Guest
@@ -176,7 +178,7 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
           {(
             <span
               className={activeTab === 'time' ? 'activetabb' : 'p-[10px]'}
-              onClick={() => setActiveTab('time')}
+              onClick={() => (selectedDate && selectedGuests) && setActiveTab('time')}
               id="time"
             >
               Time
@@ -230,10 +232,9 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
               !props.maxGuests &&
               <div>
                 <div className="flex rounded-lg">
-                  <input type="number" min={1} name='note' placeholder="Enter number of guests" value={selectedGuests as number}
-                    className='w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-s-lg bg-white dark:bg-darkthemeitems text-black dark:text-white'
-                    onChange={(e) => setSelectedGuests(Number(e.target.value))} />
-                    <BaseBtn onClick={() => handleGuestClick(Number(selectedGuests))} className="rounded-none rounded-e-lg" loading={timesLoading || isLoadingTimes}>
+                  <input type="number" min={1} name='note' placeholder="Enter number of guests" value={numberGuests} onChange={(e) => setNumberGuests(e.target.value)}
+                    className='w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-s-lg bg-white dark:bg-darkthemeitems text-black dark:text-white'/>
+                    <BaseBtn onClick={() => handleGuestClick(Number(numberGuests))} className="rounded-none rounded-e-lg" loading={timesLoading} disabled={timesLoading || !numberGuests || numberGuests < 1}>
                       Confirm
                     </BaseBtn>
                 </div>
