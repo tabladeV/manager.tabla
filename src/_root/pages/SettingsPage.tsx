@@ -163,7 +163,7 @@ const SettingsPage = () => {
             </Link>
           </CanAccess>
 
-          <DevOnly>
+          {/* <DevOnly> */}
             <CanAccess
               resource="billing"
               action="view"
@@ -173,7 +173,7 @@ const SettingsPage = () => {
                 {expanded && t('settingsPage.menuItems.billing')}
               </Link>
             </CanAccess>
-          </DevOnly>
+          {/* </DevOnly> */}
 
           {/* Roles - check for view_role */}
           <CanAccess
@@ -209,7 +209,7 @@ const SettingsPage = () => {
             </Link>
           </CanAccess>
 
-          <DevOnly>
+          {/* <DevOnly> */}
             <CanAccess 
               resource="tags"
               action="view"
@@ -223,7 +223,7 @@ const SettingsPage = () => {
                   {expanded && t('settingsPage.menuItems.tags')}
                 </Link>
             </CanAccess>
-          </DevOnly>
+          {/* </DevOnly> */}
           {/* to be restored after */}
           {/* 
           <Link to='/settings/menu' className={`hover:underline ${pathname === '/settings/menu' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.menu')}</Link>

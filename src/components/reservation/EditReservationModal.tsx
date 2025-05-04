@@ -147,14 +147,12 @@ const EditReservationModal = ({
       </h1>
 
       
-      <DevOnly>
-        <p className="text-md mb-[-.4em] font-[500]">tags</p>
-        {selectedClient.tags.map((tag: string) => (
-          <span className={`text-[12px] font-[500] px-2 py-1 rounded-md mt-2 bg-softgreentheme text-greentheme`}>
-            {tag}
-          </span>
-        ))}
-      </DevOnly>
+      <p className="text-md mb-[-.4em] font-[500]">tags</p>
+      {selectedClient.tags.map((tag: string) => (
+        <span className={`text-[12px] font-[500] px-2 py-1 rounded-md mt-2 bg-softgreentheme text-greentheme`}>
+          {tag}
+        </span>
+      ))}
       
       {/* Client preferences - read only */}
       <div className={`flex flex-col p-2 mb-2 rounded-xl gap-3 cursor-default ${isDarkMode ? 'bg-darkthemeitems text-whitetheme' : ' border-2 text-darkthemeitems'}`}>
@@ -252,16 +250,14 @@ const EditReservationModal = ({
               {`(Reservation id: ${selectedClient.seq_id})`}
             </span>
           </h1>
-          <DevOnly>
-            <p className="text-md  font-[500]">Tags</p>
-            <div className="flex flex-wrap gap-2 mb-3">
-              {selectedClient.tags.map((tag: string) => (
-                <span className={`text-[12px] font-[500] px-2 py-1 rounded-md mt-2 w-fit bg-softgreentheme text-greentheme`}>
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </DevOnly>
+          <p className="text-md  font-[500]">Tags</p>
+          <div className="flex flex-wrap gap-2 mb-3">
+            {selectedClient.tags.map((tag: string) => (
+              <span className={`text-[12px] font-[500] px-2 py-1 rounded-md mt-2 w-fit bg-softgreentheme text-greentheme`}>
+                {tag}
+              </span>
+            ))}
+          </div>
 
           <div className={`flex flex-col p-2 mb-2 rounded-xl gap-3 cursor-default ${isDarkMode ? 'bg-darkthemeitems text-whitetheme' : ' border-2 text-darkthemeitems'}`}>
             <p className="text-md mb-[-.4em] font-[500]">{selectedClient.full_name}'s preferences</p>

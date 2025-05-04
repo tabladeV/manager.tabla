@@ -7,7 +7,6 @@ import BaseBtn from '../common/BaseBtn';
 import { Occasion, OccasionsType } from '../settings/Occasions';
 import BaseSelect from '../common/BaseSelect';
 import WidgetReservationProcess from './WidgetReservationProcess';
-import { DevOnly } from '../DevOnly';
 
 interface Reservation extends BaseRecord {
   id?: BaseKey;
@@ -585,16 +584,14 @@ const ReservationModal = (props: ReservationModalProps) => {
               <X size={20} />
             </button>
           </div>
-          <DevOnly>
-            <p className="text-md  font-[500]">Tags</p>
-            <div className="flex flex-wrap gap-2 mb-3">
-              {selectedClient?.tags?.map((tag:{name:string;id:number}) => (
-                <span key={tag.id} className={`text-[12px] font-[500] px-2 py-1 rounded-md mt-2 w-fit bg-softgreentheme text-greentheme`}>
-                  {tag.name}
-                </span>
-              ))}
-            </div>
-          </DevOnly>
+          <p className="text-md  font-[500]">Tags</p>
+          <div className="flex flex-wrap gap-2 mb-3">
+            {selectedClient?.tags?.map((tag:{name:string;id:number}) => (
+              <span key={tag.id} className={`text-[12px] font-[500] px-2 py-1 rounded-md mt-2 w-fit bg-softgreentheme text-greentheme`}>
+                {tag.name}
+              </span>
+            ))}
+          </div>
           <div className="flex flex-col gap-2">
             <input
               placeholder={t('grid.placeHolders.name')}
