@@ -4,7 +4,8 @@
         "buttons": {
             "notifications": "Notifications",
             "profile": "Profile",
-            "logout": "Logout"
+            "logout": "Logout",
+            "changeRestaurant": "Change Restaurant"
         },
         "date": {
             "today": "Today",
@@ -433,6 +434,7 @@
                 "labels": {
                     "restaurantName": "Restaurant Name",
                     "email": "Email",
+                    "restaurantInformations": "Restaurant Informations",
                     "country": "Country",
                     "city": "Select City",
                     "description": "Restaurant Description",
@@ -449,7 +451,12 @@
                 "buttons": {
                     "cancel": "Cancel",
                     "save": "Save",
+                    "saveSubdomain": "Save Subdomain",
                     "addcategory": "Add Category"
+                },
+                "notifications":{
+                    "subdomainUpdated": "Subdomain updated successfully",
+                    "subdomainUpdateFailed": "Subdomain update failed"
                 }
             }
         },
@@ -496,7 +503,8 @@
             },
             "buttons": {
                 "preview": "Preview",
-                "save": "Save"
+                "save": "Save",
+                "saving": "Saving"
             }
         },
         "permissions":{

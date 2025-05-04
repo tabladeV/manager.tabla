@@ -4,7 +4,8 @@
         "buttons": {
             "notifications": "الإشعارات",
             "profile": "الملف الشخصي",
-            "logout": "تسجيل الخروج"
+            "logout": "تسجيل الخروج",
+            "changeRestaurant": "تغيير المطعم"
         },
         "date": {
             "today": "اليوم",

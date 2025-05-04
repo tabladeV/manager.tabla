@@ -202,21 +202,17 @@ const ReviewPage = () => {
           <p>{errorMessage}</p>
         </div>
       ) : (
-        <div className="h-[90vh] items-center  xl:max-w-[1200px] no-scrollbar mx-auto pb-[5em] overflow-y-auto w-full flex p-5 px-10 justify-between">
-          <div className="w-[60%]  lt-sm:w-full">
-            <div className="sm:hidden ">
-              {restaurantData?.logo ? (
+        <div className="h-[90vh] items-center  xl:max-w-[1200px] no-scrollbar mx-auto pb-[5em] overflow-y-auto w-full flex p-5 px-10 justify-center">
+          <div className={`w-[60%] lt-sm:w-full lt-sm:flex lt-sm:flex-col lt-sm:items-center lt-sm:text-center ${restaurantData?.logo ?'':'flex flex-col items-center text-center '}`}>
+            {/* <div className="sm:hidden ">
+              {restaurantData?.logo && (
                 <img
                   src={restaurantData?.logo || "/placeholder.svg"}
                   alt="Restaurant"
                   className="w-full h-[10em] object-cover rounded-lg shadow-md"
                 />
-              ) : (
-                <div className="w-full h-full bg-[#f5f5f5] dark:bg-[#2a2a2a] rounded-lg flex items-center justify-center">
-                  <p className="text-[#888888] dark:text-[#666666]">Restaurant image</p>
-                </div>
-              )}
-            </div>
+              ) }
+            </div> */}
             <h1
               className={`text-3xl font-bold mt-3 ${step === 1 ? "block" : "hidden"} dark:text-textdarktheme text-blacktheme`}
             >
@@ -346,15 +342,15 @@ const ReviewPage = () => {
               </div>
             )}
           </div>
-          <div className="w-[40%] lt-sm:hidden flex justify-center items-start pt-10">
+          {restaurantData?.logo && <div className="w-[40%] lt-sm:hidden flex justify-center items-start pt-10">
             <div className="rounded-lg overflow-hidden shadow-md border border-softgreytheme dark:border-darkthemeitems">
               <img
-                src={restaurantData?.logo || "/placeholder.svg"}
+                src={restaurantData?.logo}
                 alt="Restaurant"
                 className="h-[300px] w-full object-cover"
               />
             </div>
-          </div>
+          </div>}
         </div>
       )}
     </div>

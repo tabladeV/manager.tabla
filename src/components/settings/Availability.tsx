@@ -489,12 +489,12 @@ const Availability = () => {
         ))}
 
         <CanAccess resource='availabilityday' action='change'>
-          <div className="flex flex-col sm:flex-row gap-2 mt-6 pt-4">
-            <button onClick={handleSaveAvailability} className="btn-primary w-full sm:w-auto">
-              {t('settingsPage.availability.save')}
-            </button>
-            <button onClick={() => { setData(fetchedData) }} className="btn-secondary w-full sm:w-auto">
+          <div className="flex flex-col justify-center sm:flex-row gap-2 mt-6 pt-4">
+            <button onClick={() => { setData(fetchedData) }} className="btn-secondary w-full sm:w-1/4">
               {t('settingsPage.availability.cancel')}
+            </button>
+            <button onClick={handleSaveAvailability} className="btn-primary w-full sm:w-1/4">
+              {t('settingsPage.availability.save')}
             </button>
           </div>
         </CanAccess>

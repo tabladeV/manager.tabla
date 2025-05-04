@@ -51,7 +51,7 @@ interface NotificationModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
   message: Message | null;
-  onSubmit: (values: { subject: string; message: string }) => void;
+  onSubmit: (values: { message: string }) => void;
   formLoading: boolean;
 }
 
@@ -169,7 +169,7 @@ const MessagesPage = () => {
     setShowNotificationModal(true);
   };
 
-  const handleSubmitNotification = (formValues: { subject: string; message: string }) => {
+  const handleSubmitNotification = (formValues: { message: string }) => {
     if (!selectedMessage?.reservation?.customer?.id && !selectedMessage?.id) return;
     
     const formData = new FormData();
@@ -179,7 +179,6 @@ const MessagesPage = () => {
     
     // Append other form fields
     formData.append('restaurant', localStorage.getItem('restaurant_id') || '');
-    formData.append('subject', formValues.subject);
     formData.append('message', String(selectedMessage?.id));
     formData.append('text_massage', formValues.message);
 
@@ -388,20 +387,18 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
   formLoading
 }) => {
   const { darkMode } = useDarkContext();
-  const [subject, setSubject] = useState("");
   const [responseMessage, setResponseMessage] = useState("");
 
   // Reset values when modal opens/closes
   useEffect(() => {
     if (!showModal) {
-      setSubject("");
       setResponseMessage("");
     }
   }, [showModal]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({ subject, message: responseMessage });
+    onSubmit({ message: responseMessage });
   };
 
   if (!showModal || !message) return null;
@@ -425,15 +422,6 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
         </div>
         
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {/* Subject */}
-          <input
-            type="text"
-            placeholder="Subject"
-            className="inputs-unique bg-white dark:bg-bgdarktheme2"
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            required
-          />
 
           {/* Message */}
           <textarea
@@ -458,7 +446,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
             <button
               type="submit"
               className={`btn-primary ${formLoading ? 'opacity-70 cursor-wait' : ''}`}
-              disabled={!subject || !responseMessage || formLoading}
+              disabled={!responseMessage || formLoading}
             >
               {formLoading ? 'Sending...' : 'Send'}
             </button>

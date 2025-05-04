@@ -1,142 +1,199 @@
-import { BaseKey, useCustomMutation, useList, useUpdate } from '@refinedev/core';
-import { Upload, X } from 'lucide-react';
-import React, { useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
-import axiosInstance from '../../providers/axiosInstance';
+"use client"
+
+import { type BaseKey, useList } from "@refinedev/core"
+import { Upload, X, Check, AlertCircle } from "lucide-react"
+import type React from "react"
+import { useEffect, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
+import { Link } from "react-router-dom"
+import axiosInstance from "../../providers/axiosInstance"
+
+interface ReviewSettings {
+  id: BaseKey
+  title: string
+  description: string
+  logo: string
+  restaurant: number
+}
+
+interface ToastProps {
+  type: "success" | "error"
+  message: string
+}
 
 const ReviewWidget = () => {
+  const { t } = useTranslation()
+  const restaurantId = localStorage.getItem("restaurant_id")
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [toast, setToast] = useState<ToastProps | null>(null)
 
-  
+  // Set page title
   useEffect(() => {
-    document.title = 'Review Widget Settings | Tabla'
+    document.title = "Review Widget Settings | Tabla"
   }, [])
 
-  const restaurantId = localStorage.getItem('restaurant_id');
-
-  // const { mutate, isLoading: widgetLoading, data, error: widgetError } = useCustomMutation();
-  
-  const {data : subdomainData, isLoading: isLoadingSubdomain, error: errorSubdomain} = useList({
-    resource: 'api/v1/bo/restaurants/subdomain',
+  // Get subdomain data
+  const { data: subdomainData } = useList({
+    resource: "api/v1/bo/restaurants/subdomain",
   })
-  const [subdomain, setSubdomain] = useState<string>('')
+
+  const [subdomain, setSubdomain] = useState<string>("")
   useEffect(() => {
-    if(subdomainData?.data){
-      const subdomainApi = subdomainData.data as unknown as {subdomain: string}
-      setSubdomain(subdomainApi.subdomain as unknown as string)
+    if (subdomainData?.data) {
+      const subdomainApi = subdomainData.data as unknown as { subdomain: string }
+      setSubdomain(subdomainApi.subdomain)
     }
   }, [subdomainData])
 
-  const { data: reviewData, isLoading, error } = useList({
-    resource: 'api/v1/reviews/widget',
-  });
+  // Get review widget data
+  const {
+    data: reviewData,
+    isLoading,
+    refetch,
+  } = useList({
+    resource: "api/v1/reviews/widget",
+  })
 
-  interface ReviewSettings {
-    id: BaseKey;
-    title: string;
-    description: string;
-    logo: string;
-    restaurant: number;
-  }
+  // State for form fields
+  const [title, setTitle] = useState<string>("")
+  const [description, setDescription] = useState<string>("")
+  const [reviewSettings, setReviewSettings] = useState<ReviewSettings>()
+  const [logo, setLogo] = useState<string | null>(null)
+  const [file, setFile] = useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [deleteLogo, setDeleteLogo] = useState<boolean>(false)
+  const [formChanged, setFormChanged] = useState<boolean>(false)
 
-  const [title, setTitle] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
-  const [reviewSettings, setReviewSettings] = useState<ReviewSettings>();
-  const [logo, setLogo] = useState<string | null>(null);
-  const [file, setFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [newLogo, setNewLogo] = useState<boolean>(false);
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
+  // Initialize form with data from API
   useEffect(() => {
     if (reviewData?.data) {
-      setReviewSettings(reviewData.data as unknown as ReviewSettings);
+      const data = reviewData.data as unknown as ReviewSettings
+      setReviewSettings(data)
+      setTitle(data.title || "")
+      setDescription(data.description || "")
+      setLogo(data.logo || null)
+      setDeleteLogo(false)
+      setFormChanged(false)
     }
-  }, [reviewData]);
+  }, [reviewData])
 
+  // Track form changes
   useEffect(() => {
     if (reviewSettings) {
-      setTitle(reviewSettings.title);
-      setDescription(reviewSettings.description);
-      setLogo(reviewSettings.logo);
-      if (reviewSettings.logo) {
-        setNewLogo(false);
-      }
+      const hasChanges =
+        title !== reviewSettings.title || description !== reviewSettings.description || file !== null || deleteLogo
+      setFormChanged(hasChanges)
     }
-  }, [reviewSettings]);
+  }, [title, description, file, deleteLogo, reviewSettings])
 
+  // Handle file selection
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-      const selectedFile = event.target.files[0];
-      setFile(selectedFile);
+      const selectedFile = event.target.files[0]
+      setFile(selectedFile)
+      setDeleteLogo(false)
 
       // Generate a temporary preview URL
-      const objectUrl = URL.createObjectURL(selectedFile);
-      setPreviewUrl(objectUrl);
-      setNewLogo(true); // Indicate that a new logo has been selected
+      const objectUrl = URL.createObjectURL(selectedFile)
+      setPreviewUrl(objectUrl)
     }
-  };
+  }
 
-  const { mutate: updateWidget } = useUpdate({
-    errorNotification(error, values, resource) {
-      return {
-        type: 'error',
-        message: error?.formattedMessage,
-      };
-    },
-  });
+  // Handle logo deletion
+  const handleDeleteLogo = () => {
+    setLogo(null)
+    setPreviewUrl(null)
+    setFile(null)
+    setDeleteLogo(true)
+  }
 
+  // Show toast message
+  const showToast = (type: "success" | "error", message: string) => {
+    setToast({ type, message })
+    setTimeout(() => {
+      setToast(null)
+    }, 3000)
+  }
+
+  // Save widget settings
   const handleSave = async () => {
-    if (!reviewSettings) return;
+    if (!reviewSettings && !formChanged) return
 
-    const newFormData = new FormData();
-    newFormData.append('title', title);
-    newFormData.append('description', description);
-    if (file) {
-      newFormData.append('logo', file); // Append the logo file to FormData
-    }
-    console.log('formData', newFormData);
-
+    setIsSubmitting(true)
 
     try {
-      await axiosInstance.patch('/api/v1/reviews/widget',newFormData)
-      alert('Configuration saved successfully!');
+      const formData = new FormData()
+      formData.append("title", title)
+      formData.append("description", description)
+
+      if (file) {
+        formData.append("logo", file)
+        formData.append("clear_logo", "false")
+      }
+
+      if (deleteLogo) {
+        formData.append("clear_logo", "true")
+      }
+
+      await axiosInstance.patch("/api/v1/reviews/widget", formData)
+      showToast("success", "Configuration saved successfully!")
+      refetch() // Refresh data after successful update
+      setFormChanged(false)
     } catch (error) {
-      console.error('Error updating widget:', error);
-      alert('Failed to save configuration. Please try again.');
+      console.error("Error updating widget:", error)
+      showToast("error", "Failed to save configuration. Please try again.")
+    } finally {
+      setIsSubmitting(false)
     }
-  };
+  }
 
   const darkModeClass =
-    localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-white' : 'bg-white text-black';
-  const { t } = useTranslation();
-
+    localStorage.getItem("darkMode") === "true" ? "bg-bgdarktheme text-white" : "bg-white text-black"
+  const API_HOST = import.meta.env.VITE_API_URL || "https://api.dev.tabla.ma"
   const currentUrl = window.location.href
-  console.log('Current URL:', currentUrl)
-  
-  const API_HOST = import.meta.env.VITE_API_URL || "https://api.dev.tabla.ma";
+
+  // Generate preview URL based on environment
+  const getPreviewUrl = () => {
+    if (currentUrl.includes("dev")) {
+      return `https://${subdomain}.dev.tabla.ma/make/review/preview`
+    } else if (currentUrl.includes("localhost")) {
+      return `http://${subdomain}.localhost:5173/make/review/preview`
+    } else {
+      return `https://${subdomain}.tabla.ma/make/review/preview`
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className={`w-full mx-auto p-6 rounded-[10px] ${darkModeClass}`}>
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-greentheme"></div>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <div className={`w-full mx-auto p-6 rounded-[10px] ${darkModeClass}`}>
+    <div className={`w-full mx-auto p-6 rounded-[10px] ${darkModeClass} relative`}>
       <h1 className="text-2xl font-bold text-center mb-6">
-        {t('settingsPage.widget.title')} for <span className="italic font-[600]"></span>
+        {t("settingsPage.widget.title")} for <span className="italic font-[600]">Reviews</span>
       </h1>
+
       <div className="mb-6">
+        <label className="block text-sm font-medium mb-2">Logo</label>
         {logo || previewUrl ? (
-          <div className="relative w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden">
+          <div className="relative w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden border border-gray-200 dark:border-darkthemeitems">
             <img
-              src={!newLogo ? `${API_HOST}${logo ?? ''}` : previewUrl ?? undefined}
+              src={previewUrl || (logo ? `${API_HOST}${logo}` : "")}
               alt="Logo"
               className="w-full h-full object-contain"
             />
             <button
-              onClick={() => {
-                setLogo(null);
-                setPreviewUrl(null);
-                setNewLogo(true);
-              }}
+              onClick={handleDeleteLogo}
               className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
+              aria-label="Delete logo"
             >
               <X size={16} />
             </button>
@@ -147,45 +204,98 @@ const ReviewWidget = () => {
             className="w-full py-4 border-2 border-dashed border-gray-300 dark:border-darkthemeitems rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-darkthemeitems transition-colors"
           >
             <Upload className="mr-2" size={20} />
-            {t('settingsPage.widget.uploadLogo')}
+            {t("settingsPage.widget.uploadLogo")}
           </button>
         )}
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          accept="image/*"
-          className="hidden"
-        />
+        <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
       </div>
+
       <div className="space-y-4 mb-6">
-        <input
-          type="text"
-          placeholder={t('settingsPage.widget.addTitlePlaceholder')}
-          className="inputs p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <textarea
-          placeholder={t('settingsPage.widget.addDescriptionPlaceholder')}
-          className="w-full inputs p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white lt-sm:w-full h-24 resize-none"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
+        <div>
+          <label htmlFor="title" className="block text-sm font-medium mb-2">
+            Title
+          </label>
+          <input
+            id="title"
+            type="text"
+            placeholder={t("settingsPage.widget.addTitlePlaceholder")}
+            className="w-full inputs p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </div>
+
+        <div>
+          <label htmlFor="description" className="block text-sm font-medium mb-2">
+            Description
+          </label>
+          <textarea
+            id="description"
+            placeholder={t("settingsPage.widget.addDescriptionPlaceholder")}
+            className="w-full inputs p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white lt-sm:w-full h-24 resize-none"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
       </div>
+
       <div className="flex gap-3 lt-md:flex-col">
         <button
           onClick={handleSave}
-          className="flex-1 py-2 bg-greentheme text-white rounded-lg hover:opacity-90 transition-opacity"
+          disabled={isSubmitting || !formChanged}
+          className={`flex-1 py-2 rounded-lg transition-all flex items-center justify-center ${
+            formChanged
+              ? "bg-greentheme text-white hover:opacity-90"
+              : "bg-gray-300 dark:bg-darkthemeitems text-gray-500 dark:text-gray-400 cursor-not-allowed"
+          }`}
         >
-          {t('settingsPage.widget.buttons.save')}
+          {isSubmitting ? (
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
+              {t("settingsPage.widget.buttons.saving")}
+            </>
+          ) : (
+            t("settingsPage.widget.buttons.save")
+          )}
         </button>
-        <Link to={currentUrl.includes('dev')?`https://${subdomain}.dev.tabla.ma/make/review/preview`:currentUrl.includes('localhost')? `http://${subdomain}.localhost:5173/make/review/preview` : `https://${subdomain}.tabla.ma/make/review/preview`} target="_blank" className="btn-secondary w-1/2 text-center lt-md:w-full">
-          {t('settingsPage.widget.buttons.preview')}
+        <Link
+          to={getPreviewUrl()}
+          target="_blank"
+          className="btn-secondary w-1/2 text-center lt-md:w-full flex items-center justify-center"
+        >
+          {t("settingsPage.widget.buttons.preview")}
         </Link>
       </div>
-    </div>
-  );
-};
 
-export default ReviewWidget;
+      {/* Toast notification */}
+      {toast && (
+        <div className="fixed bottom-4 right-4 bg-white dark:bg-white shadow-lg rounded-md overflow-hidden z-50 animate-slideDown max-w-md w-full">
+          <div className="flex items-center p-4 pr-10 relative">
+            <div className={`flex-shrink-0 mr-3 ${toast.type === "success" ? "text-green-600" : "text-red-600"}`}>
+              {toast.type === "success" ? (
+                <div className="bg-green-100 rounded-full p-1">
+                  <Check size={18} className="text-green-600" />
+                </div>
+              ) : (
+                <div className="bg-red-100 rounded-full p-1">
+                  <AlertCircle size={18} className="text-red-600" />
+                </div>
+              )}
+            </div>
+            <p className="text-gray-700 font-medium">{toast.message}</p>
+            <button
+              onClick={() => setToast(null)}
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+              aria-label="Close"
+            >
+              <X size={16} />
+            </button>
+          </div>
+          <div className={`h-1 ${toast.type === "success" ? "bg-green-500" : "bg-red-500"}`} />
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default ReviewWidget

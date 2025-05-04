@@ -76,12 +76,12 @@ const RestaurantSelection: React.FC<{showLogo?: boolean}> = ({showLogo=true}) =>
   };
   
   return (
-    <div className="flex bg-cover flex-col items-center w-full min-h-screen dark:bg-bgdarktheme">
+    <div className="flex bg-cover flex-col items-center w-full min-h-screen max-h-screen overflow-y-auto dark:bg-bgdarktheme">
       
       <div className="relative w-full flex items-center justify-center">
         {showLogo && <>
           <Logo className="horizontal" nolink />
-          <button className="btn-primary fixed top-[10px] left-[20px]" onClick={() => handleLogout()}>
+          <button className="btn-primary fixed top-[10px] left-[10px] z-10" onClick={() => handleLogout()}>
             change user
           </button>
         </>}

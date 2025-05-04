@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Map from '../map/Map';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, WholeWord } from 'lucide-react';
 import {
   BaseKey,
   BaseRecord,
@@ -12,6 +12,7 @@ import {
   CanAccess,
 } from '@refinedev/core';
 import loading from '../../assets/loading.png';
+import BaseBtn from '../common/BaseBtn';
 
 interface Restaurant {
   id: BaseKey;
@@ -170,7 +171,7 @@ const General = () => {
     return (
       <input
         type="text"
-        className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+        className={`inputs  dark:bg-darkthemeitems bg-white `}
         value={value}
         onChange={(e) => editCategory(index, e.target.value)}
         onBlur={() => setEditingCategoryIndex(null)}
@@ -202,7 +203,23 @@ const General = () => {
     },
   });
 
-  const { mutate } = useCustomMutation();
+  const { mutate, isLoading } = useCustomMutation();
+
+  const handleSubDomainChange = () => {
+    mutate({
+      url: 'api/v1/bo/restaurants/subdomain',
+      method: 'patch',
+      values: { subdomain: subdomain },
+      successNotification: {
+        type: 'success',
+        message: t('settingsPage.general.basicInformationForm.notifications.subdomainUpdated'),
+      },
+      errorNotification: {
+        type: 'error',
+        message: t('settingsPage.general.basicInformationForm.notifications.subdomainUpdateFailed'),
+      },
+    });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -218,13 +235,7 @@ const General = () => {
       city: formData.city,
     };
 
-    if (subdomain) {
-      mutate({
-        url: 'api/v1/bo/restaurants/subdomain',
-        method: 'patch',
-        values: { subdomain: subdomain },
-      });
-    }
+    
 
     updateRestaurant({
       resource: 'api/v1/bo/restaurants',
@@ -235,7 +246,7 @@ const General = () => {
 
   // Read-only view when the user does not have access to change
   const ReadOnlyView = () => (
-    <div className={`rounded-[10px] p-3 w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}>
+    <div className={`rounded-[10px] p-3 w-full  dark:bg-bgdarktheme bg-white `}>
         <h2 className="text-center mb-3">{t('settingsPage.general.basicInformationForm.title')}</h2>
         <div className="flex flex-col gap-3">
           <div className="flex flex-row gap-3">
@@ -243,7 +254,7 @@ const General = () => {
               type="text"
               id="name"
               placeholder={t('settingsPage.general.basicInformationForm.labels.restaurantName')}
-              className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+              className={`inputs  dark:bg-darkthemeitems bg-white `}
               value={formData.name}
               readOnly aria-readonly
             />
@@ -251,7 +262,7 @@ const General = () => {
               type="text"
               id="email"
               placeholder={t('settingsPage.general.basicInformationForm.labels.email')}
-              className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+              className={`inputs  dark:bg-darkthemeitems bg-white `}
               value={formData.email}
               readOnly aria-readonly
             />
@@ -259,7 +270,7 @@ const General = () => {
           <div className="flex flex-row gap-3">
             <select
               id="country"
-              className={`inputs w-1/2 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+              className={`inputs w-1/2  dark:bg-darkthemeitems bg-white `}
               value={formData.country}
               aria-readonly
             >
@@ -271,7 +282,7 @@ const General = () => {
             </select>
             <select
               id="city"
-              className={`inputs w-1/2 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+              className={`inputs w-1/2  dark:bg-darkthemeitems bg-white `}
               value={formData.city}
               aria-readonly
             >
@@ -287,7 +298,7 @@ const General = () => {
               type="text"
               id="address"
               placeholder={t('settingsPage.general.basicInformationForm.labels.address')}
-              className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+              className={`inputs  dark:bg-darkthemeitems bg-white `}
               value={restaurant?.address}
               readOnly aria-readonly
             />
@@ -296,7 +307,7 @@ const General = () => {
             <textarea
               id="description"
               placeholder={t('settingsPage.general.basicInformationForm.labels.description')}
-              className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+              className={`inputs  dark:bg-darkthemeitems bg-white `}
               value={formData.description}
               readOnly aria-readonly
             ></textarea>
@@ -306,7 +317,7 @@ const General = () => {
               type="text"
               id="phone"
               placeholder={t('settingsPage.general.basicInformationForm.labels.phone')}
-              className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+              className={`inputs  dark:bg-darkthemeitems bg-white `}
               value={formData.phone}
               readOnly aria-readonly
             />
@@ -314,7 +325,7 @@ const General = () => {
               type="text"
               id="website"
               placeholder={t('settingsPage.general.basicInformationForm.labels.website')}
-              className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+              className={`inputs  dark:bg-darkthemeitems bg-white `}
               value={formData.website}
               readOnly aria-readonly
             />
@@ -325,7 +336,7 @@ const General = () => {
               type="text"
               id="subdomain"
               placeholder={t('settingsPage.general.basicInformationForm.labels.subdomain')}
-              className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+              className={`inputs  dark:bg-darkthemeitems bg-white `}
               value={subdomain}
               readOnly aria-readonly
             />
@@ -340,15 +351,40 @@ const General = () => {
       action="change"
       fallback={<ReadOnlyView />}
     >
-      <div className={`rounded-[10px] p-3 w-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}>
+      <div className={`rounded-[10px] p-3 w-full dark:bg-bgdarktheme bg-white `}>
         <h2 className="text-center mb-3">{t('settingsPage.general.basicInformationForm.title')}</h2>
+        <div className="flex flex-col gap-2 mb-4">
+          <p>{t('settingsPage.general.basicInformationForm.labels.subdomain')}</p>
+          <div className="flex gap-3 lt-lg:flex-col items-center">
+            <input
+              type="text"
+              id="subdomain"
+              placeholder={t('settingsPage.general.basicInformationForm.labels.subdomain')}
+              className={`inputs dark:bg-darkthemeitems bg-white `}
+              value={subdomain}
+              onChange={(e) => setSubdomain(e.target.value)}
+            />
+            <BaseBtn
+              variant="primary"
+              type="submit"
+              loading={isLoading}
+              className=" w-1/4 py-[10px] lt-lg:w-full "
+              onClick={handleSubDomainChange}
+            >
+              {t('settingsPage.general.basicInformationForm.buttons.save')} <span className='text-[10px] flex gap-1 items-center'><WholeWord className="ml-0" size={16} />.tabla.ma</span>
+            </BaseBtn>
+          </div>
+        </div>
         <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
+          <p className="">
+            {t('settingsPage.general.basicInformationForm.labels.restaurantInformations')}
+          </p>
           <div className="flex flex-row gap-3">
             <input
               type="text"
               id="name"
               placeholder={t('settingsPage.general.basicInformationForm.labels.restaurantName')}
-              className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+              className={`inputs dark:bg-darkthemeitems bg-white `}
               value={formData.name}
               onChange={handleInputChange}
             />
@@ -356,7 +392,7 @@ const General = () => {
               type="text"
               id="email"
               placeholder={t('settingsPage.general.basicInformationForm.labels.email')}
-              className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+              className={`inputs dark:bg-darkthemeitems bg-white `}
               value={formData.email}
               onChange={handleInputChange}
             />
@@ -364,7 +400,7 @@ const General = () => {
           <div className="flex flex-row gap-3">
             <select
               id="country"
-              className={`inputs w-1/2 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+              className={`inputs w-1/2 dark:bg-darkthemeitems bg-white `}
               value={formData.country}
               onChange={handleSelectChange}
             >
@@ -376,7 +412,7 @@ const General = () => {
             </select>
             <select
               id="city"
-              className={`inputs w-1/2 ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+              className={`inputs w-1/2 dark:bg-darkthemeitems bg-white `}
               value={formData.city}
               onChange={handleSelectChange}
             >
@@ -392,7 +428,7 @@ const General = () => {
               type="text"
               id="address"
               placeholder={t('settingsPage.general.basicInformationForm.labels.address')}
-              className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+              className={`inputs  dark:bg-darkthemeitems bg-white `}
               value={formData.address}
               onChange={handleInputChange}
             />
@@ -401,7 +437,7 @@ const General = () => {
             <textarea
               id="description"
               placeholder={t('settingsPage.general.basicInformationForm.labels.description')}
-              className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+              className={`inputs  dark:bg-darkthemeitems bg-white `}
               value={formData.description}
               onChange={handleInputChange}
             ></textarea>
@@ -411,7 +447,7 @@ const General = () => {
               type="text"
               id="phone"
               placeholder={t('settingsPage.general.basicInformationForm.labels.phone')}
-              className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+              className={`inputs  dark:bg-darkthemeitems bg-white `}
               value={formData.phone}
               onChange={handleInputChange}
             />
@@ -419,30 +455,20 @@ const General = () => {
               type="text"
               id="website"
               placeholder={t('settingsPage.general.basicInformationForm.labels.website')}
-              className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
+              className={`inputs  dark:bg-darkthemeitems bg-white `}
               value={formData.website}
               onChange={handleInputChange}
             />
           </div>
-          <div className="flex flex-col gap-2 mt-2">
-            <p>{t('settingsPage.general.basicInformationForm.labels.subdomain')}</p>
-            <input
-              type="text"
-              id="subdomain"
-              placeholder={t('settingsPage.general.basicInformationForm.labels.subdomain')}
-              className={`inputs ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems' : 'bg-white'}`}
-              value={subdomain}
-              onChange={(e) => setSubdomain(e.target.value)}
-            />
-          </div>
+          
           <div className="flex w-full justify-center gap-4">
             <button
               type="reset"
-              className={`btn ${localStorage.getItem('darkMode') === 'true' ? 'border-white text-white hover:border-redtheme hover:text-redtheme' : ''}`}
+              className={`btn lt-sm:w-1/2 w-[200px] border border-softgreytheme dark:border-darkthemeitems dark:bg-darkthemeitems dark:text-textdarktheme hover:bg-softgreytheme hover:dark:bg-darkthemeitems`}
             >
               {t('settingsPage.general.basicInformationForm.buttons.cancel')}
             </button>
-            <button type="submit" className="btn-primary">
+            <button type="submit" className="btn-primary lt-sm:w-1/2 w-[200px]">
               {t('settingsPage.general.basicInformationForm.buttons.save')}
             </button>
           </div>

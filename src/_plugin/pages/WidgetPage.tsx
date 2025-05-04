@@ -288,21 +288,17 @@ const WidgetPage = () => {
       <div className="h-16 w-full z-[0] opacity-0"></div>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row gap-8">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex justify-center flex-col sm:flex-row gap-8">
         {/* Left Column - Form */}
       <div className="w-full sm:w-3/5">
         <div className=" flex items-start">
-        {widgetInfo?.image ? (
+        {widgetInfo?.image && (
             <img
               src={widgetInfo.image || "/placeholder.svg"}
               alt="Restaurant"
               className="w-full h-[7em] object-scale-down "
             />
-          ) : (
-            <div className="w-full h-full bg-[#f5f5f5] dark:bg-[#2a2a2a] rounded-lg flex items-center justify-center">
-              <p className="text-[#888888] dark:text-[#666666]">Restaurant image</p>
-            </div>
-          )}
+          ) }
         </div>
           {step !== 6 && (
             <h1 className="text-3xl sm:text-4xl text-center font-bold mb-4 text-black dark:text-white">
@@ -675,7 +671,7 @@ const WidgetPage = () => {
         </div>
 
         {/* Right Column - Image */}
-        <div className="hidden sm:block w-2/5 sticky top-20 h-[80vh]">
+        {widgetInfo?.image_2 && <div className="hidden sm:block w-2/5 sticky top-20 h-[80vh]">
           {widgetInfo?.image_2 ? (
             <img
               src={widgetInfo.image_2 || "/placeholder.svg"}
@@ -687,7 +683,7 @@ const WidgetPage = () => {
               <p className="text-[#888888] dark:text-[#666666]">Restaurant image</p>
             </div>
           )}
-        </div>
+        </div>}
       </main>
     </div>
   )

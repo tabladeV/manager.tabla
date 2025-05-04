@@ -37,6 +37,7 @@ interface ReservationModalProps {
 interface Client extends BaseRecord {
   id: BaseKey;
   full_name: string;
+  tags: {name:string,id:number}[];
   email: string;
   phone: string;
   comment?: string;
@@ -85,6 +86,7 @@ const ReservationModal = (props: ReservationModalProps) => {
     queryOptions: {
       onSuccess: (data) => {
         setClientsForAPI(data.data as unknown as ClientForApi);
+        console.log('clients data', data.data);
       },
     },
     errorNotification(error, values, resource) {
@@ -581,6 +583,14 @@ const ReservationModal = (props: ReservationModalProps) => {
             >
               <X size={20} />
             </button>
+          </div>
+          <p className="text-md  font-[500]">Tags</p>
+          <div className="flex flex-wrap gap-2 mb-3">
+            {selectedClient?.tags?.map((tag:{name:string;id:number}) => (
+              <span key={tag.id} className={`text-[12px] font-[500] px-2 py-1 rounded-md mt-2 w-fit bg-softgreentheme text-greentheme`}>
+                {tag.name}
+              </span>
+            ))}
           </div>
           <div className="flex flex-col gap-2">
             <input

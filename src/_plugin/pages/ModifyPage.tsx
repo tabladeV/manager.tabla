@@ -345,19 +345,15 @@ const Modify = () => {
       </header>
       <div className="h-16 w-full opacity-0"></div>
 
-      <div className="h-[90vh] items-start xl:max-w-[1200px] no-scrollbar mx-auto  overflow-y-auto w-full flex p-5 gap-8 px-10 justify-between">
+      <div className="h-[90vh] items-start xl:max-w-[1200px] no-scrollbar mx-auto  overflow-y-auto w-full flex  p-5 gap-8 px-10 justify-center">
         <div className="w-full sm:w-3/5">
-          {widgetInfo?.image ? (
+          {widgetInfo?.image && (
             <img
               src={widgetInfo.image || "/placeholder.svg"}
               alt="Restaurant"
               className="w-full h-[7em] object-scale-down "
             />
-          ) : (
-            <div className="w-full h-full bg-[#f5f5f5] dark:bg-[#2a2a2a] rounded-lg flex items-center justify-center">
-              <p className="text-[#888888] dark:text-[#666666]">Restaurant image</p>
-            </div>
-          )}
+          ) }
           <h1 className={`text-4xl text-center font-bold dark:text-white mb-2`}>{widgetInfo?.title}</h1>
 
           <div>
@@ -711,7 +707,7 @@ const Modify = () => {
             </div>
           )}
         </div>
-        <div className="hidden sm:block w-2/5 sticky top-0 h-[83vh]">
+        {widgetInfo?.image_2 && <div className="hidden sm:block w-2/5 sticky top-0 h-[83vh]">
           {widgetInfo?.image_2 ? (
             <img
               src={widgetInfo.image_2 || "/placeholder.svg"}
@@ -723,7 +719,7 @@ const Modify = () => {
               <p className="text-[#888888] dark:text-[#666666]">Restaurant image</p>
             </div>
           )}
-        </div>
+        </div>}
       </div>
       {showProcess && (
         <div className="">
