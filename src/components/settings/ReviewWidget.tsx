@@ -184,9 +184,9 @@ const ReviewWidget = () => {
       <div className="mb-6">
         <label className="block text-sm font-medium mb-2">Logo</label>
         {logo || previewUrl ? (
-          <div className="relative w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden border border-gray-200 dark:border-darkthemeitems">
+            <div className="relative w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden border border-gray-200 dark:border-darkthemeitems">
             <img
-              src={previewUrl || (logo ? `${logo}` : "")}
+              src={previewUrl || (logo ? (logo.includes(API_HOST) ? logo : `${API_HOST}${logo}`) : "")}
               alt="Logo"
               className="w-full h-full object-contain"
             />
@@ -197,7 +197,7 @@ const ReviewWidget = () => {
             >
               <X size={16} />
             </button>
-          </div>
+            </div>
         ) : (
           <button
             onClick={() => fileInputRef.current?.click()}
