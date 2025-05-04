@@ -290,11 +290,11 @@ export default function WidgetConfig() {
         </div>
       </div>
 
-      <div className="mb-6 flex gap-5 justify-between items-start">
-        <div className='flex w-1/2 flex-col gap-2'>
+      <div className="mb-6 flex gap-5 justify-between lt-sm:flex-col lt-sm:w-full items-start">
+        <div className='flex w-1/2 lt-sm:w-full flex-col gap-2'>
           <h2 className="text-lg font-semibold mb-2">{t('settingsPage.widget.logo')}</h2>
           {logo ? (
-            <div className="relative w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden">
+            <div className="relative  w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden">
               <img src={ logo} alt="Logo" className="w-full h-full object-contain" />
               <button
                 onClick={() => {setLogo(null);setNewLogo(true);setDeleteLogo(true)}}
@@ -313,7 +313,7 @@ export default function WidgetConfig() {
             </button>
           )}
         </div>
-        <div className='flex w-1/2 flex-col gap-2'>
+        <div className='flex w-1/2 lt-sm:w-full flex-col gap-2'>
           <h2 className="text-lg font-semibold mt-2">{t('settingsPage.widget.image')}</h2>
           {image ? (
             <div className="relative w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden">
@@ -405,10 +405,10 @@ export default function WidgetConfig() {
                 ))}
               </div>
               {(hasMenu) && (
-                <div className="flex justify-around items-center">
+                <div className="flex justify-around gap-2 items-center">
                   <button
                     onClick={() => filePdfInputRef.current?.click()}
-                    className="btn-secondary gap-2 flex mt-3"
+                    className="btn-secondary gap-2 flex items-center mt-3"
                   >
                     <Upload className="mr-2" size={20} />
                     {t('settingsPage.widget.uploadMenu')}

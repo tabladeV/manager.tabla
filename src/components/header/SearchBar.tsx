@@ -11,7 +11,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ SearchHandler, prepend, append })
     const { t } = useTranslation();
     const expandTables = true;
     return (
-        <div className={`flex rounded-lg items-center p-2 gap-2 justify-between ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-textdarktheme' : 'bg-white text-black'}`}>
+        <div className={`flex rounded-lg items-center p-2 gap-2 justify-between dark:bg-bgdarktheme dark:text-textdarktheme bg-white text-black `}>
             {prepend}
             <div className='flex items-center gap-2'>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

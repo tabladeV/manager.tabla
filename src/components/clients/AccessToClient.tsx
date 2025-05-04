@@ -27,7 +27,7 @@ const AccessToClient = (props:AccessToClientProps) => {
   }, [props.id])
   const {pathname} = useLocation();
   return (
-    <div className={ ` rounded-[10px] p-2 flex justify-between items-center ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme2 text-white':'bg-softgreytheme text-greytheme'}`}>
+    <div className={ ` rounded-[10px] p-2 flex justify-between items-center dark:bg-bgdarktheme2 dark:text-white bg-softgreytheme text-greytheme `}>
       <Link to={`/clients/${props.id}`} className={`flex gap-3 w-full cursor-pointer  hover:opacity-80 justify-start  items-center ${pathname=== '/clients/'+urlId ? 'opacity-100':'opacity-25 lt-sm:opacity-100'}`}>
         <img className="w-12 h-12 object-cover rounded-full" src={props.image}/>
         <div className="h-12 border-[1px] border-[#00000010] w-0 "></div>
