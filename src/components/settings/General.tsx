@@ -371,7 +371,7 @@ const General = () => {
               className=" w-1/4 py-[10px] lt-lg:w-full "
               onClick={handleSubDomainChange}
             >
-              {t('settingsPage.general.basicInformationForm.buttons.save')} <span className='text-[10px] flex gap-1 items-center'><WholeWord className="ml-2" size={16} />.tabla.ma</span>
+              {t('settingsPage.general.basicInformationForm.buttons.save')} <span className='text-[10px] flex gap-1 items-center'><WholeWord className="ml-0" size={16} />.tabla.ma</span>
             </BaseBtn>
           </div>
         </div>

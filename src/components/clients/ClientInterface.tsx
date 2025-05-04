@@ -191,7 +191,7 @@ const ClientInterface = () => {
       setReservation(reservationsAPI.results)
       setCount(reservationsAPI.count)
     }
-  }, [data, reservationsAPI])
+  }, [data, reservationsAPI, client?.tags])
 
   const [isProfile, setIsProfile] = useState(true)
 
@@ -493,18 +493,21 @@ const ClientInterface = () => {
               </h1>
               <h4 className={` text-[18px] font-[500] text-subblack dark:text-softwhitetheme`}>{client.email}</h4>
               <h4 className={` text-[18px] font-[500] text-subblack dark:text-softwhitetheme`}>{client.phone}</h4>
-              <DevOnly>
-                <div className="flex gap-2 mt-[0em] mb-1">
-                  {tags.map((tag) => (
-                    <span
-                      key={tag.id}
-                      className={`text-[12px] font-[500] px-2 py-1 rounded-md mt-2 bg-softgreentheme text-greentheme`}
-                    >
-                      {tag.name}
-                    </span>
-                  ))}
-                </div>
-              </DevOnly>
+              <div className="flex gap-2 mt-[0em] mb-1">
+                {tagsLoading&& (
+                  <div className="flex items-center justify-center w-full h-full">
+                    loading...
+                  </div>
+                )}
+                {tags && tags.map((tag) => (
+                  <span
+                    key={tag.id}
+                    className={`text-[12px] font-[500] px-2 py-1 rounded-md mt-2 bg-softgreentheme text-greentheme`}
+                  >
+                    {tag.name}
+                  </span>
+                ))}
+              </div>
               <CanAccess resource="customer" action="delete">
                 <button
                   onClick={() => {
@@ -641,30 +644,28 @@ const ClientInterface = () => {
                             <td className="font-medium p-2">{t("clients.profileSection.fields.guestNotes")}</td>
                             {renderCell("internal_note", 3)}
                           </tr>
-                          <DevOnly>
-                            <tr className="border border-gray-300">
-                              <td className="font-medium p-2">{t("clients.profileSection.fields.tags")}</td>
-                              <td className="p-2 ">
-                                <span className="flex flex-wrap gap-3 w-full px-3 py-2 rounded cursor-pointer  transition-colors dark:bg-bgdarktheme2  bg-gray-100 items-start ">
-                                  {allTags.map((tag) => (
-                                    <span
-                                      key={tag.id}
-                                      onClick={() => {
-                                        handleAddDropTag(tag.id)
-                                      }}
-                                      className={`text-[12px] font-[500] hover:bg-greentheme/50 px-2 py-1 rounded-md mt-2 ${
-                                        tags.some((t) => t.id === tag.id)
-                                          ? "bg-greentheme text-white"
-                                          : "bg-softgreentheme text-greentheme"
-                                      }`}
-                                    >
-                                      {tag.name}
-                                    </span>
-                                  ))}
-                                </span>
-                              </td>
-                            </tr>
-                          </DevOnly>
+                          <tr className="border border-gray-300">
+                            <td className="font-medium p-2">{t("clients.profileSection.fields.tags")}</td>
+                            <td className="p-2 ">
+                              <span className="flex flex-wrap gap-3 w-full px-3 py-2 rounded cursor-pointer  transition-colors dark:bg-bgdarktheme2  bg-gray-100 items-start ">
+                                {allTags.map((tag) => (
+                                  <span
+                                    key={tag.id}
+                                    onClick={() => {
+                                      handleAddDropTag(tag.id)
+                                    }}
+                                    className={`text-[12px] font-[500] hover:bg-greentheme/50 px-2 py-1 rounded-md mt-2 ${
+                                      tags.some((t) => t.id === tag.id)
+                                        ? "bg-greentheme text-white"
+                                        : "bg-softgreentheme text-greentheme"
+                                    }`}
+                                  >
+                                    {tag.name}
+                                  </span>
+                                ))}
+                              </span>
+                            </td>
+                          </tr>
                         </tbody>
                       </table>
                     </div>
