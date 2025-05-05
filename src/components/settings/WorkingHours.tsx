@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Plus, X, Copy, Check, CheckSquare, Square } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import i18next from 'i18next';
+import i18next, { use } from 'i18next';
 import { BaseKey, BaseRecord, CanAccess, useCreate, useList, useUpdate } from '@refinedev/core';
 import { id } from 'date-fns/locale';
 import { set } from 'date-fns';
@@ -41,6 +41,20 @@ const WorkingHours = () => {
 
   const { data: restaurantData, isLoading: restaurantLoading, error: restaurantError } = useList({
     resource: `api/v1/bo/restaurants/${restaurantId}/current/`,
+  });
+
+  interface Cover {
+    total_capacity: number;
+  }
+
+  const [cover , setCover] =useState<Cover>();
+  const {data: capacity , isLoading: loadingCapacity , error: errorCapacity} = useList({
+    resource: `api/v1/bo/availability/total-capacity/`,
+    queryOptions:{
+      onSuccess(data){
+        setCover(data.data as unknown as Cover)
+      }
+    }
   });
 
   const [duration, setDuration] = useState<string>('');
@@ -290,6 +304,10 @@ const WorkingHours = () => {
             />
           </CanAccess>
         </div> */}
+        <div className="flex items-center gap-2 rounded-md shadow-sm">
+          <h4 className="font-semibold text-gray-700 dark:text-gray-300">Total Covers:</h4>
+          <p className="text-gray-900 bg-gray-100 rounded-md px-3 dark:bg-darkthemeitems py-2 dark:text-white">{cover?.total_capacity}</p>
+        </div>
       </div>
 
       <CanAccess resource='availabilityday' action='change'>
