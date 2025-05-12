@@ -67,7 +67,7 @@ const RestaurantSelection: React.FC<{showLogo?: boolean}> = ({showLogo=true}) =>
 
         setTimeout(()=>{
           window.location.reload();
-        }, 1000);
+        });
       }
     }catch (e) {
       localStorage.removeItem("restaurant_id");
