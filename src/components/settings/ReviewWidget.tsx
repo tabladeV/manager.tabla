@@ -69,6 +69,7 @@ const ReviewWidget = () => {
   // Initialize form with data from API
   useEffect(() => {
     if (reviewData?.data) {
+      console.log("Review data:", reviewData.data)
       const data = reviewData.data as unknown as ReviewSettings
       setReviewSettings(data)
       setTitle(data.title || "")
@@ -186,7 +187,7 @@ const ReviewWidget = () => {
         {logo || previewUrl ? (
           <div className="relative w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden border border-gray-200 dark:border-darkthemeitems">
             <img
-              src={previewUrl || (logo ? `${API_HOST}${logo}` : "")}
+              src={previewUrl || (logo ? `${logo}` : "")}
               alt="Logo"
               className="w-full h-full object-contain"
             />
