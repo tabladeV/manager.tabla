@@ -74,7 +74,7 @@ function App() {
   }, []);
 
   const subdomain = getSubdomain();
-  const isManager = subdomain === "manager";
+  const isManager = subdomain === "manager" || true;
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLogedIn") === "true";
     const refreshToken = localStorage.getItem("refresh");

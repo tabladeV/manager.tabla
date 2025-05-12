@@ -4,347 +4,399 @@ import React, {
   useRef,
   useCallback,
   useMemo,
+  useImperativeHandle
 } from 'react';
-import { Stage, Layer } from 'react-konva';
+import { Stage, Layer, Transformer } from 'react-konva';
 import Rectangle from './Rectangle';
 import CircleShape from './CircleShape';
 import { useTranslation } from 'react-i18next';
-import { BaseKey, BaseRecord, useDelete, useList, useNotification } from '@refinedev/core';
+import { BaseKey, BaseRecord, useNotification } from '@refinedev/core'; // Removed unused hooks
 import { generateRandomNumber } from '../../../utils/helpers';
 import Konva from 'konva';
 import ZoomControls from '../ZoomControls';
-import dataProvider from '@refinedev/simple-rest';
 import axiosInstance from '../../../providers/axiosInstance';
-import { off } from 'process';
-import BaseBtn from '../../common/BaseBtn';
 import { useDarkContext } from '../../../context/DarkContext';
 import ActionPopup from '../../popup/ActionPopup';
-import { Table } from '../../../_root/pages/DesignPlaces';
+import { Table } from '../../../_root/pages/DesignPlaces'; // Keep Table type if used elsewhere
 
-const MAX_ZOOM = 0.9; // maximum scale allowed
-const MIN_ZOOM = 0.4; // minimum scale allowed
+// Import new DesignElement type
+import { DesignElement } from '../../../_root/pages/DesignPlaces';
+import AssetShape from './AssetShape';
+
+// Import new DesignToolbar component
+import DesignToolbar from './DesignToolbar';
+// Placeholder icons - replace with actual Lucid icons
+import { Plus, Circle, Square, Diamond, DoorOpen, Leaf, Sprout, Waypoints, DraftingCompass, BrickWall, Martini, Cigarette, CigaretteOff } from 'lucide-react';
+
+// Import SVG assets
+import singleDoorSrc from '../../../assets/single-door.svg';
+import doubleDoorSrc from '../../../assets/double-door.svg';
+import plant1Src from '../../../assets/plant1.svg';
+import plant2Src from '../../../assets/plant2.svg';
+import plant3Src from '../../../assets/plant3.svg';
+import plant4Src from '../../../assets/plant4.svg';
+import staireSrc from '../../../assets/staire.svg';
+import staire2Src from '../../../assets/staire2.svg';
+import cigarette from '../../../assets/cigarette.svg';
+import cigaretteOff2Src from '../../../assets/cigarette-off.svg';
+import doorSrc from '../../../assets/door.svg';
+import Rhombus from './Rhombus';
+
+const MAX_ZOOM = 2; // maximum scale allowed
+const MIN_ZOOM = 0.3; // minimum scale allowed
+
+// Define distinct types for Tables and Props (Assets)
+interface TableShape extends DesignElement {
+  type: 'RECTANGLE' | 'CIRCLE' | 'RHOMBUS';
+  name: string;
+  max: number;
+  min: number;
+  blocked: boolean;
+}
+
+interface PropShape extends DesignElement {
+  type: AssetType;
+  src: string;
+}
+
+// Configuration for different asset types
+const ASSET_CONFIG = {
+  SINGLE_DOOR: { src: singleDoorSrc, defaultWidth: 90, defaultHeight: 60, name: 'Single Door', icon: <DoorOpen size={24} /> },
+  DOUBLE_DOOR: { src: doubleDoorSrc, defaultWidth: 180, defaultHeight: 60, name: 'Double Door', icon: <DoorOpen size={24} /> },
+  DOOR: { src: doorSrc, defaultWidth: 60, defaultHeight: 100, name: 'Door', icon: <DoorOpen size={24} /> },
+  CIGARETTE_ZONE: { src: cigarette, defaultWidth: 80, defaultHeight: 80, name: 'Cigarette zone', icon: <Cigarette size={24} /> },
+  NOCIGARETTE_ZONE: { src: cigaretteOff2Src, defaultWidth: 80, defaultHeight: 80, name: 'No Cigarette zone', icon: <CigaretteOff size={24} /> },
+  PLANT1: { src: plant1Src, defaultWidth: 80, defaultHeight: 80, name: 'Plant 1', icon: <Leaf size={24} /> },
+  PLANT2: { src: plant2Src, defaultWidth: 80, defaultHeight: 90, name: 'Plant 2', icon: <Leaf size={24} /> },
+  PLANT3: { src: plant3Src, defaultWidth: 80, defaultHeight: 80, name: 'Plant 3', icon: <Leaf size={24} /> },
+  PLANT4: { src: plant4Src, defaultWidth: 80, defaultHeight: 120, name: 'Plant 4', icon: <Leaf size={24} /> },
+  STAIRE: { src: staireSrc, defaultWidth: 150, defaultHeight: 150, name: 'Stairs Up', icon: <Waypoints size={24} /> }, // Changed Stairs to Waypoints
+  STAIRE2: { src: staire2Src, defaultWidth: 200, defaultHeight: 160, name: 'Stairs Side', icon: <Waypoints size={24} /> }, // Changed Stairs to Waypoints
+};
+
+// Define AssetType based on ASSET_CONFIG keys
+type AssetType = keyof typeof ASSET_CONFIG;
 
 interface CanvasTypes {
   focusedRoofId: BaseKey | undefined | null;
-  tables: Table[];
-  onSave: (table: Table[]) => void;
+  tables: DesignElement[]; // Still receiving all elements as DesignElement initially
+  onSave: (elements: DesignElement[]) => void; // Still saving all elements as DesignElement
   isLoading: boolean;
-  newTables: (table: Table[]) => void;
+  newTables: (elements: DesignElement[]) => void; // Prop to notify parent (will be called less frequently)
   floorName: string | undefined;
 }
 
-const DesignCanvas: React.FC<CanvasTypes> = (props) => {
+const DesignCanvas = (props: CanvasTypes) => {
   const { darkMode } = useDarkContext();
-  const [shapes, setShapes] = useState<Table[]>([]);
+  // Separate state for tables and props
+  const [tables, setTables] = useState<TableShape[]>([]);
+  const [propsShapes, setPropsShapes] = useState<PropShape[]>([]);
   const [selectedId, selectShape] = useState<BaseKey | null>(null);
-  const [showTools, setShowTools] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
-  const [showAdd, setShowAdd] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [loadingAddShape, setLoadingAddShape] = useState(false);
+  const [showAdd, setShowAdd] = useState<'RECTANGLE' | 'CIRCLE' | 'RHOMBUS' | null>(null);
+  // Removed unused loading states
+  // const [loading, setLoading] = useState(false);
+  // const [loadingAddShape, setLoadingAddShape] = useState(false);
 
   // Stage pan and zoom state
   const [stagePosition, setStagePosition] = useState({ x: 0, y: 0 });
   const [stageScale, setStageScale] = useState(1);
   const [isShapeDragging, setIsShapeDragging] = useState(false);
 
+  // Stage ref for accessing Konva stage methods and Transformer ref
+  const stageRef = useRef<Konva.Stage | null>(null);
+  const trRef = useRef<Konva.Transformer | null>(null);
+
   // Container measurements for responsive stage
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
   const [containerHeight, setContainerHeight] = useState(0);
+  const [action, setAction] = useState('');
+  const [showPopup, setShowPopup] = useState(false);
+  
 
   const { t } = useTranslation();
+  const { open } = useNotification();
 
-  // Update shapes when focusedRoofId changes
-  useEffect(() => {
-    if (props.focusedRoofId) {
-      setShapes(props.tables);
-      
-      // Auto focus when tables are loaded
-      if (props.tables.length > 0) {
-        // Use setTimeout to ensure the stage is ready
-        setTimeout(() => focusAll(), 100);
-      }
+  // Function to check if a table with the given name exists on the backend
+  const checkTableExists = useCallback(async (tableName: string) => {
+    try {
+      // Removed setLoading as it's not used elsewhere in this function's scope
+      const { data } = await axiosInstance.get('api/v1/bo/tables/', {
+        params: {
+          search: tableName
+        }
+      });
+      return data.length > 0;
+    } catch (error) {
+      console.error(error);
+      return true; // Assume exists on error to prevent duplicate names
     }
-  }, [props.focusedRoofId, props.tables]);
+  }, [axiosInstance]);
 
-  // Set container width on mount and window resize
-  useEffect(() => {
-    const updateWidth = () => {
-      if (containerRef.current) {
-        setContainerWidth(containerRef.current.clientWidth);
-      }
-    };
-    const updateHeight = () => {
-      if (containerRef.current) {
-        setContainerHeight(containerRef.current.clientHeight);
-      }
-    };
-    updateWidth();
-    updateHeight();
-    window.addEventListener('resize', ()=>{
-      updateWidth()
-      updateHeight()
-    });
-    return () => window.removeEventListener('resize', ()=>{
-      updateWidth()
-      updateHeight()
-    });
-  }, []);
+  // Transition the stage view to center a specific shape (table or prop)
+  const transitionToShape = useCallback((shape: DesignElement) => {
+    const stage = stageRef.current;
+    if (!stage) return;
 
-  // Memoize deselect callback to avoid inline recreations
+    // Center the new shape in the view
+    const shapeWidth = shape.width || (shape.type === 'CIRCLE' ? (shape.radius || 0) * 2 : 0);
+    const shapeHeight = shape.height || (shape.type === 'CIRCLE' ? (shape.radius || 0) * 2 : 0);
+
+    const newPos = {
+      x:
+        containerWidth / 2 -
+        (shape.x + shapeWidth / 2) * stageScale,
+      y:
+        containerHeight / 2 -
+        (shape.y + shapeHeight / 2) * stageScale,
+    };
+    const tween = new Konva.Tween({
+      node: stage,
+      duration: 0.1,
+      x: newPos.x,
+      y: newPos.y,
+    });
+    tween.play();
+    setStagePosition(newPos);
+  }, [containerWidth, containerHeight, stageScale]);
+
+  // Add a new shape (table or asset) to the canvas
+  const addShape = useCallback(
+    async (
+      type: 'RECTANGLE' | 'CIRCLE' | 'RHOMBUS' | AssetType,
+      options?: { name?: string; max?: number; min?: number; blocked?: boolean }
+    ) => {
+      // Removed setLoadingAddShape
+      let newShape: DesignElement | null = null;
+
+      const OFFSET = 20; // Offset in pixels for new elements
+      // Calculate initial position based on the last added shape of *any* type or a default
+      const allShapes = [...tables, ...propsShapes];
+      const lastShape = allShapes.length > 0 ? allShapes[allShapes.length - 1] : null;
+
+      const newX = lastShape
+        ? lastShape.x + OFFSET
+        : 50;
+      const newY = lastShape
+        ? lastShape.y + OFFSET
+        : 50;
+
+      if (type === 'RECTANGLE' || type === 'CIRCLE' || type === 'RHOMBUS') {
+        let counter = null;
+        let elementName = options?.name || '';
+        let existsInShapes = null;
+        let elementExists = null;
+
+        // If no name is provided, generate one
+        if (!elementName) {
+          // Count existing tables for name generation
+          counter = tables.length + 1;
+          elementName = `${type === 'RECTANGLE' ? 'Rectangle' : type === 'CIRCLE' ? 'Circle' : 'Rhombus'} ${counter}`;
+          existsInShapes = !!tables.find(s => s.name === elementName);
+          elementExists = await checkTableExists(elementName) || existsInShapes;
+          while (elementExists && counter < 100) {
+            counter++;
+            elementName = `${type === 'RECTANGLE' ? 'Rectangle' : type === 'CIRCLE' ? 'Circle' : 'Rhombus'} ${counter}`;
+            existsInShapes = !!tables.find(s => s.name === elementName);
+            elementExists = await checkTableExists(elementName) || existsInShapes;
+          }
+          if (elementExists) {
+            open?.({ type: "error", message: "Table name already exists" });
+            setShowAdd(type);
+            // Removed setLoadingAddShape
+            return;
+          }
+        } else {
+          // Check if user-provided name exists (only within tables and backend tables)
+          existsInShapes = !!tables.find(s => s.name === elementName && s.type === type);
+          elementExists = await checkTableExists(elementName) || existsInShapes;
+          if (elementExists) {
+            open?.({ type: "error", message: "Table name already exists" });
+            // Removed setLoadingAddShape
+            return;
+          }
+        }
+
+        newShape = {
+          id: generateRandomNumber(10),
+          name: elementName,
+          rotation: type === 'RHOMBUS' ? 45 : 0,
+          type,
+          width: 100,
+          height: type === 'RECTANGLE' ? 100 : 50,
+          radius: type === 'CIRCLE' ? 50 : undefined,
+          x: newX,
+          y: newY,
+          max: options?.max || 6,
+          min: options?.min || 1,
+          floor: props.focusedRoofId!,
+          reservations: [],
+          blocked: options?.blocked || false,
+        } as TableShape;
+      } else if (Object.keys(ASSET_CONFIG).includes(type)) {
+        const assetDetails = ASSET_CONFIG[type as AssetType];
+        newShape = {
+          id: generateRandomNumber(10),
+          name: assetDetails.name || type,
+          type: type,
+          src: assetDetails.src,
+          width: assetDetails.defaultWidth,
+          height: assetDetails.defaultHeight,
+          x: newX,
+          y: newY,
+          rotation: 0,
+          floor: props.focusedRoofId!,
+        } as PropShape;
+      }
+
+      if (newShape) {
+        const finalNewShape = newShape;
+        if (finalNewShape.type === 'RECTANGLE' || finalNewShape.type === 'CIRCLE' || finalNewShape.type === 'RHOMBUS') {
+          setTables((prevTables) => {
+            // Notify parent only on add/delete
+            props.newTables([...prevTables, finalNewShape as TableShape, ...propsShapes]);
+            setTimeout(() => transitionToShape(finalNewShape), 0);
+            return [...prevTables, finalNewShape as TableShape];
+          });
+        } else {
+           setPropsShapes((prevProps) => {
+             // Notify parent only on add/delete
+            props.newTables([...tables, ...prevProps, finalNewShape as PropShape]);
+            setTimeout(() => transitionToShape(finalNewShape), 0);
+            return [...prevProps, finalNewShape as PropShape];
+          });
+        }
+      }
+      // Removed setLoadingAddShape
+    },
+    [props.focusedRoofId, transitionToShape, checkTableExists, tables, propsShapes, open, props.newTables]
+  );
+
+  // Handle changes to a shape's attributes (position, size, rotation, etc.)
+  const handleShapeChange = useCallback((updatedShape: DesignElement) => {
+    const isTable = tables.some(table => table.id === updatedShape.id);
+
+    if (isTable) {
+      setTables(prevTables =>
+        prevTables.map(s => (s.id === updatedShape.id ? updatedShape as TableShape : s))
+      );
+    } else {
+      setPropsShapes(prevProps =>
+        prevProps.map(s => (s.id === updatedShape.id ? updatedShape as PropShape : s))
+      );
+    }
+    // Do NOT call props.newTables here to avoid excessive re-renders
+  }, [tables, propsShapes]);
+
+  // Memoize deselect callback
   const checkDeselect = useCallback((e: any) => {
-    if (e.target.name() === 'stage') {
-      selectShape(null);
+    if (e.target === e.target.getStage() || e.target.getClassName() === 'Transformer') {
+        selectShape(null);
     }
   }, []);
 
-  const { data: foundTables, isLoading: loadingCheckTableName, error, refetch } = useList<Table>({
-    resource: "api/v1/bo/tables/",
-    pagination: {
-      mode: "off",
-    },
-    queryOptions:{
-      enabled: false,
-    },
-    filters: [
-      {
-        field: "search",
-        operator: "null",
-        value: "",
-      }
-    ]
-  });
-
-  // Update document title
-  useEffect(() => {
-    document.title = `Design Floor - ${props.floorName} | Tabla`;
-  }, [props.floorName])
-
-
-  const [showPopup, setShowPopup] = useState(false);
-  const [action, setAction] = useState<'delete' | 'update' | 'create'| 'confirm'>('delete');
-
+  // Function triggered by the delete button in the toolbar
   const deleteShape = useCallback(() => {
-    // if (!confirm('Are you sure you want to delete this table?')) return;
     setAction('delete');
     setShowPopup(true);
-
-    // if (selectedId) {
-    //   setShapes((prevShapes) =>
-    //     prevShapes.filter((shape) => shape.id !== selectedId)
-    //   );
-    //   selectShape(null);
-    // }
   }, []);
 
+  // Function executed after confirming deletion in the popup
   const handleDelete = useCallback(() => {
     if (selectedId) {
-      setShapes((prevShapes) =>
-        prevShapes.filter((shape) => shape.id !== selectedId)
-      );
+      const isTable = tables.some(table => table.id === selectedId);
+
+      if (isTable) {
+        setTables((prevTables) => {
+           // Notify parent only on add/delete
+          props.newTables([...prevTables.filter((table) => table.id !== selectedId), ...propsShapes]);
+          return prevTables.filter((table) => table.id !== selectedId);
+        });
+      } else {
+        setPropsShapes((prevProps) => {
+          // Notify parent only on add/delete
+          props.newTables([...tables, ...prevProps.filter((prop) => prop.id !== selectedId)]);
+          return prevProps.filter((prop) => prop.id !== selectedId);
+        });
+      }
       selectShape(null);
     }
-    
-  }, [selectedId]);
+  }, [selectedId, tables, propsShapes, props.newTables]); // Added dependencies
 
-  useEffect(() => {
-    props.newTables(shapes);
-  }
-  , [shapes]);
-
-
-  
-  const { open } = useNotification();
-  
-
-  // Extracted changing name component to memoize its internals
-  const ChangingName = useCallback(
-    ({ id }: { id: number }) => {
-      const shape = shapes.find((s) => s.id === id);
-      if (!shape) return null;
-      return (
-        <div>
-          <form
-            className="popup bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme rounded-[10px]"
-            onSubmit={async (e) => {
-              e.preventDefault();
-              const newName = (e.target as any).elements[0].value;
-              const newMax = (e.target as any).elements[1].value;
-              const newMin = (e.target as any).elements[2].value;
-              const blocked = (e.target as any).elements[3].checked;
-              if(newName !== shape.name){
-                if (
-                  !!shapes.find(
-                    (s) => s.name === newName && s.id !== id
-                  ) || await checkTableExists(newName)
-                ) {
-                  // open notification
-                  open?.({
-                    type: "error",
-                    message: "Warning, Table name already exists",
-                  });
-                  return;
-                } 
-              }
-              setShapes((prev) =>
-                prev.map((s) =>
-                  s.id === id ? { ...s, name: newName, max: newMax, min: newMin, blocked: blocked } : s
-                )
-              );
-              console.log(shapes.find(s => s.id === id));
-              setShowEdit(false);
-            }}
-          >
-            <h1>Edit {shape.name}</h1>
-            <p>Change Table Name</p>
-            <input
-              type="text"
-              defaultValue={shape.name}
-              className="inputs-unique mt-2 bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme"
-            />
-            <p>Change maximum capacity</p>
-            <input
-              type="text"
-              defaultValue={shape.max}
-              className="inputs-unique mt-2 bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme"
-            />
-            <p>Change minimum capacity</p>
-            <input
-              type="text"
-              defaultValue={shape.min}
-              className="inputs-unique mt-2 bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme"
-            />
-                        <label className="flex items-center my-1">
-              <input
-                type="checkbox"
-                name="blocked"
-                defaultChecked={shape.blocked}
-                className="checkbox mr-2 form-checkbox h-4 w-4 text-green-600"
-              />
-              <span className="text-md">Blocked</span>
-            </label>
-            <button type="submit" className="btn-primary mt-2">
-              Save
-            </button>
-          </form>
-        </div>
-      );
-    },
-    [shapes]
-  );
-
-  // Extracted changing name component to memoize its internals
-  const AddTable = useCallback(
-    () => {
-      return (
-        <div>
-          <form
-            className="popup bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme rounded-[10px]"
-            onSubmit={async (e) => {
-              e.preventDefault();
-              const newName = (e.target as any).elements[0].value;
-              const newMax = (e.target as any).elements[1].value;
-              const newMin = (e.target as any).elements[2].value;
-              const blocked = (e.target as any).elements[3].checked;
-
-              if (!!shapes.find((s) => s.name === newName ) || await checkTableExists(newName)) {
-                open?.({
-                  type: "error",
-                  message: "Table name already exists",
-                });
-                return;
-              }
-              addShape(showAdd === 'RECTANGLE'?'RECTANGLE':'CIRCLE', newName, newMax, newMin, blocked);
-              setShowAdd(null);
-            }}
-          >
-            <h1>Add <span className='capitalize'>{showAdd === 'RECTANGLE'?'Rectangle':'circle'}</span> Table</h1>
-            <p>Table Name</p>
-            <input
-              type="text"
-              className="inputs-unique mt-2 bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme"
-            />
-            <p>Maximum capacity</p>
-            <input
-              type="text"
-              defaultValue={6}
-              className="inputs-unique mt-2 bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme"
-            />
-            <p>Minimum capacity</p>
-            <input
-              type="text"
-              defaultValue={1}
-              className="inputs-unique mt-2 bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme"
-            />
-            <label className="flex items-center my-1">
-              <input
-                type="checkbox"
-                name="blocked"
-                className="checkbox mr-2 form-checkbox h-4 w-4 text-green-600"
-              />
-              <span className="text-sm">Blocked</span>
-            </label>
-            <button type="submit" className="btn-primary mt-2">
-              Add
-            </button>
-          </form>
-        </div>
-      );
-    },
-    [shapes, showAdd]
-  );
-
+  // Function triggered by the edit button in the toolbar
   const editShape = useCallback(() => {
     if (selectedId) {
-      setShowEdit(true);
-      setShowTools(false);
+      const selectedTable = tables.find(s => s.id === selectedId);
+      if (selectedTable) {
+        setShowEdit(true);
+      }
     }
-  }, [selectedId]);
+  }, [selectedId, tables]);
 
-  useEffect(() => {
-    if (selectedId) {
-      setShowTools(false);
-    }
-  }, [selectedId]);
-
+  // Save the current layout (combine tables and props)
   const saveLayout = useCallback(() => {
-    props.onSave(shapes as Table[]);
-  }, [props, shapes]);
+    props.onSave([...tables, ...propsShapes] as DesignElement[]);
+  }, [props, tables, propsShapes]);
 
+  // Reset the layout to the initial state from props
   const resetLayout = useCallback(() => {
-    setShapes(props.tables);
-  }, [props.tables]);
+    const initialTables: TableShape[] = [];
+    const initialProps: PropShape[] = [];
+    props.tables.forEach(element => {
+      if (element.type === 'RECTANGLE' || element.type === 'CIRCLE' || element.type === 'RHOMBUS') {
+        initialTables.push(element as TableShape);
+      } else {
+        initialProps.push(element as PropShape);
+      }
+    });
+    setTables(initialTables);
+    setPropsShapes(initialProps);
+     // Notify parent after reset
+    props.newTables(props.tables);
+  }, [props.tables, props.newTables]);
 
+  // Focus the stage view on all shapes (tables and props)
+  const focusAll = useCallback(() => {
+    const allShapes = [...tables, ...propsShapes];
+    if (allShapes.length === 0) return;
+    let minX = Infinity,
+      minY = Infinity,
+      maxX = -Infinity,
+      maxY = -Infinity;
+    allShapes.forEach((shape) => {
+      const shapeWidth = shape.width || (shape.type === 'CIRCLE' ? (shape.radius || 0) * 2 : 0);
+      const shapeHeight = shape.height || (shape.type === 'CIRCLE' ? (shape.radius || 0) * 2 : 0);
 
-  // Check if there are unsaved changes
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-
-  useEffect(() => {
-    if (props.tables !== shapes) {
-      setHasUnsavedChanges(true);
-    } else {
-      setHasUnsavedChanges(false);
+      minX = Math.min(minX, shape.x);
+      minY = Math.min(minY, shape.y);
+      maxX = Math.max(maxX, shape.x + shapeWidth);
+      maxY = Math.max(maxY, shape.y + shapeHeight);
+    });
+    const boundingBoxWidth = maxX - minX;
+    const boundingBoxHeight = maxY - minY;
+    const stage = stageRef.current;
+    if (stage) {
+      const margin = 20;
+      const scaleX = containerWidth / (boundingBoxWidth + margin);
+      const scaleY = containerHeight / (boundingBoxHeight + margin);
+      const newScale = Math.min(scaleX, scaleY, 1);
+      const boundingBoxCenter = {
+        x: (minX + maxX) / 2,
+        y: (minY + maxY) / 2,
+      };
+      const newPos = {
+        x: containerWidth / 2 - newScale * boundingBoxCenter.x,
+        y: containerHeight / 2 - newScale * boundingBoxCenter.y,
+      };
+      stage.scale({ x: newScale, y: newScale });
+      stage.position(newPos);
+      setStageScale(newScale);
+      setStagePosition(newPos);
     }
-  }, [shapes, props.tables]);
-
-  const [showConfirmNavigationPopup, setShowConfirmNavigationPopup] = useState(false);
-  const [pendingNavigationRoofId, setPendingNavigationRoofId] = useState<BaseKey | null>(null);
-
-  useEffect(() => {
-    if (pendingNavigationRoofId) {
-      setShowConfirmNavigationPopup(true);
-    }
-  }, [pendingNavigationRoofId]);
-  // if((!location.pathname.includes(props.focusedRoofId as string)) && props.tables !== shapes){
-  //   confirm('You have unsaved changes, do you want to save them?') && saveLayout();
-    
-  // }
-
+  }, [tables, propsShapes, containerWidth, containerHeight]);
 
   // --- Zoom & Pan Logic ---
-  const stageRef = useRef<any>(null);
-
   const handleWheel = useCallback((e: any) => {
     e.evt.preventDefault();
     const stage = stageRef.current;
@@ -459,7 +511,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
       setStageScale(newScale);
       setStagePosition(newPos);
     }
-  }, [stageScale, stagePosition, containerWidth]);
+  }, [stageScale, stagePosition, containerWidth, containerHeight]);
 
   const zoomOut = useCallback(() => {
     const stage = stageRef.current;
@@ -482,197 +534,301 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
       setStageScale(newScale);
       setStagePosition(newPos);
     }
-  }, [stageScale, stagePosition, containerWidth]);
-
-  const focusAll = useCallback(() => {
-    if (shapes.length === 0) return;
-    let minX = Infinity,
-      minY = Infinity,
-      maxX = -Infinity,
-      maxY = -Infinity;
-    shapes.forEach((shape) => {
-      minX = Math.min(minX, shape.x);
-      minY = Math.min(minY, shape.y);
-      maxX = Math.max(maxX, shape.x + shape.width);
-      maxY = Math.max(maxY, shape.y + shape.height);
-    });
-    const boundingBoxWidth = maxX - minX;
-    const boundingBoxHeight = maxY - minY;
-    const stage = stageRef.current;
-    if (stage) {
-      const margin = 20;
-      const scaleX = containerWidth / (boundingBoxWidth + margin);
-      const scaleY = containerHeight / (boundingBoxHeight + margin);
-      const newScale = Math.min(scaleX, scaleY, 1);
-      const boundingBoxCenter = {
-        x: (minX + maxX) / 2,
-        y: (minY + maxY) / 2,
-      };
-      const newPos = {
-        x: containerWidth / 2 - newScale * boundingBoxCenter.x,
-        y: containerHeight / 2 - newScale * boundingBoxCenter.y,
-      };
-      stage.scale({ x: newScale, y: newScale });
-      stage.position(newPos);
-      setStageScale(newScale);
-      setStagePosition(newPos);
-    }
-  }, [shapes, containerWidth]);
+  }, [stageScale, stagePosition, containerWidth, containerHeight]);
 
 
-  
-  const transitionToShape = useCallback((shape: Table) => {
-    const stage = stageRef.current;
-    if (stage) {
-      // Center the new shape in the view
-      const newPos = {
-        x:
-          containerWidth / 2 -
-          (shape.x + shape.width / 2) * stageScale,
-        y:
-          containerHeight / 2 -
-          (shape.y + shape.height / 2) * stageScale,
-      };
-      const tween = new Konva.Tween({
-        node: stage,
-        duration: 0.1,
-        x: newPos.x,
-        y: newPos.y,
+  // Update shapes when focusedRoofId changes (initial load/reset)
+  useEffect(() => {
+    if (props.focusedRoofId) {
+      const initialTables: TableShape[] = [];
+      const initialProps: PropShape[] = [];
+      props.tables.forEach(element => {
+        if (element.type === 'RECTANGLE' || element.type === 'CIRCLE' || element.type === 'RHOMBUS') {
+          initialTables.push(element as TableShape);
+        } else {
+          initialProps.push(element as PropShape);
+        }
       });
-      tween.play();
-      setStagePosition(newPos);
+      setTables(initialTables);
+      setPropsShapes(initialProps);
     }
-  }, [containerWidth, containerHeight, stageScale]);
+  }, [props.focusedRoofId, props.tables]);
 
-  // Memoize shapes rendering to avoid recalculations
+  // // Deselect shape and focus on all shapes when focusedRoofId changes
+  // useEffect(() => {
+  //   selectShape(null);
+  //   focusAll();
+  // }, [props.focusedRoofId, focusAll]);
+
+  // Track unsaved changes
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
+  useEffect(() => {
+    const currentElements = [...tables, ...propsShapes].sort((a, b) => (a.id as any) - (b.id as any));
+    const initialElements = [...props.tables].sort((a, b) => (a.id as any) - (b.id as any));
+
+    // Deep comparison of elements
+    const areEqual = JSON.stringify(currentElements) === JSON.stringify(initialElements);
+    setHasUnsavedChanges(!areEqual);
+  }, [tables, propsShapes, props.tables]);
+
+
+  // Removed unused list hook
+  // const { data: foundTables, isLoading: loadingCheckTableName, error, refetch } = useList<DesignElement>({...});
+
+  // Removed unused showTools state and effect
+  // const [showTools, setShowTools] = useState(false);
+  // useEffect(() => { if (selectedId) { setShowTools(false); } }, [selectedId]);
+
+  // Removed unused navigation popup states and effects
+
+
+  // Component for changing shape name and properties (used in edit popup)
+  const ChangingName = useCallback(
+    ({ id }: { id: BaseKey }) => {
+      const shape = tables.find((s) => s.id === id);
+      if (!shape) return null;
+
+      return (
+        <div>
+          <form
+            className="popup bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme rounded-[10px]"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const newName = (e.target as any).elements[0].value;
+              const newMax = (e.target as any).elements[1].value;
+              const newMin = (e.target as any).elements[2].value;
+              const blocked = (e.target as any).elements[3].checked;
+
+              if (newName !== shape.name) {
+                if (
+                  !!tables.find(
+                    (s) => s.name === newName && s.id !== id
+                  ) || await checkTableExists(newName)
+                ) {
+                  open?.({ type: "error", message: "Warning, Table name already exists" });
+                  return;
+                }
+              }
+
+              setTables(prev =>
+                prev.map(s =>
+                  s.id === id ? { ...s, name: newName, max: parseInt(newMax, 10) || 0, min: parseInt(newMin, 10) || 0, blocked: blocked } as TableShape : s as TableShape
+                )
+              );
+              setShowEdit(false);
+            }}
+          >
+            <h1>Edit {shape.name}</h1>
+            <p>Change Table Name</p>
+            <input type="text" defaultValue={shape.name} className="inputs-unique mt-2 bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme" />
+            <p>Change maximum capacity</p>
+            <input type="number" defaultValue={shape.max} className="inputs-unique mt-2 bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme" />
+            <p>Change minimum capacity</p>
+            <input type="number" defaultValue={shape.min} className="inputs-unique mt-2 bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme" />
+            <label className="flex items-center my-1">
+              <input type="checkbox" name="blocked" defaultChecked={shape.blocked} className="checkbox mr-2 form-checkbox h-4 w-4 text-green-600" />
+              <span className="text-md">Blocked</span>
+            </label>
+            <button type="submit" className="btn-primary mt-2">Save</button>
+          </form>
+        </div>
+      );
+    },
+    [tables, checkTableExists, open]
+  );
+
+  // Component for adding a new table
+  const AddTable = useCallback(
+    () => {
+      return (
+        <div>
+          <form
+            className="popup bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme rounded-[10px]"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const newName = (e.target as any).elements[0].value;
+              const newMax = (e.target as any).elements[1].value;
+              const newMin = (e.target as any).elements[2].value;
+              const blocked = (e.target as any).elements[3].checked;
+
+              if (!!tables.find((s) => s.name === newName) || await checkTableExists(newName)) {
+                open?.({ type: "error", message: "Table name already exists" });
+                return;
+              }
+              addShape(showAdd === 'RECTANGLE' ? 'RECTANGLE' : showAdd === 'CIRCLE' ? 'CIRCLE' : 'RHOMBUS', { name: newName, max: parseInt(newMax, 10) || 0, min: parseInt(newMin, 10) || 0, blocked: blocked });
+              setShowAdd(null);
+            }}
+          >
+            <h1>Add <span className='capitalize'>{showAdd === 'RECTANGLE' ? 'Rectangle' : showAdd === 'CIRCLE' ? 'circle' : 'rhombus'}</span> Table</h1>
+            <p>Table Name</p>
+            <input type="text" className="inputs-unique mt-2 bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme" />
+            <p>Maximum capacity</p>
+            <input type="number" defaultValue={6} className="inputs-unique mt-2 bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme" />
+            <p>Minimum capacity</p>
+            <input type="number" defaultValue={1} className="inputs-unique mt-2 bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme" />
+            <label className="flex items-center my-1">
+              <input type="checkbox" name="blocked" className="checkbox mr-2 form-checkbox h-4 w-4 text-green-600" />
+              <span className="text-sm">Blocked</span>
+            </label>
+            <button type="submit" className="btn-primary mt-2">Add</button>
+          </form>
+        </div>
+      );
+    },
+    [tables, showAdd, checkTableExists, open, addShape]
+  );
+
+  // Effect to attach/detach transformer
+  useEffect(() => {
+    if (!trRef.current || !stageRef.current) {
+      return;
+    }
+
+    if (selectedId) {
+      const selectedNode = stageRef.current.findOne(`#${selectedId}`);
+      if (selectedNode) {
+        trRef.current.nodes([selectedNode]);
+      } else {
+        trRef.current.nodes([]);
+      }
+    } else {
+      trRef.current.nodes([]);
+    }
+    trRef.current.getLayer()?.batchDraw();
+  }, [selectedId, tables, propsShapes]);
+
+  // Memoize shapes rendering
   const renderedShapes = useMemo(
-    () =>
-      shapes.map((shape: BaseRecord, i) => {
+    () => {
+      const allShapes = [...tables, ...propsShapes];
+      return allShapes.map((shape: DesignElement) => {
         const commonProps = {
           id: shape.id,
           shapeProps: shape,
           isSelected: shape.id === selectedId,
           onSelect: () => selectShape(shape?.id || null),
-          onChange: (newAttrs: any) => {
-            setShapes((prevShapes) => {
-              const newShapes = [...prevShapes];
-              newShapes[i] = newAttrs;
-              return newShapes;
-            });
-          },
+          onChange: handleShapeChange,
           onDragStartCallback: () => setIsShapeDragging(true),
           onDragEndCallback: () => setIsShapeDragging(false),
         };
         if (shape.type === 'RECTANGLE') {
-          return <Rectangle key={shape.id} {...commonProps} />;
+          return <Rectangle key={shape.id} {...commonProps} shapeProps={shape as TableShape} />;
         }
         if (shape.type === 'CIRCLE') {
-          return <CircleShape key={shape.id} {...commonProps} />;
+          return <CircleShape key={shape.id} {...commonProps} shapeProps={shape as TableShape} />;
+        }
+        if (shape.type === 'RHOMBUS') {
+          return <Rhombus key={shape.id} {...commonProps} shapeProps={shape as TableShape} />;
+        }
+        if (Object.keys(ASSET_CONFIG).includes(shape.type as AssetType)) {
+          return <AssetShape key={shape.id} {...commonProps} shapeProps={shape as PropShape} />;
         }
         return null;
-      }),
-    [shapes, selectedId]
+      });
+    },
+    [tables, propsShapes, selectedId, handleShapeChange]
   );
 
-  const checkTableExists = useCallback(async (tableName: string) => {
-    try {
-      setLoading(true);
-      const { data } = await axiosInstance.get('api/v1/bo/tables/',{
-        params: {
-          search: tableName
-        }
-      })
-      setLoading(false);
-      return data.length > 0;
-    } catch (error) {
-      setLoading(false);
-      console.error(error);
-      return true;
-    }
+  // Set container width/height on mount and resize
+  useEffect(() => {
+    const updateSize = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.clientWidth);
+        setContainerHeight(containerRef.current.clientHeight);
+      }
+    };
+    updateSize();
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
   }, []);
 
-
-  const addShape = useCallback(
-    async (type: 'RECTANGLE' | 'CIRCLE', name = '', max=null, min=null, blocked=false) => {
-      setLoadingAddShape(true);
-      let counter= null;
-      let tableName = '';
-      let existsInShapes= null;
-      let tableExists= null;
-      if(!name) {
-        counter = shapes.length + 1;
-        tableName = `Table ${counter}`;
-        existsInShapes = !!shapes.find(s => s.name === tableName as string );
-        tableExists = await checkTableExists(tableName as string) || existsInShapes;
-        while (tableExists && counter < 10) {
-          counter++;
-          tableName = `Table ${counter}`;
-          existsInShapes = !!shapes.find(s => s.name === tableName as string );
-          tableExists = await checkTableExists(tableName as string) || existsInShapes;
-        }
-  
-        if(tableExists){
-          setShowAdd(type);
-          setLoadingAddShape(false);
-          return;
-        } 
-      }
-
-      const OFFSET = 20; // Offset in pixels for new tables
-      const newX = shapes.length > 0
-        ? shapes[shapes.length - 1].x + OFFSET
-        : 50;
-      const newY = shapes.length > 0
-        ? shapes[shapes.length - 1].y + OFFSET
-        : 50;
-
-      const newShape: Table = {
-        id: generateRandomNumber(10),
-        name: name || tableName,
-        rotation: 0,
-        type,
-        width: 100,
-        height: 100,
-        x: newX,
-        y: newY,
-        max: max || Math.floor(innerWidth / 220),
-        min: min || 1,
-        floor: props.focusedRoofId!,
-        reservations: [],
-        blocked: blocked,
-      };
-      setShapes((prevShapes) => {
-        // Trigger stage transition on the new shape
-        // Use setTimeout to ensure state update has been scheduled
-        setTimeout(() => transitionToShape(newShape), 0);
-
-        return [...prevShapes, newShape];
-      });
-      setLoadingAddShape(false);
+  // Define toolbar items
+  const DESIGN_TOOLBAR_ITEMS = useMemo(() => [
+    {
+      id: 'add-table',
+      label: 'Add Table',
+      icon: <Plus size={24} />,
+      onClick: () => console.log('Add Table parent clicked'),
+      children: [
+        { id: 'add-table-square', label: 'Add Rect Table', icon: <Square size={24} />, onClick: () => setShowAdd('RECTANGLE') },
+        { id: 'add-table-circle', label: 'Add Circle Table', icon: <Circle size={24} />, onClick: () => setShowAdd('CIRCLE') },
+        { id: 'add-table-rhombus', label: 'Add Rhombus Table', icon: <Diamond size={24} />, onClick: () => setShowAdd('RHOMBUS') },
+      ]
     },
-    [props.focusedRoofId, transitionToShape, checkTableExists, shapes]
-  );
+    {
+      id: 'add-door',
+      label: 'Add Door',
+      icon: <DoorOpen size={24} />,
+      onClick: () => console.log('Add Door parent clicked'),
+      children: [
+        { id: 'add-door-single', label: 'Add Single Door', icon: <DoorOpen size={24} />, onClick: () => addShape('SINGLE_DOOR') },
+        { id: 'add-door-double', label: 'Add Double Door', icon: <div className='relative w-full h-full'><DoorOpen className='absolute top-[50%] translate-y-[-50%]' size={16} /><DoorOpen className='absolute top-[50%] translate-y-[-50%] scale-x-[-1] right-0' size={16} /></div>, onClick: () => addShape('DOUBLE_DOOR') },
+        { id: 'add-3d-door', label: 'Add Door (3D)', icon: <div className='relative w-full h-full'><DoorOpen className='absolute top-[40%] translate-y-[-50%]' size={20} /><div className='absolute bottom-[-30%] right-[-30%] text-[12px]'>3D</div></div>, onClick: () => addShape('DOOR') },
+      ]
+    },
+    {
+      id: 'add-plant',
+      label: 'Add Plant',
+      icon: <Sprout size={24} />,
+      onClick: () => console.log('Add Plant parent clicked'),
+      children: [
+        { id: 'add-plant1', label: 'Add Plant 1', icon: <div className='relative w-full h-full'><Sprout className='absolute top-[40%] translate-y-[-50%]' size={24} /><h5 className='absolute bottom-[-20%] right-[-10%]'>1</h5></div>, onClick: () => addShape('PLANT1') },
+        { id: 'add-plant2', label: 'Add Plant 2', icon: <div className='relative w-full h-full'><Sprout className='absolute top-[40%] translate-y-[-50%]' size={24} /><h5 className='absolute bottom-[-20%] right-[-10%]'>2</h5></div>, onClick: () => addShape('PLANT2') },
+        { id: 'add-plant3', label: 'Add Plant 3', icon: <div className='relative w-full h-full'><Sprout className='absolute top-[40%] translate-y-[-50%]' size={24} /><h5 className='absolute bottom-[-20%] right-[-10%]'>3</h5></div>, onClick: () => addShape('PLANT3') },
+        { id: 'add-plant4', label: 'Add Plant 4', icon: <div className='relative w-full h-full'><Sprout className='absolute top-[40%] translate-y-[-50%]' size={24} /><h5 className='absolute bottom-[-20%] right-[-10%]'>4</h5></div>, onClick: () => addShape('PLANT4') },
+      ]
+    },
+    {
+      id: 'draw-wall-bar',
+      label: 'Draw Wall/Bar',
+      icon: <DraftingCompass size={24} />,
+      onClick: () => console.log('Draw Wall/Bar parent clicked - leaving for later'),
+      children: [
+        { id: 'draw-wall', label: 'Draw Wall', icon: <BrickWall size={24} />, onClick: () => console.log('Draw Wall clicked - leaving for later') },
+        { id: 'draw-bar', label: 'Draw bar', icon: <Martini size={24} />, onClick: () => console.log('Draw bar clicked - leaving for later') },
+      ]
+    },
+    { id: 'add-smoking-zone', label: 'Add Smoking Zone', icon: <Cigarette size={24} />, onClick: () => addShape('CIGARETTE_ZONE') },
+    { id: 'add-nosmoking-zone', label: 'Add No-Smoking Zone', icon: <CigaretteOff size={24} />, onClick: () => addShape('NOCIGARETTE_ZONE') },
+    {
+      id: 'add-stairs',
+      label: 'Add Stairs',
+      icon: <div className='relative w-full h-full'>
+        <svg className="stroke-white fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M384 64c0-17.7 14.3-32 32-32l128 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-96 0 0 96c0 17.7-14.3 32-32 32l-96 0 0 96c0 17.7-14.3 32-32 32l-96 0 0 96c0 17.7-14.3 32-32 32L32 480c-17.7 0-32-14.3-32-32s14.3-32 32-32l96 0 0-96c0-17.7 14.3-32 32-32l96 0 0-96c0-17.7 14.3-32 32-32l96 0 0-96z" /></svg>
+      </div>,
+      onClick: () => console.log('Add Stairs parent clicked'),
+      children: [
+        { id: 'add-stairs1', label: 'Add Stairs 1', icon: <div className='relative w-full h-full'><svg className="absolute top-[40%] translate-y-[-50%] stroke-white fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M384 64c0-17.7 14.3-32 32-32l128 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-96 0 0 96c0 17.7-14.3 32-32 32l-96 0 0 96c0 17.7-14.3 32-32 32l-96 0 0 96c0 17.7-14.3 32-32 32L32 480c-17.7 0-32-14.3-32-32s14.3-32 32-32l96 0 0-96c0-17.7 14.3-32 32-32l96 0 0-96c0-17.7 14.3-32 32-32l96 0 0-96z" /></svg><h5 className='absolute bottom-[-20%] right-[-10%]'>1</h5></div>, onClick: () => addShape('STAIRE') },
+        { id: 'add-stairs2', label: 'Add Stairs 2', icon: <div className='relative w-full h-full'><svg className="absolute top-[40%] translate-y-[-50%] stroke-white fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M384 64c0-17.7 14.3-32 32-32l128 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-96 0 0 96c0 17.7-14.3 32-32 32l-96 0 0 96c0 17.7-14.3 32-32 32l-96 0 0 96c0 17.7-14.3 32-32 32L32 480c-17.7 0-32-14.3-32-32s14.3-32 32-32l96 0 0-96c0-17.7 14.3-32 32-32l96 0 0-96c0-17.7 14.3-32 32-32l96 0 0-96z" /></svg><h5 className='absolute bottom-[-20%] right-[-10%]'>2</h5></div>, onClick: () => addShape('STAIRE2') },
+      ]
+    },
+  ], [addShape, setShowAdd]);
+
 
   return (
     <>
-      
-      <ActionPopup 
+      {/* Action Popup for delete confirmation */}
+      <ActionPopup
         action={action}
         showPopup={showPopup}
-        setShowPopup={(show)=>setShowPopup(show)}
-        message='Are you sure you want to delete this table?'
+        setShowPopup={(show) => setShowPopup(show)}
+        message='Are you sure you want to delete this element?'
         actionFunction={handleDelete}
       />
-      
+
+      {/* Edit Shape Popup */}
       {showEdit && (
         <div>
           <div
             className="overlay opacity-15 z-[200] bg-white dark:bg-black"
             onClick={() => setShowEdit(false)}
           ></div>
-          {selectedId && <ChangingName id={selectedId as number} />}
+          {selectedId && <ChangingName id={selectedId as BaseKey} />}
         </div>
       )}
+
+      {/* Add Table Popup */}
       {showAdd && (
         <div>
           <div
@@ -682,138 +838,33 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
           <AddTable />
         </div>
       )}
-      <div className="flex justify-between gap-5 my-4">
-        <div
-          className="flex rounded-[10px] bg-white dark:bg-bgdarktheme text-subblack dark:text-white"
-        >
-          <button
-            onClick={() => {
-              setShowTools((prev) => !prev);
-              selectShape(null);
-            }}
-            disabled={loading}
-            className="text-md items-center text-greentheme font-[600] px-2 rounded-[10px] border border-transparent hover:border-softgreentheme duration-200 gap-3 flex"
-          >
-            <div className="text-greentheme bg-softgreentheme w-[2em] h-[2em] rounded-[10px] items-center flex justify-center">
-              +
-            </div>
-            <p className='m-0'>
-              {t('editPlace.buttons.addTable')}{' '}
-              {showTools ? ' <' : ' >'}
-            </p>
-          </button>
 
-          {/* Transition for the tools section */}
-          <div
-            className={`flex gap-2 transition-all duration-300 ${showTools ? 'opacity-100 translate-x-0 ml-1' : 'opacity-0 translate-x-[-10px]'
-              }`}
-          >
-            {showTools && (
-              <>
-                <BaseBtn variant='outlined'
-                  onClick={() => addShape('RECTANGLE')}
-                  disabled={loading || loadingAddShape}
-                  loading={loadingAddShape}
-                >
-                  
-                  {t('editPlace.buttons.rectangleTable')}
-                </BaseBtn>
-                <BaseBtn variant='outlined'
-                  onClick={() => addShape('CIRCLE')}
-                  disabled={loading || loadingAddShape}
-                  loading={loadingAddShape}
-                >
-                  
-                  {t('editPlace.buttons.circleTable')}
-                </BaseBtn>
-              </>
-            )}
-          </div>
-
-          <div className="flex items-center">
-            {selectedId && (
-              <div className="flex">
-                <button
-                  onClick={deleteShape}
-                  className="text-lg items-center py-2 text-redtheme font-[600] px-2 rounded-[10px] border border-transparent hover:border-softredtheme duration-200 gap-3 flex"
-                  disabled={loading}
-                >
-                  <svg
-                    className="text-redtheme p-2 bg-softredtheme rounded-[10px] items-center flex justify-center"
-                    width="35"
-                    height="35"
-                    viewBox="0 0 10 10"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M3.85409 1.25C3.85409 1.16712 3.88701 1.08763 3.94561 1.02903C4.00422 0.970424 4.08371 0.9375 4.16659 0.9375H5.83325C5.91613 0.9375 5.99562 0.970424 6.05422 1.02903C6.11283 1.08763 6.14575 1.16712 6.14575 1.25V1.5625H7.91659C7.99947 1.5625 8.07895 1.59542 8.13756 1.65403C8.19616 1.71263 8.22909 1.79212 8.22909 1.875C8.22909 1.95788 8.19616 2.03737 8.13756 2.09597C8.07895 2.15458 7.99947 2.1875 7.91659 2.1875H2.08325C2.00037 2.1875 1.92089 2.15458 1.86228 2.09597C1.80368 2.03737 1.77075 1.95788 1.77075 1.875C1.77075 1.79212 1.80368 1.71263 1.86228 1.65403C1.92089 1.59542 2.00037 1.5625 2.08325 1.5625H3.85409V1.25Z"
-                      fill="#FF4B4B"
-                    />
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M2.59989 3.31042C2.60553 3.25944 2.62978 3.21234 2.66799 3.17812C2.7062 3.14391 2.75569 3.125 2.80698 3.125H7.19281C7.2441 3.125 7.29359 3.14391 7.33179 3.17812C7.37 3.21234 7.39425 3.25944 7.39989 3.31042L7.48323 4.06083C7.63369 5.41375 7.63369 6.77917 7.48323 8.13208L7.47489 8.20583C7.44846 8.44539 7.34289 8.66929 7.17491 8.8421C7.00692 9.01492 6.7861 9.12679 6.54739 9.16C5.52073 9.30366 4.47906 9.30366 3.45239 9.16C3.21361 9.12687 2.9927 9.01504 2.82463 8.84222C2.65656 8.66939 2.55093 8.44545 2.52448 8.20583L2.51614 8.13208C2.36571 6.77931 2.36571 5.41403 2.51614 4.06125L2.59989 3.31042ZM4.47906 4.75C4.47906 4.66712 4.44614 4.58763 4.38753 4.52903C4.32893 4.47042 4.24944 4.4375 4.16656 4.4375C4.08368 4.4375 4.00419 4.47042 3.94559 4.52903C3.88698 4.58763 3.85406 4.66712 3.85406 4.75V7.66667C3.85406 7.74955 3.88698 7.82903 3.94559 7.88764C4.00419 7.94624 4.08368 7.97917 4.16656 7.97917C4.24944 7.97917 4.32893 7.94624 4.38753 7.88764C4.44614 7.82903 4.47906 7.74955 4.47906 7.66667V4.75ZM6.14573 4.75C6.14573 4.66712 6.1128 4.58763 6.0542 4.52903C5.99559 4.47042 5.91611 4.4375 5.83323 4.4375C5.75035 4.4375 5.67086 4.47042 5.61226 4.52903C5.55365 4.58763 5.52073 4.66712 5.52073 4.75V7.66667C5.52073 7.74955 5.55365 7.82903 5.61226 7.88764C5.67086 7.94624 5.75035 7.97917 5.83323 7.97917C5.91611 7.97917 5.99559 7.94624 6.0542 7.88764C6.1128 7.82903 6.14573 7.74955 6.14573 7.66667V4.75Z"
-                      fill="#FF4B4B"
-                    />
-                  </svg>
-                  {t('editPlace.buttons.delete')}
-                </button>
-                <button
-                  onClick={editShape}
-                  className="text-lg items-center py-2 text-greentheme ml-3 font-[600] px-2 rounded-[10px] border border-transparent hover:border-softgreentheme duration-200 gap-3 flex"
-                  disabled={loading}
-                >
-                  <svg
-                    width="35"
-                    height="35"
-                    viewBox="0 0 19 19"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <rect width="19" height="19" rx="3" fill="#88AB61" fillOpacity="0.1" />
-                    <path
-                      d="M6.45833 11.5786L6 13.412L7.83333 12.9536L13.1436 7.64339C13.3154 7.47149 13.412 7.23837 13.412 6.9953C13.412 6.75224 13.3154 6.51912 13.1436 6.34722L13.0647 6.26839C12.8928 6.09654 12.6597 6 12.4167 6C12.1736 6 11.9405 6.09654 11.7686 6.26839L6.45833 11.5786Z"
-                      stroke="#88AB61"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M6.45833 11.5786L6 13.412L7.83333 12.9536L12.4167 8.3703L11.0417 6.9953L6.45833 11.5786Z"
-                      fill="#88AB61"
-                    />
-                    <path
-                      d="M11.0417 6.9953L12.4167 8.3703M10.125 13.412H13.7917"
-                      stroke="#88AB61"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                  {t('editPlace.buttons.edit')}
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-        <div className="flex gap-2 py-3">
-          <button className="btn-primary" onClick={saveLayout}>
-            {t('editPlace.buttons.save')}
-          </button>
-          <button className="btn-secondary" onClick={resetLayout}>
-            {t('editPlace.buttons.reset')}
-          </button>
-        </div>
-      </div>
+      {/* Main canvas container */}
       <div
         ref={containerRef}
-        className="border-[1px] rounded-xl relative h-[calc(100vh-300px)]"
+        className="border-[1px] rounded-xl relative h-[calc(100vh-170px)]"
         style={{ width: '100%' }}
       >
+        {/* Zoom controls */}
         <ZoomControls
           onZoomIn={zoomIn}
           onZoomOut={zoomOut}
           onFocusAll={focusAll}
         />
+        {/* Save and Reset buttons */}
+        <div className="absolute bottom-2 right-2 flex gap-2 z-[2]">
+          <button className="btn-primary" onClick={saveLayout}>Save</button>
+          <button className="btn-secondary" onClick={resetLayout}>Reset</button>
+        </div>
+        {/* Design Toolbar */}
+        <DesignToolbar
+            items={DESIGN_TOOLBAR_ITEMS}
+            showEditDelete={!!selectedId}
+            onEdit={editShape}
+            onDelete={deleteShape}
+         />
+
+        {/* Konva Stage */}
         <Stage
           name="stage"
           ref={stageRef}
@@ -832,11 +883,24 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
           scaleX={stageScale}
           scaleY={stageScale}
           onDragEnd={(e) => {
-            if (e.target.name() === 'stage')
+                if (e.target.name() === 'stage')
               setStagePosition({ x: e.target.x(), y: e.target.y() });
           }}
         >
-          <Layer>{renderedShapes}</Layer>
+          <Layer>
+            {/* Render all shapes */}
+            {renderedShapes}
+            {/* Transformer for resizing/rotating selected shapes */}
+            <Transformer
+              ref={trRef}
+              boundBoxFunc={(oldBox, newBox) => {
+                if (newBox.width < 5 || newBox.height < 5) {
+                  return oldBox;
+                }
+                return newBox;
+              }}
+            />
+          </Layer>
         </Stage>
       </div>
     </>

@@ -7,7 +7,8 @@ import AccessToClient from "../../components/clients/AccessToClient"
 import SearchBar from "../../components/header/SearchBar"
 import { Outlet, useLocation } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { type BaseKey, type BaseRecord, useCreate, useList } from "@refinedev/core"
+import { type BaseKey, type BaseRecord, useCreate, useList, useCustom } from "@refinedev/core"
+import axios from "axios"
 
 import image from "../../assets/profile.png"
 import ExportModal from "../../components/common/ExportModal"
@@ -198,6 +199,154 @@ const ClientsPage = () => {
   const { customers } = useExportConfig()
   // const {customers} = useAdvancedExportConfig();
 
+  // Export state management
+  const [exportStatus, setExportStatus] = useState<'idle' | 'processing' | 'completed' | 'error'>('idle')
+  const [exportTaskId, setExportTaskId] = useState<string | null>(null)
+  const [exportDownloadUrl, setExportDownloadUrl] = useState<string | null>(null)
+  const [exportProgress, setExportProgress] = useState<number>(0)
+  const statusCheckInterval = useRef<NodeJS.Timeout | null>(null)
+  const [exportPayload, setExportPayload] = useState<Record<string, any> | null>(null)
+
+  // Export API hooks
+  const { mutate: initiateExport } = useCreate({
+    resource: "api/v1/bo/reports/customers/",
+    mutationOptions: {
+      onSuccess: (data) => {
+        console.log("Export initiated:", data);
+        if (data?.data?.task_id) {
+          setExportTaskId(data.data.task_id);
+          startStatusPolling(data.data.task_id);
+        } else {
+          setExportStatus('error');
+        }
+      },
+      onError: (error) => {
+        console.error("Export error:", error);
+        setExportStatus('error');
+      },
+    },
+    errorNotification(error) {
+      return {
+        type: "error",
+        message: error?.message || "Failed to initiate export",
+      }
+    },
+  });
+
+  // Status check hook - defined but used manually to control polling
+  const { refetch: checkExportStatus } = useList({
+    resource: `api/v1/bo/reports/status/${exportTaskId || 'placeholder'}/`,
+    queryOptions: {
+      enabled: false,
+      onSuccess: (data) => {
+        const statusData = data?.data;
+        if (statusData?.status === 'completed') {
+          setExportStatus('completed');
+          setExportDownloadUrl(statusData.download_url);
+          setExportProgress(100);
+          
+          if (statusCheckInterval.current) {
+            clearInterval(statusCheckInterval.current);
+            statusCheckInterval.current = null;
+          }
+        } else if (statusData?.status === 'failed') {
+          setExportStatus('error');
+          
+          if (statusCheckInterval.current) {
+            clearInterval(statusCheckInterval.current);
+            statusCheckInterval.current = null;
+          }
+        } else if (statusData?.progress) {
+          setExportProgress(statusData.progress);
+        }
+      },
+      onError: (error) => {
+        console.error("Status check error:", error);
+      }
+    }
+  });
+
+  // Download report hook - uses file download approach
+  const downloadExportedReport = async () => {
+    if (!exportDownloadUrl) return;
+    
+    try {
+      // For file downloads, we need to use direct fetch/axios with responseType blob
+      // useCreate/useList don't directly support file downloads
+      const response = await fetch(exportDownloadUrl);
+      const blob = await response.blob();
+      
+      // Create a download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      
+      // Extract filename from Content-Disposition header or use default
+      const contentDisposition = response.headers.get('content-disposition');
+      const filename = contentDisposition
+        ? contentDisposition.split('filename=')[1].replace(/"/g, '')
+        : 'customer-report.pdf';
+      
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Reset export state
+      setExportStatus('idle');
+      setExportTaskId(null);
+      setExportDownloadUrl(null);
+    } catch (error) {
+      console.error('Download error:', error);
+    }
+  };
+
+  // Function to initiate export process
+  const handleExport = (format: 'sheet' | 'pdf', selectedColumns: string[], customValues: Record<string, any>) => {
+    setExportStatus('processing');
+    setExportProgress(0);
+    
+    // Create request payload
+    const payload = {
+      format: format,
+      pdf_engine: "xhtml2pdf",
+      async_generation: true,
+      selected_columns: selectedColumns,
+      customOptions: customValues,
+      customers: selectedClient.length > 0 ? selectedClient.map(client => client.id) : searchResults?.map(client => client.id),
+      search: searchKeyword,
+    };
+    
+    setExportPayload(payload);
+    initiateExport({ values: payload });
+    setShowExportModal(false);
+  };
+
+  // Function to poll status endpoint
+  const startStatusPolling = (taskId: string) => {
+    console.log('heey')
+    // Clear any existing interval
+    if (statusCheckInterval.current) {
+      clearInterval(statusCheckInterval.current);
+    }
+
+    // Set up new polling interval (check every 2 seconds)
+    statusCheckInterval.current = setInterval(() => {
+      if (exportTaskId) {
+        checkExportStatus();
+      }
+    }, 2000);
+  };
+
+  // Clean up interval on component unmount
+  useEffect(() => {
+    return () => {
+      if (statusCheckInterval.current) {
+        clearInterval(statusCheckInterval.current);
+      }
+    };
+  }, []);
+
   useEffect(() => {
     setSearchResults(clients)
   }, [clients])
@@ -332,13 +481,89 @@ const ClientsPage = () => {
         <ExportModal
           columns={customers.columns}
           customFields={customers.customFields}
-          onExport={(format, selectedColumns, customFields) => {
-            console.log(format, selectedColumns, customFields)
-            setShowExportModal(false)
-          }}
+          onExport={handleExport}
           onClose={() => setShowExportModal(false)}
         />
       )}
+      
+      {/* Export Status Overlay */}
+      {exportStatus === 'processing' && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-bgdarktheme p-6 rounded-lg shadow-lg w-80">
+            <h3 className="text-lg font-medium mb-3">Generating Export</h3>
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mb-4">
+              <div 
+                className="bg-greentheme h-2.5 rounded-full" 
+                style={{ width: `${exportProgress}%` }}
+              ></div>
+            </div>
+            <p className="text-sm text-gray-600 dark:text-gray-300">
+              This might take a few moments depending on the amount of data.
+            </p>
+            <div className="flex justify-between">
+              <button 
+                onClick={() => setExportStatus('idle')} 
+                className="btn-secondary"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={downloadExportedReport} 
+                className="btn-primary"
+              >
+                Download
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Download Ready Notification */}
+      {exportStatus === 'completed' && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-bgdarktheme p-6 rounded-lg shadow-lg w-80">
+            <h3 className="text-lg font-medium mb-3">Export Ready</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+              Your export has been generated and is ready to download.
+            </p>
+            <div className="flex justify-between">
+              <button 
+                onClick={() => setExportStatus('idle')} 
+                className="btn-secondary"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={downloadExportedReport} 
+                className="btn-primary"
+              >
+                Download
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Error Notification */}
+      {exportStatus === 'error' && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-bgdarktheme p-6 rounded-lg shadow-lg w-80">
+            <h3 className="text-lg font-medium mb-3 text-red-500">Export Failed</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+              There was an error generating your export. Please try again.
+            </p>
+            <div className="flex justify-end">
+              <button 
+                onClick={() => setExportStatus('idle')} 
+                className="btn-primary"
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showNotificationModal && (
         <div>
           <div

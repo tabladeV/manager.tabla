@@ -24,6 +24,22 @@ export interface Table extends BaseRecord {
   reservations: BaseKey[];
   blocked: boolean;
 }
+export interface DesignElement extends BaseRecord {
+  id: BaseKey | undefined;
+  name?: string; // Optional, as assets might not have names
+  type: 'RECTANGLE' | 'CIRCLE' | 'SINGLE_DOOR' | 'DOUBLE_DOOR' | 'PLANT1' | 'PLANT2' | 'PLANT3' | 'PLANT4' | 'STAIRE' | 'STAIRE2' | string;
+  rotation: number;
+  width: number;
+  height: number;
+  x: number;
+  y: number;
+  src?: string; // For image-based assets
+  max?: number; // Optional
+  min?: number; // Optional
+  floor?: BaseKey; // Optional
+  reservations?: BaseKey[]; // Optional
+  blocked?: boolean; // Optional
+}
 
 const DesignPlaces: React.FC = () => {
   const { roofId } = useParams();
@@ -39,7 +55,7 @@ const DesignPlaces: React.FC = () => {
   const [floorName, setFloorName] = useState<string | undefined>(undefined);
 
   // API hooks
-  const { mutate: upDateFloor } = useUpdate({
+  const { mutate: upDateFloor, isLoading: loadingUpdate } = useUpdate({
     resource: 'api/v1/bo/floors',
     errorNotification(error, values, resource) {
       return {
@@ -151,7 +167,7 @@ const DesignPlaces: React.FC = () => {
   const [action, setAction] = useState<'delete' | 'create' | 'update' | 'confirm'>('delete');
 
   // Update focused floor tables when focusedRoof changes
-  const [newTables, setNewTables] = useState<Table[]>([]);
+  const [newTables, setNewTables] = useState<DesignElement[]>([]);
   const [isSaved, setIsSaved] = useState<boolean>(false);
 
   console.log(newTables, 'new tables');
@@ -352,30 +368,32 @@ const DesignPlaces: React.FC = () => {
           </form>
         </div>
       )}
-      <div className="flex justify-start gap-3 mb-2">
-        <Link
-          to="/places/design"
-          className="hover:bg-softgreentheme px-4 items-center flex justify-center text-greentheme font-bold rounded-[10px]"
-        >
-          {'<'}
-        </Link>
-        <h1 className="text-3xl font-[700]">{t('editPlace.title')}</h1>
-      </div>
-      <div className="flex gap-3">
-        <CanAccess resource="floor" action="add">
-          <button
-            className={`btn-primary dark:text-white`}
-            onClick={() => setShowAddPlace(true)}
+      <div className='flex mb-2'>
+        <div className="flex justify-start items-center gap-2 mb-2 w-[30%]">
+          <Link
+            to="/places/design"
+            className="hover:bg-softgreentheme px-4 items-center flex justify-center text-greentheme font-bold rounded-[10px] size-[40px]"
           >
-            <Plus />
-          </button>
-        </CanAccess>
-        <div className="max-w-[90%]">
-          {roofsList}
+            {'<'}
+          </Link>
+          <h3 className="font-[700]">{t('editPlace.title')}</h3>
+        </div>
+        <div className="flex gap-1 w-[70%] justify-end">
+          <div className="max-w-[90%]">
+            {roofsList}
+          </div>
+          <CanAccess resource="floor" action="add">
+            <button
+              className={`btn-primary dark:text-white`}
+              onClick={() => setShowAddPlace(true)}
+            >
+              <Plus />
+            </button>
+          </CanAccess>
         </div>
       </div>
       <DesignCanvas
-        isLoading={isLoading}
+        isLoading={isLoading || loadingUpdate || oneFloorLoading}
         onSave={saveFloor}
         tables={focusedFloorTables}
         focusedRoofId={focusedRoof}
