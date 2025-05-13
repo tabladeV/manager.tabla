@@ -184,7 +184,7 @@ const UserBar = () => {
         )}
         
         {/* Widget Online Toggle Button */}
-        <WidgetOnlineToggle />
+        {/* <WidgetOnlineToggle /> */}
 
         {/* Notifications Dropdown - ADDED HERE */}
         <NotificationsDropdown />
