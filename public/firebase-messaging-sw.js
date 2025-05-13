@@ -1,6 +1,8 @@
 // public/firebase-messaging-sw.js
 /* eslint-disable no-restricted-globals */
+// eslint-disable-next-line no-undef
 importScripts('https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js');
+// eslint-disable-next-line no-undef
 importScripts('https://www.gstatic.com/firebasejs/9.22.1/firebase-messaging-compat.js');
 
 // --- IMPORTANT: REPLACE WITH YOUR ACTUAL FIREBASE CONFIG ---
@@ -15,9 +17,12 @@ const firebaseConfig = {
 };
 // --- END OF IMPORTANT CONFIG ---
 
+// eslint-disable-next-line no-undef
 if (!firebase.apps.length) {
+    // eslint-disable-next-line no-undef
     firebase.initializeApp(firebaseConfig);
 }
+// eslint-disable-next-line no-undef
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
@@ -37,13 +42,16 @@ self.addEventListener('notificationclick', (event) => {
     event.notification.close();
     const urlToOpen = event.notification.data?.url || event.notification.data?.link || '/';
     event.waitUntil(
+        // eslint-disable-next-line no-undef
         clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
             for (const client of clientList) {
                 if (client.url === self.location.origin + urlToOpen && 'focus' in client) {
                     return client.focus();
                 }
             }
+            // eslint-disable-next-line no-undef
             if (clients.openWindow) {
+                // eslint-disable-next-line no-undef
                 return clients.openWindow(urlToOpen);
             }
         })
