@@ -11,7 +11,7 @@ const NotificationsProvider = ({ children }: { children: ReactNode }) => {
 
         if (localStorage.getItem("isLogedIn") === "true") {
             console.log("Zustand: User authenticated, setting up foreground message handler.");
-            unsubscribeFromForegroundMessages = onForegroundMessageHandler((payload: { notification: any; data: any; }) => {
+            unsubscribeFromForegroundMessages = onForegroundMessageHandler((payload) => {
                 console.log('Zustand: Foreground FCM message in Provider:', payload);
                 const { notification, data } = payload;
                 if (notification && data) {
