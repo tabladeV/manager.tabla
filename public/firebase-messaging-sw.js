@@ -30,8 +30,8 @@ messaging.onBackgroundMessage((payload) => {
     const notificationTitle = payload.notification?.title || 'New Notification';
     const notificationOptions = {
         body: payload.notification?.body || 'You have a new message.',
-        icon: '/vite.svg', // Replace with your app icon (e.g., /logo192.png if you add one)
-        badge: '/vite.svg',
+        icon: '/logo.png', // Replace with your app icon (e.g., /logo192.png if you add one)
+        badge: '/logo.png',
         data: payload.data
     };
     self.registration.showNotification(notificationTitle, notificationOptions);
