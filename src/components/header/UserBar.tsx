@@ -12,6 +12,7 @@ import WidgetOnlineToggle from '../common/WidgetOnlineToggle';
 import authProvider from '../../providers/authProvider';
 import { useDarkContext } from '../../context/DarkContext';
 import { useDateContext } from '../../context/DateContext';
+import NotificationsDropdown from './notifications/NotificationsDropdown';
 
 const UserBar = () => {
   // State management
@@ -183,7 +184,10 @@ const UserBar = () => {
         )}
         
         {/* Widget Online Toggle Button */}
-        <WidgetOnlineToggle />
+        {/* <WidgetOnlineToggle /> */}
+
+        {/* Notifications Dropdown - ADDED HERE */}
+        <NotificationsDropdown />
 
         {/* Language Selector Button */}
         <button

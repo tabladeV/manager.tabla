@@ -23,6 +23,7 @@ interface Widget {
   description: string;
   menu_file: string;
   has_menu: boolean;
+  auto_confirmation: boolean;
 }
 
 
@@ -71,6 +72,7 @@ export default function WidgetConfig() {
   const [image, setImage] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [hasMenu, setHasMenu] = useState<boolean>();
+  const [autoConfirmation, setAutoConfirmation] = useState<boolean>(false);
   const [description, setDescription] = useState('');
   const [disabledTitle, setDisabledTitle] = useState('');
   const [disabledDescription, setDisabledDescription] = useState('');
@@ -90,6 +92,7 @@ export default function WidgetConfig() {
     if (widgetData?.data) {
       const data = widgetData.data as unknown as Widget;
       setHasMenu(data.has_menu);
+      setAutoConfirmation(data.auto_confirmation);
       setMaxGuestsPerReservation(data.max_of_guests_par_reservation)
       setSearchTabs((prev) => ({ ...prev, menu: data.has_menu}));
       setWidgetInfo(data);
@@ -239,6 +242,8 @@ export default function WidgetConfig() {
       formData.append('menu_file', filePDF);
     }
 
+    formData.append('auto_confirmation', autoConfirmation?.toString() || '0');
+    
     try {
       await updateWidget({
         id: `${restaurantId}/widget_partial_update/`,
@@ -403,6 +408,21 @@ export default function WidgetConfig() {
                   </label>}
                   </React.Fragment>
                 ))}
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={(autoConfirmation) as boolean}
+                  onChange={() => setAutoConfirmation((prev) => !prev)}
+                  className="sr-only"
+                />
+                <span
+                  className={`flex items-center justify-center w-6 h-6 border rounded-md mr-2 ${autoConfirmation ? 'bg-greentheme border-greentheme' : 'border-gray-300 dark:border-darkthemeitems'
+                    }`}
+                >
+                  {autoConfirmation && <Check size={16} className="text-white" />}
+                </span>
+                <span className="capitalize">Auto-confirm online reservations</span>
+              </label>
               </div>
               {(hasMenu) && (
                 <div className="flex justify-around gap-2 items-center">
