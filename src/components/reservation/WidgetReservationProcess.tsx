@@ -149,7 +149,7 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
 
   return (
     <div className="">
-      <div className="overlay z-[309] glassmorphism" onClick={props.onClick}></div>
+      <div className="overlay z-[300] glassmorphism" onClick={props.onClick}></div>
       <div className={`popup z-[360] lt-sm:h-[70vh] sm:w-[30em] lt-sm:bottom-0 lt-sm:w-full rounded-[10px] ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}>
         <div className="flex justify-center gap-5 mt-[1em]">
           {(
