@@ -22,6 +22,7 @@
     "color-mode": "^0.1.0",
     "date-fns": "^3.6.0",
     "draft-js": "^0.11.7",
+    "firebase": "^11.7.1",
     "i18next": "^23.16.5",
     "i18next-browser-languagedetector": "^8.0.0",
     "install": "^0.13.0",
