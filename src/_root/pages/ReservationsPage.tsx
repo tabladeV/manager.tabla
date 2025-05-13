@@ -18,6 +18,7 @@ import {
   Trash2,
   Tags
 } from 'lucide-react';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import SearchBar from "../../components/header/SearchBar";
 import IntervalCalendar from "../../components/Calendar/IntervalCalendar";
 import ReservationModal from "../../components/reservation/ReservationModal";
@@ -1024,6 +1025,42 @@ const ReservationsPage: React.FC = () => {
   useEffect(() => {
     document.title = 'Reservations | Tabla'
   }, []);
+
+  // URL query parameters
+  const [searchParams, setSearchParams] = useSearchParams();
+  const reservationIdParam = searchParams.get('reservation_id');
+
+  // Effect to fetch specific reservation if reservation_id is in URL
+  const { data: specificReservation, isLoading: isSpecificReservationLoading } = useList({
+    resource: `api/v1/bo/reservations/${reservationIdParam}/`,
+    queryOptions: {
+      enabled: !!reservationIdParam,      onSuccess: (data) => {
+        // When the specific reservation is fetched, open the edit modal
+        if (data?.data) {
+          // The response structure might be different when fetching a single item
+          const reservation = Array.isArray(data.data) 
+            ? data.data[0] as unknown as Reservation 
+            : data.data as unknown as Reservation;
+          
+          if (reservation) {
+            setSelectedClient(reservation);
+            setEditingClient(reservation.id);
+            setShowModal(true);
+          }
+        }
+      }    }
+  });
+
+  // Effect to listen for URL parameter changes
+  useEffect(() => {
+    if (reservationIdParam) {
+      // Will trigger the useList for specific reservation
+      console.log(`Fetching reservation with ID: ${reservationIdParam}`);
+    } else {
+      // Close the modal if the query param is removed
+      setShowModal(false);
+    }
+  }, [reservationIdParam]);
 
   // Dark mode context
   const { darkMode } = useDarkContext();

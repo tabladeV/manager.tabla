@@ -124,7 +124,7 @@ const QuillEditor = ({
             <button className="ql-clean"></button>
           </span>
         </div>
-        <div ref={editorRef} className="max-h-[200px]" />
+        <div ref={editorRef} className="max-h-[300px] min-h-[200px] overflow-y-scroll border" />
       </div>
   )
 }
