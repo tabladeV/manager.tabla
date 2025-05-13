@@ -110,19 +110,19 @@ const NotificationsDropdown = () => {
 
   const handleMarkAsRead = async (notification: NotificationType) => {
     const originalNotifications = [...notifications];
-    const itemIndex = notifications.findIndex(item => item.notification_id === notification.notification_id);
+    const itemIndex = notifications.findIndex(item => item.user_notification_id === notification.user_notification_id);
 
     if (itemIndex !== -1 && !notifications[itemIndex].is_read) {
       const updatedNotifications = notifications.map(item =>
-        item.notification_id === notification.notification_id ? { ...item, is_read: true, read_at: new Date().toISOString() } : item
+        item.user_notification_id === notification.user_notification_id ? { ...item, is_read: true, read_at: new Date().toISOString() } : item
       );
       setNotifications(updatedNotifications);
       setUnreadCount(prev => Math.max(0, prev - 1));
     }
 
     try {
-      console.log('Marking notification as read:', notification.notification_id);
-      await axiosInstance.post(`api/v1/notifications/${notification.notification_id}/mark-read/`);
+      console.log('Marking notification as read:', notification.user_notification_id);
+      await axiosInstance.post(`api/v1/notifications/${notification.user_notification_id}/mark-read/`);
       // After successful API call, redirect if this is a RESERVATION notification
       if (notification.notification_type === 'RESERVATION') {
         // Check if reservation_id exists in the data
