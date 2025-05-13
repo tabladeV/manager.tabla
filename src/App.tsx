@@ -89,6 +89,7 @@ function App() {
         });
     }
   }, []);
+  
 
 
   return (
@@ -121,7 +122,7 @@ function App() {
                             <Outlet />
                             <ToastContainer
                               position="bottom-right"
-                              autoClose={5000}
+                              autoClose={2000}
                               hideProgressBar={false}
                               newestOnTop
                               closeOnClick
@@ -130,7 +131,7 @@ function App() {
                               pauseOnFocusLoss
                               draggable
                               pauseOnHover
-                              theme="light" // or "dark" based on your isDarkMode
+                              theme={localStorage.getItem('darkMode')==='true' ? "dark":"light"} // or "dark" based on your isDarkMode
                             />
                           </div>
                         }
