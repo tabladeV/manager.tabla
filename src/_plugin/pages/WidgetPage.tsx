@@ -250,7 +250,7 @@ const WidgetPage = () => {
   return (
     <div className="min-h-screen h-[100vh] overflow-y-auto  bg-white dark:bg-bgdarktheme2 text-black dark:text-white">
       {/* Header */}
-      <header className="h-16 z-[300] w-full fixed flex items-center justify-between px-4 sm:px-10 shadow-md bg-white dark:bg-bgdarktheme">
+      <header className="h-16 z-[10] w-full fixed flex items-center justify-between px-4 sm:px-10 shadow-md bg-white dark:bg-bgdarktheme">
         <Logo className="horizontal" nolink={true} />
         <button
           onClick={toggleDarkMode}
@@ -535,7 +535,7 @@ const WidgetPage = () => {
 
           {step === 4 && (
             <div className="bg-white dark:bg-darkthemeitems rounded-lg p-6 shadow-sm">
-              <h2 className="text-xl font-semibold mb-4">Confirm Your Reservation</h2>
+              <h2 className="text-xl font-semibold mb-4">Confirm Your Informations</h2>
 
               <div className="space-y-4 mb-6">
                 <div className="grid grid-cols-2 gap-4">
@@ -617,7 +617,7 @@ const WidgetPage = () => {
                       Processing...
                     </>
                   ) : (
-                    "Confirm Reservation"
+                    "Confirm"
                   )}
                 </button>
               </div>
@@ -631,7 +631,7 @@ const WidgetPage = () => {
                   <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="#88AB61" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-semibold mb-2">Reservation Confirmed!</h2>
+              <h2 className="text-2xl font-semibold mb-2">{widgetInfo?.auto_confirmation ? 'Reservation Confirmed!':'Reservation Completed!'}</h2>
               <p className="font-[600] dark:text-greentheme text-greentheme mb-6">
                 Your reservation has been successfully made. You will receive a confirmation email shortly.
               </p>
