@@ -4,7 +4,7 @@ import type React from "react"
 import { useEffect, useMemo, useState } from "react"
 import Logo from "../../components/header/Logo"
 import { ArrowLeft, Edit, Edit2, Expand, MessageCircle, MessageCircleOff, Send, SendHorizonalIcon, X, XCircle } from "lucide-react"
-import { BaseKey, type BaseRecord, useCreate, useCustom, useCustomMutation, useOne } from "@refinedev/core"
+import { BaseKey, type BaseRecord, useCreate, useCustom, useCustomMutation, useList, useOne } from "@refinedev/core"
 import { useLocation, useParams, useSearchParams } from "react-router-dom"
 import { format } from "date-fns"
 import { getSubdomain } from "../../utils/getSubdomain"
@@ -211,6 +211,62 @@ const Modify = () => {
     id: "",
   })
 
+  interface CancelAPI {
+    results: CancelationReason[]
+    count: number
+  }
+
+  const [cancelAPI, setCancelAPI] = useState<CancelAPI>()
+
+  interface CancelationReason {
+    id: number
+    name: string
+  }
+
+  const [reason, setReason] = useState<CancelationReason>()
+
+  const [otherReason, setOtherReason] = useState<string>("")
+
+  const [cancelationReasons, setCancelationReasons] = useState<CancelationReason[]>()
+
+  const { data: cancelReasons, isLoading: cancelReasonsLoading,error: cancelationError } = useList({
+    resource: `api/v1/bo/reservations/cancellation-reasons/`,
+    filters: [
+      {
+        field: "page",
+        operator: "eq",
+        value: 1,
+      },
+      {
+        field: "page_size",
+        operator: "eq",
+        value: 100,
+      },
+    ],
+    queryOptions: {
+      onSuccess: (data) => {
+        setCancelAPI(data.data as unknown as CancelAPI)
+      },
+      retry: 1,
+      onError: (error) => {
+        console.log(error.message, "error")
+      },
+    },
+    errorNotification(error, values, resource) {
+      return {
+        type: "error",
+        message: error?.formattedMessage,
+      }
+    },
+
+  })
+
+  useEffect(() => {
+    if (cancelAPI) {
+      setCancelationReasons(cancelAPI.results as unknown as CancelationReason[])
+    }
+  }, [cancelAPI])
+
   useEffect(() => {
     setTab(activeTab)
   }, [activeTab])
@@ -287,10 +343,16 @@ const Modify = () => {
     const [showConfirmPopup, setShowConfirmPopup] = useState(false);
     
     const confirmCancel = () => {
+      
       cancelReservation({
         resource: `api/v1/bo/subdomains/public/cutomer/reservations/${token}/cancel`,
-        values: {},
+        values: {
+          cancellation_reason: (reason && reason?.id !== 0) ? reason?.id : null,
+          cancellation_note: (reason && reason?.id !== 0) ? reason?.name : otherReason,
+          other_cancellation_reason: otherReason === "" ? false : true,
+        },
       })
+      
       setErrorPage(true)
       setShowConfirmPopup(false)
     }
@@ -304,9 +366,15 @@ const Modify = () => {
         actionFunction={confirmCancel}
         showPopup={showConfirmPopup}
         setShowPopup={setShowConfirmPopup}
+        cancelReason={cancelationReasons}
+        reasonSelected={(reason) => { setReason(reason); }}
+        otherReasonSelected={(otherReasonSent) => {
+          setOtherReason(otherReasonSent)
+        }}
       />
 
       }
+
       {/* Header */}
       <header className="h-16 z-[300] w-full fixed flex items-center justify-between px-4 sm:px-10 shadow-md bg-white dark:bg-bgdarktheme">
         <Logo className="horizontal" nolink={true} />
@@ -344,6 +412,7 @@ const Modify = () => {
         </button>
       </header>
       <div className="h-16 w-full opacity-0"></div>
+      
 
       <div className="h-[90vh] items-start xl:max-w-[1200px] no-scrollbar mx-auto  overflow-y-auto w-full flex  p-5 gap-8 px-10 justify-center">
         <div className="w-full sm:w-3/5">

@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
+interface CancelReasonType {
+  id: number;
+  name: string;
+}
 interface ConfirmPopupProps {
   action: "delete" | "update" | "create" | "confirm"| "cancel" ;
   message?: string | React.ReactNode;
@@ -10,6 +14,9 @@ interface ConfirmPopupProps {
   secondAction?: (action: boolean) => void;
   secondActionText?: string;
   isSave?: (saved: boolean) => void;
+  cancelReason?: CancelReasonType[];
+  reasonSelected?: (reasonId: CancelReasonType | undefined) => void;
+  otherReasonSelected?: (otherReason: string) => void;
 }
 
 const ActionPopup: React.FC<ConfirmPopupProps> = ({ 
@@ -20,11 +27,16 @@ const ActionPopup: React.FC<ConfirmPopupProps> = ({
   actionFunction, 
   showPopup, 
   setShowPopup,
-  isSave
+  isSave,
+  cancelReason,
+  reasonSelected,
+  otherReasonSelected
 }) => {
   // Add state to handle animation
   const [isAnimating, setIsAnimating] = useState(false);
-  
+  const [reasonId, setReasonId] = useState<number | null>(null);
+  const [otherReasonText, setOtherReasonText] = useState<string>("");
+
   // Add escape key listener
   useEffect(() => {
     const handleEscKey = (event: KeyboardEvent) => {
@@ -51,6 +63,13 @@ const ActionPopup: React.FC<ConfirmPopupProps> = ({
     };
   }, [showPopup]);
 
+  // Send other reason text to parent whenever it changes
+  useEffect(() => {
+    if (reasonId === 0 && otherReasonText.trim() !== "") {
+      otherReasonSelected?.(otherReasonText);
+    }
+  }, [otherReasonText, reasonId, otherReasonSelected]);
+
   // Close popup with animation
   const handleClose = () => {
     setIsAnimating(false);
@@ -58,6 +77,9 @@ const ActionPopup: React.FC<ConfirmPopupProps> = ({
     setTimeout(() => {
       secondAction?.(false);
       setShowPopup(false);
+      // Reset states when closing
+      setReasonId(null);
+      setOtherReasonText("");
     }, 300); // Match this with transition duration (300ms)
   };
 
@@ -79,6 +101,39 @@ const ActionPopup: React.FC<ConfirmPopupProps> = ({
     }
   };
 
+  // Handle reason selection
+  const handleReasonChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const id = parseInt(e.target.value);
+    setReasonId(id);
+    
+    if (id === 0) {
+      // If "Other Reason" is selected, clear the selected reason
+      reasonSelected?.(undefined);
+      // If there's already text in the other reason field, send it to parent
+      if (otherReasonText.trim() !== "") {
+        otherReasonSelected?.(otherReasonText);
+      }
+    } else if (cancelReason) {
+      // If it's a regular reason, send it to parent
+      const selectedReason = cancelReason.find(reason => reason.id === id);
+      if (selectedReason) {
+        reasonSelected?.(selectedReason);
+        // Clear any previously set other reason
+        otherReasonSelected?.("");
+      }
+    }
+  };
+
+  // Handle other reason text input
+  const handleOtherReasonChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const text = e.target.value;
+    setOtherReasonText(text);
+    // Send to parent immediately if not empty
+    if (text.trim() !== "") {
+      otherReasonSelected?.(text);
+    }
+  };
+
   // Return null if popup shouldn't be shown
   if (!showPopup) return null;
 
@@ -96,7 +151,21 @@ const ActionPopup: React.FC<ConfirmPopupProps> = ({
 
   // Get button class based on action type
   const getButtonClass = () => {
-    return (action === "delete"||action==="cancel") ? "btn-danger" : "btn-primary";
+    if (action === "delete") return 'btn-danger';
+    if (action === "cancel") {
+      if (reasonId === null) return 'btn-disabled';
+      if (reasonId === 0 && otherReasonText.trim() === "") return 'btn-disabled';
+      return 'btn-danger';
+    }
+    return 'btn-primary';
+  };
+
+  // Check if button should be disabled
+  const isButtonDisabled = () => {
+    if (action !== "cancel") return false;
+    if (reasonId === null) return true;
+    if (reasonId === 0 && otherReasonText.trim() === "") return true;
+    return false;
   };
 
   // Check if dark mode is enabled
@@ -132,6 +201,40 @@ const ActionPopup: React.FC<ConfirmPopupProps> = ({
         <div className="flex flex-col items-center text-center">
           <h2 className="text-xl font-semibold capitalize mb-2">{action}</h2>
           {message}
+          {
+            cancelReason && cancelReason.length > 0 && (
+              <div className="mt-4 w-full">
+                <label htmlFor="cancelReason" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Select a reason:
+                </label>
+                <select 
+                  id="cancelReason" 
+                  className="inputs mt-2 w-full dark:bg-darkthemeitems dark:text-white bg-white text-gray-900"
+                  onChange={handleReasonChange}
+                  defaultValue=""
+                >
+                  <option value="" disabled>Select a reason</option>
+                  {cancelReason.map((reason) => (
+                    <option key={reason.id} value={reason.id}>
+                      {reason.name}
+                    </option>
+                  ))}
+                  <option value={0}>Other Reason</option>
+                </select>
+                {(reasonId === 0) && (
+                  <input
+                    type="text"
+                    className='inputs mt-2 w-full dark:bg-darkthemeitems dark:text-white bg-white text-gray-900'
+                    placeholder="Please specify"
+                    value={otherReasonText}
+                    onChange={handleOtherReasonChange}
+                    // Auto-focus the input when "Other Reason" is selected
+                    autoFocus
+                  />
+                )}
+              </div>
+            )
+          }
           
           <div className="flex gap-3 mt-4 w-full justify-center">
             <button 
@@ -144,8 +247,9 @@ const ActionPopup: React.FC<ConfirmPopupProps> = ({
             <button 
               className={getButtonClass()}
               onClick={handleConfirm}
+              disabled={isButtonDisabled()}
             >
-              {getActionText() || 'Confirm'}
+              {getActionText()}
             </button>
           </div>
         </div>
