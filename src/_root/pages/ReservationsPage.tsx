@@ -955,12 +955,12 @@ const ReservationTable: React.FC<ReservationTableProps> = ({
           <Pencil size={16} className='stroke-gray-600' />
         </button>
       </ReservationTableHeader>
-      <tbody className={`${isDarkMode ? 'bg-bgdarktheme divide-y divide-gray-800' : 'bg-white divide-y divide-gray-200'}`}>
+      <tbody className={`dark:bg-bgdarktheme dark:divide-y dark:divide-gray-800 bg-white divide-y divide-gray-200`}>
         {filteredReservations.length === 0 && !isLoading ? (
           <tr>
             <td colSpan={columns.length + 1} className="text-center py-4">
               <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                There is no reservation to show
+                There are no reservations to show
               </p>
             </td>
           </tr>
@@ -1631,7 +1631,7 @@ const ReservationsPage: React.FC = () => {
       </div>
 
       {/* Reservation cards for mobile */}
-      <div className='gt-sm:hidden overflow-x-auto max-w-full rounded-lg bg-white px-2 py-3 mt-2 min-h-[40vh]'>
+      <div className='gt-sm:hidden overflow-x-auto max-w-full rounded-lg bg-white dark:bg-bgdarktheme px-2 py-3 mt-2 min-h-[40vh]'>
         {(isLoading || isFirstLoad) ?
           <DraggableItemSkeleton count={3} isDarkMode={darkMode} />
           : (filteredReservations.map(item => (
