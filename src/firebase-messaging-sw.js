@@ -1,4 +1,13 @@
-// public/firebase-messaging-sw.js
+// src/firebase-messaging-sw.js
+
+// eslint-disable-next-line no-undef
+importScripts(
+  'https://storage.googleapis.com/workbox-cdn/releases/6.4.1/workbox-sw.js'
+);
+// eslint-disable-next-line no-undef
+const { precacheAndRoute } = workbox.precaching;
+precacheAndRoute(self.__WB_MANIFEST)
+
 /* eslint-disable no-restricted-globals */
 // eslint-disable-next-line no-undef
 importScripts('https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js');

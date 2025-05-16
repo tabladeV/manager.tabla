@@ -1,4 +1,4 @@
-// src/firebase/firebase.js
+// src/providers/firebase.js
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, MessagePayload, onMessage } from 'firebase/messaging';
 import axiosInstance from './axiosInstance';

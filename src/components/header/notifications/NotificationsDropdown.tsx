@@ -160,7 +160,24 @@ const NotificationsDropdown = () => {
   const toggleDropdown = () => {
     const newIsOpen = !isOpen;
     setIsOpen(newIsOpen);
+    setIsLoading(true);
   };
+
+
+   // Handles fetch when tab visibility changes (focus back)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && permissionStatus === 'granted') {
+        fetchNotifications();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [permissionStatus, fetchNotifications]); // Re-attach listener if permissionStatus or fetchNotifications changes
 
   const bgColor = isDarkMode ? 'bg-bgdarktheme' : 'bg-white';
   const hasUnreadNotifications = unreadCount > 0;
@@ -172,7 +189,7 @@ const NotificationsDropdown = () => {
       {isOpen && (
         <div
           ref={dropdownRef}
-          className={`absolute top-12 right-0 mt-2 w-80 max-h-96 overflow-y-auto rounded-md shadow-lg z-20 ${bgColor} border border-slate-200 dark:border-slate-700`}
+          className={`absolute top-12 gt-sm:right-0 -right-[120px] mt-2 w-80 max-h-96 overflow-y-auto rounded-md shadow-lg z-20 ${bgColor} border border-slate-200 dark:border-slate-700`}
         >
           <div className="p-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
             <h5 className="text-sm font-semibold text-slate-700 dark:text-slate-200">Notifications</h5>
