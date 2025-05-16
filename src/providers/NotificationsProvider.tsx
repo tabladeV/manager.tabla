@@ -1,17 +1,28 @@
+// src/providers/NotificationsProvider.tsx
 import React, { useEffect, ReactNode } from 'react';
 import { registerServiceWorker, onForegroundMessageHandler } from './firebase';
+import { updateServiceWorker } from './swManager'
 
-const NotificationsProvider = ({ children }: { children: ReactNode }) => {
-    
-    useEffect(() => {
-        registerServiceWorker();
+const NotificationsProvider = ({ children }: { children: React.ReactNode }) => {
+  useEffect(() => {
+    console.log("NotificationsProvider mounted.");
+    // run at mount and whenever permission or login might change
+    updateServiceWorker()
 
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        let unsubscribeFromForegroundMessages = () => { };
+    // permission can flip from 'default'→'granted' after user clicks “allow”
+    const handlePermChange = () => {
+      updateServiceWorker()
+    }
+    // listen for permission changes (some browsers fire this event)
+    navigator.permissions?.query({ name: 'notifications' }).then((perm) => {
+      perm.onchange = handlePermChange
+    })
 
-        if (localStorage.getItem("isLogedIn") === "true") {
-            console.log("Zustand: User authenticated, setting up foreground message handler.");
-            unsubscribeFromForegroundMessages = onForegroundMessageHandler((payload) => {
+    // set up foreground handler only when logged in & granted
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    let unsubscribe = () => {}
+    if (localStorage.getItem('isLogedIn') === 'true' && Notification.permission === 'granted') {
+      unsubscribe = onForegroundMessageHandler(payload => {
                 console.log('Zustand: Foreground FCM message in Provider:', payload);
                 const { notification, data } = payload;
                 if (notification && data) {
@@ -50,7 +61,7 @@ const NotificationsProvider = ({ children }: { children: ReactNode }) => {
         }
         return () => {
             console.log("Zustand: Cleaning up NotificationProvider, unsubscribing.");
-            unsubscribeFromForegroundMessages();
+            unsubscribe();
         };
     }, []);
 

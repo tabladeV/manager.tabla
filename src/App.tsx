@@ -66,6 +66,7 @@ import FAQPage from "./_root/pages/FAQPage";
 import TermsAndConditions from "./_root/pages/TermsAndConditions";
 import CalendarGrid from "./_root/pages/CalendarGrid";
 import WorkingHours from "./components/settings/WorkingHours";
+import NotificationsProvider from "./providers/NotificationsProvider";
 const API_HOST = import.meta.env.VITE_API_URL || "https://api.dev.tabla.ma";
 function App() {
 
@@ -74,7 +75,7 @@ function App() {
   }, []);
 
   const subdomain = getSubdomain();
-  const isManager = subdomain === "manager";
+  const isManager = subdomain === "manager" || true;
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLogedIn") === "true";
     const refreshToken = localStorage.getItem("refresh");
@@ -98,7 +99,8 @@ function App() {
         <DateProvider>
           <BrowserRouter>
             <RefineKbarProvider>
-              <DevtoolsProvider>
+              <NotificationsProvider>
+                <DevtoolsProvider>
                 <Refine
                   authProvider={authProvider}
                   dataProvider={dataProvider(API_HOST, customAxiosInstance)}
@@ -113,7 +115,6 @@ function App() {
                   }}
                 >
                   {isManager ? (
-
 
                     <Routes>
                       <Route
@@ -450,7 +451,8 @@ function App() {
                   <DocumentTitleHandler />
                 </Refine>
                 <DevtoolsPanel />
-              </DevtoolsProvider>
+                </DevtoolsProvider>
+              </NotificationsProvider>
             </RefineKbarProvider>
           </BrowserRouter>
         </DateProvider>

@@ -1,4 +1,4 @@
-// src/firebase/firebase.js
+// src/providers/firebase.js
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, MessagePayload, onMessage } from 'firebase/messaging';
 import axiosInstance from './axiosInstance';
@@ -24,13 +24,12 @@ try {
 
 
 export const registerServiceWorker = () => {
-    // The path '/sw.js' should match 'workbox.swDest' in your vite.config.ts
     if ('serviceWorker' in navigator && 'PushManager' in window) {
-        navigator.serviceWorker.register('/sw.js') 
+        navigator.serviceWorker.register('/firebase-messaging-sw.js') // Vite serves from public dir
             .then((registration) => {
-                console.log('PWA Service Worker (with Firebase) registered with scope:', registration.scope);
+                console.log('Service Worker registered with scope:', registration.scope);
             }).catch((err) => {
-                console.error('PWA Service Worker registration failed:', err);
+                console.error('Service Worker registration failed:', err);
             });
     } else {
         console.warn('Push messaging is not supported or service workers are not available.');

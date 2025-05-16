@@ -1,54 +1,45 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
+import path from 'path';
 
 export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate', // Consider 'prompt' for more user control over updates
-      injectRegister: null, // We will use the manual registration in src/providers/firebase.ts
+      // ─── DEV OPTIONS ─────────────────────────────────────────────────────────────
+      // serve & register your SW even in dev, so you can test push locally
       devOptions: {
-        enabled: true, // Enable PWA features in development mode
-        type: 'module', // Recommended for development service worker type
+        enabled: true,
+        type: 'module',
       },
+
+      // ─── INJECT-MANIFEST ─────────────────────────────────────────────────────────
+      strategies: 'injectManifest',
+      srcDir: 'src',                           // ← look in `src/`
+      filename: 'firebase-messaging-sw.js',    // ← your SW file in `src/`
+      injectManifest: {
+        globDirectory: path.resolve(__dirname, 'dist'),
+        globPatterns: ['**/*.{js,css,html,png,svg,woff2}'],
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,  // bump to 5 MiB
+      },
+
+      // ─── REGISTRATION & MANIFEST ─────────────────────────────────────────────────
+      injectRegister: false,
+      registerType: 'autoUpdate',
       manifest: {
-        name: 'Tabla Back Office',
-        short_name: 'TablaBO',
-        description: 'Tabla Back Office For Online Restaurant Booking System',
-        theme_color: '#ffffff', // Adjust to your app's theme color
-        background_color: '#ffffff', // Adjust to your app's background color
-        start_url: '/',
+        name: 'D-RSS',
+        short_name: 'D-RSS',
+        theme_color: '#06091c',
+        background_color: '#06091c',
         display: 'standalone',
         icons: [
-          {
-            src: 'logo.png', // Path relative to your public folder (public/logo.png)
-            sizes: '192x192',
-            type: 'image/png',
-          },
-          {
-            src: 'logo.png', // Path relative to your public folder (public/logo.png)
-            sizes: '512x512',
-            type: 'image/png',
-          },
-          // You can add more icon sizes and types here
-          // e.g., for maskable icons:
-          // {
-          //   src: 'maskable_icon.png',
-          //   sizes: '196x196',
-          //   type: 'image/png',
-          //   purpose: 'maskable'
-          // }
-        ],
-      },
-      // Configuration for injectManifest strategy
-      strategies: 'injectManifest',
-      srcDir: 'src', // The directory where your custom service worker source file is located
-      filename: 'custom-sw.js', // The name of your custom service worker source file in srcDir
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,json,vue,txt,woff2}'], // Files to be precached
-        swDest: 'sw.js', // The name of the output service worker file in the dist directory
-      },
-    }),
+          { src: '/logo.png', sizes: '48x48',   type: 'image/png' },
+          { src: '/logo.png', sizes: '96x96',   type: 'image/png' },
+          { src: '/logo.png', sizes: '512x512', type: 'image/png' },
+          { src: '/logo.png', sizes: '512x512', type: 'image/png', purpose: 'maskable any' }
+        ]
+      }
+    })
   ],
 });
