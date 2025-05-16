@@ -191,7 +191,7 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
                 value={selectedDate}
                 onClick={handleDateClick} 
                 availableDays={availableDates}
-                loading={loadingDates || !availableDates?.length}
+                loading={loadingDates}
                 onMonthChange={(month)=>handleMonthChange(month)}
               />
           </div>
