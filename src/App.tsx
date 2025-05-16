@@ -75,7 +75,7 @@ function App() {
   }, []);
 
   const subdomain = getSubdomain();
-  const isManager = subdomain === "manager" || true;
+  const isManager = subdomain === "manager";
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLogedIn") === "true";
     const refreshToken = localStorage.getItem("refresh");
@@ -99,7 +99,6 @@ function App() {
         <DateProvider>
           <BrowserRouter>
             <RefineKbarProvider>
-              <NotificationsProvider>
                 <DevtoolsProvider>
                 <Refine
                   authProvider={authProvider}
@@ -115,7 +114,7 @@ function App() {
                   }}
                 >
                   {isManager ? (
-
+                  <NotificationsProvider>
                     <Routes>
                       <Route
                         element={
@@ -430,6 +429,7 @@ function App() {
                         <Route path="*" element={<ErrorPage />} />
                       </Route>
                     </Routes>
+                  </NotificationsProvider>
                   ) : (
                     <Routes>
                       <Route element={<Plugins />}>
@@ -452,7 +452,6 @@ function App() {
                 </Refine>
                 <DevtoolsPanel />
                 </DevtoolsProvider>
-              </NotificationsProvider>
             </RefineKbarProvider>
           </BrowserRouter>
         </DateProvider>
