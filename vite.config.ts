@@ -22,7 +22,7 @@ export default defineConfig({
       },
       injectRegister: false,
       // registerType: 'prompt',
-      registerType:'autoUpdate',
+      registerType:'prompt',
       manifest: {
         id: '1:511226021492:web:cd57bf0b58f828368fb321',
         name: 'Tabla Back Office',
