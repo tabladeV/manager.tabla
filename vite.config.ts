@@ -36,13 +36,13 @@ export default defineConfig({
         theme_color: '#88ab61',
         icons: [
           {
-            src: '/src/assets/LOGO.png',
+            src: '/logo.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any maskable'
           },
           {
-            src: '/src/assets/LOGO.png',
+            src: '/logo.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'
