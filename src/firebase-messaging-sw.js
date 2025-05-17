@@ -1,5 +1,7 @@
 // src/firebase-messaging-sw.js
-
+/* Make new SW activate and take control ASAP */
+self.addEventListener('install', e => self.skipWaiting());
+self.addEventListener('activate', e => self.clients.claim());
 // eslint-disable-next-line no-undef
 importScripts(
   'https://storage.googleapis.com/workbox-cdn/releases/6.4.1/workbox-sw.js'
