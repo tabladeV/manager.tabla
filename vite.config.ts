@@ -21,7 +21,8 @@ export default defineConfig({
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
       },
       injectRegister: false,
-      registerType: 'autoUpdate',
+      // registerType: 'prompt',
+      registerType:'autoUpdate',
       manifest: {
         id: '1:511226021492:web:cd57bf0b58f828368fb321',
         name: 'Tabla Back Office',
