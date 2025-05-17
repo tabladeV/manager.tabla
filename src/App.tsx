@@ -115,7 +115,6 @@ function App() {
                 >
                   {isManager ? (
                   <NotificationsProvider>
-                  <NotificationsProvider>
                     <Routes>
                       <Route
                         element={
