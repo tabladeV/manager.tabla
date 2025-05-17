@@ -27,7 +27,7 @@ export default defineConfig({
       // ─── REGISTRATION & MANIFEST ─────────────────────────────────────────────────
       injectRegister: false,
       // registerType: 'autoUpdate',
-      registerType:'prompt',
+      registerType:'autoUpdate',
       manifest: {
         name: 'Tabla Back Office',
         short_name: 'Tabla BO',
