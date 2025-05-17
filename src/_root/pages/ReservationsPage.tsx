@@ -55,6 +55,8 @@ export interface Reservation extends BaseRecord {
   internal_note: string;
   source: ReservationSource;
   number_of_guests: string;
+  cancellation_note?: string;
+  cancellation_reason?: {id:number, name:string};
   tableSet?: number;
   phone: string;
   tables?: ReceivedTables[];
