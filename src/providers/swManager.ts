@@ -1,3 +1,4 @@
+// src/providers/swManager.ts
 // The name of your service worker file as configured in vite.config.ts and output by VitePWA
 // service worker file name used in prod is different from dev handle 
 const PWA_SERVICE_WORKER_NAME = import.meta.env.MODE === 'development' ? '/dev-sw.js?dev-sw' : '/firebase-messaging-sw.js';
