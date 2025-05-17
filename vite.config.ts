@@ -1,45 +1,55 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
-import path from 'path';
+import * as path from 'path';
 
 export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      // ─── DEV OPTIONS ─────────────────────────────────────────────────────────────
-      // serve & register your SW even in dev, so you can test push locally
+      manifestFilename: 'manifest.json',   // ← this makes the generated file manifest.json
       devOptions: {
         enabled: true,
         type: 'module',
       },
-
-      // ─── INJECT-MANIFEST ─────────────────────────────────────────────────────────
       strategies: 'injectManifest',
-      srcDir: 'src',                           // ← look in `src/`
-      filename: 'firebase-messaging-sw.js',    // ← your SW file in `src/`
+      srcDir: 'src',
+      filename: 'firebase-messaging-sw.js',
       injectManifest: {
         globDirectory: path.resolve(__dirname, 'dist'),
         globPatterns: ['**/*.{js,css,html,png,svg,woff2}'],
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,  // bump to 5 MiB
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
       },
-
-      // ─── REGISTRATION & MANIFEST ─────────────────────────────────────────────────
       injectRegister: false,
-      registerType: 'autoUpdate',
+      // registerType: 'prompt',
+      registerType:'prompt',
       manifest: {
-        name: 'D-RSS',
-        short_name: 'D-RSS',
-        theme_color: '#06091c',
-        background_color: '#06091c',
+        id: '1:511226021492:web:cd57bf0b58f828368fb321',
+        name: 'Tabla Back Office',
+        short_name: 'Tabla BO',
+        description: 'Tabla Back Office For Online Restaurant Booking System',
+        start_url: '.',
+        scope: '/',
         display: 'standalone',
+        orientation: 'any',
+        background_color: '#ffffff',
+        theme_color: '#88ab61',
         icons: [
-          { src: '/logo.png', sizes: '48x48',   type: 'image/png' },
-          { src: '/logo.png', sizes: '96x96',   type: 'image/png' },
-          { src: '/logo.png', sizes: '512x512', type: 'image/png' },
-          { src: '/logo.png', sizes: '512x512', type: 'image/png', purpose: 'maskable any' }
+          {
+            src: '/logo.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any maskable'
+          },
+          {
+            src: '/logo.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable'
+          }
         ]
       }
     })
   ],
 });
+

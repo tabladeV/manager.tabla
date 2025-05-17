@@ -429,7 +429,7 @@ function App() {
                         <Route path="*" element={<ErrorPage />} />
                       </Route>
                     </Routes>
-                  </NotificationsProvider>
+                    </NotificationsProvider>
                   ) : (
                     <Routes>
                       <Route element={<Plugins />}>

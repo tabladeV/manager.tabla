@@ -1,5 +1,4 @@
 // src/firebase-messaging-sw.js
-
 // eslint-disable-next-line no-undef
 importScripts(
   'https://storage.googleapis.com/workbox-cdn/releases/6.4.1/workbox-sw.js'
@@ -41,7 +40,8 @@ messaging.onBackgroundMessage((payload) => {
         body: payload.notification?.body || 'You have a new message.',
         icon: '/logo.png', // Replace with your app icon (e.g., /logo192.png if you add one)
         badge: '/logo.png',
-        data: payload.data
+        data: payload.data,
+        tag: payload.data?.notification_type || 'default' // Group similar notifications
     };
     self.registration.showNotification(notificationTitle, notificationOptions);
 });
