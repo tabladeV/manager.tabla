@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
-import path from 'path';
+import * as path from 'path';
 
 export default defineConfig({
   plugins: [
@@ -26,10 +26,12 @@ export default defineConfig({
 
       // ─── REGISTRATION & MANIFEST ─────────────────────────────────────────────────
       injectRegister: false,
-      registerType: 'autoUpdate',
+      // registerType: 'autoUpdate',
+      registerType:'prompt',
       manifest: {
-        name: 'D-RSS',
-        short_name: 'D-RSS',
+        name: 'Tabla Back Office',
+        short_name: 'Tabla BO',
+        description: 'Tabla Back Office',
         theme_color: '#06091c',
         background_color: '#06091c',
         display: 'standalone',

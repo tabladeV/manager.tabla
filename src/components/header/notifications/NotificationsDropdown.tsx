@@ -16,12 +16,19 @@ interface NotificationsApiResponse {
   // Add other fields if your API returns them
 }
 
+interface NotificationCount {
+  read: number;
+  total: number;
+  unread: number
+}
+
 const NotificationsDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<NotificationType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [notificationCount, setNotificationCount] = useState<NotificationCount | null | undefined>();
   const [permissionStatus, setPermissionStatus] = useState('default');
 
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -42,10 +49,16 @@ const NotificationsDropdown = () => {
       const params = { limit: 20, offset: 0 };
       console.log('Fetching notifications with params:', params);
       const response = await axiosInstance.get<NotificationsApiResponse>('api/v1/notifications/', { params });
+      const countResponse = await axiosInstance.get<NotificationCount>('api/v1/notifications/count/', { params });
       
+      const countResults = countResponse.data || (countResponse.data ? countResponse.data as unknown as NotificationCount : { read: 0, total: 0, unread: 0 });
       const results = response.data.results || (Array.isArray(response.data) ? response.data as NotificationType[] : []);
       setNotifications(results);
-      setUnreadCount(results.filter(n => !n.is_read).length);
+      setNotificationCount({
+        read: countResults.read,
+        total: countResults.total,
+        unread: countResults.unread
+      });
 
     } catch (err: unknown) { // Changed to unknown for better type safety
       let errorMsg = 'Failed to fetch notifications';
@@ -57,7 +70,6 @@ const NotificationsDropdown = () => {
       console.error('Error fetching notifications:', errorMsg, err);
       setError(errorMsg);
       setNotifications([]);
-      setUnreadCount(0);
     } finally {
       setIsLoading(false);
     }
@@ -117,7 +129,6 @@ const NotificationsDropdown = () => {
         item.user_notification_id === notification.user_notification_id ? { ...item, is_read: true, read_at: new Date().toISOString() } : item
       );
       setNotifications(updatedNotifications);
-      setUnreadCount(prev => Math.max(0, prev - 1));
     }
 
     try {
@@ -153,7 +164,6 @@ const NotificationsDropdown = () => {
       }
       console.error(errorMsg, err);
       setNotifications(originalNotifications);
-      setUnreadCount(originalNotifications.filter(n => !n.is_read).length);
     }
   };
   
@@ -180,11 +190,11 @@ const NotificationsDropdown = () => {
   }, [permissionStatus, fetchNotifications]); // Re-attach listener if permissionStatus or fetchNotifications changes
 
   const bgColor = isDarkMode ? 'bg-bgdarktheme' : 'bg-white';
-  const hasUnreadNotifications = unreadCount > 0;
+  const hasUnreadNotifications = (notificationCount?.unread || 0) > 0;
 
   return (
     <div className="relative">
-      <NotificationIcon ref={iconRef} unreadCount={unreadCount} hasUnread={hasUnreadNotifications} onClick={toggleDropdown} />
+      <NotificationIcon ref={iconRef} unreadCount={notificationCount?.unread || 0} hasUnread={hasUnreadNotifications} onClick={toggleDropdown} />
 
       {isOpen && (
         <div
