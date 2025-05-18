@@ -73,14 +73,19 @@ const NotificationsProvider = ({ children }: { children: React.ReactNode }) => {
               const browserNotification = new Notification(notification.title || "New Message", {
                 body: notification.body,
                 icon: '/logo.png', // Ensure this icon exists and is accessible
-                data: data
+                badge: '/logo.png',
+                data: data,
+                tag: data?.notification_type || 'default' // Group similar notifications
               });
               browserNotification.onclick = () => {
                 console.log("[NotificationsProvider] Browser notification clicked:", data);
+                const urlToOpen = data?.reservation_id? `/reservations?reservation_id=${data?.reservation_id}`: '/reservations';
                 window.focus(); // Attempt to focus the window
                 // Optionally, navigate to a relevant part of the app:
-                // if (data.url) { window.location.href = data.url; }
+                if (urlToOpen) { window.location.href = urlToOpen; }
               };
+              // Dispatch event for other components to update (e.g., notification count)
+              window.dispatchEvent(new CustomEvent('newNotificationReceived'));
             }
           }
         });
