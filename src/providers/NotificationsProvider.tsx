@@ -58,7 +58,7 @@ const NotificationsProvider = ({ children }: { children: React.ReactNode }) => {
               restaurant_id: data.restaurant_id ? parseInt(data.restaurant_id, 10) : null,
               restaurant_name: data.restaurant_name || null,
               notification_type: data.notification_type,
-              title: notification.title,
+              title: 'FOR|' + notification.title,
               message: notification.body,
               data: { ...data },
               created_at: data.created_at || new Date().toISOString(),
