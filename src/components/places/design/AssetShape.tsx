@@ -43,7 +43,7 @@ const AssetShape: React.FC<AssetShapeProps> = ({
         onClick={onSelect}
         onTap={onSelect}
         ref={shapeRef}
-        {...shapeProps} // Includes x, y, width, height, src, rotation
+        {...{...shapeProps, id:id as string}} // Includes x, y, width, height, src, rotation
         draggable
         onDragStart={onDragStartCallback}
         onDragEnd={(e) => {
