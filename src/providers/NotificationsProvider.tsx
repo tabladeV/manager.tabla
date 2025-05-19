@@ -1,6 +1,6 @@
 // src/providers/NotificationsProvider.tsx
 import React, { useEffect, ReactNode } from 'react';
-import { onForegroundMessageHandler } from './firebase';
+import { onForegroundMessageHandler, requestTokenOnly } from './firebase';
 import { updateServiceWorker } from './swManager';
 
 const NotificationsProvider = ({ children }: { children: React.ReactNode }) => {
@@ -105,7 +105,25 @@ const NotificationsProvider = ({ children }: { children: React.ReactNode }) => {
       // though it's often handled by the browser when the component unmounts.
     };
   }, []); // Empty dependency array means this runs once on mount and cleans up on unmount.
-
+  
+  
+  useEffect(() => {
+    const handleRequestPermission = async () => {
+      if (Notification.permission === 'granted') {
+        // Always re‐get the latest token (it may have rotated)
+        try {
+          const token = await requestTokenOnly();
+          if (token) {
+            console.log('[NotificationsProvider] Refreshed FCM token:', token);
+            // your backend registration is already done inside requestNotification…
+          }
+        } catch (error) {
+          console.error('[NotificationsProvider] Error refreshing FCM token:', error);
+        }
+      }
+    } 
+    handleRequestPermission();
+  }, []); 
   return <>{children}</>;
 };
 
