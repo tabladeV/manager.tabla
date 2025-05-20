@@ -421,7 +421,7 @@ export default function WidgetConfig() {
                 >
                   {autoConfirmation && <Check size={16} className="text-white" />}
                 </span>
-                <span className="capitalize">Auto confirm new online reservations</span>
+                <span className="capitalize">Auto-confirm online reservations</span>
               </label>
               </div>
               {(hasMenu) && (

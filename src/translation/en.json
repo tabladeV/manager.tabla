@@ -185,6 +185,7 @@
           "internalNote": "Internal Note",
           "email": "Email",
           "phone": "Phone",
+          "cancellationNote": "Cancellation Note",
           "floor": "Floor",
           "table":"Table",
           "date": "Date",

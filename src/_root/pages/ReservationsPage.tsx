@@ -18,6 +18,7 @@ import {
   Trash2,
   Tags
 } from 'lucide-react';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import SearchBar from "../../components/header/SearchBar";
 import IntervalCalendar from "../../components/Calendar/IntervalCalendar";
 import ReservationModal from "../../components/reservation/ReservationModal";
@@ -54,6 +55,8 @@ export interface Reservation extends BaseRecord {
   internal_note: string;
   source: ReservationSource;
   number_of_guests: string;
+  cancellation_note?: string;
+  cancellation_reason?: {id:number, name:string};
   tableSet?: number;
   phone: string;
   tables?: ReceivedTables[];
@@ -954,12 +957,12 @@ const ReservationTable: React.FC<ReservationTableProps> = ({
           <Pencil size={16} className='stroke-gray-600' />
         </button>
       </ReservationTableHeader>
-      <tbody className={`${isDarkMode ? 'bg-bgdarktheme divide-y divide-gray-800' : 'bg-white divide-y divide-gray-200'}`}>
+      <tbody className={`dark:bg-bgdarktheme dark:divide-y dark:divide-gray-800 bg-white divide-y divide-gray-200`}>
         {filteredReservations.length === 0 && !isLoading ? (
           <tr>
             <td colSpan={columns.length + 1} className="text-center py-4">
               <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                There is no reservation to show
+                There are no reservations to show
               </p>
             </td>
           </tr>
@@ -1024,6 +1027,42 @@ const ReservationsPage: React.FC = () => {
   useEffect(() => {
     document.title = 'Reservations | Tabla'
   }, []);
+
+  // URL query parameters
+  const [searchParams, setSearchParams] = useSearchParams();
+  const reservationIdParam = searchParams.get('reservation_id');
+
+  // Effect to fetch specific reservation if reservation_id is in URL
+  const { data: specificReservation, isLoading: isSpecificReservationLoading } = useList({
+    resource: `api/v1/bo/reservations/${reservationIdParam}/`,
+    queryOptions: {
+      enabled: !!reservationIdParam,      onSuccess: (data) => {
+        // When the specific reservation is fetched, open the edit modal
+        if (data?.data) {
+          // The response structure might be different when fetching a single item
+          const reservation = Array.isArray(data.data) 
+            ? data.data[0] as unknown as Reservation 
+            : data.data as unknown as Reservation;
+          
+          if (reservation) {
+            setSelectedClient(reservation);
+            setEditingClient(reservation.id);
+            setShowModal(true);
+          }
+        }
+      }    }
+  });
+
+  // Effect to listen for URL parameter changes
+  useEffect(() => {
+    if (reservationIdParam) {
+      // Will trigger the useList for specific reservation
+      console.log(`Fetching reservation with ID: ${reservationIdParam}`);
+    } else {
+      // Close the modal if the query param is removed
+      setShowModal(false);
+    }
+  }, [reservationIdParam]);
 
   // Dark mode context
   const { darkMode } = useDarkContext();
@@ -1594,7 +1633,7 @@ const ReservationsPage: React.FC = () => {
       </div>
 
       {/* Reservation cards for mobile */}
-      <div className='gt-sm:hidden overflow-x-auto max-w-full rounded-lg bg-white px-2 py-3 mt-2 min-h-[40vh]'>
+      <div className='gt-sm:hidden overflow-x-auto max-w-full rounded-lg bg-white dark:bg-bgdarktheme px-2 py-3 mt-2 min-h-[40vh]'>
         {(isLoading || isFirstLoad) ?
           <DraggableItemSkeleton count={3} isDarkMode={darkMode} />
           : (filteredReservations.map(item => (

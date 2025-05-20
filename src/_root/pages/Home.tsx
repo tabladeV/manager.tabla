@@ -15,7 +15,7 @@ import { useDarkContext } from '../../context/DarkContext'
 const Home = () => {
 
   useEffect(() => {
-    document.title = `Tabla | taste Morocco's best`
+    document.title = `Tabla | Taste Morocco's Best`
   }, [])
 
   const { data, isLoading, error } = useList({

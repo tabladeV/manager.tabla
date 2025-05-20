@@ -2,7 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="/src/assets/LOGO.png" />
+    <!-- PWA manifest -->
+    <link rel="icon" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta
@@ -13,7 +14,11 @@
       name="description"
       content="Tabla Back Office For Online Restaurant Booking System"
     />
-    <link rel="apple-touch-icon" href="/src/assets/LOGO.png" />
+        <!-- iOS standalone support -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Tabla Back Office" />
+    <link rel="apple-touch-icon" href="/logo.png" sizes="192x192" />
     <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
