@@ -27,7 +27,7 @@ export interface Table extends BaseRecord {
 export interface DesignElement extends BaseRecord {
   id: BaseKey | undefined;
   name?: string; // Optional, as assets might not have names
-  type: 'RECTANGLE' | 'CIRCLE' | 'SINGLE_DOOR' | 'DOUBLE_DOOR' | 'PLANT1' | 'PLANT2' | 'PLANT3' | 'PLANT4' | 'STAIRE' | 'STAIRE2' | string;
+  type: 'SINGLE_DOOR' | 'DOUBLE_DOOR' | 'PLANT1' | 'PLANT2' | 'PLANT3' | 'PLANT4' | 'STAIRE' | 'STAIRE2' | string;
   rotation: number;
   width: number;
   height: number;
@@ -78,7 +78,8 @@ const DesignPlaces: React.FC = () => {
   // Local state
   const [showAddPlace, setShowAddPlace] = useState(false);
   const [focusedRoof, setFocusedRoof] = useState<BaseKey | undefined>(roofId ? roofId : 1);
-  const [focusedFloorTables, setFocusedFloorTables] = useState<Table[]>([]);
+  const [focusedFloorTables, setFocusedFloorTables] = useState<any[]>([]);
+  const [focusedFloorAssets, setFocusedFloorAssets] = useState<any[]>([]);
   const [roofs, setRoofs] = useState<BaseRecord[]>([]);
   const [thisFloor, setThisFloor] = useState<BaseRecord | undefined>(undefined);
 
@@ -95,11 +96,12 @@ const DesignPlaces: React.FC = () => {
     resource: 'api/v1/bo/floors/',
   });
 
-  // Update thisFloor and focused floor tables when oneFloor is loaded
+  // Update thisFloor and focused floor tables/assets when oneFloor is loaded
   useEffect(() => {
     if (oneFloor?.data) {
       setThisFloor(oneFloor.data as BaseRecord);
       setFocusedFloorTables((oneFloor.data as BaseRecord).tables || []);
+      setFocusedFloorAssets((oneFloor.data as BaseRecord).assets || []);
     }
   }, [oneFloor]);
 
@@ -118,11 +120,11 @@ const DesignPlaces: React.FC = () => {
   }, [data]);
 
   // Handlers
-  const saveFloor = useCallback((tables: Table[]) => {
+  const saveFloor = useCallback((tables: any[], assets: any[]) => {
     if (!roofId) return;
     upDateFloor({
       id: roofId + '/',
-      values: { tables },
+      values: { tables, assets },
     },
       {
         onSuccess: () => {
@@ -130,7 +132,7 @@ const DesignPlaces: React.FC = () => {
         },
       }
     );
-    console.log(tables);
+    console.log({ tables, assets });
   }, [roofId, upDateFloor]);
 
   const handleAddFloor = useCallback(() => {
@@ -143,7 +145,8 @@ const DesignPlaces: React.FC = () => {
     mutate({
       values: {
         name: placeName,
-        tables: [],
+        tables: [], // Initialize with empty tables array
+        assets: [], // Initialize with empty assets array
       },
       successNotification: () => ({
         message: `${placeName} Successfully Added.`,
@@ -166,33 +169,58 @@ const DesignPlaces: React.FC = () => {
   const [message, setMessage] = useState<string | undefined>(undefined);
   const [action, setAction] = useState<'delete' | 'create' | 'update' | 'confirm'>('delete');
 
-  // Update focused floor tables when focusedRoof changes
-  const [newTables, setNewTables] = useState<DesignElement[]>([]);
+  // Update focused floor tables/assets when focusedRoof changes
+  const [newTables, setNewTables] = useState<any[]>([]);
+  const [newAssets, setNewAssets] = useState<DesignElement[]>([]);
   const [isSaved, setIsSaved] = useState<boolean>(false);
 
   console.log(newTables, 'new tables');
 
+  // Helper function to compare arrays of tables or assets
+  const areArraysEqual = useCallback((arr1: any[], arr2: any[]) => {
+    if (arr1.length !== arr2.length) return false;
+
+    // Create normalized versions for comparison (sorting by ID and including only essential properties)
+    const normalize = (items: any[]) => items
+      .map(item => ({
+        id: item.id,
+        type: item.type,
+        x: Math.round(item.x * 100) / 100, // Round to reduce floating point comparison issues
+        y: Math.round(item.y * 100) / 100,
+        width: Math.round(item.width * 100) / 100,
+        height: Math.round(item.height * 100) / 100,
+        rotation: Math.round(item.rotation * 100) / 100,
+        name: item.name,
+        max: item.max,
+        min: item.min,
+        blocked: item.blocked,
+        src: item.src,
+      }))
+      .sort((a, b) => String(a.id).localeCompare(String(b.id)));
+    
+    return JSON.stringify(normalize(arr1)) === JSON.stringify(normalize(arr2));
+  }, []);
+
   const navigationHandler = useCallback((roofId: BaseKey) => {
-    if (newTables === focusedFloorTables || isSaved) {
+    // Check if no changes have been made or if changes are already saved
+    if (areArraysEqual(newTables, focusedFloorTables) && 
+        areArraysEqual(newAssets, focusedFloorAssets) || isSaved) {
       navigate(`/places/design/${roofId}`);
       setIsSaved(false);
     } else {
-      setMessage("Are you sure you want to leave this page? Changes will notbe saved.");
+      setMessage("Are you sure you want to leave this page? Changes will not be saved.");
       setAction("confirm");
       setPendingRoofId(roofId);
       setShowConfirmPopup(true);
-
     }
-  }
-    , [newTables, focusedFloorTables, focusedRoof, navigate, isSaved]);
+  }, [newTables, newAssets, focusedFloorTables, focusedFloorAssets, navigate, isSaved, areArraysEqual]);
 
   const handleSave = useCallback(() => {
     if (!roofId || !pendingRoofId) return;
-
     upDateFloor(
       {
         id: roofId + '/',
-        values: { tables: newTables },
+        values: { tables: newTables, assets: newAssets }, // Send separate tables and assets arrays
       },
       {
         onSuccess: () => {
@@ -202,7 +230,7 @@ const DesignPlaces: React.FC = () => {
         },
       }
     );
-  }, [pendingRoofId, newTables, navigate, roofId, upDateFloor]);
+  }, [pendingRoofId, newTables, newAssets, navigate, roofId, upDateFloor]);
 
   const handleSecondAction = useCallback(() => {
     navigate(`/places/design/${pendingRoofId}`);
@@ -275,18 +303,16 @@ const DesignPlaces: React.FC = () => {
             className={`${window.location.pathname === `/places/design/${roof.id}` ? 'btn-primary' : 'btn-secondary'} gap-3 flex`}
           >
             <button
-              // to={`/places/design/${roof.id}`}
               onClick={() => {
-                if (newTables === focusedFloorTables) {
+                if (areArraysEqual(newTables, focusedFloorTables) && 
+                    areArraysEqual(newAssets, focusedFloorAssets)) {
                   navigate(`/places/design/${roof.id}`);
                   setFocusedRoof(roof.id);
                   setFloorName(roof.name);
                 } else {
                   roof.id && navigationHandler(roof.id);
-
                 }
-              }
-              }
+              }}
               className="flex gap-3"
             >
               {roof.name}
@@ -322,7 +348,7 @@ const DesignPlaces: React.FC = () => {
         ))}
       </SlideGroup>
     )
-  }, [roofs, handleDeleteRequest]);
+  }, [roofs, handleDeleteRequest, navigate, setFocusedRoof, setFloorName, navigationHandler, newTables, focusedFloorTables, newAssets, focusedFloorAssets, areArraysEqual]);
 
   return (
     <div>
@@ -394,10 +420,14 @@ const DesignPlaces: React.FC = () => {
       </div>
       <DesignCanvas
         isLoading={isLoading || loadingUpdate || oneFloorLoading}
-        onSave={saveFloor}
+        onSave={(tables, assets) => saveFloor(tables, assets)}
         tables={focusedFloorTables}
+        assets={focusedFloorAssets}
         focusedRoofId={focusedRoof}
-        newTables={(tables) => setNewTables(tables)}
+        newTables={(tables, assets) => {
+          setNewTables(tables);
+          setNewAssets(assets);
+        }}
         floorName={floorName}
       />
     </div>

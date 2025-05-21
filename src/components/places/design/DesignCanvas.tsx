@@ -60,7 +60,7 @@ interface PropShape extends DesignElement {
 }
 
 // Configuration for different asset types
-const ASSET_CONFIG = {
+export const ASSET_CONFIG = {
   SINGLE_DOOR: { src: singleDoorSrc, defaultWidth: 90, defaultHeight: 60, name: 'Single Door', icon: <DoorOpen size={24} /> },
   DOUBLE_DOOR: { src: doubleDoorSrc, defaultWidth: 180, defaultHeight: 60, name: 'Double Door', icon: <DoorOpen size={24} /> },
   DOOR: { src: doorSrc, defaultWidth: 60, defaultHeight: 100, name: 'Door', icon: <DoorOpen size={24} /> },
@@ -75,18 +75,20 @@ const ASSET_CONFIG = {
 };
 
 // Define AssetType based on ASSET_CONFIG keys
-type AssetType = keyof typeof ASSET_CONFIG;
+export type AssetType = keyof typeof ASSET_CONFIG;
 
 interface CanvasTypes {
   focusedRoofId: BaseKey | undefined | null;
-  tables: DesignElement[]; // Still receiving all elements as DesignElement initially
-  onSave: (elements: DesignElement[]) => void; // Still saving all elements as DesignElement
+  tables: TableShape[]; // Changed from DesignElement[] to TableShape[]
+  assets: PropShape[]; // Added separate assets prop
+  onSave: (tables: TableShape[], assets: PropShape[]) => void; // Updated to accept separate arrays
   isLoading: boolean;
-  newTables: (elements: DesignElement[]) => void; // Prop to notify parent (will be called less frequently)
+  newTables: (tables: TableShape[], assets: PropShape[]) => void; // Updated to notify parent with separate arrays
   floorName: string | undefined;
 }
 
 const DesignCanvas = (props: CanvasTypes) => {
+  console.log({props});
   const { darkMode } = useDarkContext();
   // Separate state for tables and props
   const [tables, setTables] = useState<TableShape[]>([]);
@@ -111,7 +113,7 @@ const DesignCanvas = (props: CanvasTypes) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
   const [containerHeight, setContainerHeight] = useState(0);
-  const [action, setAction] = useState('');
+  const [action, setAction] = useState<"delete" | "cancel" | "update" | "create" | "confirm">('delete');
   const [showPopup, setShowPopup] = useState(false);
   
 
@@ -254,15 +256,15 @@ const DesignCanvas = (props: CanvasTypes) => {
         const finalNewShape = newShape;
         if (finalNewShape.type === 'RECTANGLE' || finalNewShape.type === 'CIRCLE' || finalNewShape.type === 'RHOMBUS') {
           setTables((prevTables) => {
-            // Notify parent only on add/delete
-            props.newTables([...prevTables, finalNewShape as TableShape, ...propsShapes]);
+            // Notify parent only on add/delete with separate arrays
+            props.newTables([...prevTables, finalNewShape as TableShape], propsShapes);
             setTimeout(() => transitionToShape(finalNewShape), 0);
             return [...prevTables, finalNewShape as TableShape];
           });
         } else {
            setPropsShapes((prevProps) => {
-             // Notify parent only on add/delete
-            props.newTables([...tables, ...prevProps, finalNewShape as PropShape]);
+             // Notify parent only on add/delete with separate arrays
+            props.newTables(tables, [...prevProps, finalNewShape as PropShape]);
             setTimeout(() => transitionToShape(finalNewShape), 0);
             return [...prevProps, finalNewShape as PropShape];
           });
@@ -309,20 +311,20 @@ const DesignCanvas = (props: CanvasTypes) => {
 
       if (isTable) {
         setTables((prevTables) => {
-           // Notify parent only on add/delete
-          props.newTables([...prevTables.filter((table) => table.id !== selectedId), ...propsShapes]);
+          // Notify parent only on add/delete with separate arrays
+          props.newTables(prevTables.filter((table) => table.id !== selectedId), propsShapes);
           return prevTables.filter((table) => table.id !== selectedId);
         });
       } else {
         setPropsShapes((prevProps) => {
-          // Notify parent only on add/delete
-          props.newTables([...tables, ...prevProps.filter((prop) => prop.id !== selectedId)]);
+          // Notify parent only on add/delete with separate arrays
+          props.newTables(tables, prevProps.filter((prop) => prop.id !== selectedId));
           return prevProps.filter((prop) => prop.id !== selectedId);
         });
       }
       selectShape(null);
     }
-  }, [selectedId, tables, propsShapes, props.newTables]); // Added dependencies
+  }, [selectedId, tables, propsShapes, props.newTables]);
 
   // Function triggered by the edit button in the toolbar
   const editShape = useCallback(() => {
@@ -334,27 +336,18 @@ const DesignCanvas = (props: CanvasTypes) => {
     }
   }, [selectedId, tables]);
 
-  // Save the current layout (combine tables and props)
+  // Save the current layout (keep tables and props separate)
   const saveLayout = useCallback(() => {
-    props.onSave([...tables, ...propsShapes] as DesignElement[]);
+    props.onSave(tables, propsShapes);
   }, [props, tables, propsShapes]);
 
   // Reset the layout to the initial state from props
   const resetLayout = useCallback(() => {
-    const initialTables: TableShape[] = [];
-    const initialProps: PropShape[] = [];
-    props.tables.forEach(element => {
-      if (element.type === 'RECTANGLE' || element.type === 'CIRCLE' || element.type === 'RHOMBUS') {
-        initialTables.push(element as TableShape);
-      } else {
-        initialProps.push(element as PropShape);
-      }
-    });
-    setTables(initialTables);
-    setPropsShapes(initialProps);
-     // Notify parent after reset
-    props.newTables(props.tables);
-  }, [props.tables, props.newTables]);
+    setTables(props.tables || []);
+    setPropsShapes(props.assets || []);
+    // Notify parent after reset with separate arrays
+    props.newTables(props.tables, props.assets);
+  }, [props.tables, props.assets, props.newTables]);
 
   // Focus the stage view on all shapes (tables and props)
   const focusAll = useCallback(() => {
@@ -539,20 +532,13 @@ const DesignCanvas = (props: CanvasTypes) => {
 
   // Update shapes when focusedRoofId changes (initial load/reset)
   useEffect(() => {
+    
+    console.log('Updated tables and propsShapes:', props.focusedRoofId,{ tables, propsShapes });
     if (props.focusedRoofId) {
-      const initialTables: TableShape[] = [];
-      const initialProps: PropShape[] = [];
-      props.tables.forEach(element => {
-        if (element.type === 'RECTANGLE' || element.type === 'CIRCLE' || element.type === 'RHOMBUS') {
-          initialTables.push(element as TableShape);
-        } else {
-          initialProps.push(element as PropShape);
-        }
-      });
-      setTables(initialTables);
-      setPropsShapes(initialProps);
+      setTables(props.tables || []);
+      setPropsShapes(props.assets || []);
     }
-  }, [props.focusedRoofId, props.tables]);
+  }, [props.focusedRoofId, props.tables, props.assets]);
 
   // // Deselect shape and focus on all shapes when focusedRoofId changes
   // useEffect(() => {
@@ -564,13 +550,14 @@ const DesignCanvas = (props: CanvasTypes) => {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   useEffect(() => {
-    const currentElements = [...tables, ...propsShapes].sort((a, b) => (a.id as any) - (b.id as any));
-    const initialElements = [...props.tables].sort((a, b) => (a.id as any) - (b.id as any));
-
-    // Deep comparison of elements
-    const areEqual = JSON.stringify(currentElements) === JSON.stringify(initialElements);
-    setHasUnsavedChanges(!areEqual);
-  }, [tables, propsShapes, props.tables]);
+    // Compare tables and assets separately
+    const tablesEqual = JSON.stringify([...tables].sort((a, b) => (a.id as any) - (b.id as any))) === 
+                        JSON.stringify([...props.tables].sort((a, b) => (a.id as any) - (b.id as any)));
+    const assetsEqual = JSON.stringify([...propsShapes].sort((a, b) => (a.id as any) - (b.id as any))) === 
+                        JSON.stringify([...props.assets].sort((a, b) => (a.id as any) - (b.id as any)));
+    
+    setHasUnsavedChanges(!(tablesEqual && assetsEqual));
+  }, [tables, propsShapes, props.tables, props.assets]);
 
 
   // Removed unused list hook
@@ -722,7 +709,7 @@ const DesignCanvas = (props: CanvasTypes) => {
           return <Rhombus key={shape.id} {...commonProps} shapeProps={shape as TableShape} />;
         }
         if (Object.keys(ASSET_CONFIG).includes(shape.type as AssetType)) {
-          return <AssetShape key={shape.id} {...commonProps} shapeProps={shape as PropShape} />;
+          return <AssetShape key={shape.id} {...commonProps} shapeProps={{...shape,src: ASSET_CONFIG[shape.type as AssetType]?.src || 'ok why'}} />;
         }
         return null;
       });

@@ -17,7 +17,6 @@ const HtmlAssetShape: React.FC<HtmlAssetShapeProps> = ({ shapeProps }) => {
     transform: `rotate(${rotation || 0}deg)`,
     objectFit: 'contain', 
   };
-
   if (!src) {
     // Optionally, render a placeholder or nothing if src is not available
     return null; 

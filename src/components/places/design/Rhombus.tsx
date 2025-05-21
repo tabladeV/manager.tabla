@@ -85,8 +85,9 @@ const Rhombus: React.FC<RhombusProps> = ({
         rotation={0}
         fill="#88AB61"
         stroke="grey"
+        shadowBlur={2}
         strokeWidth={0.5}
-        opacity={0.6}
+        opacity={0.9}
         draggable
         onClick={onSelect}
         onTap={onSelect}
