@@ -34,7 +34,7 @@ const DndPreview = () => {
     pointerEvents: 'none',
     zIndex: 1000,
     opacity: 0.8,
-    position: 'fixed',
+    transform: 'rotate(45deg)',
     borderRadius: itemType !== 'BOX' ? (item?.type === 'RECTANGLE' ? '10px' : '50%'):'',
     boxShadow: '0 5px 15px rgba(0,0,0,0.15)',
   };

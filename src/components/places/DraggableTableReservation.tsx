@@ -9,7 +9,7 @@ interface DraggableTableReservationProps {
   fromTableId: BaseKey;
   id: BaseKey;
   name: string;
-  type: 'RECTANGLE' | 'CIRCLE';
+  type: 'RECTANGLE' | 'CIRCLE' | 'RHOMBUS';
   floorId?: BaseKey | undefined;
   x: number;
   y: number;

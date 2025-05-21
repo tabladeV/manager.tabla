@@ -19,7 +19,7 @@ const RreservationItemType = 'RESERVATION_LIST_ITEM';
 interface DropTargetProps {
   id: BaseKey;
   name: string;
-  type: 'RECTANGLE' | 'CIRCLE';
+  type: 'RECTANGLE' | 'CIRCLE' | 'RHOMBUS'; // Added RHOMBUS type
   floorId: BaseKey | undefined;
   x: number;
   y: number;
@@ -153,7 +153,7 @@ const DropTarget: React.FC<DropTargetProps> = ({
   // Handle drops from the sidebar (regular reservations)
   const [{ isOver, canDrop }, drop] = useDrop({
     accept: [ItemType, TableReservationType, RreservationItemType],
-    canDrop: (item: DroppedItem) => (!isLoading && item?.fromTableId !== id && reservations?.findIndex((res) => res.id === item.id || res.time === item.time) === -1 && canChangeRes),
+    canDrop: (item: DroppedItem) => (!blocked && !isLoading && item?.fromTableId !== id && reservations?.findIndex((res) => res.id === item.id || res.time === item.time) === -1 && canChangeRes),
     drop: (item: DroppedItem) => {
       handleDrop(item);
     },
@@ -380,8 +380,10 @@ const DropTarget: React.FC<DropTargetProps> = ({
                   : '#F6F6F6',
           left: x,
           top: y,
-          borderRadius: type === 'RECTANGLE' ? '10px' : '50%',
-          transform: type === 'RECTANGLE'?'translate(0px,0px)':`translate(-${width/2}px, -${height/2}px)`,
+          borderRadius: type === 'CIRCLE' ? '50%' : '10px', // Updated to handle both RECTANGLE and RHOMBUS
+          transform: type === 'CIRCLE' ? `translate(-${width/2}px, -${height/2}px)` : (
+            type === 'RHOMBUS' ? `translate(0, 0) rotate(45deg)` : 'translate(0px, 0px)'
+          ), // Special transform for RHOMBUS
           position: 'absolute',
           color: getTextColor(reservedBy ? (reservedBy?.occasion?.color || '#88ab61') : darkMode ? '#042117' : '#F6F6F6')
         }}
@@ -405,7 +407,9 @@ const DropTarget: React.FC<DropTargetProps> = ({
 
         {/* Make the reservation draggable if the table has one */}
         {reservations?.length ===1 ? (
-          <div className="absolute inset-0 z-10 m-0" >
+          <div className="absolute inset-0 z-10 m-0" style={{
+            transform: type === 'RHOMBUS' ? 'rotate(-45deg)' : 'none' // Counter-rotate content
+          }}>
             {!isLoading && (
               <DraggableTableReservation
                 type={type}
@@ -430,29 +434,31 @@ const DropTarget: React.FC<DropTargetProps> = ({
           </div>
         ) : (
           <>
-            <h6
-              className={"text-[14px] px-1 w-full text-center font-semibold"}
-              style={{
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-              }}
-            >
-              {name}
-            </h6>
-            <span
-              className={`text-[12px] pa-1 rounded-full h-[20px] min-w-[20px] font-semibold ${darkMode
-                  ? 'bg-bgdarktheme text-white'
-                  : 'bg-[#dddddd] text-greytheme'
-                }`}
-              style={{
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-              }}
-            >
-              {max}
-            </span>
+            <div style={{ transform: type === 'RHOMBUS' ? 'rotate(-45deg)' : 'none' }}>
+              <h6
+                className={"text-[14px] px-1 w-full text-center font-semibold"}
+                style={{
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                {name}
+              </h6>
+              <span
+                className={`text-[12px] pa-1 rounded-full h-[20px] min-w-[20px] font-semibold ${darkMode
+                    ? 'bg-bgdarktheme text-white'
+                    : 'bg-[#dddddd] text-greytheme'
+                  }`}
+                style={{
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                {max}
+              </span>
+            </div>
           </>
         )}
       </div>
@@ -463,8 +469,8 @@ const DropTarget: React.FC<DropTargetProps> = ({
               ref={optionsRef}
               className="absolute z-[1000] bg-[#F6F6F6] dark:bg-bgdarktheme2 shadow-md rounded-md overflow-hidden dark:text-white"
               style={{
-                left: x + (type === 'RECTANGLE'?80:40),
-                top: y + (type === 'RECTANGLE'?50:20),
+                left: x + (type === 'CIRCLE' ? 40 : 80),
+                top: y + (type === 'CIRCLE' ? 20 : 50),
                 transform: 'translateY(-50%)'
               }}
             >
@@ -498,8 +504,8 @@ const DropTarget: React.FC<DropTargetProps> = ({
                 : 'bg-[#F6F6F6] text-greytheme'
               }`}
             style={{
-              left: x + (type === 'RECTANGLE'?80:40),
-              top: y + (type === 'RECTANGLE'?50:20),
+              left: x + (type === 'CIRCLE' ? 40 : 80),
+              top: y + (type === 'CIRCLE' ? 20 : 50),
             }}
           >
             {name} has {reservations?.length} {reservations?.length > 1 ? 'reservations' : 'reservation'}
