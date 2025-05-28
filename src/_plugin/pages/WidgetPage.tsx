@@ -231,6 +231,7 @@ const WidgetPage = () => {
   }
 
   const [checkedConditions, setCheckedConditions] = useState<boolean>(false)
+  const [checkedDressCode, setCheckedDressCode] = useState<boolean>(false)
 
   const toggleDarkMode = () => {
     document.documentElement.classList.toggle("dark")
@@ -507,6 +508,19 @@ const WidgetPage = () => {
                       the terms and conditions
                     </Link>
                   </label>
+                  
+                </div>
+                <div className="flex items-start pt-2">
+                  <input
+                    type="checkbox"
+                    id="DressCode"
+                    checked={checkedDressCode}
+                    onChange={() => setCheckedDressCode(!checkedDressCode)}
+                    className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]"
+                  />
+                  <label htmlFor="dressCode" className="ml-2 block text-sm text-[#555555] dark:text-[#cccccc]">
+                    I agree to the dress code (Smart Casual)
+                  </label>
                 </div>
 
                 <div className="flex gap-4 pt-2">
@@ -519,9 +533,9 @@ const WidgetPage = () => {
                   </button>
                   <button
                     type="submit"
-                    disabled={!checkedConditions}
+                    disabled={!checkedConditions || !checkedDressCode}
                     className={`flex-1 py-3 px-4 rounded-md font-medium transition-colors ${
-                      !checkedConditions
+                      !checkedConditions || !checkedDressCode
                         ? "bg-[#88AB61] opacity-50 cursor-not-allowed"
                         : "bg-[#88AB61] hover:bg-[#769c4f] text-white"
                     }`}
