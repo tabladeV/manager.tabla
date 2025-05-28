@@ -18,7 +18,7 @@ const NotificationIcon = React.forwardRef<HTMLButtonElement, NotificationIconPro
       <Bell className="text-gray-600 dark:text-gray-300" size={20} />
       {hasUnread && (
         <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white ring-2 ring-white dark:ring-bgdarktheme">
-          {unreadCount > 0 ? unreadCount : null}
+          {unreadCount > 0 ? (unreadCount>99?"99+":unreadCount) : null}
           {unreadCount === 0 && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>} {/* Blinking dot if count is 0 but hasUnread is true */}
         </span>
       )}

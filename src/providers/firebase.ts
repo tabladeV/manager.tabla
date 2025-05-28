@@ -78,6 +78,37 @@ export const requestNotificationPermissionAndToken = async () => {
     }
 };
 
+export const requestTokenOnly = async () => {
+    if (!messagingInstance) {
+        console.error("Firebase Messaging not available.");
+        return null;
+    }
+
+    try {
+        const registration = await getSWRegistration();
+        if (!registration) {
+            console.error('Service Worker registration not found.');
+            return null;
+        }
+        const currentToken = await getToken(messagingInstance, {
+            vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY || "BPO3O19QxBcc-j1k4wIZsrgxaFkqi8svWVMriCMltjFr1E1e58FcnAw-2Ogyttiryb7508I4O45fwDWnKpOf6FA",
+            serviceWorkerRegistration: registration
+        });
+
+        if (currentToken) {
+            console.log('FCM Token retrieved:', currentToken);
+            await registerTokenWithBackend(currentToken);
+            return currentToken;
+        } else {
+            console.log('No registration token available. Request permission first or check service worker.');
+            return null;
+        }
+    } catch (err) {
+        console.error('An error occurred while retrieving token. ', err);
+        return null;
+    }
+};
+
 export const onForegroundMessageHandler = (callback: { (payload: { notification: any; data: any; }): void; (arg0: MessagePayload): void; }) => {
     if (!messagingInstance) { // Use the initialized instance
         console.error("Firebase Messaging not available for foreground handler.");
