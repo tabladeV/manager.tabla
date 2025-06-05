@@ -289,7 +289,7 @@ const WidgetPage = () => {
       <div className="h-16 w-full z-[0] opacity-0"></div>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex justify-center flex-col sm:flex-row gap-8">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex justify-center flex-col sm:flex-row gap-8 mb-10">
         {/* Left Column - Form */}
       <div className="w-full sm:w-3/5">
         <div className=" flex items-start">

@@ -66,7 +66,7 @@ export default function TermsAndConditions() {
   ]
 
   return (
-    <div className="min-h-screen bg-softgreytheme dark:bg-bgdarktheme2 text-blacktheme dark:text-textdarktheme">
+    <div className="bg-softgreytheme dark:bg-bgdarktheme2 text-blacktheme dark:text-textdarktheme">
       {/* Header */}
       <header className="sticky top-0 z-10 bg-whitetheme dark:bg-bgdarktheme shadow-sm">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-1 flex items-center justify-between">
@@ -110,7 +110,7 @@ export default function TermsAndConditions() {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="max-h-[calc(100vh-80px)] overflow-y-auto w-full px-4 sm:px-6 lg:px-8 py-12">
         <div className="max-w-3xl mx-auto">
           {/* Title */}
           <div className="text-center mb-10">
