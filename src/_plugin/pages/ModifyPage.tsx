@@ -414,7 +414,7 @@ const Modify = () => {
       <div className="h-16 w-full opacity-0"></div>
       
 
-      <div className="h-[90vh] items-start xl:max-w-[1200px] no-scrollbar mx-auto  overflow-y-auto w-full flex  p-5 gap-8 px-10 justify-center">
+      <div className="h-[90vh] items-start xl:max-w-[1200px] no-scrollbar mx-auto  overflow-y-auto w-full flex  p-5 gap-8 px-10 justify-center mb-5">
         <div className="w-full sm:w-3/5">
           {widgetInfo?.image && (
             <img
