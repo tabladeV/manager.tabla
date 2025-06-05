@@ -110,7 +110,7 @@ export default function TermsAndConditions() {
       </header>
 
       {/* Main Content */}
-      <main className="max-h-[calc(100vh-80px)] overflow-y-auto w-full px-4 sm:px-6 lg:px-8 py-12">
+      <main className="max-h-[calc(100vh-80px)] overflow-y-auto w-full px-4 sm:px-6 lg:px-8 py-12 mb-10">
         <div className="max-w-3xl mx-auto">
           {/* Title */}
           <div className="text-center mb-10">
