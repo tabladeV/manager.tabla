@@ -169,6 +169,7 @@ const WidgetPage = () => {
   }
 
   const [isWidgetActivated, setIsWidgetActivated] = useState(true)
+  const [dressCodePopupOpen, setDressCodePopupOpen] = useState(false)
 
   useEffect(() => {
     if (widgetInfo) {
@@ -510,18 +511,46 @@ const WidgetPage = () => {
                   </label>
                   
                 </div>
-                <div className="flex items-start pt-2">
+                {widgetInfo?.enable_dress_code && (<div className="flex items-start pt-2">
                   <input
-                    type="checkbox"
-                    id="DressCode"
-                    checked={checkedDressCode}
-                    onChange={() => setCheckedDressCode(!checkedDressCode)}
-                    className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]"
+                  type="checkbox"
+                  id="DressCode"
+                  checked={checkedDressCode}
+                  onChange={() => setCheckedDressCode(!checkedDressCode)}
+                  className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]"
                   />
-                  <label htmlFor="dressCode" className="ml-2 block text-sm text-[#555555] dark:text-[#cccccc]">
-                    I agree to the dress code (Smart Casual)
+                  <div className="ml-2">
+                  <label htmlFor="DressCode" className="block text-sm text-[#555555] dark:text-[#cccccc]">
+                    I agree to the dress code ({widgetInfo?.dress_code && widgetInfo.dress_code.length > 100 
+                    ? `${widgetInfo.dress_code.substring(0, 100)}... `
+                    : widgetInfo?.dress_code || "No specific dress code"}
+                    {widgetInfo?.dress_code && widgetInfo.dress_code.length > 100 && (
+                      <button type="button" onClick={() => setDressCodePopupOpen(true)} className="underline font-medium text-[#88AB61]">
+                        read more
+                      </button>
+                    )})
                   </label>
-                </div>
+                  </div>
+                </div>)}
+
+                {/* Dress Code Popup */}
+                {dressCodePopupOpen && (
+                  <div onClick={() => setDressCodePopupOpen(false)} className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                  <div className="bg-white dark:bg-darkthemeitems rounded-lg p-6 max-w-md w-full">
+                    <h3 className="text-lg font-semibold mb-2">Dress Code</h3>
+                    <p className="mb-4">{widgetInfo?.dress_code}</p>
+                    <div className="flex justify-end">
+                      <button
+                    type="button"
+                    onClick={() => setDressCodePopupOpen(false)}
+                    className="py-2 px-4 bg-[#88AB61] text-white rounded-md hover:bg-[#769c4f]"
+                    >
+                    Close
+                    </button>
+                    </div>
+                  </div>
+                  </div>
+                )}
 
                 <div className="flex gap-4 pt-2">
                   <button
@@ -533,11 +562,10 @@ const WidgetPage = () => {
                   </button>
                   <button
                     type="submit"
-                    disabled={!checkedConditions || !checkedDressCode}
-                    className={`flex-1 py-3 px-4 rounded-md font-medium transition-colors ${
-                      !checkedConditions || !checkedDressCode
-                        ? "bg-[#88AB61] opacity-50 cursor-not-allowed"
-                        : "bg-[#88AB61] hover:bg-[#769c4f] text-white"
+                    disabled={!checkedConditions || (widgetInfo?.enable_dress_code? !checkedDressCode : false)}
+                    className={`bg-[#88AB61] flex-1 py-3 px-4 rounded-md font-medium transition-colors ${
+                      !checkedConditions || (widgetInfo?.enable_dress_code? !checkedDressCode : false) ? "bg-[#88AB61] opacity-50 cursor-not-allowed"
+                        : "hover:bg-[#769c4f] text-white"}
                     }`}
                   >
                     Continue
