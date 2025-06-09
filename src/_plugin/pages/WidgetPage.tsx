@@ -361,15 +361,15 @@ const WidgetPage = () => {
                   onClick={() => setShowProcess(true)}
                   className="flex justify-between items-center cursor-pointer px-3 py-4 hover:border-softgreentheme border-2 border-[#00000000] hover:bg-[#f0f0f0] dark:hover:bg-bgdarktheme2 rounded-md transition-colors"
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex md:flex-row flex-col items-center gap-1">
                     <span className="font-[600] dark:text-greentheme text-greentheme">Date</span>
                     <span className="font-medium">{formatedDate() || "----/--/--"}</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex md:flex-row flex-col items-center gap-1">
                     <span className="font-[600] dark:text-greentheme text-greentheme">Time</span>
                     <span className="font-medium">{data.time || "--:--"}</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex md:flex-row flex-col items-center gap-1">
                     <span className="font-[600] dark:text-greentheme text-greentheme">Guests</span>
                     <span className="font-medium">{data.guests || "--"}</span>
                   </div>
@@ -623,7 +623,7 @@ const WidgetPage = () => {
               <h2 className="text-xl font-semibold mb-4">Confirm Your Informations</h2>
 
               <div className="space-y-4 mb-6">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <h3 className="text-sm font-medium font-[600] dark:text-greentheme text-greentheme">Name</h3>
                     <p className="text-base">
