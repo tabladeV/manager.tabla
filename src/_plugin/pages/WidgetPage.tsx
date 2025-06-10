@@ -342,7 +342,7 @@ const WidgetPage = () => {
       )}
 
       {/* Main Content */}
-      <main className="w-[90%] mx-auto px-4 sm:px-6 py-8 flex justify-center flex-col sm:flex-col gap-8 mb-10">
+      <main className="w-[90%] mx-auto py-8 flex justify-center flex-col sm:flex-col gap-8 mb-10">
         {/* Left Column - Form */}
       <div className="w-full sm:w-4/5 mx-auto">
           {/* {step !== 6 && (
@@ -562,18 +562,16 @@ const WidgetPage = () => {
                   onChange={() => setCheckedDressCode(!checkedDressCode)}
                   className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]"
                   />
-                  <div className="ml-2">
-                  <label htmlFor="DressCode" className="block text-sm text-[#555555] dark:text-[#cccccc]">
-                    I agree to the dress code ({widgetInfo?.dress_code && widgetInfo.dress_code.length > 100 
-                    ? `${widgetInfo.dress_code.substring(0, 100)}... `
-                    : widgetInfo?.dress_code || "No specific dress code"}
+                  <label htmlFor="DressCode" className="ml-2 block text-sm text-[#555555] dark:text-[#cccccc]">
+                    I agree to the dress code ({widgetInfo?.dress_code && widgetInfo.dress_code.length > 100
+                      ? `${widgetInfo.dress_code.substring(0, 100)}... `
+                      : widgetInfo?.dress_code || "No specific dress code"}
                     {widgetInfo?.dress_code && widgetInfo.dress_code.length > 100 && (
                       <button type="button" onClick={() => setDressCodePopupOpen(true)} className="underline font-medium text-[#88AB61]">
                         read more
                       </button>
                     )})
                   </label>
-                  </div>
                 </div>)}
 
                 {/* Dress Code Popup */}
