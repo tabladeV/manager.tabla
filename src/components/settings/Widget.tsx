@@ -6,6 +6,8 @@ import 'draft-js/dist/Draft.css';
 import { Editor, EditorState, convertToRaw, convertFromRaw } from 'draft-js';
 import { BaseKey, useList, useUpdate } from '@refinedev/core';
 import QuillEditor from './widgetComp/QuillEditor';
+import BaseBtn from '../common/BaseBtn';
+import { set } from 'date-fns';
 
 
 
@@ -22,6 +24,8 @@ interface Widget {
   content: string;
   description: string;
   menu_file: string;
+  enable_dress_code: boolean;
+  dress_code: string;
   has_menu: boolean;
   auto_confirmation: boolean;
 }
@@ -73,9 +77,11 @@ export default function WidgetConfig() {
   const [title, setTitle] = useState('');
   const [hasMenu, setHasMenu] = useState<boolean>();
   const [autoConfirmation, setAutoConfirmation] = useState<boolean>(false);
+  const [enableDressCode, setEnableDressCode] = useState<boolean>(false);
   const [description, setDescription] = useState('');
   const [disabledTitle, setDisabledTitle] = useState('');
   const [disabledDescription, setDisabledDescription] = useState('');
+  const [dressCode, setDressCode] = useState<string>('');
   const [isWidgetActivated, setIsWidgetActivated] = useState<boolean>(true);
   const [menuPdf, setMenuPdf] = useState<string | null>(null);
   const [searchTabs, setSearchTabs] = useState({
@@ -104,6 +110,8 @@ export default function WidgetConfig() {
       setDescription(data.content);
       setMenuPdf(data.menu_file || null);
       setLogo(data.image || null);
+      setEnableDressCode(data.enable_dress_code);
+      setDressCode(data.dress_code || '');
       // if(logo === null){
       //   setNewLogo(true);
       // }
@@ -195,7 +203,7 @@ export default function WidgetConfig() {
     setSearchTabs((prev) => ({ ...prev, [tab]: !prev[tab] }));
   };
 
-  const { mutate: updateWidget } = useUpdate({
+  const { mutate: updateWidget, isLoading: isLoadingUpdate } = useUpdate({
     errorNotification(error, values, resource) {
       return {
         type: 'error',
@@ -204,9 +212,7 @@ export default function WidgetConfig() {
     },
   });
 
-  
   const currentUrl = window.location.href
-  console.log('Current URL:', currentUrl)
 
   const handleSave = async () => {
     if (!widgetInfo) return;
@@ -243,6 +249,9 @@ export default function WidgetConfig() {
     }
 
     formData.append('auto_confirmation', autoConfirmation?.toString() || '0');
+
+    formData.append('enable_dress_code', enableDressCode?.toString() || '0');
+    formData.append('dress_code', dressCode || '');
     
     try {
       await updateWidget({
@@ -269,12 +278,45 @@ export default function WidgetConfig() {
 
   const darkModeClass = 'dark:bg-bgdarktheme dark:text-white bg-white text-black';
 
+   const isFormValid = () => {
+    if (isWidgetActivated) {
+      // Validate active widget fields
+      if (!title.trim()) {
+        console.log("Validation failed: Title is empty");
+        return false;
+      }
+      if (maxGuestsPerReservation <= 0) {
+        console.log("Validation failed: Max guests must be positive");
+        return false;
+      }
+      if (enableDressCode && !dressCode.trim()) {
+        console.log("Validation failed: Dress code is enabled but empty");
+        return false;
+      }
+      if (hasMenu && !menuPdf && !filePDF) { // Check if menu is enabled but no PDF is set or uploaded
+        console.log("Validation failed: Menu is enabled but no PDF is provided");
+        return false;
+      }
+    } else {
+      // Validate disabled widget fields
+      if (!disabledTitle.trim()) {
+        console.log("Validation failed: Disabled title is empty");
+        return false;
+      }
+      if (!disabledDescription.trim()) {
+        console.log("Validation failed: Disabled description is empty");
+        return false;
+      }
+    }
+    return true;
+  };
+
   if (isLoading) return <div className="text-center">Loading...</div>;
 
   
 
   return (
-    <div className={`w-full mx-auto p-6 rounded-[10px] ${darkModeClass}`}>
+    <div className={`w-full min-h-[100vh] mx-auto p-6 rounded-[10px] ${darkModeClass}`}>
       <div className="flex lt-sm:flex-col items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-center mb-6">
           {t('settingsPage.widget.title')} for <span className='italic font-[600]'>{widgetInfo?.restaurant}</span>
@@ -355,27 +397,9 @@ export default function WidgetConfig() {
           className="hidden"
         />
       </div>
+      
       {isWidgetActivated ? (
-          <div>
-            <div className="space-y-2 mb-6">
-              <h2 className="text-lg font-semibold mt-2">{t('settingsPage.widget.name')}</h2>
-
-              <input
-                type="text"
-                placeholder={t('settingsPage.widget.addTitlePlaceholder')}
-                className="inputs p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-              />
-              <h2 className="text-lg font-semibold mt-2">{t('settingsPage.widget.description')}</h2>
-              <QuillEditor
-                value={description}
-                onChange={setDescription}
-                placeholder={t('settingsPage.widget.addDescriptionPlaceholder')}
-                
-              />
-            </div>
-
+          <>
             <div className="mb-6">
               <h2 className="text-lg font-semibold mb-2">{t('settingsPage.widget.searchTabs.title')}</h2>
               <div className="flex flex-wrap gap-4">
@@ -423,7 +447,36 @@ export default function WidgetConfig() {
                 </span>
                 <span className="capitalize">Auto-confirm online reservations</span>
               </label>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={(enableDressCode) as boolean}
+                  onChange={() => setEnableDressCode((prev) => !prev)}
+                  className="sr-only"
+                />
+                <span
+                  className={`flex items-center justify-center w-6 h-6 border rounded-md mr-2 ${enableDressCode ? 'bg-greentheme border-greentheme' : 'border-gray-300 dark:border-darkthemeitems'
+                    }`}
+                >
+                  {enableDressCode && <Check size={16} className="text-white" />}
+                </span>
+                <span className="capitalize">Enable dress code</span>
+              </label>
               </div>
+              {enableDressCode && (
+              <div className="space-y-4 my-6">
+                <div className="relative">
+                  <textarea
+                    placeholder={'Dress code'}
+                    className={`w-full inputs p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white lt-sm:w-full h-24 resize-none`}
+                    value={dressCode}
+                    onChange={(e) => {
+                      setDressCode(e.target.value);
+                    }}
+                  />
+                </div>
+              </div>
+              )}
               {(hasMenu) && (
                 <div className="flex justify-around gap-2 items-center">
                   <button
@@ -455,7 +508,7 @@ export default function WidgetConfig() {
                 </div>
               )}
             </div>
-          </div>):
+          </>):
           (
             <div className="space-y-4 mb-6">
               <input
@@ -474,15 +527,34 @@ export default function WidgetConfig() {
             </div>
           )
       }
-      
+
+      {isWidgetActivated && <div className="space-y-2 mb-6">
+        <h2 className="text-lg font-semibold mt-2">{t('settingsPage.widget.name')}</h2>
+
+        <input
+          type="text"
+          placeholder={t('settingsPage.widget.addTitlePlaceholder')}
+          className="inputs p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        <h2 className="text-lg font-semibold mt-2">{t('settingsPage.widget.description')}</h2>
+        <QuillEditor
+          value={description}
+          onChange={setDescription}
+          placeholder={t('settingsPage.widget.addDescriptionPlaceholder')}
+        />
+      </div>}
 
       <div className="flex lt-md:grid gap-3 lt-md:grid-cols-2">
-        <button
+        <BaseBtn
           onClick={handleSave}
+          loading={isLoadingUpdate}
+          disabled={!isFormValid()}
           className="flex-1 py-2 bg-greentheme text-white rounded-lg hover:opacity-90 transition-opacity lt-sm:w-full lt-md:col-span-2"
         >
           {t('settingsPage.widget.buttons.save')}
-        </button>
+        </BaseBtn>
         <Link to={currentUrl.includes('dev')?`https://${subdomain}.dev.tabla.ma/make/reservation`: currentUrl.includes('localhost') ? `http://italiana.localhost:5173/make/reservation`: `https://${subdomain}.tabla.ma/make/reservation`} target="_blank" className="btn-secondary w-1/4 text-center lt-md:w-full">
           {t('settingsPage.widget.buttons.preview')} Reservation
         </Link>

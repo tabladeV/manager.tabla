@@ -234,7 +234,7 @@ const SettingsPage = () => {
           {/* <Link to='/settings/permissions' className={`hover:underline ${pathname === '/settings/permissions' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.permissions')}</Link> */}
           {/* <Link to='/settings/services' className={`hover:underline ${pathname === '/settings/services' ? 'text-greentheme underline':''}`}>{t('settingsPage.menuItems.services')}</Link> */}
         </div>
-        <div className={`w-full h-calc(100vh-160px)  overflow-y-auto ${pathname === '/settings' ? 'lt-sm:hidden' : ''}`}>
+        <div className={`w-full h-full  overflow-y-auto ${pathname === '/settings' ? 'lt-sm:hidden' : ''}`}>
           <Outlet />
         </div>
       </div>

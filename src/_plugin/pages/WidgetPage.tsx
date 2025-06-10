@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { Link, useLocation, useParams } from "react-router-dom"
 import Logo from "../../components/header/Logo"
 import { LoaderCircle, ScreenShareIcon } from "lucide-react"
@@ -169,6 +169,7 @@ const WidgetPage = () => {
   }
 
   const [isWidgetActivated, setIsWidgetActivated] = useState(true)
+  const [dressCodePopupOpen, setDressCodePopupOpen] = useState(false)
 
   useEffect(() => {
     if (widgetInfo) {
@@ -246,13 +247,24 @@ const WidgetPage = () => {
     }
   }, [])
 
-  
+  const formatedDate = useCallback(() => {
+    if (data.reserveDate) {
+      return format(new Date(data.reserveDate), "MMM-dd")
+    }
+    return ""
+  }, [data.reserveDate])
 
   return (
     <div className="min-h-screen h-[100vh] overflow-y-auto  bg-white dark:bg-bgdarktheme2 text-black dark:text-white">
       {/* Header */}
       <header className="h-16 z-[10] w-full fixed flex items-center justify-between px-4 sm:px-10 shadow-md bg-white dark:bg-bgdarktheme">
-        <Logo className="horizontal" nolink={true} />
+        {widgetInfo?.image? (
+          <img
+            src={widgetInfo.image || "/placeholder.svg"}
+            alt="Restaurant"
+            className="h-16 object-scale-down horizontal pa-1"
+          />
+        ): <Logo className="horizontal" nolink={true} /> }
         <button
           onClick={toggleDarkMode}
           aria-label="Toggle dark mode"
@@ -287,50 +299,77 @@ const WidgetPage = () => {
         </button>
       </header>
       <div className="h-16 w-full z-[0] opacity-0"></div>
+      {/* {widgetInfo?.image_2 && <div className="w-full" style={{ height: "300px", backgroundImage: `url(${widgetInfo.image_2})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+        
+      </div>} */}
+      {widgetInfo?.image_2 ? (
+        // <div className="w-[98%] rounded-lg mx-auto mt-2 relative overflow-hidden h-[250px] lg:h-[300px]">
+        <div className="w-full relative overflow-hidden h-[250px] lg:h-[350px]">
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `url(${widgetInfo.image_2})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundAttachment: "fixed", // This creates the parallax effect
+              transform: "translateZ(0)", // Hardware acceleration
+            }}
+          />
+          <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+            <h1 className="text-4xl text-white font-bold px-4 text-center drop-shadow-lg">
+              {widgetInfo?.title || "Make a Reservation"}
+            </h1>
+          </div>
+        </div>
+      ) : (
+        <div className="w-full relative overflow-hidden h-[250px] lg:h-[350px]">
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `black`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundAttachment: "fixed", // This creates the parallax effect
+              transform: "translateZ(0)", // Hardware acceleration
+            }}
+          />
+          <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+            <h1 className="text-4xl text-white font-bold px-4 text-center drop-shadow-lg">
+              {widgetInfo?.title || "Make a Reservation"}
+            </h1>
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex justify-center flex-col sm:flex-row gap-8">
+      <main className="w-[90%] mx-auto py-8 flex justify-center flex-col sm:flex-col gap-8 mb-10">
         {/* Left Column - Form */}
-      <div className="w-full sm:w-3/5">
-        <div className=" flex items-start">
-        {widgetInfo?.image && (
-            <img
-              src={widgetInfo.image || "/placeholder.svg"}
-              alt="Restaurant"
-              className="w-full h-[7em] object-scale-down "
-            />
-          ) }
-        </div>
-          {step !== 6 && (
+      <div className="w-full sm:w-4/5 mx-auto">
+          {/* {step !== 6 && (
             <h1 className="text-3xl sm:text-4xl text-center font-bold mb-4 text-black dark:text-white">
               {widgetInfo?.title || "Make a Reservation"}
             </h1>
-          )}
+          )} */}
 
           {step === 1 && (
             <>
               {/* <p className="text-lg mb-6 text-[#333333] dark:text-[#e1e1e1]">
                 {widgetInfo?.description || "Reserve your table at our restaurant."}
               </p> */}
-              <QuillPreview
-                content={widgetInfo?.content || ""}
-                className="mb-6 text-[#333333] dark:text-[#e1e1e1]"
-              />
-
               <div className="bg-[#f9f9f9]  dark:bg-darkthemeitems rounded-lg  mb-6 shadow-sm">
                 <div
                   onClick={() => setShowProcess(true)}
-                  className="flex justify-between items-center cursor-pointer p-6 hover:border-softgreentheme border-2 border-[#00000000] hover:bg-[#f0f0f0] dark:hover:bg-bgdarktheme2 rounded-md transition-colors"
+                  className="flex justify-between items-center cursor-pointer px-3 py-4 hover:border-softgreentheme border-2 border-[#00000000] hover:bg-[#f0f0f0] dark:hover:bg-bgdarktheme2 rounded-md transition-colors"
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex md:flex-row flex-col items-center gap-1">
                     <span className="font-[600] dark:text-greentheme text-greentheme">Date</span>
-                    <span className="font-medium">{data.reserveDate || "----/--/--"}</span>
+                    <span className="font-medium">{formatedDate() || "----/--/--"}</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex md:flex-row flex-col items-center gap-1">
                     <span className="font-[600] dark:text-greentheme text-greentheme">Time</span>
                     <span className="font-medium">{data.time || "--:--"}</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex md:flex-row flex-col items-center gap-1">
                     <span className="font-[600] dark:text-greentheme text-greentheme">Guests</span>
                     <span className="font-medium">{data.guests || "--"}</span>
                   </div>
@@ -358,6 +397,11 @@ const WidgetPage = () => {
                   <ScreenShareIcon size={18} />
                 </button>
               )}
+              
+              <QuillPreview
+                content={widgetInfo?.content || ""}
+                className="my-6 text-[#333333] dark:text-[#e1e1e1]"
+              />
             </>
           )}
 
@@ -510,18 +554,44 @@ const WidgetPage = () => {
                   </label>
                   
                 </div>
-                <div className="flex items-start pt-2">
+                {widgetInfo?.enable_dress_code && (<div className="flex items-start pt-2">
                   <input
-                    type="checkbox"
-                    id="DressCode"
-                    checked={checkedDressCode}
-                    onChange={() => setCheckedDressCode(!checkedDressCode)}
-                    className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]"
+                  type="checkbox"
+                  id="DressCode"
+                  checked={checkedDressCode}
+                  onChange={() => setCheckedDressCode(!checkedDressCode)}
+                  className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]"
                   />
-                  <label htmlFor="dressCode" className="ml-2 block text-sm text-[#555555] dark:text-[#cccccc]">
-                    I agree to the dress code (Smart Casual)
+                  <label htmlFor="DressCode" className="ml-2 block text-sm text-[#555555] dark:text-[#cccccc]">
+                    I agree to the dress code ({widgetInfo?.dress_code && widgetInfo.dress_code.length > 100
+                      ? `${widgetInfo.dress_code.substring(0, 100)}... `
+                      : widgetInfo?.dress_code || "No specific dress code"}
+                    {widgetInfo?.dress_code && widgetInfo.dress_code.length > 100 && (
+                      <button type="button" onClick={() => setDressCodePopupOpen(true)} className="underline font-medium text-[#88AB61]">
+                        read more
+                      </button>
+                    )})
                   </label>
-                </div>
+                </div>)}
+
+                {/* Dress Code Popup */}
+                {dressCodePopupOpen && (
+                  <div onClick={() => setDressCodePopupOpen(false)} className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                  <div className="bg-white dark:bg-darkthemeitems rounded-lg p-6 max-w-md w-full">
+                    <h3 className="text-lg font-semibold mb-2">Dress Code</h3>
+                    <p className="mb-4">{widgetInfo?.dress_code}</p>
+                    <div className="flex justify-end">
+                      <button
+                    type="button"
+                    onClick={() => setDressCodePopupOpen(false)}
+                    className="py-2 px-4 bg-[#88AB61] text-white rounded-md hover:bg-[#769c4f]"
+                    >
+                    Close
+                    </button>
+                    </div>
+                  </div>
+                  </div>
+                )}
 
                 <div className="flex gap-4 pt-2">
                   <button
@@ -533,11 +603,10 @@ const WidgetPage = () => {
                   </button>
                   <button
                     type="submit"
-                    disabled={!checkedConditions || !checkedDressCode}
-                    className={`flex-1 py-3 px-4 rounded-md font-medium transition-colors ${
-                      !checkedConditions || !checkedDressCode
-                        ? "bg-[#88AB61] opacity-50 cursor-not-allowed"
-                        : "bg-[#88AB61] hover:bg-[#769c4f] text-white"
+                    disabled={!checkedConditions || (widgetInfo?.enable_dress_code? !checkedDressCode : false)}
+                    className={`bg-[#88AB61] flex-1 py-3 px-4 rounded-md font-medium transition-colors ${
+                      !checkedConditions || (widgetInfo?.enable_dress_code? !checkedDressCode : false) ? "bg-[#88AB61] opacity-50 cursor-not-allowed"
+                        : "hover:bg-[#769c4f] text-white"}
                     }`}
                   >
                     Continue
@@ -552,7 +621,7 @@ const WidgetPage = () => {
               <h2 className="text-xl font-semibold mb-4">Confirm Your Informations</h2>
 
               <div className="space-y-4 mb-6">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <h3 className="text-sm font-medium font-[600] dark:text-greentheme text-greentheme">Name</h3>
                     <p className="text-base">
@@ -685,7 +754,7 @@ const WidgetPage = () => {
         </div>
 
         {/* Right Column - Image */}
-        {widgetInfo?.image_2 && <div className="hidden sm:block w-2/5 sticky top-20 h-[80vh]">
+        {/* {widgetInfo?.image_2 && <div className="hidden sm:block w-2/5 sticky top-20 h-[80vh]">
           {widgetInfo?.image_2 ? (
             <img
               src={widgetInfo.image_2 || "/placeholder.svg"}
@@ -697,7 +766,11 @@ const WidgetPage = () => {
               <p className="text-[#888888] dark:text-[#666666]">Restaurant image</p>
             </div>
           )}
-        </div>}
+        </div>} */}
+        {/* Footer */}
+        <div className="mt-8 text-center text-subblack dark:text-textdarktheme text-sm">
+          <p>© {new Date().getFullYear()} Tabla. Tous droits réservés.</p>
+        </div>
       </main>
     </div>
   )
