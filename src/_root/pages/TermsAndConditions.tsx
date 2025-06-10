@@ -66,7 +66,7 @@ export default function TermsAndConditions() {
   ]
 
   return (
-    <div className="min-h-screen bg-softgreytheme dark:bg-bgdarktheme2 text-blacktheme dark:text-textdarktheme">
+    <div className="min-h-screen  bg-softgreytheme dark:bg-bgdarktheme2 text-blacktheme dark:text-textdarktheme">
       {/* Header */}
       <header className="sticky top-0 z-10 bg-whitetheme dark:bg-bgdarktheme shadow-sm">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-1 flex items-center justify-between">
@@ -110,7 +110,7 @@ export default function TermsAndConditions() {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="container mx-auto px-4 overflow-y-scroll max-h-[90vh] sm:px-6 lg:px-8 py-12">
         <div className="max-w-3xl mx-auto">
           {/* Title */}
           <div className="text-center mb-10">
@@ -180,6 +180,14 @@ export default function TermsAndConditions() {
                 ))}
               </div>
             </div>
+          </div>
+          <div className="bg-whitetheme dark:bg-darkthemeitems rounded-xl shadow-sm p-6 my-8">
+            
+            <p className="text-blacktheme dark:text-textdarktheme leading-relaxed">
+              Scale valley sarl collecte vos données personnelles en vue de gestion des clients. Ce traitement a fait l’objet d’une déclaration / demande d’autorisation auprès de la CNDP sous le numéro <a className="text-greentheme hover:underline transition-all duration-200">---</a> Les données personnelles collectées peuvent être transmises à l’étranger conformément à la demande de transfert déposée auprès de la CNDP.
+              <br />
+              Vous pouvez vous adresser à <a href="mailto:contact@tabla.ma" className="text-greentheme hover:underline transition-all duration-200">contact@tabla.ma</a> pour exercer vos droits d’accès, de rectification et d’opposition conformément aux dispositions de la loi 09-08.
+            </p>
           </div>
 
           {/* Footer */}
