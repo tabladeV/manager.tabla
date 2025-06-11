@@ -187,7 +187,7 @@ const WidgetPage = () => {
 
   const [serverError, setServerError] = useState<string>()
 
-  const [chosenTitle, setChosenTitle] = useState<'mr' | 'mrs' | 'ms'>()
+  const [chosenTitle, setChosenTitle] = useState<'mr'| 'mrs'| 'ms'>()
 
   const handleConfirmation = () => {
     setIsLoading(true)
@@ -258,13 +258,13 @@ const WidgetPage = () => {
     <div className="min-h-screen h-[100vh] overflow-y-auto  bg-white dark:bg-bgdarktheme2 text-black dark:text-white">
       {/* Header */}
       <header className="h-16 z-[10] w-full fixed flex items-center justify-between px-4 sm:px-10 shadow-md bg-white dark:bg-bgdarktheme">
-        {widgetInfo?.image ? (
+        {widgetInfo?.image? (
           <img
             src={widgetInfo.image || "/placeholder.svg"}
             alt="Restaurant"
             className="h-16 object-scale-down horizontal pa-1"
           />
-        ) : <Logo className="horizontal" nolink={true} />}
+        ): <Logo className="horizontal" nolink={true} /> }
         <button
           onClick={toggleDarkMode}
           aria-label="Toggle dark mode"
@@ -342,9 +342,9 @@ const WidgetPage = () => {
       )}
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex justify-center flex-col sm:flex-row gap-8">
+      <main className="w-[90%] mx-auto py-8 flex justify-center flex-col sm:flex-col gap-8 mb-10">
         {/* Left Column - Form */}
-        <div className="w-full sm:w-4/5 mx-auto">
+      <div className="w-full sm:w-4/5 mx-auto">
           {/* {step !== 6 && (
             <h1 className="text-3xl sm:text-4xl text-center font-bold mb-4 text-black dark:text-white">
               {widgetInfo?.title || "Make a Reservation"}
@@ -361,15 +361,15 @@ const WidgetPage = () => {
                   onClick={() => setShowProcess(true)}
                   className="flex justify-between items-center cursor-pointer px-3 py-4 hover:border-softgreentheme border-2 border-[#00000000] hover:bg-[#f0f0f0] dark:hover:bg-bgdarktheme2 rounded-md transition-colors"
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex md:flex-row flex-col items-center gap-1">
                     <span className="font-[600] dark:text-greentheme text-greentheme">Date</span>
                     <span className="font-medium">{formatedDate() || "----/--/--"}</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex md:flex-row flex-col items-center gap-1">
                     <span className="font-[600] dark:text-greentheme text-greentheme">Time</span>
                     <span className="font-medium">{data.time || "--:--"}</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex md:flex-row flex-col items-center gap-1">
                     <span className="font-[600] dark:text-greentheme text-greentheme">Guests</span>
                     <span className="font-medium">{data.guests || "--"}</span>
                   </div>
@@ -379,10 +379,11 @@ const WidgetPage = () => {
               <button
                 onClick={() => setStep(2)}
                 disabled={!data.reserveDate || !data.time || !data.guests}
-                className={`w-full py-3 px-4 rounded-md font-medium transition-colors ${!data.reserveDate || !data.time || !data.guests
-                  ? "bg-[#88AB61] opacity-50 cursor-not-allowed"
-                  : "bg-[#88AB61] hover:bg-[#769c4f] text-white"
-                  }`}
+                className={`w-full py-3 px-4 rounded-md font-medium transition-colors ${
+                  !data.reserveDate || !data.time || !data.guests
+                    ? "bg-[#88AB61] opacity-50 cursor-not-allowed"
+                    : "bg-[#88AB61] hover:bg-[#769c4f] text-white"
+                }`}
               >
                 Book Now
               </button>
@@ -396,7 +397,7 @@ const WidgetPage = () => {
                   <ScreenShareIcon size={18} />
                 </button>
               )}
-
+              
               <QuillPreview
                 content={widgetInfo?.content || ""}
                 className="my-6 text-[#333333] dark:text-[#e1e1e1]"
@@ -411,7 +412,7 @@ const WidgetPage = () => {
               <form onSubmit={handleSubmit} className="space-y-1">
                 <div className="flex items-center gap-2 mb-4">
                   <p className="text-sm font-bold text-[#555555] dark:text-[#cccccc]">
-                    Title
+                    Title 
                   </p>
                   <label htmlFor="Mr" className="text-sm font-medium text-[#555555] dark:text-[#cccccc]">
                     Mr.
@@ -544,53 +545,51 @@ const WidgetPage = () => {
                     onChange={() => setCheckedConditions(!checkedConditions)}
                     className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]"
                   />
-
+                  
                   <label htmlFor="terms" className="ml-2  block text-sm text-[#555555] dark:text-[#cccccc]">
                     I agree to{" "}
                     <Link to="/terms-and-conditions" className="underline font-medium text-[#88AB61]" target="_blank">
                       the terms and conditions
                     </Link>
                   </label>
-
+                  
                 </div>
                 {widgetInfo?.enable_dress_code && (<div className="flex items-start pt-2">
                   <input
-                    type="checkbox"
-                    id="DressCode"
-                    checked={checkedDressCode}
-                    onChange={() => setCheckedDressCode(!checkedDressCode)}
-                    className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]"
+                  type="checkbox"
+                  id="DressCode"
+                  checked={checkedDressCode}
+                  onChange={() => setCheckedDressCode(!checkedDressCode)}
+                  className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]"
                   />
-                  <div className="ml-2">
-                    <label htmlFor="DressCode" className="block text-sm text-[#555555] dark:text-[#cccccc]">
-                      I agree to the dress code ({widgetInfo?.dress_code && widgetInfo.dress_code.length > 100
-                        ? `${widgetInfo.dress_code.substring(0, 100)}... `
-                        : widgetInfo?.dress_code || "No specific dress code"}
-                      {widgetInfo?.dress_code && widgetInfo.dress_code.length > 100 && (
-                        <button type="button" onClick={() => setDressCodePopupOpen(true)} className="underline font-medium text-[#88AB61]">
-                          read more
-                        </button>
-                      )})
-                    </label>
-                  </div>
+                  <label htmlFor="DressCode" className="ml-2 block text-sm text-[#555555] dark:text-[#cccccc]">
+                    I agree to the dress code ({widgetInfo?.dress_code && widgetInfo.dress_code.length > 100
+                      ? `${widgetInfo.dress_code.substring(0, 100)}... `
+                      : widgetInfo?.dress_code || "No specific dress code"}
+                    {widgetInfo?.dress_code && widgetInfo.dress_code.length > 100 && (
+                      <button type="button" onClick={() => setDressCodePopupOpen(true)} className="underline font-medium text-[#88AB61]">
+                        read more
+                      </button>
+                    )})
+                  </label>
                 </div>)}
 
                 {/* Dress Code Popup */}
                 {dressCodePopupOpen && (
                   <div onClick={() => setDressCodePopupOpen(false)} className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white dark:bg-darkthemeitems rounded-lg p-6 max-w-md w-full">
-                      <h3 className="text-lg font-semibold mb-2">Dress Code</h3>
-                      <p className="mb-4">{widgetInfo?.dress_code}</p>
-                      <div className="flex justify-end">
-                        <button
-                          type="button"
-                          onClick={() => setDressCodePopupOpen(false)}
-                          className="py-2 px-4 bg-[#88AB61] text-white rounded-md hover:bg-[#769c4f]"
-                        >
-                          Close
-                        </button>
-                      </div>
+                  <div className="bg-white dark:bg-darkthemeitems rounded-lg p-6 max-w-md w-full">
+                    <h3 className="text-lg font-semibold mb-2">Dress Code</h3>
+                    <p className="mb-4">{widgetInfo?.dress_code}</p>
+                    <div className="flex justify-end">
+                      <button
+                    type="button"
+                    onClick={() => setDressCodePopupOpen(false)}
+                    className="py-2 px-4 bg-[#88AB61] text-white rounded-md hover:bg-[#769c4f]"
+                    >
+                    Close
+                    </button>
                     </div>
+                  </div>
                   </div>
                 )}
 
@@ -604,9 +603,10 @@ const WidgetPage = () => {
                   </button>
                   <button
                     type="submit"
-                    disabled={!checkedConditions || (widgetInfo?.enable_dress_code ? !checkedDressCode : false)}
-                    className={`bg-[#88AB61] flex-1 py-3 px-4 rounded-md font-medium transition-colors ${!checkedConditions || (widgetInfo?.enable_dress_code ? !checkedDressCode : false) ? "bg-[#88AB61] opacity-50 cursor-not-allowed"
-                      : "hover:bg-[#769c4f] text-white"}
+                    disabled={!checkedConditions || (widgetInfo?.enable_dress_code? !checkedDressCode : false)}
+                    className={`bg-[#88AB61] flex-1 py-3 px-4 rounded-md font-medium transition-colors ${
+                      !checkedConditions || (widgetInfo?.enable_dress_code? !checkedDressCode : false) ? "bg-[#88AB61] opacity-50 cursor-not-allowed"
+                        : "hover:bg-[#769c4f] text-white"}
                     }`}
                   >
                     Continue
@@ -621,11 +621,11 @@ const WidgetPage = () => {
               <h2 className="text-xl font-semibold mb-4">Confirm Your Informations</h2>
 
               <div className="space-y-4 mb-6">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <h3 className="text-sm font-medium font-[600] dark:text-greentheme text-greentheme">Name</h3>
                     <p className="text-base">
-                      {chosenTitle ? chosenTitle + '. ' : ''}{userInformation.firstname} {userInformation.lastname}
+                      {chosenTitle? chosenTitle+'. ':''}{userInformation.firstname} {userInformation.lastname}
                     </p>
                   </div>
                   <div>
@@ -648,7 +648,7 @@ const WidgetPage = () => {
                       {data.guests} {data.guests === 1 ? "person" : "people"}
                     </p>
                   </div>
-                  {userInformation.occasion && (
+                  {userInformation.occasion &&  (
                     <div>
                       <h3 className="text-sm font-medium font-[600] dark:text-greentheme text-greentheme">Occasion</h3>
                       <p className="text-base">
@@ -714,7 +714,7 @@ const WidgetPage = () => {
                   <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="#88AB61" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-semibold mb-2">{widgetInfo?.auto_confirmation ? 'Reservation Confirmed!' : 'Reservation Completed!'}</h2>
+              <h2 className="text-2xl font-semibold mb-2">{widgetInfo?.auto_confirmation ? 'Reservation Confirmed!':'Reservation Completed!'}</h2>
               <p className="font-[600] dark:text-greentheme text-greentheme mb-6">
                 Your reservation has been successfully made. You will receive a confirmation email shortly.
               </p>
