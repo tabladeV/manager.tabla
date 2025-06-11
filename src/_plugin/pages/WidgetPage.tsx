@@ -380,8 +380,8 @@ const WidgetPage = () => {
                 onClick={() => setStep(2)}
                 disabled={!data.reserveDate || !data.time || !data.guests}
                 className={`w-full py-3 px-4 rounded-md font-medium transition-colors ${!data.reserveDate || !data.time || !data.guests
-                    ? "bg-[#88AB61] opacity-50 cursor-not-allowed"
-                    : "bg-[#88AB61] hover:bg-[#769c4f] text-white"
+                  ? "bg-[#88AB61] opacity-50 cursor-not-allowed"
+                  : "bg-[#88AB61] hover:bg-[#769c4f] text-white"
                   }`}
               >
                 Book Now
@@ -606,7 +606,7 @@ const WidgetPage = () => {
                     type="submit"
                     disabled={!checkedConditions || (widgetInfo?.enable_dress_code ? !checkedDressCode : false)}
                     className={`bg-[#88AB61] flex-1 py-3 px-4 rounded-md font-medium transition-colors ${!checkedConditions || (widgetInfo?.enable_dress_code ? !checkedDressCode : false) ? "bg-[#88AB61] opacity-50 cursor-not-allowed"
-                        : "hover:bg-[#769c4f] text-white"}
+                      : "hover:bg-[#769c4f] text-white"}
                     }`}
                   >
                     Continue
