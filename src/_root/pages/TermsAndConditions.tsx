@@ -184,6 +184,7 @@ export default function TermsAndConditions() {
               </div>
             </div>
           </div>
+
           <DevOnly>
             <div className="bg-whitetheme dark:bg-darkthemeitems rounded-xl shadow-sm p-6 my-8">
               
@@ -195,6 +196,7 @@ export default function TermsAndConditions() {
             </div>
           </DevOnly>
 
+
           {/* Footer */}
           <div className="mt-8 text-center text-subblack dark:text-textdarktheme text-sm">
             <p>© {new Date().getFullYear()} Tabla. Tous droits réservés.</p>
@@ -204,4 +206,3 @@ export default function TermsAndConditions() {
     </div>
   )
 }
-

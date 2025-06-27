@@ -466,6 +466,7 @@ export default function WidgetConfig() {
                 </span>
                 <span className="capitalize">Enable dress code</span>
               </label>
+
               <label className="flex items-center">
                 <input
                   type="checkbox"
