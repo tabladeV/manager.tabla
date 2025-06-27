@@ -161,19 +161,25 @@ const EditReservationModal = ({
         <div className="">
           <p className="text-sm font-[400]">Allergies</p>
           <div className={`flex items-center btn text-sm font-[400] ${isDarkMode ? 'text-white' : ''}`}>
-            {selectedClient.allergies || 'None'}
+            {selectedClient.allergies || '--'}
+          </div>
+        </div>
+        <div className="">
+          <p className="text-sm font-[400]">Area</p>
+          <div className={`flex items-center btn text-sm font-[400] ${isDarkMode ? 'text-white' : ''}`}>
+            {selectedClient.area ? selectedClient.area.name : '--'}
           </div>
         </div>
         <div className="">
           <p className="text-sm font-[400]">Occasion</p>
           <div className={`flex items-center btn text-sm font-[400] ${isDarkMode ? 'text-white' : ''}`}>
-            {selectedClient.occasion?.name || 'None'}
+            {selectedClient.occasion?.name || '--'}
           </div>
         </div>
         <div className="">
           <p className="text-sm font-[400]">Comment</p>
           <div className={`flex items-center btn text-sm font-[400] ${isDarkMode ? 'text-white' : ''}`}>
-            {selectedClient.commenter || 'None'}
+            {selectedClient.commenter || '--'}
           </div>
         </div>
       </div>
@@ -299,19 +305,25 @@ const EditReservationModal = ({
             <div className="">
               <p className="text-sm font-[400]">Allergies</p>
               <div className={`flex items-center btn text-sm font-[400] ${isDarkMode ? 'text-white' : ''}`}>
-                {selectedClient.allergies}
+                {selectedClient.allergies || '--'}
+              </div>
+            </div>
+            <div className="">
+              <p className="text-sm font-[400]">Area</p>
+              <div className={`flex items-center btn text-sm font-[400] ${isDarkMode ? 'text-white' : ''}`}>
+                {selectedClient.area ? selectedClient.area.name : '--'}
               </div>
             </div>
             <div className="">
               <p className="text-sm font-[400]">Occasion</p>
               <div className={`flex items-center btn text-sm font-[400] ${isDarkMode ? 'text-white' : ''}`}>
-                {selectedClient.occasion?.name}
+                {selectedClient.occasion?.name|| '--'}
               </div>
             </div>
             <div className="">
               <p className="text-sm font-[400]">Comment</p>
               <div className={`flex items-center btn text-sm font-[400] ${isDarkMode ? 'text-white' : ''}`}>
-                {selectedClient.commenter}
+                {selectedClient.commenter || '--'}
               </div>
             </div>
           </div>
