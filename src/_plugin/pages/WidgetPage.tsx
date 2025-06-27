@@ -59,6 +59,26 @@ const WidgetPage = () => {
   const { mutate: createReservation } = useCreate()
   const [widgetInfo, setWidgetInfo] = useState<BaseRecord>()
 
+  interface Area {
+    id: BaseKey
+    seq_id: BaseKey
+    name: string
+    restaurant: BaseKey
+  }
+  const [areas, setAreas] = useState<Area[]>([])
+
+  const [areaSelected, setAreaSelected] = useState<BaseKey>()
+
+  const {data: areasList , isLoading: areasListLoading, error:areasEroor} = useList({
+    resource: `api/v1/bo/areas/`,
+    queryOptions: {
+      onSuccess: (data) => {
+        setAreas(data.data as Area[])
+      } 
+    }
+  })
+
+
   useEffect(() => {
     if (widgetData) {
       setWidgetInfo(widgetData.data)
@@ -158,6 +178,7 @@ const WidgetPage = () => {
       email: form.email.value,
       phone: form.phone.value,
       preferences: form.preferences.value,
+      area: areaSelected,
       allergies: form.allergies.value,
       occasion: form.occasion?.value !== "0" ? form.occasion?.value : null,
     }
@@ -212,6 +233,7 @@ const WidgetPage = () => {
           status: "PENDING",
           allergies: userInformation.allergies,
           preferences: userInformation.preferences,
+          area: areaSelected,
           commenter: userInformation.preferences,
           date: format(data.reserveDate, "yyyy-MM-dd"),
           time: data.time + ":00",
@@ -537,7 +559,29 @@ const WidgetPage = () => {
                   </div>
                 )}
 
-                <div className="flex items-start pt-2">
+                {widgetInfo?.enbale_area_selection && <div>
+                  <label
+                    htmlFor="floors"
+                    className="block text-sm font-medium text-[#555555] dark:text-[#cccccc] mb-1"
+                  >
+                    Areas
+                  </label>
+                  <div className="flex flex-wrap gap-2 mb-10">
+                    {areas.map((floor: Area, index: number) => (
+                      <label key={index} className="inline-flex items-center bg-softgreentheme text-greentheme p-2 rounded-md cursor-pointer">
+                        <input
+                          type="checkbox"
+                          value={floor.id}
+                          checked={areaSelected === floor.id}
+                          onChange={() => setAreaSelected(floor.id)}
+                          className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]"
+                        />
+                        <span className="ml-2 text-sm ">{floor.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>}
+                <div className="flex items-start pt-2 border-t border-[#dddddd] dark:border-[#444444]">
                   <input
                     type="checkbox"
                     id="terms"

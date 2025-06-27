@@ -1,7 +1,8 @@
-// src/firebase/firebase.js
+// src/providers/firebase.js
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, MessagePayload, onMessage } from 'firebase/messaging';
 import axiosInstance from './axiosInstance';
+import { getSWRegistration } from './swManager';
 
 const firebaseConfig = {
     apiKey: "AIzaSyASiN6DhFjj2kPJbke_MIXmLdRD0A7A1IU",
@@ -21,20 +22,6 @@ try {
 } catch (error) {
     console.error("Failed to initialize Firebase Messaging, possibly due to unsupported environment (e.g., non-browser).", error);
 }
-
-
-export const registerServiceWorker = () => {
-    if ('serviceWorker' in navigator && 'PushManager' in window) {
-        navigator.serviceWorker.register('/firebase-messaging-sw.js') // Vite serves from public dir
-            .then((registration) => {
-                console.log('Service Worker registered with scope:', registration.scope);
-            }).catch((err) => {
-                console.error('Service Worker registration failed:', err);
-            });
-    } else {
-        console.warn('Push messaging is not supported or service workers are not available.');
-    }
-};
 
 const registerTokenWithBackend = async (fcmToken: string) => {
     try {
@@ -68,8 +55,10 @@ export const requestNotificationPermissionAndToken = async () => {
         const permission = await Notification.requestPermission();
         if (permission === 'granted') {
             console.log('Notification permission granted.');
+            const registration = await getSWRegistration();
             const currentToken = await getToken(messagingInstance, { // Use the initialized instance
                 vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY || "BPO3O19QxBcc-j1k4wIZsrgxaFkqi8svWVMriCMltjFr1E1e58FcnAw-2Ogyttiryb7508I4O45fwDWnKpOf6FA",
+                serviceWorkerRegistration: registration
             });
             if (currentToken) {
                 console.log('FCM Token:', currentToken);
@@ -81,6 +70,37 @@ export const requestNotificationPermissionAndToken = async () => {
             }
         } else {
             console.log('Unable to get permission to notify.');
+            return null;
+        }
+    } catch (err) {
+        console.error('An error occurred while retrieving token. ', err);
+        return null;
+    }
+};
+
+export const requestTokenOnly = async () => {
+    if (!messagingInstance) {
+        console.error("Firebase Messaging not available.");
+        return null;
+    }
+
+    try {
+        const registration = await getSWRegistration();
+        if (!registration) {
+            console.error('Service Worker registration not found.');
+            return null;
+        }
+        const currentToken = await getToken(messagingInstance, {
+            vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY || "BPO3O19QxBcc-j1k4wIZsrgxaFkqi8svWVMriCMltjFr1E1e58FcnAw-2Ogyttiryb7508I4O45fwDWnKpOf6FA",
+            serviceWorkerRegistration: registration
+        });
+
+        if (currentToken) {
+            console.log('FCM Token retrieved:', currentToken);
+            await registerTokenWithBackend(currentToken);
+            return currentToken;
+        } else {
+            console.log('No registration token available. Request permission first or check service worker.');
             return null;
         }
     } catch (err) {

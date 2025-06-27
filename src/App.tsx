@@ -66,6 +66,8 @@ import FAQPage from "./_root/pages/FAQPage";
 import TermsAndConditions from "./_root/pages/TermsAndConditions";
 import CalendarGrid from "./_root/pages/CalendarGrid";
 import WorkingHours from "./components/settings/WorkingHours";
+import NotificationsProvider from "./providers/NotificationsProvider";
+import Areas from "./components/settings/Areas";
 const API_HOST = import.meta.env.VITE_API_URL || "https://api.dev.tabla.ma";
 function App() {
 
@@ -98,7 +100,7 @@ function App() {
         <DateProvider>
           <BrowserRouter>
             <RefineKbarProvider>
-              <DevtoolsProvider>
+                <DevtoolsProvider>
                 <Refine
                   authProvider={authProvider}
                   dataProvider={dataProvider(API_HOST, customAxiosInstance)}
@@ -113,8 +115,7 @@ function App() {
                   }}
                 >
                   {isManager ? (
-
-
+                  <NotificationsProvider>
                     <Routes>
                       <Route
                         element={
@@ -361,6 +362,15 @@ function App() {
                                 <Tags />
                               </CanAccess>
                             } />
+                            <Route path="/settings/areas" element={
+                              <CanAccess
+                                resource="areas"
+                                action="view"
+                                fallback="You don't have access to Areas"
+                              >
+                                <Areas />
+                              </CanAccess>
+                            } />
                             <Route path="/settings/messaging" element={
                               <CanAccess
                                 resource="message"
@@ -429,6 +439,7 @@ function App() {
                         <Route path="*" element={<ErrorPage />} />
                       </Route>
                     </Routes>
+                    </NotificationsProvider>
                   ) : (
                     <Routes>
                       <Route element={<Plugins />}>
@@ -450,7 +461,7 @@ function App() {
                   <DocumentTitleHandler />
                 </Refine>
                 <DevtoolsPanel />
-              </DevtoolsProvider>
+                </DevtoolsProvider>
             </RefineKbarProvider>
           </BrowserRouter>
         </DateProvider>

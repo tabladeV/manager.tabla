@@ -5,7 +5,7 @@ import BaseSelect from "../common/BaseSelect";
 import { ReservationSource, ReservationStatus } from "../common/types/Reservation";
 import { TableType as OriginalTableType } from "../../_root/pages/PlacesPage";
 import ActionPopup from "../popup/ActionPopup";
-import { Clock, User2, Users2, Calendar } from "lucide-react";
+import { Clock, User2, Users2, Calendar, XCircle } from "lucide-react";
 
 interface TableType extends OriginalTableType {
   id: number;
@@ -161,25 +161,39 @@ const EditReservationModal = ({
         <div className="">
           <p className="text-sm font-[400]">Allergies</p>
           <div className={`flex items-center btn text-sm font-[400] ${isDarkMode ? 'text-white' : ''}`}>
-            {selectedClient.allergies || 'None'}
+            {selectedClient.allergies || '--'}
+          </div>
+        </div>
+        <div className="">
+          <p className="text-sm font-[400]">Area</p>
+          <div className={`flex items-center btn text-sm font-[400] ${isDarkMode ? 'text-white' : ''}`}>
+            {selectedClient.area ? selectedClient.area.name : '--'}
           </div>
         </div>
         <div className="">
           <p className="text-sm font-[400]">Occasion</p>
           <div className={`flex items-center btn text-sm font-[400] ${isDarkMode ? 'text-white' : ''}`}>
-            {selectedClient.occasion?.name || 'None'}
+            {selectedClient.occasion?.name || '--'}
           </div>
         </div>
         <div className="">
           <p className="text-sm font-[400]">Comment</p>
           <div className={`flex items-center btn text-sm font-[400] ${isDarkMode ? 'text-white' : ''}`}>
-            {selectedClient.commenter || 'None'}
+            {selectedClient.commenter || '--'}
           </div>
         </div>
       </div>
       
       {/* Read-only reservation information */}
       <div className="space-y-2">
+        {selectedClient.status === 'CANCELED' &&
+          <div className="flex items-center text-redtheme bg-redtheme/10 p-2 rounded-md">
+            <XCircle size={16} className="mr-2" />
+            <p className="text-sm font-medium">Cancelled</p>
+            
+            <span className="text-xs text-redtheme/70 ml-2">{selectedClient.cancellation_note}|</span>
+          </div>
+        } 
         <div>
           <p className="text-sm font-medium">{t('reservations.edit.informations.madeBy')}</p>
           <div className={`w-full rounded-md p-2 ${isDarkMode ? 'bg-darkthemeitems text-whitetheme' : 'bg-softgreytheme text-subblack'}`}>
@@ -261,22 +275,55 @@ const EditReservationModal = ({
 
           <div className={`flex flex-col p-2 mb-2 rounded-xl gap-3 cursor-default ${isDarkMode ? 'bg-darkthemeitems text-whitetheme' : ' border-2 text-darkthemeitems'}`}>
             <p className="text-md mb-[-.4em] font-[500]">{selectedClient.full_name}'s preferences</p>
+            {(selectedClient.status === 'CANCELED' && (selectedClient.cancellation_note)) ?
+                <div className="flex flex-col gap-1 bg-redtheme/10 border border-redtheme/30 rounded-md p-3 mb-2">
+                <div className="flex items-center mb-1">
+                  <XCircle size={18} className="mr-2 text-redtheme" />
+                  <span className="text-sm font-semibold text-redtheme">{t('reservations.statusLabels.cancelled')}</span>
+                </div>
+                {selectedClient.cancellation_note && (
+                  <div className="flex items-center mt-1">
+                  <span className="text-xs font-medium text-redtheme/80 mr-2">{t('reservations.edit.informations.cancellationNote') || 'Cancellation Note'}:</span>
+                  <span className="text-xs text-redtheme/70">{selectedClient.cancellation_note}</span>
+                  </div>
+                )}
+                </div>
+            :(selectedClient.status === 'CANCELED' && (selectedClient.cancellation_reason)) &&
+                <div className="flex flex-col gap-1 bg-redtheme/10 border border-redtheme/30 rounded-md p-3 mb-2">
+                <div className="flex items-center mb-1">
+                  <XCircle size={18} className="mr-2 text-redtheme" />
+                  <span className="text-sm font-semibold text-redtheme">{t('reservations.statusLabels.cancelled')}</span>
+                </div>
+                {selectedClient.cancellation_reason && (
+                  <div className="flex items-center mt-1">
+                  <span className="text-xs font-medium text-redtheme/80 mr-2">{t('reservations.edit.informations.cancellationNote') || 'Cancellation Note'}:</span>
+                  <span className="text-xs text-redtheme/70">{selectedClient.cancellation_reason.name}</span>
+                  </div>
+                )}
+                </div>
+            } 
             <div className="">
               <p className="text-sm font-[400]">Allergies</p>
               <div className={`flex items-center btn text-sm font-[400] ${isDarkMode ? 'text-white' : ''}`}>
-                {selectedClient.allergies}
+                {selectedClient.allergies || '--'}
+              </div>
+            </div>
+            <div className="">
+              <p className="text-sm font-[400]">Area</p>
+              <div className={`flex items-center btn text-sm font-[400] ${isDarkMode ? 'text-white' : ''}`}>
+                {selectedClient.area ? selectedClient.area.name : '--'}
               </div>
             </div>
             <div className="">
               <p className="text-sm font-[400]">Occasion</p>
               <div className={`flex items-center btn text-sm font-[400] ${isDarkMode ? 'text-white' : ''}`}>
-                {selectedClient.occasion?.name}
+                {selectedClient.occasion?.name|| '--'}
               </div>
             </div>
             <div className="">
               <p className="text-sm font-[400]">Comment</p>
               <div className={`flex items-center btn text-sm font-[400] ${isDarkMode ? 'text-white' : ''}`}>
-                {selectedClient.commenter}
+                {selectedClient.commenter || '--'}
               </div>
             </div>
           </div>

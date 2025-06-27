@@ -298,11 +298,11 @@ const ClientsPage = () => {
     )
 
     const formData = new FormData()
-    formData.append("customers", selectedClient.map((client) => client.id).join(","))
-    formData.append("template", notificationInfo.template?.toString() || "")
-    formData.append("restaurant", notificationInfo.restaurant?.toString() || "")
-    formData.append("subject", notificationInfo.subject)
-    formData.append("message", notificationInfo.message)
+    // formData.append("customers", selectedClient.map((client) => client.id).join(","))
+    // formData.append("template", notificationInfo.template?.toString() || "")
+    // formData.append("restaurant", notificationInfo.restaurant?.toString() || "")
+    // formData.append("subject", notificationInfo.subject)
+    // formData.append("message", notificationInfo.message)
 
     if (allClients) {
       formData.append("template", notificationInfo.template?.toString() || "")
@@ -314,7 +314,11 @@ const ClientsPage = () => {
         values: formData,
       })
     } else {
-      formData.append("customers", selectedClient.map((client) => client.id).join(","))
+      selectedClient.forEach((id, index) => {
+        formData.append(`customers`, id?.id?.toString() ?? "");
+      });
+
+      // formData.append("customers", selectedClient.map((client) => client.id).join(","))
       formData.append("template", notificationInfo.template?.toString() || "")
       formData.append("restaurant", notificationInfo.restaurant?.toString() || "")
       formData.append("subject", notificationInfo.subject)

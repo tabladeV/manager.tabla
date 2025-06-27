@@ -453,13 +453,13 @@ const Modify = () => {
                         className={`text-md inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm transition-all hover:shadow-md`}
                       >
                         <span className="font-bold mx-4">Special Request</span>
-                        {reservationInfo?.commenter}
+                        {updateInfo?.commenter}
                       </p>
                       <p
                         className={`text-md inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm transition-all hover:shadow-md`}
                       >
                         <span className="font-bold mx-4">Allergies</span>
-                        {reservationInfo?.allergies}
+                        {updateInfo?.allergies}
                       </p>
                       {selectedOccasion ? (
                         <p

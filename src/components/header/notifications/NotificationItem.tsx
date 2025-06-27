@@ -30,7 +30,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onCli
       className={`relative p-3 border-b border-slate-200 dark:border-slate-700 dark:hover:bg-bgdarktheme2/30 cursor-pointer ${!notification.is_read ? 'bg-greentheme/10 animate-pulse dark:bg-bgdarktheme2' : ''}`}
       onClick={handleClick} // Call handleClick on div click
     >
-      {!notification.is_read  && <span className="absolute top-1 right-1 flex size-3 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white ring-2 ring-white dark:ring-bgdarktheme">
+      {!notification.is_read  && <span className="absolute top-1 right-1 flex size-3 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white ring-1 ring-white dark:ring-bgdarktheme">
 
       </span>}
       <div className="flex items-start space-x-3">

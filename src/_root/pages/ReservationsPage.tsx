@@ -16,7 +16,8 @@ import {
   User2,
   Trash,
   Trash2,
-  Tags
+  Tags,
+  LayoutPanelLeft
 } from 'lucide-react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import SearchBar from "../../components/header/SearchBar";
@@ -55,7 +56,13 @@ export interface Reservation extends BaseRecord {
   internal_note: string;
   source: ReservationSource;
   number_of_guests: string;
+  cancellation_note?: string;
+  cancellation_reason?: {id:number, name:string};
   tableSet?: number;
+  area: {
+    name: string;
+    id: BaseKey;
+  };
   phone: string;
   tables?: ReceivedTables[];
   status: ReservationStatus;
@@ -693,9 +700,9 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
                   <Phone size={14} className='dark:text-gray-400text-gray-500' />
                   <span>{reservation.phone || 'N/A'}</span>
                 </div>
-              }      
+              }   
               {reservation.tags?.length > 0 &&
-                <div className="flex gap-1 items-center gap-1 text-gray-500">
+                <div className="flex gap-1 items-center text-gray-500">
                   <Tags size={14} className='dark:text-gray-400text-gray-500' />
                   <div className="flex gap-2 flex-wrap">
                     {reservation.tags.map((tag: string, index: React.Key | null | undefined) => (
@@ -715,6 +722,12 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
                 <span>{reservation.commenter.length > 50 ? `${reservation.commenter.substring(0, 50)}...` : reservation.commenter}</span>
               </div>
             )}
+            {reservation.area && reservation.area &&
+              <div aria-label='Area' className="flex text-sm items-center gap-1 text-gray-500">
+                <LayoutPanelLeft size={14} className='dark:text-gray-400text-gray-500' />
+                <span>{reservation.area.name}</span>
+              </div>
+            } 
             <div className="text-sm text-gray-500">
               {` # ${reservation.seq_id}`}
             </div>

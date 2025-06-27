@@ -1,4 +1,12 @@
-// public/firebase-messaging-sw.js
+// src/firebase-messaging-sw.js
+// eslint-disable-next-line no-undef
+importScripts(
+  'https://storage.googleapis.com/workbox-cdn/releases/6.4.1/workbox-sw.js'
+);
+// eslint-disable-next-line no-undef
+const { precacheAndRoute } = workbox.precaching;
+precacheAndRoute(self.__WB_MANIFEST)
+
 /* eslint-disable no-restricted-globals */
 // eslint-disable-next-line no-undef
 importScripts('https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js');
@@ -32,7 +40,8 @@ messaging.onBackgroundMessage((payload) => {
         body: payload.notification?.body || 'You have a new message.',
         icon: '/logo.png', // Replace with your app icon (e.g., /logo192.png if you add one)
         badge: '/logo.png',
-        data: payload.data
+        data: payload.data,
+        tag: payload.data?.notification_type || 'default' // Group similar notifications
     };
     self.registration.showNotification(notificationTitle, notificationOptions);
 });
@@ -40,7 +49,7 @@ messaging.onBackgroundMessage((payload) => {
 self.addEventListener('notificationclick', (event) => {
     console.log('[firebase-messaging-sw.js] Notification click Received.', event.notification);
     event.notification.close();
-    const urlToOpen = event.notification.data?.url || event.notification.data?.link || '/';
+    const urlToOpen = event.notification?.data?.reservation_id? `/reservations?reservation_id=${event.notification.data?.reservation_id}`: '/reservations';
     event.waitUntil(
         // eslint-disable-next-line no-undef
         clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {

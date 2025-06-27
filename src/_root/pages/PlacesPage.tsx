@@ -28,6 +28,8 @@ import SlideGroup from '../../components/common/SlideGroup';
 import BaseTimeInput from '../../components/common/BaseTimeInput';
 import { isTouchDevice } from '../../utils/isTouchDevice';
 import ReservationModal from '../../components/reservation/ReservationModal';
+import HtmlAssetShape from '../../components/places/design/HtmlAssetShape';
+import { ASSET_CONFIG, AssetType } from '../../components/places/design/DesignCanvas';
 
 interface ReservationType {
   results: Reservation[]
@@ -351,6 +353,10 @@ const PlacePage: React.FC = () => {
   const floorTables = useMemo(():TableType[] => {
     return roofData?.find(floor => floor.id === focusedRoof)?.tables || [];
   },[roofData, focusedRoof]);
+  
+  const floorAssets = useMemo(():TableType[] => {
+    return roofData?.find(floor => floor.id === focusedRoof)?.assets || [];
+  },[roofData, focusedRoof]);
 
   // Zoom control buttons – using container center as focal point
   // Helper function to animate zoom transitions
@@ -588,12 +594,9 @@ const PlacePage: React.FC = () => {
     }
   }, [focusedRoof]);
 
-  // // Add a new effect specifically for table data changes
   // useEffect(() => {
-  //   if (tables.length > 0 && floorId !== undefined && !isLoadingTables) {
-  //     handleFocusAll();
-  //   }
-  // }, [tables, isLoadingTables, handleFocusAll]);
+    //     handleFocusAll();
+  // }, [handleFocusAll]);
 
 
   // Handle click outside to close dropdowns
@@ -846,6 +849,7 @@ const PlacePage: React.FC = () => {
                     position: 'relative'
                   }}
                 >
+                  {floorAssets.map(asset => (<HtmlAssetShape shapeProps={{...asset, src: ASSET_CONFIG[asset.type as AssetType]?.src }} /> ))}
                   {tables.filter(table => table.floor === floorId).map(table => (
                     <DropTarget
                       key={table.id}
