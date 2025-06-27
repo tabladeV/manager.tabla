@@ -3,7 +3,7 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import { CanAccess } from "@refinedev/core";
 import { useEffect, useState } from "react";
 import { useDarkContext } from "../../context/DarkContext";
-import { Book, BookImageIcon, CalendarClock, ChevronLeft, ChevronRight, Clock, Computer, DollarSign, ExternalLink, Laptop, PartyPopper, PcCase, Settings, Star, Tag, TimerReset, UserCheck, Users } from "lucide-react";
+import { Book, BookImageIcon, CalendarClock, ChevronLeft, ChevronRight, Clock, Computer, DollarSign, ExternalLink, Laptop, Layout, LayoutGrid, LayoutPanelLeft, PartyPopper, PcCase, Settings, Square, Star, Tag, TimerReset, UserCheck, Users } from "lucide-react";
 import { DevOnly } from "../../components/DevOnly";
 
 const SettingsPage = () => {
@@ -221,6 +221,19 @@ const SettingsPage = () => {
                 }`}>
                   <Tag size={22}/>
                   {expanded && t('settingsPage.menuItems.tags')}
+                </Link>
+            </CanAccess>
+            <CanAccess 
+              resource="areas"
+              action="view"
+              >
+                <Link to='/settings/areas' 
+                className={`flex items-center gap-3 ${pathname === "/settings/areas"
+                  ? navigatedMenuClass
+                  : normalMenuClass
+                }`}>
+                  <LayoutPanelLeft size={22}/>
+                  {expanded && t('settingsPage.menuItems.areas')}
                 </Link>
             </CanAccess>
           {/* </DevOnly> */}

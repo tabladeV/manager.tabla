@@ -25,6 +25,7 @@ interface Widget {
   description: string;
   menu_file: string;
   enable_dress_code: boolean;
+  enbale_area_selection: boolean;
   dress_code: string;
   has_menu: boolean;
   auto_confirmation: boolean;
@@ -78,6 +79,7 @@ export default function WidgetConfig() {
   const [hasMenu, setHasMenu] = useState<boolean>();
   const [autoConfirmation, setAutoConfirmation] = useState<boolean>(false);
   const [enableDressCode, setEnableDressCode] = useState<boolean>(false);
+  const [enableAreaSelection, setEnableAreaSelection] = useState<boolean>(false);
   const [description, setDescription] = useState('');
   const [disabledTitle, setDisabledTitle] = useState('');
   const [disabledDescription, setDisabledDescription] = useState('');
@@ -111,6 +113,7 @@ export default function WidgetConfig() {
       setMenuPdf(data.menu_file || null);
       setLogo(data.image || null);
       setEnableDressCode(data.enable_dress_code);
+      setEnableAreaSelection(data.enbale_area_selection);
       setDressCode(data.dress_code || '');
       // if(logo === null){
       //   setNewLogo(true);
@@ -251,6 +254,7 @@ export default function WidgetConfig() {
     formData.append('auto_confirmation', autoConfirmation?.toString() || '0');
 
     formData.append('enable_dress_code', enableDressCode?.toString() || '0');
+    formData.append('enbale_area_selection', enableAreaSelection?.toString() || '0');
     formData.append('dress_code', dressCode || '');
     
     try {
@@ -461,6 +465,21 @@ export default function WidgetConfig() {
                   {enableDressCode && <Check size={16} className="text-white" />}
                 </span>
                 <span className="capitalize">Enable dress code</span>
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={(enableAreaSelection) as boolean}
+                  onChange={() => setEnableAreaSelection((prev) => !prev)}
+                  className="sr-only"
+                />
+                <span
+                  className={`flex items-center justify-center w-6 h-6 border rounded-md mr-2 ${enableAreaSelection ? 'bg-greentheme border-greentheme' : 'border-gray-300 dark:border-darkthemeitems'
+                    }`}
+                >
+                  {enableAreaSelection && <Check size={16} className="text-white" />}
+                </span>
+                <span className="capitalize">Enable areas selection</span>
               </label>
               </div>
               {enableDressCode && (
