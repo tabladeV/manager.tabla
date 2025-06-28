@@ -69,14 +69,7 @@ const WidgetPage = () => {
 
   const [areaSelected, setAreaSelected] = useState<BaseKey>()
 
-  const {data: areasList , isLoading: areasListLoading, error:areasEroor} = useList({
-    resource: `api/v1/bo/areas/`,
-    queryOptions: {
-      onSuccess: (data) => {
-        setAreas(data.data as Area[])
-      } 
-    }
-  })
+  
 
 
   useEffect(() => {
@@ -86,6 +79,12 @@ const WidgetPage = () => {
       console.log("widgetData", widgetData.data)
     }
   }, [widgetData])
+
+  useEffect(() => {
+    if(widgetInfo){
+      setAreas(widgetInfo.areas as Area[] || [])
+    }  
+  },[widgetInfo])
 
   const [step, setStep] = useState(1)
   const [showProcess, setShowProcess] = useState(false)
