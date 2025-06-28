@@ -86,6 +86,7 @@ const WidgetPage = () => {
       console.log("widgetData", widgetData.data)
     }
   }, [widgetData])
+  
 
   const [step, setStep] = useState(1)
   const [showProcess, setShowProcess] = useState(false)

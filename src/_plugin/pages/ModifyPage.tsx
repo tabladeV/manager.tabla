@@ -13,6 +13,7 @@ import { useClickAway } from "react-use"
 import BaseBtn from "../../components/common/BaseBtn"
 import WidgetReservationProcess from "../../components/reservation/WidgetReservationProcess"
 import ActionPopup from "../../components/popup/ActionPopup"
+import { ar } from "date-fns/locale"
 
 interface QuillPreviewProps {
   content: string
@@ -114,6 +115,30 @@ const Modify = () => {
   useEffect(() => {
     console.log("updateInfo", updateInfo)
   }, [updateInfo])
+  interface Area {
+      id: BaseKey
+      seq_id: BaseKey
+      name: string
+      restaurant: BaseKey
+    }
+    const [areas, setAreas] = useState<Area[]>([])
+  
+    const [areaSelected, setAreaSelected] = useState<BaseKey>()
+
+    useEffect(() => {
+      console.log("areaSelected", areaSelected)
+    }, [areaSelected])
+
+    
+  
+    const {data: areasList , isLoading: areasListLoading, error:areasEroor} = useList({
+      resource: `api/v1/bo/areas/`,
+      queryOptions: {
+        onSuccess: (data) => {
+          setAreas(data.data as Area[])
+        } 
+      }
+    })
 
   const modifyReservation = () => {
     console.log("updateInfo", updateInfo?.occasion)
@@ -138,6 +163,8 @@ const Modify = () => {
         preferences: updateInfo?.preferences,
         restaurant: updateInfo?.restaurant,
         offer: 0,
+        area: 2 ,
+
         occasion: updateInfo?.occasion,
       },
     })
@@ -271,6 +298,9 @@ const Modify = () => {
     setTab(activeTab)
   }, [activeTab])
 
+  
+  
+
   const [restaurantID, setRestaurantID] = useState<string>()
 
   useEffect(() => {
@@ -278,8 +308,13 @@ const Modify = () => {
     if (widgetData) {
       setWidgetInfo(widgetData.data)
       setRestaurantID(widgetData.data.restaurant)
+      console.log("widgetInfo", widgetData.data)
     }
   }, [widgetData])
+
+  useEffect(()=>{
+    setAreaSelected(reservationInfo?.area)
+  }, [reservationInfo])
 
   const [isDarkMode, setIsDarkMode] = useState(false)
   const toggleDarkMode = () => {
@@ -453,25 +488,36 @@ const Modify = () => {
                         className={`text-md inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm transition-all hover:shadow-md`}
                       >
                         <span className="font-bold mx-4">Special Request</span>
-                        {updateInfo?.commenter}
+                        {updateInfo?.commenter || '--'}
                       </p>
                       <p
                         className={`text-md inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm transition-all hover:shadow-md`}
                       >
                         <span className="font-bold mx-4">Allergies</span>
-                        {updateInfo?.allergies}
+                        {updateInfo?.allergies || '--'}
                       </p>
+                      
                       {selectedOccasion ? (
                         <p
                           className={`text-md inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm transition-all hover:shadow-md`}
                         >
                           <span className="font-bold mx-4">Occasion</span>
-                          {selectedOccasion}
+                          {selectedOccasion|| '--'}
                         </p>
                       ) : (
                         <></>
                       )}
                     </div>
+                    {widgetInfo?.enbale_area_selection&&
+                    <p
+                          className={`text-md flex items-center inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm transition-all hover:shadow-md`}
+                        >
+                      <span className="font-bold mx-4">Areas</span>
+                      <div className="flex flex-wrap gap-2">
+                        {areas.find((area) => area.id === areaSelected)?.name || '--'}
+                      </div>
+                      </p>
+                    }           
                     <p
                       className={`text-md flex justify-around  inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm p-4`}
                     >
@@ -488,6 +534,7 @@ const Modify = () => {
                         <span className="text-lg">{reservationInfo?.number_of_guests}</span>
                       </div>
                     </p>
+                    
                   </div>
                   <div className="w-full">
                     <div className="flex w-full gap-3 mt-5">
@@ -542,6 +589,25 @@ const Modify = () => {
                       setUpdateInfo({ ...updateInfo, allergies: e.target.value })
                     }}
                   />
+                  <p className={`text-md flex items-center inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm transition-all hover:shadow-md`}>
+                    <span className="font-[400] ">Areas</span>
+                    
+                    <div className="flex flex-wrap gap-2 ">
+                      
+                      {areas.map((area: Area, index: number) => (
+                        <label key={index} className="inline-flex items-center bg-softgreentheme text-greentheme p-2 rounded-md cursor-pointer">
+                          <input
+                            type="checkbox"
+                            value={area.id}
+                            checked={areaSelected === area.id}
+                            onChange={()=>{setAreaSelected(area.id);setUpdateInfo({ ...updateInfo, area: area.id })}}
+                            className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]"
+                          />
+                          <span className="ml-2 text-sm ">{area.name}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </p>
                   {occasions?.length || updateInfo?.occasion ? (
                     <>
                       <div
