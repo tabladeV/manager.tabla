@@ -109,7 +109,6 @@ const EditReservationModal = ({
   const handleSave = () => {
     setShowConfirmPopup(true);
   };
-  console.log('tags',selectedClient)
 
 
   const confirmUpdate = () => {

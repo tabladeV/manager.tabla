@@ -12,6 +12,9 @@ import { type BaseKey, type BaseRecord, useCreate, useList } from "@refinedev/co
 import image from "../../assets/profile.png"
 import ExportModal from "../../components/common/ExportModal"
 import useExportConfig from "../../components/common/config/exportConfig"
+import axiosInstance from "../../providers/axiosInstance"
+import { saveAs } from "file-saver"
+import { useAsyncTaskManager } from "../../hooks/useAsyncTaskManager"
 
 interface LoadingRowProps {
   isDarkMode: boolean
@@ -195,7 +198,10 @@ const ClientsPage = () => {
   const [searchResults, setSearchResults] = useState(clients)
 
   const [showExportModal, setShowExportModal] = useState(false)
+  const [loading, setLoading] = useState(false)
+
   const { customers } = useExportConfig()
+  const { startTask, AsyncTaskManager } = useAsyncTaskManager()
   // const {customers} = useAdvancedExportConfig();
 
   useEffect(() => {
@@ -329,18 +335,78 @@ const ClientsPage = () => {
       })
     }
   }
+  const handleExport = async (format: 'sheet' | 'pdf', selectedColumns: string[], customValues: Record<string, any>, pdfEngine?: 'xhtml2pdf' | 'reportlab') => {
+    const {
+      created_at__gte,
+      created_at__lte,
+      title,
+      is_active,
+      includeTitleStats,
+      async: asyncGeneration,
+      email
+    } = customValues;
+
+    const requestBody: any = {
+      format,
+      selected_columns: selectedColumns,
+      async: asyncGeneration,
+      customOptions: {
+        includeTitleStats: !!includeTitleStats,
+      },
+      pdf_engine: pdfEngine, 
+      customers: []
+    };
+
+    if (selectedClient.length > 0) {
+      requestBody.customers = selectedClient.map(c => c.id);
+    }
+
+    if (created_at__gte) requestBody.created_at__gte = created_at__gte;
+    if (created_at__lte) requestBody.created_at__lte = created_at__lte;
+    if (title) requestBody.title = title;
+    if (is_active !== 'all') requestBody.customOptions.is_active = is_active === 'true';
+    if (searchKeyword) requestBody.search = searchKeyword;
+    if (asyncGeneration && email) requestBody.email = email;
+
+    try {
+      setLoading(true);
+      const response = await axiosInstance.post('/api/v1/bo/reports/customers/', requestBody, {
+        responseType: asyncGeneration ? 'json' : 'blob',
+      });
+
+      if (asyncGeneration) {
+        const { task_id } = response.data;
+        if (email) {
+          alert(`Report generation started. You will be notified by email at ${email}. Task ID: ${task_id}`);
+        } else {
+          startTask(task_id);
+        }
+      } else {
+        // Handle sync response
+        const blob = new Blob([response.data], { type: response.headers['content-type'] });
+        const filename = `customers_export.${format === 'sheet' ? 'xlsx' : 'pdf'}`;
+        saveAs(blob, filename);
+      }
+      setShowExportModal(false);
+    } catch (error) {
+      console.error("Export failed:", error);
+      alert("Failed to export data. Please check the console for details.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="h-full">
+      <AsyncTaskManager />
       {showExportModal && (
         <ExportModal
+          title="Export Clients"
           columns={customers.columns}
           customFields={customers.customFields}
-          onExport={(format, selectedColumns, customFields) => {
-            console.log(format, selectedColumns, customFields)
-            setShowExportModal(false)
-          }}
+          onExport={handleExport}
           onClose={() => setShowExportModal(false)}
+          loading={loading}
         />
       )}
       {showNotificationModal && (

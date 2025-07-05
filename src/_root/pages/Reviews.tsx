@@ -11,6 +11,9 @@ import { type BaseKey, type BaseRecord, useList } from "@refinedev/core"
 import Pagination from "../../components/reservation/Pagination"
 import ExportModal from "../../components/common/ExportModal"
 import useExportConfig from "../../components/common/config/exportConfig"
+import axiosInstance from "../../providers/axiosInstance"
+import { saveAs } from "file-saver"
+import { useAsyncTaskManager } from "../../hooks/useAsyncTaskManager"
 
 interface Review {
   id: BaseKey
@@ -45,7 +48,63 @@ const Reviews = () => {
 
   const [searchKeyword, setSearchKeyword] = useState("")
   const [showExportModal, setShowExportModal] = useState(false)
+  const [loading, setLoading] = useState(false)
   const { reviews: reviewsExportConfig } = useExportConfig()
+  const { startTask, AsyncTaskManager } = useAsyncTaskManager()
+
+  const handleExport = async (format: 'sheet' | 'pdf', selectedColumns: string[], customValues: Record<string, any>, pdfEngine?: 'xhtml2pdf' | 'reportlab') => {
+    const {
+      created_at__gte,
+      created_at__lte,
+      ratings,
+      includeRatingStats,
+      async: asyncGeneration,
+      email
+    } = customValues
+
+    const requestBody: any = {
+      format,
+      selected_columns: selectedColumns,
+      async_generation: asyncGeneration,
+      async: asyncGeneration,
+      customOptions: {
+        includeRatingStats: !!includeRatingStats,
+      },
+      pdf_engine: pdfEngine,
+    }
+
+    if (created_at__gte) requestBody.created_at__gte = created_at__gte
+    if (created_at__lte) requestBody.created_at__lte = created_at__lte
+    // if (ratings && ratings.length > 0) requestBody.ratings = ratings // has issues
+    if (searchKeyword) requestBody.search = searchKeyword
+    if (asyncGeneration && email) requestBody.email = email
+
+    try {
+      setLoading(true)
+      const response = await axiosInstance.post('/api/v1/bo/reports/reviews/', requestBody, {
+        responseType: asyncGeneration ? 'json' : 'blob',
+      })
+
+      if (asyncGeneration) {
+        const { task_id } = response.data
+        if (email) {
+          alert(`Report generation started. You will be notified by email at ${email}. Task ID: ${task_id}`)
+        } else {
+          startTask(task_id)
+        }
+      } else {
+        const blob = new Blob([response.data], { type: response.headers['content-type'] })
+        const filename = `reviews_export.${format === 'sheet' ? 'xlsx' : 'pdf'}`
+        saveAs(blob, filename)
+      }
+      setShowExportModal(false)
+    } catch (error) {
+      console.error("Export failed:", error)
+      alert("Failed to export data. Please check the console for details.")
+    } finally {
+      setLoading(false)
+    }
+  }
   // const {reviews: reviewsExportConfig} = useAdvancedExportConfig();
 
   const searchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -185,14 +244,15 @@ const Reviews = () => {
 
   return (
     <div>
+      <AsyncTaskManager />
       {showExportModal && (
         <ExportModal
+          title="Export Reviews"
           columns={reviewsExportConfig.columns}
           customFields={reviewsExportConfig.customFields}
-          onExport={(format, selectedColumns, customValues) => {
-            setShowExportModal(false)
-          }}
+          onExport={handleExport}
           onClose={() => setShowExportModal(false)}
+          loading={loading}
         />
       )}
       {selectedClient !== 0 && (
