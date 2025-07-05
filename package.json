@@ -22,6 +22,7 @@
     "color-mode": "^0.1.0",
     "date-fns": "^3.6.0",
     "draft-js": "^0.11.7",
+    "file-saver": "^2.0.5",
     "firebase": "^11.7.1",
     "i18next": "^23.16.5",
     "i18next-browser-languagedetector": "^8.0.0",
@@ -64,6 +65,7 @@
   "devDependencies": {
     "@types/chart.js": "^2.9.41",
     "@types/draft-js": "^0.11.18",
+    "@types/file-saver": "^2.0.7",
     "@types/js-cookie": "^3.0.6",
     "@types/node": "^18.16.2",
     "@types/react": "^18.0.0",

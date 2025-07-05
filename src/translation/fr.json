@@ -497,6 +497,7 @@
                 }
             }
         },
+<<<<<<< HEAD
         "reviewWidget":{
             "title": "Widget d'avis",
             "labels": {
@@ -511,6 +512,24 @@
                 "preview": "Aperçu"
             }
         },
+=======
+        "reviewWidget": {
+    "title": "Widget d'avis",
+    "labels": {
+        "title": "Titre",
+        "description": "Description",
+        "status": "Statut",
+        "active": "Actif",
+        "inactive": "Inactif",
+        "enableAutoSend": "Activer l'envoi automatique des demandes d'avis",
+        "reviewDelay": "Délai avant l'envoi de l'avis (en heures, 0 pour aucun délai)"
+    },
+    "buttons": {
+        "save": "Enregistrer",
+        "preview": "Aperçu"
+    }
+},
+>>>>>>> 40b1cfab093ddcda67543888d2130a7a1d4c9fcc
         "widget": {
             "title": "Widget",
             "uploadLogo": "Télécharger le logo",
