@@ -16,10 +16,10 @@
     "overview": {
         "title": "Aperçu",
         "headline": "Bonjour,",
-        "subtitle": "Gérez vos réservations, clients et plus encore...",
+        "subtitle": "Contrôlez vos réservations, clients, et plus encore...",
         "buttons": {
             "viewAll": "Voir tout",
-            "filter": "Filtrer"
+            "filter": "filtrer"
         },
         "reservations": {
             "title": "Réservations",
@@ -27,7 +27,7 @@
                 "confirmed": "Confirmé",
                 "canceled": "Annulé"
             },
-            "months": {
+            "months":{
                 "january": "Janvier",
                 "february": "Février",
                 "march": "Mars",
@@ -42,129 +42,166 @@
                 "december": "Décembre"
             }
         },
-        "reviews": {
-            "title": "Avis",
+        "messages:": {
+            "title": "Messages",
             "status": {
                 "confirmed": "Confirmé",
                 "cancelled": "Annulé",
+                "noShow": "Absent",
+                "rescheduled": "Reprogrammé",
+                "pending": "En attente"
+            },
+            "noMessages": "Aucun message pour le moment",
+            "noMessagesDesc": "Vous pouvez demander à vos clients de laisser un message après leur réservation"
+        },
+        "reviews": {
+            "title": "Avis",
+            "noReviews": "Aucun avis pour le moment",
+            "noReviewsDesc": "Vous pouvez demander à vos clients de laisser un avis après leur réservation",
+            "status": {
+                "confirmed": "Confirmé",
+                "cancelled": "Annulé",
+                "noShow": "Absent",
+                "rescheduled": "Reprogrammé",
+                "pending": "En attente"
+            }
+        },
+        "messages": {
+            "title": "Messages",
+            "noMessages": "Aucun message pour le moment",
+            "noMessagesDesc": "Vous pouvez demander à vos clients de laisser un message après leur réservation",
+            "status": {
+                "confirmed": "Confirmé",
+                "cancelled": "Annulé",
+                "noShow": "Absent",
+                "rescheduled": "Reprogrammé",
                 "pending": "En attente"
             }
         },
         "charts": {
             "reservationsChart": {
-                "title": "Réservations",
-                "legend": {
-                    "cancelled": "Annulé",
-                    "confirmed": "Confirmé"
-                }
+            "title": "Réservations",
+            "legend": {
+                "cancelled": "Annulé",
+                "confirmed": "Confirmé"
+            }
             },
             "topUsers": {
-                "title": "Top Pays"
+            "title": "Meilleurs pays"
             },
             "topUserActions": {
-                "title": "Top Actions des Utilisateurs",
-                "subtitle": "Action dans :",
+                "title": "Actions utilisateur principales",
+                "subtitle": "Action en :",
                 "totalActions": 762,
                 "label": "Actions",
                 "legend": {
                     "cancelled": "Annulé",
                     "confirmed": "Confirmé",
+                    "rescheduled": "Reprogrammé",
+                    "noShow": "Absent",
                     "pending": "En attente",
-                    "seated": "Assis",
+                    "seated": "Installé",
                     "fulfilled": "Terminé"
                 }
             },
             "reservationsSource": {
-                "title": "Source des Réservations",
-                "subtitle": "Action dans :",
+                "title": "Source des réservations",
+                "subtitle": "Action en :",
                 "totalActions": 762,
                 "label": "Actions",
                 "legend": {
-                    "MarketPlace": "Market Place",
+                    "MarketPlace": "Place de marché",
                     "BackOffice": "Back Office",
                     "ThirdParty": "Tiers",
+                    "WalkIn": "Sur place",
                     "Widget": "Widget"
                 }
             }
         }
     },
     "reservations": {
-        "title": "Réservations",
-        "searchPlaceholder": "Rechercher...",
-        "occasion": "Occasion",
-        "deleteConfirm": {
-            "message": "Êtes-vous sûr de vouloir supprimer cette réservation ?"
-        },
-        "statusChange": {
-            "confirmMessage": "Êtes-vous sûr de vouloir changer le statut de cette réservation ?",
-            "from": "De",
-            "to": "À"
-        },
-        "filters": {
-            "fulfilled": "Terminé",
-            "seated": "Assis",
-            "confirmed": "Confirmé",
-            "cancelled": "Annulé",
-            "pending": "En attente",
-            "all": "Tous",
-            "date": "Date"
+      "title": "Réservations",
+      "searchPlaceholder": "Rechercher...",
+      "occasion": "Occasion",
+      "deleteConfirm": {
+        "message": "Êtes-vous sûr de vouloir supprimer cette réservation ?"
+      },
+      "statusChange":{
+        "confirmMessage": "Êtes-vous sûr de vouloir changer le statut de cette réservation ?",
+        "from": "De",
+        "to": "À"
+      },
+      "filters": {
+        "fulfilled": "Terminé",
+        "seated": "Installé",
+        "confirmed": "Confirmé",
+        "cancelled": "Annulé",
+        "noShow": "Absent",
+        "rescheduled": "Reprogrammé",
+        "pending": "En attente",
+        "all": "Tous",
+        "date": "Date"
+      },
+      "buttons": {
+        "addReservation": "Ajouter une réservation",
+        "export": "Exporter"
+      },
+      "tableHeaders": {
+        "id": "ID",
+        "name": "Nom complet",
+        "email": "Email",
+        "phone": "Téléphone",
+        "date": "Date",
+        "comment": "Commentaire",
+        "time": "Heure",
+        "guests": "Invités",
+        "madeBy": "Table",
+        "tables": "Tables",
+        "status": "Statut",
+        "review": "avis",
+        "sendReview": "Envoyer un avis",
+        "reviewed": "Avis envoyé",
+        "details": "Détails de la réservation",
+        "detailsShort": "Date/Heure/Invités"
+      },
+      "statusLabels": {
+        "pending": "En attente",
+        "noShow": "Absent",
+        "rescheduled": "Reprogrammé",
+        "confirmed": "Confirmé",
+        "cancelled": "Annulé",
+        "seated": "Installé",
+        "fulfilled": "Terminé"
+      },
+      "edit": {
+        "title": "Modifier la réservation",
+        "headline": "Modifier la réservation",
+        "subtitle": "Modifiez votre réservation",
+        "confirmationMessage": "Êtes-vous sûr de vouloir modifier cette réservation ?",
+        "informations": {
+          "title": "Informations",
+          "name": "Nom complet",
+          "internalNote": "Note interne",
+          "email": "Email",
+          "phone": "Téléphone",
+          "cancellationNote": "Note d'annulation",
+          "floor": "Étage",
+          "table":"Table",
+          "date": "Date",
+          "addCustomer": "Ajouter un client",
+          "comment": "Commentaire",
+          "tableName": "Nom de la table",
+          "time": "Heure",
+          "guests": "Invités",
+          "madeBy": "Fait par/De",
+          "status": "Statut"
         },
         "buttons": {
-            "addReservation": "Ajouter une réservation"
-        },
-        "tableHeaders": {
-            "id": "ID",
-            "name": "Nom complet",
-            "email": "Email",
-            "phone": "Téléphone",
-            "date": "Date",
-            "comment": "Commentaire",
-            "time": "Heure",
-            "guests": "Invités",
-            "tables": "Tables",
-            "madeBy": "Fait par",
-            "status": "Statut",
-            "review": "Avis",
-            "sendReview": "Envoyer un avis",
-            "reviewed": "Avis envoyé",
-            "details": "Détails de la réservation",
-            "detailsShort": "Date/Heure/Invités"
-        },
-        "statusLabels": {
-            "pending": "En attente",
-            "confirmed": "Confirmé",
-            "cancelled": "Annulé",
-            "seated": "Assis",
-            "fulfilled": "Terminé"
-        },
-        "edit": {
-            "title": "Modifier la réservation",
-            "headline": "Modifier la réservation",
-            "subtitle": "Modifiez votre réservation",
-            "confirmationMessage": "Êtes-vous sûr de vouloir modifier cette réservation ?",
-            "informations": {
-                "title": "Informations",
-                "name": "Nom complet",
-                "internalNote": "Note interne",
-                "email": "Email",
-                "phone": "Téléphone",
-                "floor": "Étage",
-                "table": "Table",
-                "date": "Date",
-                "comment": "Commentaire",
-                "tableName": "Nom de la table",
-                "addCustomer": "Ajouter le client",
-                "time": "Heure",
-                "guests": "Invités",
-                "madeBy": "Fait par",
-                "status": "Statut"
-            },
-            "buttons": {
-                "save": "Enregistrer",
-                "cancel": "Annuler",
-                "close": "Fermer"
-            }
+          "save": "Enregistrer",
+          "cancel": "Annuler",
+          "close": "Fermer"
         }
+      }
     },
     "placeManagement": {
         "title": "Gestion des tables",
@@ -172,6 +209,9 @@
         "filters": {
             "confirmed": "Confirmé",
             "canceled": "Annulé",
+            "seated": "Installé",                
+            "rescheduled": "Reprogrammé",
+            "noShow": "Absent",
             "pending": "En attente"
         },
         "tabs": {
@@ -180,14 +220,14 @@
             "terrace": "Terrasse"
         },
         "warning": {
-            "1": "Vous ne pouvez que visualiser les étages.",
-            "2": "Pour modifier les tables, utilisez un appareil plus grand !"
+            "1":"Vous ne pouvez que visualiser les étages.",
+            "2":"Pour modifier les tables, utilisez un appareil plus grand !"
         },
         "reservations": {
             "time": "Heure",
             "guests": "Invités",
             "event": "Événement",
-            "none": "Aucun"
+            "none": "aucun"
         },
         "tables": {
             "seatsLabel": "places"
@@ -197,7 +237,8 @@
         }
     },
     "editPlace": {
-        "title": "Modifier vos espaces",
+        "title1":"Sélectionnez un étage à modifier",
+        "title": "Modifier vos étages",
         "buttons": {
             "addTable": "Ajouter une table",
             "rectangleTable": "Table rectangulaire",
@@ -208,30 +249,39 @@
             "reset": "Réinitialiser"
         }
     },
-    "agenda": {
+    "agenda":{
         "title": "Agenda",
         "and": "et"
     },
-    "grid": {
+    "grid":{
         "title": "Grille",
         "buttons": {
             "addReservation": "Ajouter une réservation",
-            "navigate": "Naviguer vers l'agenda",
+            "navigate": "Voir le calendrier mensuel",
             "addNewClient": "Ajouter un nouveau client",
+            "selectAClient": "Sélectionner un client",
+            "newClient": "Attribuer une réservation à un nouveau client",
             "addClient": "Ajouter un client"
         },
         "meals": {
             "breakfast": "Petit-déjeuner",
             "lunch": "Déjeuner",
-            "dinner": "Dîner"
+            "dinner": "Dîner",
+            "available" : "Disponible",
+            "unavailable" : "Indisponible"
         },
         "people": "Personnes",
-        "placeHolders": {
+        "placeHolders":{
             "name": "Nom",
-            "intern": "Commentaire interne",
-            "extern": "Commentaire externe",
-            "searchClient": "Rechercher un client",
+            "search": "Rechercher un client",
+            "intern":"Commentaire interne",
+            "extern":"Commentaire externe",
+            "searchClient"  : "Rechercher un client",
             "email": "Email",
+            "guests": "nombre d'invités",
+            "firstname": "Prénom",
+            "lastname": "Nom",
+            "internalNote": "Note interne",
             "phone": "Numéro de téléphone"
         }
     },
@@ -239,20 +289,28 @@
         "title": "Clients",
         "searchPlaceholder": "Rechercher...",
         "selectClient": "Sélectionner un client",
-        "buttons": {
+        "buttons":{
             "deselectAll": "Tout désélectionner",
-            "selectAll": "Tout sélectionner"
+            "selectAll": "Tout sélectionner",
+            "deleteClient": "Supprimer le client"
         },
+        "linkers":{
+            "and": "et",
+            "or": "ou",
+            "more": "plus"
+        },
+        "allClients": "Tous les clients",
         "sendNotificationButton": "Envoyer une notification",
+        "sendNotificationTitle": "Envoyer une notification",
         "lifetimeInfo": {
-            "title": "Informations sur la durée de vie",
+            "title": "Informations à vie",
             "upcoming": "À venir",
             "materialized": "Matérialisé",
             "denied": "Refusé",
             "cancelled": "Annulé",
             "didntShow": "Ne s'est pas présenté",
-            "spendPerCover": "Dépenses par couvert",
-            "spendMAD": "Dépenses MAD"
+            "spendPerCover": "Dépense/couvert",
+            "spendMAD": "Dépense MAD"
         },
         "tabs": {
             "profile": "Profil",
@@ -262,25 +320,28 @@
             "title": "Informations",
             "fields": {
                 "firstName": "Prénom",
-                "lastName": "Nom de famille",
+                "lastName": "Nom",
                 "email": "Email",
+                "tags": "Tags",
+                "title": "Titre",
                 "phoneNumber": "Numéro de téléphone",
                 "alternatePhone": "Téléphone alternatif",
                 "organization": "Organisation",
-                "guestNotes": "Notes des invités"
+                "guestNotes": "Notes sur l'invité"
             },
-            "clickToEdit": "Cliquez pour modifier"
+            "clickToEdit": "Cliquer pour modifier"
         },
         "reservationHistorySection": {
             "title": "Historique des réservations",
             "tableHeaders": {
+                "id": "ID",
                 "date": "Date",
                 "time": "Heure",
-                "spend": "Dépenses",
-                "made": "Fait par",
-                "roof": "Toit",
-                "guests": "Nombre d'invités",
-                "comment": "Commentaire",
+                "spend": "Dépense",
+                "made": "Fait par/De",
+                "roof": "Étage",
+                "guests":"Nombre d'invités",
+                "comment":"Commentaire",
                 "table": "Table",
                 "status": "Statut"
             },
@@ -288,8 +349,10 @@
                 "confirmed": "Confirmé",
                 "cancelled": "Annulé",
                 "pending": "En attente",
+                "noShow": "Absent",
+                "rescheduled": "Reprogrammé",
                 "fulfilled": "Terminé",
-                "seated": "Assis"
+                "seated": "Installé"
             },
             "buttons": {
                 "edit": "Modifier",
@@ -297,7 +360,7 @@
             }
         }
     },
-    "reviews": {
+    "reviews":{
         "title": "Avis",
         "tableHeaders": {
             "id": "ID",
@@ -306,42 +369,99 @@
             "email": "Email",
             "total": "Total",
             "comment": "Commentaire",
-            "food": "Nourriture",
-            "valueForMoney": "Rapport qualité-prix",
-            "service": "Service",
-            "environment": "Environnement"
+            "food":"Nourriture",
+            "valueForMoney":"Rapport qualité-prix",
+            "service":"Service",
+            "environment":"Environnement"
         },
-        "filters": {
+        "filters":{
             "all": "Tous",
             "date": "Date"
         },
-        "view": {
-            "valueForMoney": "Rapport qualité-prix",
+        "view":{
+            "valueForMoney":"Rapport qualité-prix",
             "title": "Voir l'avis",
-            "name": "Nom",
-            "email": "Email",
-            "date": "Date",
+            "name"  : "Nom",
+            "email" : "Email",
+            "date"  : "Date",
             "comment": "Commentaire",
-            "food": "Note de la nourriture",
-            "service": "Note du service",
-            "total": "Note totale",
-            "environment": "Note de l'environnement"
+            "food":"Note nourriture",
+            "service":"Note service",
+            "total":"Note totale",
+            "environment":"Note environnement"
         }
     },
-    "settingsPage": {
+    "messages": {
+        "title": "Messages",
+        "respond":{
+            "title": "Répondre à",
+            "originalMessage": "Message original",
+            "placeholder": "Tapez votre réponse ici...",
+            "sendButton": "Envoyer la réponse",
+            "sending": "Envoi en cours...",
+            "cancelButton": "Annuler"
+        },
+        "tableHeaders": {
+            "id": "ID",
+            "date": "Date",
+            "name": "Nom",
+            "email": "Email",
+            "subject": "Sujet",
+            "message": "Message",
+            "from": "De",
+            "response": "Réponse",
+            "received": "Reçu"
+        },
+        "noMessages": "Aucun message trouvé",
+        "filters":{
+            "all": "Tous",
+            "date": "Date"
+        },
+        "view":{
+            "title": "Voir le message",
+            "name"  : "Nom",
+            "email" : "Email",
+            "date"  : "Date",
+            "subject": "Sujet",
+            "message": "Message"
+        }
+    },
+    "supportPage":{
+        "title": "Centre d'assistance",
+        "description": "Comment pouvons-nous vous aider aujourd'hui ?",
+        "faq": "Questions fréquemment posées",
+        "faqDescription": "Trouvez des réponses aux questions courantes sur nos services et fonctionnalités.",
+        "contactUs": "Nous contacter",
+        "contactUsAt": "Vous pouvez nous joindre à",
+        "contactUsDescription": "Si vous avez des questions ou besoin d'aide, n'hésitez pas à nous contacter.",
+        "contactUsButton": "Contacter le support",
+        "emailUs": "Nous envoyer un email",
+        "copy":"Cliquer pour copier l'adresse email",
+        "emailCopied": "Email copié !",
+        "copied": "Adresse email copiée dans le presse-papiers"
+    },
+    "restaurantSelection":{
+        "title": "Choisir un restaurant",
+        "description": "Sélectionnez le restaurant que vous voulez gérer",
+        "changeUser": "Changer d'utilisateur"
+    },
+     "settingsPage": {
         "title": "Paramètres",
         "chooseSettingPrompt": "Choisissez un paramètre à modifier",
         "menuItems": {
             "general": "Général",
-            "availability": "Disponibilité",
+            "availability": "Disponibilité en ligne",
             "tags": "Tags",
+            "reviewWidget": "Widget d'avis",
             "menu": "Menu",
+            "workingHours": "Heures de travail",
             "photos": "Photos",
             "messaging": "Messagerie",
             "features": "Fonctionnalités",
             "users": "Utilisateurs",
+            "areas": "Zones",
             "billing": "Facturation",
-            "widget": "Widget",
+            "widget": "Widget de réservation",
             "roles": "Rôles",
             "permissions": "Permissions",
             "services": "Services"
@@ -352,11 +472,14 @@
                 "labels": {
                     "restaurantName": "Nom du restaurant",
                     "email": "Email",
+                    "restaurantInformations": "Informations du restaurant",
                     "country": "Pays",
-                    "city": "Sélectionnez la ville",
+                    "city": "Sélectionner une ville",
                     "description": "Description du restaurant",
                     "phone": "Téléphone",
                     "website": "Site web",
+                    "address": "Adresse",
+                    "subdomain": "Sous-domaine",
                     "categories": "Catégories",
                     "location": "Localisation",
                     "avgPrice": "Prix moyen",
@@ -365,8 +488,27 @@
                 "buttons": {
                     "cancel": "Annuler",
                     "save": "Enregistrer",
+                    "saveSubdomain": "Enregistrer le sous-domaine",
                     "addcategory": "Ajouter une catégorie"
+                },
+                "notifications":{
+                    "subdomainUpdated": "Sous-domaine mis à jour avec succès",
+                    "subdomainUpdateFailed": "Échec de la mise à jour du sous-domaine"
                 }
+            }
+        },
+        "reviewWidget":{
+            "title": "Widget d'avis",
+            "labels": {
+                "title": "Titre",
+                "description": "Description",
+                "status": "Statut",
+                "active": "Actif",
+                "inactive": "Inactif"
+            },
+            "buttons": {
+                "save": "Enregistrer",
+                "preview": "Aperçu"
             }
         },
         "widget": {
@@ -374,6 +516,11 @@
             "uploadLogo": "Télécharger le logo",
             "uploadMenu": "Télécharger le menu",
             "viewMenu": "Voir le menu",
+            "logo": "Logo",
+            "name": "Nom du restaurant",
+            "description": "Description du restaurant",
+            "uploadImage": "Télécharger une image",
+            "image": "Image du restaurant",
             "addTitlePlaceholder": "Ajouter un titre ici",
             "addDescriptionPlaceholder": "Ajouter une description ici",
             "searchTabs": {
@@ -387,16 +534,17 @@
             },
             "payment": {
                 "title": "Paiement",
-                "enableWhenGuestOver": "Activer lorsque l'invité dépasse",
+                "enableWhenGuestOver": "Activer quand invité au-dessus de",
                 "disable": "Désactiver",
                 "enable": "Activer"
             },
             "buttons": {
                 "preview": "Aperçu",
-                "save": "Enregistrer"
+                "save": "Enregistrer",
+                "saving": "Enregistrement en cours"
             }
         },
-        "permissions": {
+        "permissions":{
             "title": "Permissions",
             "tableHeaders": {
                 "id": "ID",
@@ -405,11 +553,11 @@
                 "status": "Statut"
             },
             "labels": {
-                "noAssignedRoles": "Aucun rôle attribué",
-                "assignedRoles": "Rôles attribués",
+                "noAssignedRoles": "Aucun rôle assigné",
+                "assignedRoles": "Rôles assignés",
                 "selectRole": "Sélectionner un rôle",
-                "role": "Rôle",
-                "user": "Utilisateur"
+                "role":"Rôle",
+                "user":"Utilisateur"
             },
             "buttons": {
                 "addPermission": "Ajouter une permission",
@@ -417,7 +565,7 @@
                 "affectAPermission": "Affecter une permission"
             }
         },
-        "users": {
+        "users":{
             "title": "Utilisateurs",
             "tableHeaders": {
                 "id": "ID",
@@ -436,9 +584,9 @@
                 "addUser": "Ajouter un utilisateur"
             }
         },
-        "roles": {
+        "roles":{
             "title": "Rôles",
-            "labels": {
+            "labels":{
                 "roleName": "Nom du rôle",
                 "savedRoles": "Rôles enregistrés",
                 "noRolesSaved": "Aucun rôle enregistré",
@@ -458,12 +606,15 @@
             "buttons": {
                 "addRole": "Ajouter un rôle",
                 "saveRole": "Enregistrer le rôle",
+                "createRole": "Créer un rôle",
+                "update": "Mettre à jour le rôle",
+                "deleteRole": "Supprimer le rôle",
                 "affectARole": "Affecter un rôle"
             }
         },
         "availability": {
-            "title": "Disponibilité",
-            "manageWeek": "Gérez votre semaine",
+            "title": "Disponibilité en ligne",
+            "manageWeek": "Gérer votre semaine",
             "days": {
                 "monday": "LUN",
                 "tuesday": "MAR",
@@ -474,33 +625,56 @@
                 "sunday": "DIM"
             },
             "unavailable": "Indisponible",
-            "type": "Type",
+            "type":"Type",
             "from": "De",
-            "cancel": "Annuler",
-            "save": "Enregistrer",
-            "puffer": "Durée de la réservation",
+            "cancel":"Annuler",
+            "save":"Enregistrer",
+            "puffer": "Durée de réservation",
             "addAnotherSlot": "Ajouter un autre créneau",
             "to": "À",
             "applyToWeek": "Appliquer à la semaine",
-            "placeLimitLabel": "Nombre de places Online"
+            "placeLimitLabel": "Limite de places en ligne"
         },
-        "tags": {
+        "workingHours": {
+            "title": "Heures de travail",
+            "days": {
+                "monday": "LUN",
+                "tuesday": "MAR",
+                "wednesday": "MER",
+                "thursday": "JEU",
+                "friday": "VEN",
+                "saturday": "SAM",
+                "sunday": "DIM"
+            },
+            "manageWeek": "Gérer toute la semaine",
+            "applyToWeek": "Appliquer à la semaine",
+            "unavailable": "Indisponible",
+            "type":"Type",
+            "from": "De",
+            "cancel":"Annuler",
+            "save":"Enregistrer",
+            "puffer": "Durée de réservation",
+            "addAnotherSlot": "Ajouter un autre créneau",
+            "to": "À"
+        },
+        "tags":{
             "title": "Tags",
-            "placeHolder": "Ex : Végétarien, Vegan, Sans gluten",
-            "label": "Ajouter un tag",
+            "deleteTag": "Êtes-vous sûr de vouloir supprimer ce tag ?",
+            "placeHolder":"Ex : Végétarien, Végan, Sans gluten",
+            "label":"Ajouter un tag",
             "buttons": {
                 "save": "Enregistrer"
             }
         },
-        "features": {
+        "features":{
             "title": "Fonctionnalités",
-            "placeHolder": "Ex : Wifi, Parking, Terrasse",
-            "label": "Ajouter une fonctionnalité",
+            "placeHolder":"Ex : Wifi, Parking, Terrasse",
+            "label":"Ajouter une fonctionnalité",
             "buttons": {
                 "save": "Enregistrer"
             }
         },
-        "menu": {
+        "menu":{
             "title": "Menu",
             "buttons": {
                 "addMenu": "Ajouter une catégorie",
@@ -508,14 +682,14 @@
                 "save": "Enregistrer",
                 "cancel": "Annuler"
             },
-            "placeHolders": {
+            "placeHolders":{ 
                 "category": "Catégorie",
                 "food": "Nom du plat",
                 "price": "Prix",
                 "dh": "DH"
             }
         },
-        "photos": {
+        "photos":{
             "title": "Photos",
             "buttons": {
                 "uploadPhoto": "Télécharger une photo",
@@ -525,7 +699,7 @@
             "warning": "Nombre maximum d'images atteint"
         }
     },
-    "extra": {
+    "extra":{
         "title": "Widget",
         "activated": "Activé",
         "disactivated": "Désactivé"

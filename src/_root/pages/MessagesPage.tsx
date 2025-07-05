@@ -243,16 +243,16 @@ const MessageTable: React.FC<MessageTableProps> = ({
       <thead className="bg-gray-50 dark:bg-bgdarktheme2 text-gray-500 dark:text-white">
         <tr>
           <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
-            From
+            {t('messages.tableHeaders.from')}
           </th>
           <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
-            Message
+            {t('messages.tableHeaders.message')}
           </th>
           <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
-            Response
+            {t('messages.tableHeaders.response')}
           </th>
           <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">
-            Received
+            {t('messages.tableHeaders.received')}
           </th>
           <th className="w-12 px-3 py-3"></th>
         </tr>
@@ -264,7 +264,7 @@ const MessageTable: React.FC<MessageTableProps> = ({
           <tr>
             <td colSpan={4} className="py-4 text-center">
               <p className="text-gray-500 dark:text-gray-400">
-                No messages found
+                {t('messages.noMessages')}
               </p>
             </td>
           </tr>
@@ -412,12 +412,12 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
       <div className="overlay" onClick={() => setShowModal(false)}></div>
       <div className="sidepopup h-full lt-sm:w-full overflow-y-auto lt-sm:h-[70vh] lt-sm:bottom-0 bg-white dark:bg-bgdarktheme">
         <h2 className="text-2xl font-semibold mb-6 text-blacktheme dark:text-white">
-          Respond to {customerName}
+          {t('messages.respond.title')} {' '} {customerName}
         </h2>
         
         {/* Original message */}
         <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-md">
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Original message:</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">{t('messages.respond.originalMessage')} </p>
           <p className="text-gray-700 dark:text-gray-200">{message.text}</p>
         </div>
         
@@ -441,14 +441,14 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
               onClick={() => setShowModal(false)}
               disabled={formLoading}
             >
-              Cancel
+              {t('messages.respond.cancelButton')}
             </button>
             <button
               type="submit"
               className={`btn-primary ${formLoading ? 'opacity-70 cursor-wait' : ''}`}
               disabled={!responseMessage || formLoading}
             >
-              {formLoading ? 'Sending...' : 'Send'}
+              {formLoading ? t('messages.respond.sending') : t('messages.respond.sendButton')}
             </button>
           </div>
         </form>

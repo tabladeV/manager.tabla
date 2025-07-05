@@ -10,13 +10,13 @@
         "date": {
             "today": "اليوم",
             "yesterday": "أمس",
-            "tomorrow": "غدًا"
+            "tomorrow": "غداً"
         }
     },
     "overview": {
         "title": "نظرة عامة",
-        "headline": "مرحبًا,",
-        "subtitle": "إدارة الحجوزات والعملاء والمزيد...",
+        "headline": "أهلاً وسهلاً،",
+        "subtitle": "تحكم في حجوزاتك وعملائك والمزيد...",
         "buttons": {
             "viewAll": "عرض الكل",
             "filter": "تصفية"
@@ -27,7 +27,7 @@
                 "confirmed": "مؤكد",
                 "canceled": "ملغي"
             },
-            "months": {
+            "months":{
                 "january": "يناير",
                 "february": "فبراير",
                 "march": "مارس",
@@ -42,115 +42,166 @@
                 "december": "ديسمبر"
             }
         },
-        "reviews": {
-            "title": "التعليقات",
+        "messages:": {
+            "title": "الرسائل",
             "status": {
                 "confirmed": "مؤكد",
                 "cancelled": "ملغي",
-                "pending": "قيد الانتظار"
+                "noShow": "لم يحضر",
+                "rescheduled": "أُعيد جدولته",
+                "pending": "في الانتظار"
+            },
+            "noMessages": "لا توجد رسائل بعد",
+            "noMessagesDesc": "يمكنك أن تطلب من عملائك ترك رسالة بعد حجزهم"
+        },
+        "reviews": {
+            "title": "التقييمات",
+            "noReviews": "لا توجد تقييمات بعد",
+            "noReviewsDesc": "يمكنك أن تطلب من عملائك ترك تقييم بعد حجزهم",
+            "status": {
+                "confirmed": "مؤكد",
+                "cancelled": "ملغي",
+                "noShow": "لم يحضر",
+                "rescheduled": "أُعيد جدولته",
+                "pending": "في الانتظار"
+            }
+        },
+        "messages": {
+            "title": "الرسائل",
+            "noMessages": "لا توجد رسائل بعد",
+            "noMessagesDesc": "يمكنك أن تطلب من عملائك ترك رسالة بعد حجزهم",
+            "status": {
+                "confirmed": "مؤكد",
+                "cancelled": "ملغي",
+                "noShow": "لم يحضر",
+                "rescheduled": "أُعيد جدولته",
+                "pending": "في الانتظار"
             }
         },
         "charts": {
             "reservationsChart": {
-                "title": "الحجوزات",
-                "legend": {
-                    "cancelled": "ملغي",
-                    "confirmed": "مؤكد"
-                }
+            "title": "الحجوزات",
+            "legend": {
+                "cancelled": "ملغي",
+                "confirmed": "مؤكد"
+            }
             },
             "topUsers": {
-                "title": "أعلى البلدان"
+            "title": "أفضل البلدان"
             },
             "topUserActions": {
-                "title": "أعلى إجراءات المستخدمين",
-                "subtitle": "الإجراء في:",
+                "title": "أفضل إجراءات المستخدم",
+                "subtitle": "إجراء في:",
                 "totalActions": 762,
                 "label": "الإجراءات",
                 "legend": {
                     "cancelled": "ملغي",
                     "confirmed": "مؤكد",
-                    "pending": "قيد الانتظار",
+                    "rescheduled": "أُعيد جدولته",
+                    "noShow": "لم يحضر",
+                    "pending": "في الانتظار",
                     "seated": "جالس",
-                    "fulfilled": "مكتمل"
+                    "fulfilled": "منجز"
                 }
             },
             "reservationsSource": {
                 "title": "مصدر الحجوزات",
-                "subtitle": "الإجراء في:",
+                "subtitle": "إجراء في:",
                 "totalActions": 762,
                 "label": "الإجراءات",
                 "legend": {
                     "MarketPlace": "السوق",
                     "BackOffice": "المكتب الخلفي",
                     "ThirdParty": "طرف ثالث",
-                    "Widget": "البرنامج المساعد"
+                    "WalkIn": "زائر مباشر",
+                    "Widget": "الأداة"
                 }
             }
         }
     },
     "reservations": {
-        "title": "الحجوزات",
-        "searchPlaceholder": "بحث...",
-        "filters": {
-            "fulfilled": "مكتمل",
-            "seated": "جالس",
-            "confirmed": "مؤكد",
-            "cancelled": "ملغي",
-            "pending": "قيد الانتظار",
-            "all": "الكل",
-            "date": "التاريخ"
+      "title": "الحجوزات",
+      "searchPlaceholder": "بحث...",
+      "occasion": "المناسبة",
+      "deleteConfirm": {
+        "message": "هل أنت متأكد من أنك تريد حذف هذا الحجز؟"
+      },
+      "statusChange":{
+        "confirmMessage": "هل أنت متأكد من أنك تريد تغيير حالة هذا الحجز؟",
+        "from": "من",
+        "to": "إلى"
+      },
+      "filters": {
+        "fulfilled": "منجز",
+        "seated": "جالس",
+        "confirmed": "مؤكد",
+        "cancelled": "ملغي",
+        "noShow": "لم يحضر",
+        "rescheduled": "أُعيد جدولته",
+        "pending": "في الانتظار",
+        "all": "الكل",
+        "date": "التاريخ"
+      },
+      "buttons": {
+        "addReservation": "إضافة حجز",
+        "export": "تصدير"
+      },
+      "tableHeaders": {
+        "id": "المعرف",
+        "name": "الاسم الكامل",
+        "email": "البريد الإلكتروني",
+        "phone": "الهاتف",
+        "date": "التاريخ",
+        "comment": "تعليق",
+        "time": "الوقت",
+        "guests": "الضيوف",
+        "madeBy": "الطاولة",
+        "tables": "الطاولات",
+        "status": "الحالة",
+        "review": "التقييمات",
+        "sendReview": "إرسال تقييم",
+        "reviewed": "تم إرسال التقييم",
+        "details": "تفاصيل الحجز",
+        "detailsShort": "التاريخ/الوقت/الضيوف"
+      },
+      "statusLabels": {
+        "pending": "في الانتظار",
+        "noShow": "لم يحضر",
+        "rescheduled": "أُعيد جدولته",
+        "confirmed": "مؤكد",
+        "cancelled": "ملغي",
+        "seated": "جالس",
+        "fulfilled": "منجز"
+      },
+      "edit": {
+        "title": "تعديل الحجز",
+        "headline": "تعديل الحجز",
+        "subtitle": "عدّل حجزك",
+        "confirmationMessage": "هل أنت متأكد من أنك تريد تعديل هذا الحجز؟",
+        "informations": {
+          "title": "المعلومات",
+          "name": "الاسم الكامل",
+          "internalNote": "ملاحظة داخلية",
+          "email": "البريد الإلكتروني",
+          "phone": "الهاتف",
+          "cancellationNote": "ملاحظة الإلغاء",
+          "floor": "الطابق",
+          "table":"الطاولة",
+          "date": "التاريخ",
+          "addCustomer": "إضافة عميل",
+          "comment": "تعليق",
+          "tableName": "اسم الطاولة",
+          "time": "الوقت",
+          "guests": "الضيوف",
+          "madeBy": "مُنشأ من/بواسطة",
+          "status": "الحالة"
         },
         "buttons": {
-            "addReservation": "إضافة حجز"
-        },
-        "tableHeaders": {
-            "id": "المعرف",
-            "name": "الاسم الكامل",
-            "email": "البريد الإلكتروني",
-            "phone": "الهاتف",
-            "date": "التاريخ",
-            "comment": "التعليق",
-            "time": "الوقت",
-            "guests": "الضيوف",
-            "madeBy": "الطاولة",
-            "status": "الحالة",
-            "review": "التعليق",
-            "sendReview": "إرسال تعليق",
-            "reviewed": "تم إرسال التعليق"
-        },
-        "statusLabels": {
-            "pending": "قيد الانتظار",
-            "confirmed": "مؤكد",
-            "cancelled": "ملغي",
-            "seated": "جالس",
-            "fulfilled": "مكتمل"
-        },
-        "edit": {
-            "title": "تعديل الحجز",
-            "headline": "تعديل الحجز",
-            "subtitle": "عدّل حجزك",
-            "informations": {
-                "title": "معلومات",
-                "name": "الاسم الكامل",
-                "internalNote": "ملاحظة داخلية",
-                "email": "البريد الإلكتروني",
-                "phone": "الهاتف",
-                "floor": "الطابق",
-                "table": "الطاولة",
-                "date": "التاريخ",
-                "comment": "التعليق",
-                "tableName": "اسم الطاولة",
-                "time": "الوقت",
-                "guests": "الضيوف",
-                "madeBy": "تم بواسطة",
-                "status": "الحالة"
-            },
-            "buttons": {
-                "save": "حفظ",
-                "cancel": "إلغاء",
-                "close": "إغلاق"
-            }
+          "save": "حفظ",
+          "cancel": "إلغاء",
+          "close": "إغلاق"
         }
+      }
     },
     "placeManagement": {
         "title": "إدارة الطاولات",
@@ -158,7 +209,10 @@
         "filters": {
             "confirmed": "مؤكد",
             "canceled": "ملغي",
-            "pending": "قيد الانتظار"
+            "seated": "جالس",                
+            "rescheduled": "أُعيد جدولته",
+            "noShow": "لم يحضر",
+            "pending": "في الانتظار"
         },
         "tabs": {
             "mainRoom": "القاعة الرئيسية",
@@ -166,8 +220,8 @@
             "terrace": "الشرفة"
         },
         "warning": {
-            "1": "يمكنك فقط عرض الطوابق.",
-            "2": "لتعديل الطاولات، استخدم جهازًا أكبر!"
+            "1":"يمكنك فقط عرض الطوابق.",
+            "2":"لتعديل الطاولات، استخدم جهازاً أكبر!"
         },
         "reservations": {
             "time": "الوقت",
@@ -176,14 +230,15 @@
             "none": "لا شيء"
         },
         "tables": {
-            "seatsLabel": "أماكن"
+            "seatsLabel": "مقاعد"
         },
         "buttons": {
-            "designPlace": "صمم مساحتك"
+            "designPlace": "صمم مكانك"
         }
     },
     "editPlace": {
-        "title": "تعديل مساحتك",
+        "title1":"اختر طابقاً للتعديل",
+        "title": "تعديل طوابقك",
         "buttons": {
             "addTable": "إضافة طاولة",
             "rectangleTable": "طاولة مستطيلة",
@@ -191,90 +246,112 @@
             "delete": "حذف الطاولة",
             "edit": "تعديل الطاولة",
             "save": "حفظ",
-            "reset": "إعادة التعيين"
+            "reset": "إعادة تعيين"
         }
     },
-    "agenda": {
-        "title": "جدول الأعمال",
+    "agenda":{
+        "title": "الأجندة",
         "and": "و"
     },
-    "grid": {
+    "grid":{
         "title": "الشبكة",
         "buttons": {
             "addReservation": "إضافة حجز",
-            "navigate": "الانتقال إلى جدول الأعمال",
+            "navigate": "عرض التقويم الشهري",
             "addNewClient": "إضافة عميل جديد",
+            "selectAClient": "اختر عميل",
+            "newClient": "تخصيص حجز لعميل جديد",
             "addClient": "إضافة عميل"
         },
         "meals": {
             "breakfast": "الإفطار",
             "lunch": "الغداء",
-            "dinner": "العشاء"
+            "dinner": "العشاء",
+            "available" : "متوفر",
+            "unavailable" : "غير متوفر"
         },
         "people": "الأشخاص",
-        "placeHolders": {
+        "placeHolders":{
             "name": "الاسم",
-            "intern": "التعليق الداخلي",
-            "extern": "التعليق الخارجي",
-            "searchClient": "البحث عن عميل",
+            "search": "البحث عن عميل",
+            "intern":"تعليق داخلي",
+            "extern":"تعليق خارجي",
+            "searchClient"  : "البحث عن عميل",
             "email": "البريد الإلكتروني",
+            "guests": "عدد الضيوف",
+            "firstname": "الاسم الأول",
+            "lastname": "اسم العائلة",
+            "internalNote": "ملاحظة داخلية",
             "phone": "رقم الهاتف"
         }
     },
     "clients": {
         "title": "العملاء",
         "searchPlaceholder": "بحث...",
-        "selectClient": "تحديد عميل",
-        "buttons": {
+        "selectClient": "اختر عميل",
+        "buttons":{
             "deselectAll": "إلغاء تحديد الكل",
-            "selectAll": "تحديد الكل"
+            "selectAll": "تحديد الكل",
+            "deleteClient": "حذف العميل"
         },
+        "linkers":{
+            "and": "و",
+            "or": "أو",
+            "more": "أكثر"
+        },
+        "allClients": "جميع العملاء",
         "sendNotificationButton": "إرسال إشعار",
+        "sendNotificationTitle": "إرسال إشعار",
         "lifetimeInfo": {
-            "title": "معلومات العمر",
+            "title": "معلومات مدى الحياة",
             "upcoming": "قادم",
             "materialized": "متحقق",
             "denied": "مرفوض",
             "cancelled": "ملغي",
             "didntShow": "لم يحضر",
-            "spendPerCover": "الإنفاق لكل غطاء",
-            "spendMAD": "الإنفاق MAD"
+            "spendPerCover": "الإنفاق/الغطاء",
+            "spendMAD": "الإنفاق درهم"
         },
         "tabs": {
             "profile": "الملف الشخصي",
-            "reservationHistory": "تاريخ الحجز"
+            "reservationHistory": "تاريخ الحجوزات"
         },
         "profileSection": {
-            "title": "معلومات",
+            "title": "المعلومات",
             "fields": {
                 "firstName": "الاسم الأول",
                 "lastName": "اسم العائلة",
                 "email": "البريد الإلكتروني",
+                "tags": "العلامات",
+                "title": "العنوان",
                 "phoneNumber": "رقم الهاتف",
                 "alternatePhone": "هاتف بديل",
                 "organization": "المنظمة",
                 "guestNotes": "ملاحظات الضيف"
             },
-            "clickToEdit": "انقر لتعديل"
+            "clickToEdit": "انقر للتعديل"
         },
         "reservationHistorySection": {
-            "title": "تاريخ الحجز",
+            "title": "تاريخ الحجوزات",
             "tableHeaders": {
+                "id": "المعرف",
                 "date": "التاريخ",
                 "time": "الوقت",
                 "spend": "الإنفاق",
-                "made": "تم بواسطة",
-                "roof": "السقف",
-                "guests": "عدد الضيوف",
-                "comment": "التعليق",
+                "made": "مُنشأ من/بواسطة",
+                "roof": "الطابق",
+                "guests":"عدد الضيوف",
+                "comment":"تعليق",
                 "table": "الطاولة",
                 "status": "الحالة"
             },
             "statusLabels": {
                 "confirmed": "مؤكد",
                 "cancelled": "ملغي",
-                "pending": "قيد الانتظار",
-                "fulfilled": "مكتمل",
+                "pending": "في الانتظار",
+                "noShow": "لم يحضر",
+                "rescheduled": "أُعيد جدولته",
+                "fulfilled": "منجز",
                 "seated": "جالس"
             },
             "buttons": {
@@ -283,85 +360,169 @@
             }
         }
     },
-    "reviews": {
-        "title": "التعليقات",
+    "reviews":{
+        "title": "التقييمات",
         "tableHeaders": {
             "id": "المعرف",
             "date": "التاريخ",
             "name": "الاسم",
             "email": "البريد الإلكتروني",
             "total": "المجموع",
-            "comment": "التعليق",
-            "food": "تقييم الطعام",
-            "valueForMoney": "القيمة مقابل الثمن",
-            "service": "تقييم الخدمة",
-            "environment": "تقييم جو المطعم"
+            "comment": "تعليق",
+            "food":"الطعام",
+            "valueForMoney":"القيمة مقابل المال",
+            "service":"الخدمة",
+            "environment":"البيئة"
         },
-        "filters": {
+        "filters":{
             "all": "الكل",
             "date": "التاريخ"
         },
-        "view": {
-            "valueForMoney": "قيمة المال",
-            "title": "عرض التعليق",
-            "name": "الاسم",
-            "email": "البريد الإلكتروني",
-            "date": "التاريخ",
-            "comment": "التعليق",
-            "food": "تقييم الطعام",
-            "service": "تقييم الخدمة",
-            "total": "التقييم الكلي",
-            "environment": "تقييم البيئة"
+        "view":{
+            "valueForMoney":"القيمة مقابل المال",
+            "title": "عرض التقييم",
+            "name"  : "الاسم",
+            "email" : "البريد الإلكتروني",
+            "date"  : "التاريخ",
+            "comment": "تعليق",
+            "food":"تقييم الطعام",
+            "service":"تقييم الخدمة",
+            "total":"التقييم الإجمالي",
+            "environment":"تقييم البيئة"
         }
     },
-    "settingsPage": {
+    "messages": {
+        "title": "الرسائل",
+        "respond":{
+            "title": "الرد على",
+            "originalMessage": "الرسالة الأصلية",
+            "placeholder": "اكتب ردك هنا...",
+            "sendButton": "إرسال الرد",
+            "sending": "جاري الإرسال...",
+            "cancelButton": "إلغاء"
+        },
+        "tableHeaders": {
+            "id": "المعرف",
+            "date": "التاريخ",
+            "name": "الاسم",
+            "email": "البريد الإلكتروني",
+            "subject": "الموضوع",
+            "message": "الرسالة",
+            "from": "من",
+            "response": "الرد",
+            "received": "مستلم"
+        },
+        "noMessages": "لم يتم العثور على رسائل",
+        "filters":{
+            "all": "الكل",
+            "date": "التاريخ"
+        },
+        "view":{
+            "title": "عرض الرسالة",
+            "name"  : "الاسم",
+            "email" : "البريد الإلكتروني",
+            "date"  : "التاريخ",
+            "subject": "الموضوع",
+            "message": "الرسالة"
+        }
+    },
+    "supportPage":{
+        "title": "مركز الدعم",
+        "description": "كيف يمكننا مساعدتك اليوم؟",
+        "faq": "الأسئلة الشائعة",
+        "faqDescription": "اعثر على إجابات للأسئلة الشائعة حول خدماتنا وميزاتنا.",
+        "contactUs": "اتصل بنا",
+        "contactUsAt": "يمكنك الوصول إلينا على",
+        "contactUsDescription": "إذا كان لديك أي أسئلة أو تحتاج إلى مساعدة، فلا تتردد في التواصل معنا.",
+        "contactUsButton": "اتصل بالدعم",
+        "emailUs": "راسلنا عبر البريد الإلكتروني",
+        "copy":"انقر لنسخ عنوان البريد الإلكتروني",
+        "emailCopied": "تم نسخ البريد الإلكتروني!",
+        "copied": "تم نسخ عنوان البريد الإلكتروني إلى الحافظة"
+    },
+    "restaurantSelection":{
+        "title": "اختر مطعماً",
+        "description": "اختر المطعم الذي تريد إدارته",
+        "changeUser": "تغيير المستخدم"
+    },
+     "settingsPage": {
         "title": "الإعدادات",
-        "chooseSettingPrompt": "اختر إعدادًا لتعديله",
+        "chooseSettingPrompt": "اختر إعداداً للتعديل",
         "menuItems": {
             "general": "عام",
-            "availability": "التوفر",
-            "tags": "الوسوم",
+            "availability": "التوفر عبر الإنترنت",
+            "tags": "العلامات",
+            "reviewWidget": "أداة التقييم",
             "menu": "القائمة",
+            "workingHours": "ساعات العمل",
             "photos": "الصور",
             "messaging": "الرسائل",
             "features": "الميزات",
             "users": "المستخدمون",
+            "areas": "المناطق",
             "billing": "الفوترة",
-            "widget": "البرنامج المساعد",
+            "widget": "أداة الحجز",
             "roles": "الأدوار",
             "permissions": "الصلاحيات",
             "services": "الخدمات"
         },
         "general": {
             "basicInformationForm": {
-                "title": "معلومات أساسية",
+                "title": "المعلومات الأساسية",
                 "labels": {
                     "restaurantName": "اسم المطعم",
                     "email": "البريد الإلكتروني",
+                    "restaurantInformations": "معلومات المطعم",
                     "country": "البلد",
                     "city": "اختر المدينة",
                     "description": "وصف المطعم",
                     "phone": "الهاتف",
                     "website": "الموقع الإلكتروني",
+                    "address": "العنوان",
+                    "subdomain": "النطاق الفرعي",
                     "categories": "الفئات",
                     "location": "الموقع",
-                    "avgPrice": "متوسط السعر",
-                    "currency": "DH"
+                    "avgPrice": "السعر المتوسط",
+                    "currency": "درهم"
                 },
                 "buttons": {
                     "cancel": "إلغاء",
                     "save": "حفظ",
+                    "saveSubdomain": "حفظ النطاق الفرعي",
                     "addcategory": "إضافة فئة"
+                },
+                "notifications":{
+                    "subdomainUpdated": "تم تحديث النطاق الفرعي بنجاح",
+                    "subdomainUpdateFailed": "فشل في تحديث النطاق الفرعي"
                 }
             }
         },
+        "reviewWidget":{
+            "title": "أداة التقييم",
+            "labels": {
+                "title": "العنوان",
+                "description": "الوصف",
+                "status": "الحالة",
+                "active": "نشط",
+                "inactive": "غير نشط"
+            },
+            "buttons": {
+                "save": "حفظ",
+                "preview": "معاينة"
+            }
+        },
         "widget": {
-            "title": "البرنامج المساعد",
-            "uploadLogo": "تحميل الشعار",
-            "uploadMenu": "تحميل القائمة",
+            "title": "الأداة",
+            "uploadLogo": "رفع الشعار",
+            "uploadMenu": "رفع القائمة",
             "viewMenu": "عرض القائمة",
-            "addTitlePlaceholder": "أضف عنوانًا هنا",
-            "addDescriptionPlaceholder": "أضف وصفًا هنا",
+            "logo": "الشعار",
+            "name": "اسم المطعم",
+            "description": "وصف المطعم",
+            "uploadImage": "رفع صورة",
+            "image": "صورة المطعم",
+            "addTitlePlaceholder": "أضف عنواناً هنا",
+            "addDescriptionPlaceholder": "أضف وصفاً هنا",
             "searchTabs": {
                 "title": "إعدادات إضافية",
                 "options": {
@@ -373,16 +534,17 @@
             },
             "payment": {
                 "title": "الدفع",
-                "enableWhenGuestOver": "تفعيل عندما يتجاوز عدد الضيوف",
-                "disable": "تعطيل",
+                "enableWhenGuestOver": "تفعيل عندما يتجاوز الضيف",
+                "disable": "إلغاء التفعيل",
                 "enable": "تفعيل"
             },
             "buttons": {
                 "preview": "معاينة",
-                "save": "حفظ"
+                "save": "حفظ",
+                "saving": "جاري الحفظ"
             }
         },
-        "permissions": {
+        "permissions":{
             "title": "الصلاحيات",
             "tableHeaders": {
                 "id": "المعرف",
@@ -391,19 +553,19 @@
                 "status": "الحالة"
             },
             "labels": {
-                "noAssignedRoles": "لا توجد أدوار معيّنة",
-                "assignedRoles": "الأدوار المعيّنة",
-                "selectRole": "تحديد دور",
-                "role": "الدور",
-                "user": "المستخدم"
+                "noAssignedRoles": "لا توجد أدوار مخصصة",
+                "assignedRoles": "الأدوار المخصصة",
+                "selectRole": "اختر دوراً",
+                "role":"الدور",
+                "user":"المستخدم"
             },
             "buttons": {
                 "addPermission": "إضافة صلاحية",
                 "savePermission": "حفظ الصلاحية",
-                "affectAPermission": "تأثير على الصلاحية"
+                "affectAPermission": "تخصيص صلاحية"
             }
         },
-        "users": {
+        "users":{
             "title": "المستخدمون",
             "tableHeaders": {
                 "id": "المعرف",
@@ -416,20 +578,20 @@
             },
             "statusLabels": {
                 "working": "في العمل",
-                "rest": "في الراحة"
+                "rest": "استراحة"
             },
             "buttons": {
                 "addUser": "إضافة مستخدم"
             }
         },
-        "roles": {
+        "roles":{
             "title": "الأدوار",
-            "labels": {
+            "labels":{
                 "roleName": "اسم الدور",
                 "savedRoles": "الأدوار المحفوظة",
                 "noRolesSaved": "لا توجد أدوار محفوظة",
                 "permissionsavailable": "الصلاحيات المتاحة",
-                "permissionsaffected": "الصلاحيات المتأثرة"
+                "permissionsaffected": "الصلاحيات المخصصة"
             },
             "tableHeaders": {
                 "id": "المعرف",
@@ -444,11 +606,14 @@
             "buttons": {
                 "addRole": "إضافة دور",
                 "saveRole": "حفظ الدور",
-                "affectARole": "تأثير على الدور"
+                "createRole": "إنشاء دور",
+                "update": "تحديث الدور",
+                "deleteRole": "حذف الدور",
+                "affectARole": "تخصيص دور"
             }
         },
         "availability": {
-            "title": "التوفر",
+            "title": "التوفر عبر الإنترنت",
             "manageWeek": "إدارة أسبوعك",
             "days": {
                 "monday": "الاثنين",
@@ -460,33 +625,56 @@
                 "sunday": "الأحد"
             },
             "unavailable": "غير متوفر",
-            "type": "النوع",
+            "type":"النوع",
             "from": "من",
-            "cancel": "إلغاء",
-            "save": "حفظ",
+            "cancel":"إلغاء",
+            "save":"حفظ",
             "puffer": "مدة الحجز",
             "addAnotherSlot": "إضافة فترة أخرى",
             "to": "إلى",
             "applyToWeek": "تطبيق على الأسبوع",
-            "placeLimitLabel": "العدد الأقصى للأماكن"
+            "placeLimitLabel": "حد الأماكن عبر الإنترنت"
         },
-        "tags": {
-            "title": "الوسوم",
-            "placeHolder": "مثال: نباتي، نباتي صرف، خالٍ من الجلوتين",
-            "label": "إضافة وسم",
+        "workingHours": {
+            "title": "ساعات العمل",
+            "days": {
+                "monday": "الاثنين",
+                "tuesday": "الثلاثاء",
+                "wednesday": "الأربعاء",
+                "thursday": "الخميس",
+                "friday": "الجمعة",
+                "saturday": "السبت",
+                "sunday": "الأحد"
+            },
+            "manageWeek": "إدارة الأسبوع كاملاً",
+            "applyToWeek": "تطبيق على الأسبوع",
+            "unavailable": "غير متوفر",
+            "type":"النوع",
+            "from": "من",
+            "cancel":"إلغاء",
+            "save":"حفظ",
+            "puffer": "مدة الحجز",
+            "addAnotherSlot": "إضافة فترة أخرى",
+            "to": "إلى"
+        },
+        "tags":{
+            "title": "العلامات",
+            "deleteTag": "هل أنت متأكد من أنك تريد حذف هذه العلامة؟",
+            "placeHolder":"مثال: نباتي، خالي من الغلوتين",
+            "label":"إضافة علامة",
             "buttons": {
                 "save": "حفظ"
             }
         },
-        "features": {
+        "features":{
             "title": "الميزات",
-            "placeHolder": "مثال: واي فاي، موقف سيارات، شرفة",
-            "label": "إضافة ميزة",
+            "placeHolder":"مثال: واي فاي، موقف سيارات، شرفة",
+            "label":"إضافة ميزة",
             "buttons": {
                 "save": "حفظ"
             }
         },
-        "menu": {
+        "menu":{
             "title": "القائمة",
             "buttons": {
                 "addMenu": "إضافة فئة",
@@ -494,9 +682,9 @@
                 "save": "حفظ",
                 "cancel": "إلغاء"
             },
-            "placeHolders": {
+            "placeHolders":{ 
                 "category": "الفئة",
-                "food": "اسم الطبق",
+                "food": "اسم الطعام",
                 "price": "السعر",
                 "dh": "DH"
             }

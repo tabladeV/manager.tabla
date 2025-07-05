@@ -517,7 +517,7 @@ const ClientInterface = () => {
                   }}
                   className="btn-primary mt-2 bg-softredtheme text-redtheme hover:bg-redtheme hover:text-white flex items-center gap-3"
                 >
-                  <Trash size={14} /> Delete client
+                  <Trash size={14} /> {t("clients.buttons.deleteClient")}
                 </button>
               </CanAccess>
             </div>
@@ -630,7 +630,7 @@ const ClientInterface = () => {
                             <td className="font-medium p-2 border-l border-gray-300">{t('clients.profileSection.fields.email')}</td>
                             {renderCell('email')}
                           </tr> */}
-                          <tr className="border border-gray-300">
+                          <tr className="border  border-gray-300">
                             <td className="font-medium p-2">{t("clients.profileSection.fields.phoneNumber")}</td>
                             {renderCell("phone")}
                             {/* <td className="font-medium p-2 border-l border-gray-300 lt-sm:hidden">{t('clients.profileSection.fields.alternatePhone')}</td>

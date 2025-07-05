@@ -1622,7 +1622,7 @@ const ReservationsPage: React.FC = () => {
             </button>
           </CanAccess>
           <button onClick={() => setShowExportModal(true)} className={`${isDarkMode ? 'text-whitetheme' : ''} btn-primary`}>
-            export
+            {t('reservations.buttons.export')}
           </button>
         </div>
       </div>

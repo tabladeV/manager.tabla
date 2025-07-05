@@ -354,19 +354,19 @@ const ClientsPage = () => {
           <div
             className={`sidepopup h-full lt-sm:w-full overflow-y-auto lt-sm:h-[70vh] lt-sm:bottom-0 bg-white dark:bg-bgdarktheme`}
           >
-            <h2 className="">Send a notification</h2>
+            <h2 className="">{t("clients.sendNotificationTitle")}</h2>
             <div className="flex flex-col  gap-2">
               <div className="p-2 rounded-[10px] cursor-default">
                 <p className="text-greentheme font-[600] mb-2">Send to</p>
                 <div className="flex gap-2 flex-wrap">
-                  {allClients && <p className={`text-sm btn dark:text-white`}>All Clients</p>}
+                  {allClients && <p className={`text-sm btn dark:text-white`}>{t("clients.allClients")}</p>}
                   {selectedClient.slice(0, 4).map((client) => (
                     <div key={client.id} className={`flex items-center gap-2 dark:text-white`}>
                       <p className={`text-sm btn dark:text-white`}>{client.full_name}</p>
                     </div>
                   ))}
                   {selectedClient.length > 4 && (
-                    <p className={`text-sm btn dark:text-white`}>and {selectedClient.length - 4} more</p>
+                    <p className={`text-sm btn dark:text-white`}>{t("clients.linkers.and")} {selectedClient.length - 4} {t("clients.linkers.more")}</p>
                   )}
                 </div>
               </div>

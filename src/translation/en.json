@@ -145,7 +145,8 @@
         "date": "Date"
       },
       "buttons": {
-        "addReservation": "Add Reservation"
+        "addReservation": "Add Reservation",
+        "export": "Export"
       },
       "tableHeaders": {
         "id": "ID",
@@ -238,6 +239,7 @@
         }
     },
     "editPlace": {
+        "title1":"Select a floor to modify",
         "title": "Edit On Your Roofs",
         "buttons": {
             "addTable": "Add Table",
@@ -293,9 +295,17 @@
         "selectClient": "Select a client",
         "buttons":{
             "deselectAll": "Deselect All",
-            "selectAll": "Select All"
+            "selectAll": "Select All",
+            "deleteClient": "Delete Client"
         },
+        "linkers":{
+            "and": "and",
+            "or": "or",
+            "more": "more"
+        },
+        "allClients": "All Clients",
         "sendNotificationButton": "Send a notification",
+        "sendNotificationTitle": "Send a notification",
         "lifetimeInfo": {
             "title": "Life time information",
             "upcoming": "Upcoming",
@@ -388,14 +398,26 @@
     },
     "messages": {
         "title": "Messages",
+        "respond":{
+            "title": "Respond to",
+            "originalMessage": "Original message",
+            "placeholder": "Type your response here...",
+            "sendButton": "Send Response",
+            "sending": "Sending...",
+            "cancelButton": "Cancel"
+        },
         "tableHeaders": {
             "id": "ID",
             "date": "Date",
             "name": "Name",
             "email": "Email",
             "subject": "Subject",
-            "message": "Message"
+            "message": "Message",
+            "from": "From",
+            "response": "Response",
+            "received": "Received"
         },
+        "noMessages": "No messages found",
         "filters":{
             "all": "All",
             "date": "Date"
@@ -408,6 +430,25 @@
             "subject": "Subject",
             "message": "Message"
         }
+    },
+    "supportPage":{
+        "title": "Support Center",
+        "description": "How can we help you today?",
+        "faq": "Frequently Asked Questions",
+        "faqDescription": "Find answers to common questions about our services and features.",
+        "contactUs": "Contact Us",
+        "contactUsAt": "You can reach us at",
+        "contactUsDescription": "If you have any questions or need assistance, feel free to reach out to us.",
+        "contactUsButton": "Contact Support",
+        "emailUs": "Email Us",
+        "copy":"Click to copy email address",
+        "emailCopied": "Email copied!",
+        "copied": "Email address copied to clipboard"
+    },
+    "restaurantSelection":{
+        "title": "Choose a Restaurant",
+        "description": "Select the restaurant you want to manage",
+        "changeUser": "Change User"
     },
      "settingsPage": {
         "title": "Settings",

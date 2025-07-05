@@ -5,6 +5,7 @@ import Logo from "../../components/header/Logo";
 import { BaseKey, useList } from "@refinedev/core";
 import authProvider from "../../providers/authProvider";
 import { useDateContext } from "../../context/DateContext";
+import { useTranslation } from "react-i18next";
 
 interface RestaurantType {
     id: BaseKey;
@@ -74,6 +75,8 @@ const RestaurantSelection: React.FC<{showLogo?: boolean}> = ({showLogo=true}) =>
       console.log(e);
     }
   };
+
+  const { t } = useTranslation();
   
   return (
     <div className="flex bg-cover flex-col items-center w-full min-h-screen max-h-screen overflow-y-auto dark:bg-bgdarktheme">
@@ -82,17 +85,17 @@ const RestaurantSelection: React.FC<{showLogo?: boolean}> = ({showLogo=true}) =>
         {showLogo && <>
           <Logo className="horizontal" nolink />
           <button className="btn-primary fixed top-[10px] left-[10px] z-10" onClick={() => handleLogout()}>
-            change user
+            {t('restaurantSelection.changeUser') || "Change User"}
           </button>
         </>}
       </div>
       
       <div className="max-w-5xl w-full px-4 mt-8">
         <h1 className="text-4xl font-bold text-center text-darkthemeitems dark:text-white mb-2">
-          Choose a Restaurant
+          {t('restaurantSelection.title') || "Select a Restaurant"}
         </h1>
         <p className="text-center text-subblack mb-10 dark:text-gray-300">
-          Select the restaurant you want to manage
+          {t('restaurantSelection.description') || "Select the restaurant you want to manage."}
         </p>
         
         <div className="flex flex-wrap gap-6 justify-center">
