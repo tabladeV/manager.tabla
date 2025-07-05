@@ -1,49 +1,29 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Column, CustomField } from './config/exportConfig';
+import BaseBtn from './BaseBtn';
 
-export type InputType = 'text' | 'number' | 'checkbox' | 'radio' | 'select' | 'date';
-
-interface Column {
-  key: string;
-  label: string;
-}
-
-interface CustomFieldOption {
-  value: string;
-  label: string;
-}
-
-interface CustomField {
-  key: string;
-  label: string;
-  input: InputType;
-  options?: CustomFieldOption[];
-  defaultValue?: string | number | boolean;
-  children?: CustomField[];
-  showChildrenWhen?: {
-    value: any;  // Value that triggers showing children
-    condition?: 'equals' | 'notEquals' | 'includes' | 'truthy' | 'falsy';
-  };
-}
 
 interface ExportModalProps {
   title?: string;
   customOptionsTitle?: string;
   columns: Column[];
   customFields?: CustomField[];
-  onExport: (format: 'sheet' | 'pdf', selectedColumns: string[], customValues: Record<string, any>) => void;
+  onExport: (format: 'sheet' | 'pdf', selectedColumns: string[], customValues: Record<string, any>, pdfEngine?: 'xhtml2pdf' | 'reportlab') => void;
   onClose: () => void;
+  loading?: boolean;
 }
 
-const ExportModal = ({ columns, customFields = [], title, customOptionsTitle, onExport, onClose }: ExportModalProps) => {
+const ExportModal = ({ columns, customFields = [], title, customOptionsTitle, onExport, onClose, loading }: ExportModalProps) => {
   const { t } = useTranslation();
   const [exportFormat, setExportFormat] = useState<'sheet' | 'pdf'>('sheet');
+  const [pdfEngine, setPdfEngine] = useState<'xhtml2pdf' | 'reportlab'>('xhtml2pdf');
   const [selectedColumns, setSelectedColumns] = useState<string[]>(columns.map(c => c.key));
   const [customValues, setCustomValues] = useState<Record<string, any>>(() => {
     // Initialize custom values with defaults (recursive function to handle nested fields)
     const initializeValues = (fields: CustomField[]): Record<string, any> => {
       const values: Record<string, any> = {};
-      
+
       fields.forEach(field => {
         if (field.defaultValue !== undefined) {
           values[field.key] = field.defaultValue;
@@ -53,10 +33,13 @@ const ExportModal = ({ columns, customFields = [], title, customOptionsTitle, on
             case 'checkbox':
               values[field.key] = false;
               break;
+            case 'checkboxGroup':
+              values[field.key] = field.defaultValue || [];
+              break;
             case 'radio':
             case 'select':
-              values[field.key] = field.options && field.options.length > 0 
-                ? field.options[0].value 
+              values[field.key] = field.options && field.options.length > 0
+                ? field.options[0].value
                 : '';
               break;
             case 'number':
@@ -68,17 +51,17 @@ const ExportModal = ({ columns, customFields = [], title, customOptionsTitle, on
               break;
           }
         }
-        
+
         // If field has children, initialize their values too
         if (field.children && field.children.length > 0) {
           const childValues = initializeValues(field.children);
           Object.assign(values, childValues);
         }
       });
-      
+
       return values;
     };
-    
+
     return initializeValues(customFields);
   });
 
@@ -110,10 +93,10 @@ const ExportModal = ({ columns, customFields = [], title, customOptionsTitle, on
     if (!field.showChildrenWhen || !field.children || field.children.length === 0) {
       return false;
     }
-    
+
     const { value, condition = 'equals' } = field.showChildrenWhen;
     const fieldValue = customValues[field.key];
-    
+
     switch (condition) {
       case 'equals':
         return fieldValue === value;
@@ -133,14 +116,14 @@ const ExportModal = ({ columns, customFields = [], title, customOptionsTitle, on
   // Recursive function to render a field and its children
   const renderFieldWithChildren = (field: CustomField, level = 0): JSX.Element => {
     const showChildren = shouldShowChildren(field);
-    
+
     return (
       <div key={field.key} className="flex flex-col">
         <div className={`${level > 0 ? 'ml-4' : ''}`}>
           <label className="mb-1 font-medium mr-2">{field.label}</label>
           {renderCustomField(field)}
         </div>
-        
+
         {showChildren && field.children && (
           <div className="ml-6 mt-2 pl-2 border-l-2 border-gray-300 dark:border-gray-600 space-y-3">
             {field.children.map(childField => renderFieldWithChildren(childField, level + 1))}
@@ -188,6 +171,29 @@ const ExportModal = ({ columns, customFields = [], title, customOptionsTitle, on
             className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]"
           />
         );
+      case 'checkboxGroup':
+        return (
+          <div className="flex flex-col space-y-2">
+            {field.options?.map(option => (
+              <label key={`${field.key}_${option.value}`} className="flex items-center">
+                <input
+                  type="checkbox"
+                  value={option.value}
+                  checked={(customValues[field.key] || []).includes(option.value)}
+                  onChange={(e) => {
+                    const currentValues = customValues[field.key] || [];
+                    const newValues = e.target.checked
+                      ? [...currentValues, option.value]
+                      : currentValues.filter((v: any) => v !== option.value);
+                    handleCustomFieldChange(field.key, newValues);
+                  }}
+                  className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61] mr-2"
+                />
+                {option.label}
+              </label>
+            ))}
+          </div>
+        );
       case 'radio':
         return (
           <div className="flex flex-col space-y-2">
@@ -228,7 +234,7 @@ const ExportModal = ({ columns, customFields = [], title, customOptionsTitle, on
     <div>
       {/* Overlay for clicking outside to close */}
       <div className="overlay" onClick={onClose}></div>
-      <div className={`sidepopup w-[45%] overflow-y-auto lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:overflow-y-auto h-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-white' : 'bg-white'}`}>
+      <div className={`sidepopup w-[45%] overflow-y-auto lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:overflow-y-auto h-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-white' : 'bg-white'} pb-0`}>
         <h2 className="text-2xl font-[600] mb-4">{title || t('export.title', 'Export Data')}</h2>
         <div className="space-y-4">
           {/* Format Selection */}
@@ -257,6 +263,35 @@ const ExportModal = ({ columns, customFields = [], title, customOptionsTitle, on
               </label>
             </div>
           </div>
+
+          {/* PDF Engine Selection */}
+          {exportFormat === 'pdf' && (
+            <div>
+              <h3 className="text-lg font-medium mb-2">{t('export.pdfEngineTitle', 'PDF Engine')}</h3>
+              <div className="flex space-x-4">
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    value="xhtml2pdf"
+                    checked={pdfEngine === 'xhtml2pdf'}
+                    onChange={() => setPdfEngine('xhtml2pdf')}
+                    className="radio mr-2"
+                  />
+                  {t('export.pdfEngineStandard', 'Standard (Web View)')}
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    value="reportlab"
+                    checked={pdfEngine === 'reportlab'}
+                    onChange={() => setPdfEngine('reportlab')}
+                    className="radio mr-2"
+                  />
+                  {t('export.pdfEngineAdvanced', 'Advanced (Complex Tables)')}
+                </label>
+              </div>
+            </div>
+          )}
 
           {/* Column Selection */}
           <div>
@@ -297,23 +332,27 @@ const ExportModal = ({ columns, customFields = [], title, customOptionsTitle, on
             </div>
           )}
 
-          {/* Buttons */}
-          <div className="flex justify-center space-x-2 mt-6">
-            <button
+        </div>
+        {/* Buttons */}
+          <div className="flex justify-center space-x-2 mt-6 bg-white dark:bg-bgdarktheme2 py-5 sticky bottom-0">
+            <BaseBtn
+              variant="primary"
+              loading={loading}
               onClick={onClose}
               className="btn-secondary hover:bg-[#88AB6150] hover:text-greentheme transition-colors"
             >
               {t('export.closeButton', 'Close')}
-            </button>
-            <button
-              onClick={() => onExport(exportFormat, selectedColumns, customValues)}
+            </BaseBtn>
+            <BaseBtn
+              variant="primary"
+              loading={loading}
+              onClick={() => onExport(exportFormat, selectedColumns, customValues, exportFormat === 'pdf' ? pdfEngine : undefined)}
               className="btn-primary"
               disabled={selectedColumns.length === 0}
             >
               {t('export.exportButton', 'Export')}
-            </button>
+            </BaseBtn>
           </div>
-        </div>
       </div>
     </div>
   );

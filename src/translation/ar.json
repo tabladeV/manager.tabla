@@ -355,6 +355,22 @@
                 }
             }
         },
+        "reviewWidget": {
+    "title": "ودجة المراجعة",
+    "labels": {
+        "title": "العنوان",
+        "description": "الوصف",
+        "status": "الحالة",
+        "active": "نشط",
+        "inactive": "غير نشط",
+        "enableAutoSend": "تفعيل الإرسال التلقائي لطلبات المراجعة",
+        "reviewDelay": "التأخير قبل إرسال المراجعة (بالساعات، 0 يعني بدون تأخير)"
+    },
+    "buttons": {
+        "save": "حفظ",
+        "preview": "معاينة"
+    }
+},
         "widget": {
             "title": "البرنامج المساعد",
             "uploadLogo": "تحميل الشعار",
