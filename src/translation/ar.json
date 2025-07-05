@@ -497,38 +497,23 @@
                 }
             }
         },
-        "reviewWidget":{
-            "title": "أداة التقييم",
+
+        "reviewWidget": {
+            "title": "ودجة المراجعة",
             "labels": {
                 "title": "العنوان",
                 "description": "الوصف",
                 "status": "الحالة",
                 "active": "نشط",
-                "inactive": "غير نشط"
+                "inactive": "غير نشط",
+                "enableAutoSend": "تفعيل الإرسال التلقائي لطلبات المراجعة",
+                "reviewDelay": "التأخير قبل إرسال المراجعة (بالساعات، 0 يعني بدون تأخير)"
             },
             "buttons": {
                 "save": "حفظ",
                 "preview": "معاينة"
             }
         },
-
-        "reviewWidget": {
-    "title": "ودجة المراجعة",
-    "labels": {
-        "title": "العنوان",
-        "description": "الوصف",
-        "status": "الحالة",
-        "active": "نشط",
-        "inactive": "غير نشط",
-        "enableAutoSend": "تفعيل الإرسال التلقائي لطلبات المراجعة",
-        "reviewDelay": "التأخير قبل إرسال المراجعة (بالساعات، 0 يعني بدون تأخير)"
-    },
-    "buttons": {
-        "save": "حفظ",
-        "preview": "معاينة"
-    }
-},
->>>>>>> 40b1cfab093ddcda67543888d2130a7a1d4c9fcc
         "widget": {
             "title": "الأداة",
             "uploadLogo": "رفع الشعار",
