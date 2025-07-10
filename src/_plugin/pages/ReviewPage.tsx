@@ -10,6 +10,7 @@ import spanish from "../../assets/spanish.png"
 import arabic from "../../assets/arabic.jpg"
 import english from "../../assets/english.png"
 import french from "../../assets/french.png"
+import { useDateContext } from "../../context/DateContext"
 
 // Language Selector Component
 const LanguageSelector = () => {
@@ -40,7 +41,7 @@ const LanguageSelector = () => {
         <img
           src={currentLanguage.icon || "/placeholder.svg"}
           alt={currentLanguage.name}
-          className="w-6 h-6 rounded-full object-cover"
+          className="w-6 h-6 rounded-sm object-cover"
         />
         <span className="text-sm font-medium hidden sm:block">{currentLanguage.name}</span>
         <ChevronDown size={16} className={`transition-transform ${isOpen ? "rotate-180" : ""}`} />
@@ -62,7 +63,7 @@ const LanguageSelector = () => {
                 <img
                   src={language.icon || "/placeholder.svg"}
                   alt={language.name}
-                  className="w-5 h-5 rounded-full object-cover"
+                  className="w-5 h-5 rounded-sm object-cover"
                 />
                 <span className="text-sm font-medium">{language.name}</span>
               </button>
@@ -223,8 +224,13 @@ const ReviewPage = () => {
     setStep(2)
   }
 
+    const { preferredLanguage } = useDateContext()
+  
+
   return (
-    <div className="h-[100vh] dark:bg-bgdarktheme2 dark:text-white bg-white">
+    <div className={`h-[100vh] ${
+        preferredLanguage === "ar" ? "rtl" : ""
+      } dark:bg-bgdarktheme2 dark:text-white bg-white`}>
       <div className="h-[10vh] w-full flex items-center justify-between px-10 shadow-md border-b border-softgreytheme dark:border-darkthemeitems dark:bg-bgdarktheme bg-whitetheme">
         <Logo className="horizontal" nolink={true} />
         <div className="flex items-center gap-2">

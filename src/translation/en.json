@@ -1161,6 +1161,53 @@
       "title": "Thank you for your review!",
       "message": "Your review has been submitted successfully. We appreciate your feedback and will use it to improve our service."
     }
+  },
+  "calendarPopup":{
+    "months":{
+        "january": "January",
+        "february": "February",
+        "march": "March",
+        "april": "April",
+        "may": "May",
+        "june": "June",
+        "july": "July",
+        "august": "August",
+        "september": "September",
+        "october": "October",
+        "november": "November",
+        "december": "December"
+    },
+    "days":{
+        "sunday": "Sun",
+        "monday": "Mon",
+        "tuesday": "Tue",
+        "wednesday": "Wed",
+        "thursday": "Thu",
+        "friday": "Fri",
+        "saturday": "Sat"
+    },
+    "labels":{
+        "selectedRange": "Selected Range"
+    },
+    "buttons":{
+        "confirm": "Confirm",
+        "cancel": "Cancel"
+    }
+  },
+  "reservationProcess":{
+    "date": "Date",
+    "time": "Time",
+    "guests": "Guests",
+    "selectDate": "Select a Date",
+    "hasBeenSelected": "has been selected",
+    "haveBeenSelected": "have been selected",
+    "chooseNumberOfGuests": "Choose number of guests",
+    "orEnterNumberOfGuests": "or enter number of guests",
+    "confirm": "Confirm",
+    "availableTimes": "Available Times",
+    "at": "at",
+    "for": "for",
+    "yourReservationIsSetFor": "Your reservation is set for"
   }
 
 

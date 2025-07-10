@@ -976,7 +976,7 @@
     },
     "reservationWidget": {
     "page": {
-      "title": "تابلا | تذوق أفضل ما في المغرب"
+      "title": "طابلا | تذوق أفضل ما في المغرب"
     },
     "common": {
       "restaurant": "مطعم",
@@ -1059,7 +1059,7 @@
       "serverError": "حدث خطأ ما. يرجى المحاولة مرة أخرى أو الاتصال بالمطعم مباشرة."
     },
     "footer": {
-      "copyright": "© {{year}} تابلا. جميع الحقوق محفوظة."
+      "copyright": "© {{year}} طابلا. جميع الحقوق محفوظة."
     }
   },
   "modifyReservation": {
@@ -1173,5 +1173,53 @@
       "title": "شكراً لك على تقييمك!",
       "message": "تم إرسال تقييمك بنجاح. نحن نقدر ملاحظاتك وسنستخدمها لتحسين خدمتنا."
     }
-  }
+  },
+  "calendarPopup":{
+    "months": {
+        "january": "يناير",
+        "february": "فبراير",
+        "march": "مارس",
+        "april": "أبريل",
+        "may": "مايو",
+        "june": "يونيو",
+        "july": "يوليو",
+        "august": "أغسطس",
+        "september": "سبتمبر",
+        "october": "أكتوبر",
+        "november": "نوفمبر",
+        "december": "ديسمبر"
+    },
+    "days": {
+        "sunday": "الأحد",
+        "monday": "الإثنين",
+        "tuesday": "الثلاثاء",
+        "wednesday": "الأربعاء",
+        "thursday": "الخميس",
+        "friday": "الجمعة",
+        "saturday": "السبت"
+    },
+    "labels":{
+        "selectedRange": "النطاق المحدد"
+    },
+    "buttons":{
+        "confirm": "تأكيد",
+        "cancel": "إلغاء"
+    }
+  },
+  "reservationProcess":{
+    "date": "التاريخ",
+    "time": "الوقت",
+    "guests": "الضيوف",
+    "hasBeenSelected": "تم اختياره",
+    "selectDate": "اختر التاريخ",
+    "haveBeenSelected": "تم اختيارهم",
+    "chooseNumberOfGuests": "اختر عدد الضيوف",
+    "orEnterNumberOfGuests": "أو أدخل عدد الضيوف",
+    "confirm": "تأكيد",
+    "availableTimes": "الأوقات المتاحة",
+    "at": "في",
+    "for": "لـ",
+    "yourReservationIsSetFor": "تم تحديد حجزك لـ"
+}
+
 }

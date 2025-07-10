@@ -14,6 +14,7 @@ import english from "../../assets/english.png"
 import french from "../../assets/french.png"
 
 import WidgetReservationProcess from "../../components/reservation/WidgetReservationProcess"
+import { useDateContext } from "../../context/DateContext"
 
 interface QuillPreviewProps {
   content: string
@@ -51,14 +52,17 @@ const LanguageSelector = () => {
 
   const handleLanguageChange = (languageCode: string) => {
     i18n.changeLanguage(languageCode)
+    localStorage.setItem("preferredLanguage", languageCode);
     setIsOpen(false)
   }
 
+
+
   return (
-    <div className="relative">
+    <div className={`relative `}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 p-2 rounded-full hover:bg-[#f5f5f5] dark:hover:bg-[#333333] transition-colors"
+        className="flex items-center gap-2 p-2 rounded-sm hover:bg-[#f5f5f5] dark:hover:bg-[#333333] transition-colors"
         aria-label="Select language"
       >
         <img
@@ -88,7 +92,7 @@ const LanguageSelector = () => {
                 <img
                   src={language.icon || "/placeholder.svg"}
                   alt={language.name}
-                  className="w-5 h-5 rounded-full object-cover"
+                  className="w-5 h-5 rounded-sm object-cover"
                 />
                 <span className="text-sm font-medium">{language.name}</span>
               </button>
@@ -122,6 +126,19 @@ const WidgetPage = () => {
   const { data: posts } = useList({
     resource: `api/v1/bo/restaurants/subdomain/occasions`,
   })
+
+    const { i18n } = useTranslation()
+
+
+  useEffect(() => {
+    const storedLang = localStorage.getItem("preferredLanguage");
+    if (!storedLang) {
+      localStorage.setItem("preferredLanguage", "en");
+      i18n.changeLanguage("en");
+    } else {
+      i18n.changeLanguage(storedLang);
+    }
+  }, [i18n]);
 
   useEffect(() => {
     if (posts) {
@@ -351,8 +368,13 @@ const WidgetPage = () => {
     return ""
   }, [data.reserveDate])
 
+    const { preferredLanguage } = useDateContext()
+
+
   return (
-    <div className="min-h-screen h-[100vh] overflow-y-auto  bg-white dark:bg-bgdarktheme2 text-black dark:text-white">
+    <div className={`min-h-screen h-[100vh] overflow-y-auto  bg-white dark:bg-bgdarktheme2 text-black dark:text-white ${
+        preferredLanguage === "ar" ? "rtl" : ""
+      }`}>
       {/* Header */}
       <header className="h-16 z-[10] w-full fixed flex items-center justify-between px-4 sm:px-10 shadow-md bg-white dark:bg-bgdarktheme">
         {widgetInfo?.image ? (

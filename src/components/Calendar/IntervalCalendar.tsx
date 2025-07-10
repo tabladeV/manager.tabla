@@ -14,6 +14,7 @@ import {
   isBefore,
 } from 'date-fns';
 import { X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const colStartClasses = [
   '', 'col-start-2', 'col-start-3', 'col-start-4', 'col-start-5', 'col-start-6', 'col-start-7'
@@ -94,6 +95,11 @@ const IntervalCalendar: React.FC<IntervalCalendarProps> = ({ onRangeSelect, onCl
     if (onClose) onClose();
   };
 
+  
+  const {t} = useTranslation();
+  
+  const localizedMonth = t(`calendarPopup.months.${format(firstDayCurrentMonth, 'MMMM').toLowerCase()}`) || format(firstDayCurrentMonth, 'MMMM');
+
   return (
     <div className='ltr rounded-lg dark:bg-bgdarktheme bg-white'>
       <div className='flex justify-end items-center mb-3'>
@@ -106,7 +112,10 @@ const IntervalCalendar: React.FC<IntervalCalendarProps> = ({ onRangeSelect, onCl
       </div>
       
       <div className='text-xl items-center mb-4 flex justify-between'>
-        <div className='font-bold text-greentheme dark:text-white'>{format(firstDayCurrentMonth, 'MMMM yyyy')}</div>
+        <div className='font-bold text-greentheme dark:text-white'>
+          {localizedMonth} {format(firstDayCurrentMonth, 'yyyy')}
+
+        </div>
         <div className='flex space-x-2'>
           <button onClick={previousMonth} className='hover:bg-softgreentheme dark:hover:bg-darkthemeitems transition duration-200 w-8 h-8 flex justify-center items-center rounded-full'>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5 text-greentheme dark:text-white">
@@ -122,7 +131,7 @@ const IntervalCalendar: React.FC<IntervalCalendarProps> = ({ onRangeSelect, onCl
       </div>
       <div className='mx-auto'>
         <div className='grid grid-cols-7 mb-2'>
-          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => (
+          {[t('calendarPopup.days.sunday'), t('calendarPopup.days.monday'), t('calendarPopup.days.tuesday'), t('calendarPopup.days.wednesday'), t('calendarPopup.days.thursday'), t('calendarPopup.days.friday'), t('calendarPopup.days.saturday')].map((day, index) => (
             <div key={index} className='font-bold text-center text-sm text-greentheme dark:text-white'>{day}</div>
           ))}
         </div>
@@ -147,8 +156,8 @@ const IntervalCalendar: React.FC<IntervalCalendarProps> = ({ onRangeSelect, onCl
       </div>
       {dateRange.start && (
         <div className="mt-4 text-sm text-greentheme dark:text-white">
-          Selected range: {format(dateRange.start, 'MMM d, yyyy')}
-          {dateRange.end ? ` - ${format(dateRange.end, 'MMM d, yyyy')}` : ''}
+          {t('calendarPopup.labels.selectedRange')}: {format(dateRange.start, 'dd/MM/yyyy')}
+          {dateRange.end ? ` - ${format(dateRange.end, 'dd/MM/yyyy')}` : ''}
         </div>
       )}
       
@@ -157,7 +166,7 @@ const IntervalCalendar: React.FC<IntervalCalendarProps> = ({ onRangeSelect, onCl
           onClick={handleCancel}
           className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 dark:border-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-darkthemeitems transition duration-200"
         >
-          Cancel
+          {t('calendarPopup.buttons.cancel')}
         </button>
         <button 
           onClick={handleConfirm}
@@ -168,7 +177,7 @@ const IntervalCalendar: React.FC<IntervalCalendarProps> = ({ onRangeSelect, onCl
               : 'btn-secondary cursor-not-allowed'
           }`}
         >
-          Confirm
+          {t('calendarPopup.buttons.confirm')}
         </button>
       </div>
     </div>

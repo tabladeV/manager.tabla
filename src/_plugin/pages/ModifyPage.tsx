@@ -25,6 +25,7 @@ import spanish from "../../assets/spanish.png"
 import arabic from "../../assets/arabic.jpg"
 import english from "../../assets/english.png"
 import french from "../../assets/french.png"
+import { useDateContext } from "../../context/DateContext"
 
 interface QuillPreviewProps {
   content: string
@@ -75,7 +76,7 @@ const LanguageSelector = () => {
         <img
           src={currentLanguage.icon || "/placeholder.svg"}
           alt={currentLanguage.name}
-          className="w-6 h-6 rounded-full object-cover"
+          className="w-6 h-6 rounded-sm object-cover"
         />
         <span className="text-sm font-medium hidden sm:block">{currentLanguage.name}</span>
         <ChevronDown size={16} className={`transition-transform ${isOpen ? "rotate-180" : ""}`} />
@@ -97,7 +98,7 @@ const LanguageSelector = () => {
                 <img
                   src={language.icon || "/placeholder.svg"}
                   alt={language.name}
-                  className="w-5 h-5 rounded-full object-cover"
+                  className="w-5 h-5 rounded-sm object-cover"
                 />
                 <span className="text-sm font-medium">{language.name}</span>
               </button>
@@ -476,8 +477,13 @@ const Modify = () => {
     }
   }, [])
 
+    const { preferredLanguage } = useDateContext() 
+
+
   return (
-    <div className="min-h-screen bg-white  dark:bg-bgdarktheme2 text-black dark:text-white">
+    <div className={`min-h-screen bg-white  dark:bg-bgdarktheme2 text-black dark:text-white ${
+        preferredLanguage === "ar" ? "rtl" : ""
+      }`}>
       {
         <ActionPopup
           action="cancel"

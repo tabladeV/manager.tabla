@@ -1142,6 +1142,53 @@
       "title": "Merci pour votre avis!",
       "message": "Votre avis a été soumis avec succès. Nous apprécions vos commentaires et les utiliserons pour améliorer notre service."
     }
-  }
+  },
+  "calendarPopup":{
+    "months": {
+      "january": "Janvier",
+      "february": "Février",
+      "march": "Mars",
+      "april": "Avril",
+      "may": "Mai",
+      "june": "Juin",
+      "july": "Juillet",
+      "august": "Août",
+      "september": "Septembre",
+      "october": "Octobre",
+      "november": "Novembre",
+      "december": "Décembre"
+    },
+    "days": {
+      "sunday": "Dim",
+      "monday": "Lun",
+      "tuesday": "Mar",
+      "wednesday": "Mer",
+      "thursday": "Jeu",
+      "friday": "Ven",
+      "saturday": "Sam"
+    },
+    "labels":{
+      "selectedRange": "Plage de Dates Sélectionnée"
+    },
+    "buttons":{
+      "confirm": "Confirmer",
+      "cancel": "Annuler"
+    }
+  },
+  "reservationProcess":{
+    "date": "Date",
+    "time": "Heure",
+    "guests": "Invités",
+    "selectDate": "Sélectionner une Date",
+    "hasBeenSelected": "a été sélectionné",
+    "haveBeenSelected": "ont été sélectionnés",
+    "chooseNumberOfGuests": "Choisissez le nombre d'invités",
+    "orEnterNumberOfGuests": "ou entrez le nombre d'invités",
+    "confirm": "Confirmer",
+    "availableTimes": "Heures disponibles",
+    "at": "à",
+    "for": "pour",
+    "yourReservationIsSetFor": "Votre réservation est fixée pour"
+}
 
 }

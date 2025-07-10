@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useTransition } from 'react';
 import { format } from 'date-fns';
 import OurCalendar from '../Calendar/OurCalendar';
 import { useCustom, useList } from '@refinedev/core';
+import { useTranslation } from 'react-i18next';
 // Import the actual useCustom hook instead of using the mock implementation
 
 
@@ -147,6 +148,8 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
     setAvailableDates([]);
   };
 
+  const {t} = useTranslation()
+
   return (
     <div className="">
       <div className="overlay z-[300] glassmorphism" onClick={props.onClick}></div>
@@ -158,7 +161,7 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
               onClick={() => setActiveTab('date')}
               id="date"
             >
-              Date
+              {t("reservationProcess.date")}
             </span>
           )}
           {(
@@ -167,7 +170,7 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
               onClick={() => setActiveTab('guest')}
               id="guest"
             >
-              Guest
+              {t("reservationProcess.guests")}
             </span>
           )}
           {(
@@ -176,7 +179,7 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
               onClick={() => setActiveTab('time')}
               id="time"
             >
-              Time
+              {t("reservationProcess.time")}
             </span>
           )}
         </div>
@@ -184,7 +187,7 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
         {activeTab === 'date' && (
           <div className="content">
             <div className="text-[20px] text-left mx-[30px] mt-[1em] mb-[.5em] font-bold">
-              {selectedDate? <>{format(selectedDate, 'dd MMMM yyyy')} <span className="font-semibold">has been selected</span></>:<span className="font-semibold">Select a date</span>}
+              {selectedDate? <>{format(selectedDate, 'dd MMMM yyyy')} <span className="font-semibold">{t("reservationProcess.hasBeenSelected")}</span></>:<span className="font-semibold">{t("reservationProcess.selectDate")}</span>}
             </div>
             <OurCalendar 
                 forbidden={true} 
@@ -202,10 +205,10 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
             <div className="text-[20px] text-left mx-[30px] mt-[1em] mb-[.5em] font-bold">
               {selectedGuests?
               <>
-              {selectedGuests} <span className="font-semibold">guests have been selected</span>
+              {selectedGuests} <span className="font-semibold">{t("reservationProcess.guests")} {' '} {t("reservationProcess.haveBeenSelected")}</span>
               </>:
               <>
-              <span className="font-semibold">Choose number of guests</span>
+              <span className="font-semibold">{t("reservationProcess.chooseNumberOfGuests")}</span>
               </>
               }
             </div>
@@ -228,10 +231,10 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
             <div className="text-[20px] text-left mx-[30px] mt-[1em] mb-[.5em] font-bold">
               {selectedTime? 
               <>
-              {selectedTime} <span className="font-semibold">has been selected</span>
+              {selectedTime} <span className="font-semibold">{t("reservationProcess.hasBeenSelected")}</span>
               </>:
               <>
-               <span className="font-semibold">Available Times</span>
+               <span className="font-semibold">{t("reservationProcess.availableTimes")}</span>
               </>
               }
             </div>
@@ -273,13 +276,13 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
         {activeTab === 'confirm' && (
           <div className="content">
             <div className="text-[20px] text-left mx-[30px] mt-[1em] mb-[.5em] font-bold">
-              <span className='font-[500] mr-2'>Your reservation is set for</span> {selectedDate && format(selectedDate, 'dd MMMM yyyy')} <span className="font-semibold mx-2">at</span> 
-              {selectedTime} <span className="font-semibold mx-2">for</span> 
-              {selectedGuests} <span className="font-semibold">guests</span>
+              <span className='font-[500] mr-2'>{t("reservationProcess.yourReservationIsSetFor")}</span> {selectedDate && format(selectedDate, 'dd/MM/yyyy')} <span className="font-semibold mx-2">{t("reservationProcess.at")}</span> 
+              {selectedTime} <span className="font-semibold mx-2">{t("reservationProcess.for")}</span> 
+              {selectedGuests} <span className="font-semibold">{t("reservationProcess.guests")}</span>
             </div>
             <div className="flex flex-wrap justify-center gap-[10px] p-[20px] rounded-[3px]">
               <button onClick={handleConfirmClick} className="btn-primary">
-                Confirm
+                {t("reservationProcess.confirm")}
               </button>
             </div>
           </div>
