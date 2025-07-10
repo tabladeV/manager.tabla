@@ -4,7 +4,11 @@
         "buttons": {
             "notifications": "Notifications",
             "profile": "Profile",
+            "lightMode": "Light Mode",
+            "darkMode": "Dark Mode",
             "logout": "Logout",
+            "enterFullscreen": "Enter Full Screen",
+            "exitFullscreen": "Exit Full Screen",
             "changeRestaurant": "Change Restaurant"
         },
         "date": {
@@ -447,6 +451,20 @@
         "emailCopied": "Email copied!",
         "copied": "Email address copied to clipboard"
     },
+    "profile":{
+        "title": "Profile",
+        "editProfile": "Edit Profile",
+        "changePassword": "Change Password",
+        "changePasswordDescription": "Fill the required fields to change your password",
+        "logout": "Logout",
+        "profileUpdated": "Profile updated successfully",
+        "passwordUpdated": "Password updated successfully",
+        "currentPassword": "Current Password",
+        "newPassword": "New Password",
+        "confirmNewPassword": "Confirm New Password",
+        "saveChanges": "Save Changes",
+        "cancel": "Cancel"
+    },
     "restaurantSelection":{
         "title": "Choose a Restaurant",
         "description": "Select the restaurant you want to manage",
@@ -509,6 +527,7 @@
             "title": "Review Widget",
             "labels": {
                 "title": "Title",
+                "logo": "Logo",
                 "description": "Description",
                 "status": "Status",
                 "active": "Active",
@@ -522,8 +541,10 @@
             }
         },
         "widget": {
-            "title": "Widget",
+            "title": "Widget for ",
             "uploadLogo": "Upload Logo",
+            "copyLink": "Click to copy the link to your clipboard",
+            "clickToCopy": "Click to copy",
             "uploadMenu": "Upload Menu",
             "viewMenu": "View Menu",
             "logo": "Logo",
@@ -533,8 +554,20 @@
             "image": "Restaurant Image",
             "addTitlePlaceholder": "Add title here",
             "addDescriptionPlaceholder": "Add description here",
+            "dressCodePlaceholder": "Dress code",
+            "openMenu": "Preview your menu",
+            "noMenu": "No menu available",
+            "linkCopied": "Link copied to clipboard",
+            "copied": "Copied to clipboard",
+            "reservation": "Reservation",
+            "modification": "Modification",
             "searchTabs": {
                 "title": "Extra settings",
+                "menu": "Menu",
+                "autoConfirmation": "Auto-confirm online reservations",
+                "maxGuests": "max guests per reservation",
+                "enableDressCode": "Enable dress code",
+                "enableAreaSelection": "Enable areas selection",
                 "options": {
                     "city": "City",
                     "guest": "Guest",
@@ -552,6 +585,97 @@
                 "preview": "Preview",
                 "save": "Save",
                 "saving": "Saving"
+            }
+        },
+        "areas": {
+            "pageTitle": "Areas Management | Tabla",
+            "title": "Areas Management",
+            "buttons": {
+                "addArea": "Add Area",
+                "save": "Save",
+                "cancel": "Cancel"
+            },
+            "tableHeaders": {
+                "id": "ID",
+                "name": "Name",
+                "actions": "Actions"
+            },
+            "modals": {
+                "addArea": "Add Area",
+                "modifyArea": "Modify Area"
+            },
+            "form": {
+                "placeholders": {
+                "areaName": "Area Name"
+                }
+            },
+            "confirmations": {
+                "deleteArea": "Are you sure you want to delete this area?"
+            }
+        },
+        "occasions": {
+            "title": "Occasions",
+            "tableHeaders": {
+                "id": "ID",
+                "name": "Name",
+                "description": "Description",
+                "color": "Color",
+                "status": "Status",
+                "actions": "Actions"
+            },
+            "actionPopup": {
+                "edit": "Edit Occasion",
+                "delete": "Delete Occasion",
+                "confirmDelete": "Are you sure you want to delete this occasion?",
+                "confirmDeleteButton": "Yes, delete it",
+                "cancelButton": "Cancel"
+            },
+            "placeHolders": {
+                "name": "Occasion Name",
+                "description": "Occasion Description",
+                "color": "Occasion Color"   
+            },
+            "labels": {
+                "noOccasions": "No occasions available",
+                "color": "Color",
+                "selectOccasion": "Select an occasion"
+            },
+            "buttons": {
+                "addOccasion": "Add Occasion",
+                "cancel": "Cancel",
+                "save": "Save",
+                "saveOccasion": "Save Occasion"
+            }
+        },
+        "billing": {
+            "title": "Billing",
+            "labels": {
+                "currentBill": "Current Bill",
+                "noCurrentBill": "No Current Bill"
+            },
+            "currentBill": {
+                "invoice": "Invoice",
+                "billingPeriod": "Billing Period",
+                "dueDate": "Due Date",
+                "status": "Status",
+                "billDetails": "Bill Details",
+                "total": "Total",
+                "currency": "${{amount}}",
+                "payNow": "Pay Now",
+                "noCurrentBillMessage": "No current bill available."
+            },
+            "billingHistory": {
+                "title": "Billing History",
+                "table": {
+                "invoice": "Invoice",
+                "date": "Date",
+                "billingPeriod": "Billing Period",
+                "amount": "Amount",
+                "status": "Status",
+                "actions": "Actions"
+                },
+                "downloadPDF": "PDF",
+                "noBillingHistory": "No billing history available."
             }
         },
         "permissions":{
@@ -575,23 +699,38 @@
                 "affectAPermission": "Affect a permission"
             }
         },
-        "users":{
-            "title": "Users",
+        "users": {
+            "pageTitle": "Users Management | Tabla",
+            "title": "Users Management",
+            "buttons": {
+                "addUser": "Add User",
+                "save": "Save",
+                "cancel": "Cancel"
+            },
             "tableHeaders": {
                 "id": "ID",
                 "name": "Name",
                 "email": "Email",
-                "phone": "Phone Number",
                 "role": "Role",
-                "status": "Status",
                 "actions": "Actions"
             },
-            "statusLabels": {
-                "working": "At work",
-                "rest": "Rest"
+            "table": {
+                "noRole": "No role assigned"
             },
-            "buttons": {
-                "addUser": "Add User"
+            "modals": {
+                "addUser": "Add User",
+                "modifyUser": "Modify User"
+            },
+            "form": {
+                "placeholders": {
+                "firstName": "First Name",
+                "lastName": "Last Name",
+                "email": "Email",
+                "password": "Password"
+                }
+            },
+            "confirmations": {
+                "deleteUser": "Are you sure you want to delete this user?"
             }
         },
         "roles":{
@@ -638,6 +777,7 @@
             "unavailable": "Unavailable",
             "type":"Type",
             "from": "From",
+            "addSlot": "Add Slot",
             "cancel":"Cancel",
             "save":"Save",
             "puffer": "Reservation Duration",
@@ -657,11 +797,13 @@
                 "saturday": "SAT",
                 "sunday": "SUN"
             },
+            "totalCovers": "Total Covers",
             "manageWeek": "Manage the whole week",
             "applyToWeek": "Apply to weekly",
             "unavailable": "Unavailable",
             "type":"Type",
             "from": "From",
+            "addSlot": "Add Slot",
             "cancel":"Cancel",
             "save":"Save",
             "puffer": "Reservation Duration",
@@ -670,11 +812,18 @@
         },
         "tags":{
             "title": "Tags",
+            "showTip": "Show Tip",
+            "hideTip": "Hide Tip",
+            "yourTags": "Your Tags",
+            "noTags": "No tags available",
+            "editingTag": "Editing Tag",
+            "tip": "Tags are used to categorize your clients, they will be displayed in the clients Pages.",
             "deleteTag": "Are you sure you want to delete this tag?",
             "placeHolder":"Ex : Vegetarian, Vegan, Gluten Free",
             "label":"Add a tag",
             "buttons": {
-                "save": "Save"
+                "save": "Save",
+                "cancelEditing": "Cancel Editing"
             }
         },
         "features":{

@@ -1,7 +1,7 @@
 import { BaseKey, BaseRecord, useCreate, useDelete, useList, useUpdate, useCan, CanAccess } from "@refinedev/core"
 import { Trash } from "lucide-react"
 import { useState, useCallback, useEffect, useContext } from "react"
-import { useTranslation } from "react-i18next"
+import { useTranslation } from 'react-i18next';
 import { useDarkContext } from "../../context/DarkContext"
 import ActionPopup from "../popup/ActionPopup"
 
@@ -45,7 +45,8 @@ function OccasionModal({
   onInputAddChange
 }: OccasionModalProps) {
   const { darkMode:isDarkMode } = useDarkContext();
-  
+  const { t } = useTranslation();
+
   if (!isOpen) return null;
   
   
@@ -59,7 +60,7 @@ function OccasionModal({
             <input 
               type="text" 
               id="name" 
-              placeholder="Name" 
+              placeholder={t('settingsPage.occasions.placeHolders.name')}
               className={`inputs ${isDarkMode ? 'bg-darkthemeitems' : 'bg-white'}`} 
               value={occasion?.name || ''} 
               onChange={onInputChange} 
@@ -67,13 +68,13 @@ function OccasionModal({
             />
             <textarea 
               id="description" 
-              placeholder="Description" 
+              placeholder={t('settingsPage.occasions.placeHolders.description')}
               className={`inputs ${isDarkMode ? 'bg-darkthemeitems' : 'bg-white'}`} 
               value={occasion?.description || ''} 
               onChange={onInputChange} 
             />
             <div className="flex items-center">
-              <label htmlFor="color" className="mr-2">Color:</label>
+              <label htmlFor="color" className="mr-2">{t('settingsPage.occasions.labels.color')}:</label>
               <input 
                 type="color" 
                 id="color" 
@@ -84,10 +85,10 @@ function OccasionModal({
             </div>
             <div className="flex justify-center gap-4">
               <button type="button" className={isDarkMode ? 'btn text-white hover:text-redtheme border-white hover:border-redtheme' : 'btn'} onClick={onClose}>
-                Cancel
+                {t('settingsPage.occasions.buttons.cancel', 'Cancel')}
               </button>
               <button onClick={onUpdateOccasion} className="btn-primary">
-                Save
+                {t('settingsPage.occasions.buttons.save', 'Save')}
               </button>
             </div>
           </div>
@@ -96,19 +97,19 @@ function OccasionModal({
             <input 
               type="text" 
               id="name" 
-              placeholder="Name" 
+              placeholder={t('settingsPage.occasions.placeHolders.name')}
               className={`inputs ${isDarkMode ? 'bg-darkthemeitems' : 'bg-white'}`} 
               onChange={onInputAddChange} 
               required 
             />
             <textarea 
               id="description" 
-              placeholder="Description" 
+              placeholder={t('settingsPage.occasions.placeHolders.description')} 
               className={`inputs ${isDarkMode ? 'bg-darkthemeitems' : 'bg-white'}`} 
               onChange={onInputAddChange} 
             />
             <div className="flex items-center">
-              <label htmlFor="color" className="mr-2">Color:</label>
+              <label htmlFor="color" className="mr-2">{t('settingsPage.occasions.labels.color')}:</label>
               <input 
                 type="color" 
                 id="color" 
@@ -119,10 +120,10 @@ function OccasionModal({
             </div>
             <div className="flex justify-center gap-4">
               <button type="button" className={isDarkMode ? 'btn text-white hover:text-redtheme border-white hover:border-redtheme' : 'btn'} onClick={onClose}>
-                Cancel
+                {t('settingsPage.occasions.buttons.cancel', 'Cancel')}
               </button>
               <button onClick={onAddOccasion} className="btn-primary">
-                Save
+                {t('settingsPage.occasions.buttons.add', 'Add')}
               </button>
             </div>
           </div>
@@ -145,17 +146,19 @@ function OccasionTable({ occasions, onEdit, onDelete }: OccasionTableProps) {
     resource: "occasion",
     action: "delete"
   });
+
+  const { t } = useTranslation();
   
   return (
     <div className="overflow-x-auto w-full">
       <table className={`w-full border-collapse text-left text-sm ${isDarkMode ? 'bg-bgdarktheme2' : 'bg-white text-gray-500'}`}>
         <thead className={`${isDarkMode ? 'bg-bgdarktheme text-white' : 'bg-white text-gray-900'}`}>
           <tr>
-            <th scope="col" className="px-6 py-4 font-medium">ID</th>
-            <th scope="col" className="px-6 py-4 font-medium">Name</th>
-            <th scope="col" className="px-6 py-4 font-medium">Description</th>
-            <th scope="col" className="px-6 py-4 font-medium">Color</th>
-            <th scope="col" className="px-6 py-4 font-medium flex justify-end">Actions</th>
+            <th scope="col" className="px-6 py-4 font-medium">{t('settingsPage.occasions.tableHeaders.id', 'ID')}</th>
+            <th scope="col" className="px-6 py-4 font-medium">{t('settingsPage.occasions.tableHeaders.name', 'Name')}</th>
+            <th scope="col" className="px-6 py-4 font-medium">{t('settingsPage.occasions.tableHeaders.description', 'Description')}</th>
+            <th scope="col" className="px-6 py-4 font-medium">{t('settingsPage.occasions.tableHeaders.color', 'Color')} </th>
+            <th scope="col" className="px-6 py-4 font-medium flex justify-end">{t('settingsPage.occasions.tableHeaders.actions', 'Actions')}</th>
           </tr>
         </thead>
         <tbody className={`divide-y border-t ${isDarkMode ? 'border-darkthemeitems divide-darkthemeitems' : 'border-gray-200'}`}>
@@ -329,7 +332,7 @@ export default function Occasions() {
 
   const handleDeleteRequest = (id: BaseKey) => {
     setAction('delete');
-    setMessage('Are you sure you want to delete this occasion?');
+    setMessage(t('settingsPage.occasions.actionPopup.confirmDelete', ));
     setOccasionToDelete(id);
     setShowPopup(true);
   }

@@ -196,7 +196,7 @@ const ReviewWidget = () => {
       </h1>
 
       <div className="mb-6">
-        <label className="block text-sm font-medium mb-2">Logo</label>
+        <label className="block text-sm font-medium mb-2">{t('settingsPage.reviewWidget.labels.logo')}</label>
         {logo || previewUrl ? (
           <div className="relative w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden border border-gray-200 dark:border-darkthemeitems">
             <img
@@ -227,7 +227,7 @@ const ReviewWidget = () => {
       <div className="space-y-4 mb-6">
         <div>
           <label htmlFor="title" className="block text-sm font-medium mb-2">
-            Title
+            {t("settingsPage.reviewWidget.labels.title")}
           </label>
           <input
             id="title"
@@ -241,7 +241,7 @@ const ReviewWidget = () => {
 
         <div>
           <label htmlFor="description" className="block text-sm font-medium mb-2">
-            Description
+            {t("settingsPage.reviewWidget.labels.description")}
           </label>
           <textarea
             id="description"

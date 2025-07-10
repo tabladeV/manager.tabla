@@ -323,7 +323,7 @@ export default function WidgetConfig() {
     <div className={`w-full min-h-[100vh] mx-auto p-6 rounded-[10px] ${darkModeClass}`}>
       <div className="flex lt-sm:flex-col items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-center mb-6">
-          {t('settingsPage.widget.title')} for <span className='italic font-[600]'>{widgetInfo?.restaurant}</span>
+          {t('settingsPage.widget.title')} <span className='italic font-[600]'>{widgetInfo?.restaurant}</span>
         </h1>
         <div className="relative group h-[50px] flex items-center justify-center">
           <button
@@ -331,12 +331,12 @@ export default function WidgetConfig() {
             onClick={handleCopy}
           >
             <span className="">
-              Copy Reservation Widget URL
+              {t('settingsPage.widget.copyLink')}
             </span>
             <Copy size={18} className="opacity-70" />
           </button>
           <div className="absolute -bottom-10  transform -translate-x-1/2 bg-blacktheme dark:bg-darkthemeitems text-whitetheme px-3 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none w-max max-w-[200px] text-center">
-            Click to copy url address for reservation widget
+            {t('settingsPage.widget.clickToCopy', 'Click to copy the link to your clipboard')}
           </div>
         </div>
       </div>
@@ -408,7 +408,7 @@ export default function WidgetConfig() {
               <h2 className="text-lg font-semibold mb-2">{t('settingsPage.widget.searchTabs.title')}</h2>
               <div className="flex flex-wrap gap-4">
               <label className="flex items-center w-full">
-              <span className='mr-2'>max guests per reservation</span>
+              <span className='mr-2'>{t('settingsPage.widget.searchTabs.maxGuests')}</span>
               <input
                 type="number"
                 value={maxGuestsPerReservation}
@@ -432,7 +432,7 @@ export default function WidgetConfig() {
                     >
                       {hasMenu && <Check size={16} className="text-white" />}
                     </span>
-                    <span className="capitalize">{key}</span>
+                    <span className="capitalize">{t('settingsPage.widget.searchTabs.menu')}</span>
                   </label>}
                   </React.Fragment>
                 ))}
@@ -449,7 +449,7 @@ export default function WidgetConfig() {
                 >
                   {autoConfirmation && <Check size={16} className="text-white" />}
                 </span>
-                <span className="capitalize">Auto-confirm online reservations</span>
+                <span className="capitalize">{t('settingsPage.widget.searchTabs.autoConfirmation')}</span>
               </label>
               <label className="flex items-center">
                 <input
@@ -464,7 +464,7 @@ export default function WidgetConfig() {
                 >
                   {enableDressCode && <Check size={16} className="text-white" />}
                 </span>
-                <span className="capitalize">Enable dress code</span>
+                <span className="capitalize">{t('settingsPage.widget.searchTabs.enableDressCode')}</span>
               </label>
               <label className="flex items-center">
                 <input
@@ -479,14 +479,14 @@ export default function WidgetConfig() {
                 >
                   {enableAreaSelection && <Check size={16} className="text-white" />}
                 </span>
-                <span className="capitalize">Enable areas selection</span>
+                <span className="capitalize">{t('settingsPage.widget.searchTabs.enableAreaSelection')}</span>
               </label>
               </div>
               {enableDressCode && (
               <div className="space-y-4 my-6">
                 <div className="relative">
                   <textarea
-                    placeholder={'Dress code'}
+                    placeholder={t('settingsPage.widget.dressCodePlaceholder')}
                     className={`w-full inputs p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white lt-sm:w-full h-24 resize-none`}
                     value={dressCode}
                     onChange={(e) => {
@@ -518,11 +518,11 @@ export default function WidgetConfig() {
                       className="btn-secondary flex gap-4 items-center mt-3 justify-center cursor-pointer"
                       onClick={openPdfInNewTab}
                     >
-                      <p>Preview your menu</p>
+                      {t('settingsPage.widget.openMenu')}
                       <ScreenShareIcon size={20} />
                     </div>
                   ) : (
-                    'No menu uploaded'
+                    <span>{t('settingsPage.widget.noMenu')}</span>
                   )}
                 </div>
               )}
@@ -575,10 +575,10 @@ export default function WidgetConfig() {
           {t('settingsPage.widget.buttons.save')}
         </BaseBtn>
         <Link to={currentUrl.includes('dev')?`https://${subdomain}.dev.tabla.ma/make/reservation`: currentUrl.includes('localhost') ? `http://italiana.localhost:5173/make/reservation`: `https://${subdomain}.tabla.ma/make/reservation`} target="_blank" className="btn-secondary w-1/4 text-center lt-md:w-full">
-          {t('settingsPage.widget.buttons.preview')} Reservation
+          {t('settingsPage.widget.buttons.preview')} {t('settingsPage.widget.reservation')}
         </Link>
         <Link to={currentUrl.includes('dev')?`https://${subdomain}.dev.tabla.ma/make/modification/preview`: currentUrl.includes('localhost') ? `http://${subdomain}.localhost:5173/make/modification/preview`:`https://${subdomain}.tabla.ma/make/modification/preview`} target="_blank" className="btn-secondary w-1/4 text-center lt-md:w-full">
-          {t('settingsPage.widget.buttons.preview')} Modification
+          {t('settingsPage.widget.buttons.preview')} {t('settingsPage.widget.modification')}
         </Link>
       </div>
       {/* Custom Toast Notification */}
@@ -588,9 +588,9 @@ export default function WidgetConfig() {
             <Check className="h-4 w-4 text-greentheme dark:text-greentheme" />
           </div>
           <div>
-            <h3 className="font-medium text-blacktheme dark:text-textdarktheme">Link copied!</h3>
+            <h3 className="font-medium text-blacktheme dark:text-textdarktheme">{t('settingsPage.widget.linkCopied')}</h3>
             <p className="text-subblack dark:text-textdarktheme/80 text-sm">
-             {currentUrl.includes('dev')?`https://${subdomain}.dev.tabla.ma/make/reservation`: currentUrl.includes('localhost') ? `http://italiana.localhost:5173/make/reservation`: `https://${subdomain}.tabla.ma/make/reservation`} copied to clipboard
+             {currentUrl.includes('dev')?`https://${subdomain}.dev.tabla.ma/make/reservation`: currentUrl.includes('localhost') ? `http://italiana.localhost:5173/make/reservation`: `https://${subdomain}.tabla.ma/make/reservation`} {t('settingsPage.widget.copied')}
             </p>
           </div>
         </div>

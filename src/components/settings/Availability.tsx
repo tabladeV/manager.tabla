@@ -295,7 +295,7 @@ const Availability = () => {
       <CanAccess resource='availabilityday' action='change'>
         <div className="flex justify-center mb-6">
           <button className="btn-primary w-full sm:w-auto" onClick={() => setManageWeekly(true)}>
-            Manage the whole week
+            {t('settingsPage.availability.manageWeek')}
           </button>
         </div>
       </CanAccess>
@@ -479,7 +479,7 @@ const Availability = () => {
                       className="flex items-center mb-3 text-[#88AB61] hover:text-[#6A8A43]"
                     >
                       <Plus size={16} />
-                      <span className="ml-1 text-sm">Add slot</span>
+                      <span className="ml-1 text-sm">{t('settingsPage.availability.addSlot')}</span>
                     </button>
                   </CanAccess>
                 </div>

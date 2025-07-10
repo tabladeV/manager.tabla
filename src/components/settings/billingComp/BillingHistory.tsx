@@ -1,9 +1,9 @@
 "use client"
-
 import { Download, FileText } from "lucide-react"
 import { StatusBadge } from "./StatusBadge"
 import type { BillingHistoryType } from "./BillingType"
 import { EmptyState } from "./EmptyState"
+import { useTranslation } from "react-i18next"
 
 interface BillingHistoryProps {
   billingHistory: BillingHistoryType[]
@@ -11,33 +11,36 @@ interface BillingHistoryProps {
 }
 
 export function BillingHistory({ billingHistory, downloadPDF }: BillingHistoryProps) {
+  const { t } = useTranslation()
+
   return (
     <div className="border border-softgreytheme dark:border-darkthemeitems rounded-lg overflow-hidden shadow-sm">
       <div className="bg-softgreytheme dark:bg-bgdarktheme2 px-6 py-4 border-b border-softgreytheme dark:border-darkthemeitems">
-        <h2 className="text-xl font-semibold text-blacktheme dark:text-textdarktheme">Billing History</h2>
+        <h2 className="text-xl font-semibold text-blacktheme dark:text-textdarktheme">
+          {t("settingsPage.billing.billingHistory.title")}
+        </h2>
       </div>
-
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-softgreytheme dark:bg-darkthemeitems">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-blacktheme dark:text-textdarktheme uppercase tracking-wider">
-                Invoice
+                {t("settingsPage.billing.billingHistory.table.invoice")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-blacktheme dark:text-textdarktheme uppercase tracking-wider">
-                Date
+                {t("settingsPage.billing.billingHistory.table.date")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-blacktheme dark:text-textdarktheme uppercase tracking-wider">
-                Billing Period
+                {t("settingsPage.billing.billingHistory.table.billingPeriod")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-blacktheme dark:text-textdarktheme uppercase tracking-wider">
-                Amount
+                {t("settingsPage.billing.billingHistory.table.amount")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-blacktheme dark:text-textdarktheme uppercase tracking-wider">
-                Status
+                {t("settingsPage.billing.billingHistory.table.status")}
               </th>
               <th className="px-6 py-3 text-right text-xs font-medium text-blacktheme dark:text-textdarktheme uppercase tracking-wider">
-                Actions
+                {t("settingsPage.billing.billingHistory.table.actions")}
               </th>
             </tr>
           </thead>
@@ -58,7 +61,7 @@ export function BillingHistory({ billingHistory, downloadPDF }: BillingHistoryPr
                     {bill.period}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-blacktheme dark:text-textdarktheme">
-                    ${bill.amount.toFixed(2)}
+                    {t("settingsPage.billing.currentBill.currency", { amount: bill.amount.toFixed(2) })}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <StatusBadge status={bill.status} />
@@ -69,7 +72,7 @@ export function BillingHistory({ billingHistory, downloadPDF }: BillingHistoryPr
                       className="inline-flex items-center px-3 py-1.5 border border-softgreytheme dark:border-darkthemeitems rounded-md bg-whitetheme dark:bg-bgdarktheme hover:bg-softgreytheme dark:hover:bg-darkthemeitems text-blacktheme dark:text-textdarktheme transition-colors"
                     >
                       <Download className="w-4 h-4 mr-1 text-bluetheme" />
-                      PDF
+                      {t("settingsPage.billing.billingHistory.downloadPDF")}
                     </button>
                   </td>
                 </tr>
@@ -77,7 +80,7 @@ export function BillingHistory({ billingHistory, downloadPDF }: BillingHistoryPr
             ) : (
               <tr>
                 <td colSpan={6}>
-                  <EmptyState message="No billing history available." />
+                  <EmptyState message={t("settingsPage.billing.billingHistory.noBillingHistory")} />
                 </td>
               </tr>
             )}

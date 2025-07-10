@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Eye, EyeOff, MessageCircleWarningIcon } from 'lucide-react';
 import { useCreate } from '@refinedev/core';
+import { useTranslation } from 'react-i18next';
 
 const Profile = () => {
 
@@ -86,33 +87,36 @@ const Profile = () => {
     if (error) setError('');
   }
 
+  const { t } = useTranslation()
+  
+
   return (
     <div className='h-full w-full'>
-      <h1>Profile</h1>
+      <h1>{t('profile.title', 'Profile')}</h1>
       <div className='h-[60vh] flex flex-col  items-center justify-center'>
         <div className={`flex flex-col mx-auto h-fit items-start rounded-xl gap-2 lg:w-[30vw] lt-sm:w-full shadow-xl shadow-[#00000008] p-5 dark:bg-bgdarktheme bg-white `}>
-          <h2 className="text-[1.6rem] font-[700]">Change your password</h2>
-          <p className={`text-sm mb-4 mt-[-.5em]  dark:text-softwhitetheme text-subblack  `}>You can change your password here</p>
+          <h2 className="text-[1.6rem] font-[700]">{t('profile.changePassword', 'Change Password')}</h2>
+          <p className={`text-sm mb-4 mt-[-.5em]  dark:text-softwhitetheme text-subblack  `}>{t('profile.changePasswordDescription', 'Change your password to keep your account secure.')}</p>
           <div className={`inputs flex justify-between dark:bg-darkthemeitems `}>
-            <input type={eyeOldPswrd ? 'text' : 'password'}  ref={oldPswrdRef} placeholder="Old password"  onChange={handleChange} className='w-full focus:border-0 focus:ring-0 focus:outline-none bg-transparent'/>
+            <input type={eyeOldPswrd ? 'text' : 'password'}  ref={oldPswrdRef} placeholder={t('profile.currentPassword')}  onChange={handleChange} className='w-full focus:border-0 focus:ring-0 focus:outline-none bg-transparent'/>
             <button onClick={() => setEyeOldPswrd(!eyeOldPswrd)} className={ ` transition-colors dark:text-white text-[#00000080] hover:text-[#000000] `}>
               {eyeOldPswrd ? <EyeOff size={20}/> : <Eye size={20}/>} 
             </button>
           </div>  
           <div className={`inputs flex justify-between dark:bg-darkthemeitems `}>
-            <input type={eyeNewPswrd ? 'text' : 'password'}  ref={newPswrdRef} placeholder="New password"  onChange={handleChange} className='w-full focus:border-0 focus:ring-0 focus:outline-none bg-transparent'/>
+            <input type={eyeNewPswrd ? 'text' : 'password'}  ref={newPswrdRef} placeholder={t('profile.newPassword')}  onChange={handleChange} className='w-full focus:border-0 focus:ring-0 focus:outline-none bg-transparent'/>
             <button onClick={() => setEyeNewPswrd(!eyeNewPswrd)} className={ ` transition-colors dark:text-white text-[#00000080] hover:text-[#000000] `}>
               {eyeNewPswrd ? <EyeOff size={20}/> : <Eye size={20}/>} 
             </button>
           </div>
           <div className={`inputs flex justify-between dark:bg-darkthemeitems `}>
-            <input type={eyeConfirmPswrd ? 'text' : 'password'}  ref={confirmPswrdRef} placeholder="Confirm new password"  onChange={handleChange} className='w-full focus:border-0 focus:ring-0 focus:outline-none bg-transparent'/>
+            <input type={eyeConfirmPswrd ? 'text' : 'password'}  ref={confirmPswrdRef} placeholder={t('profile.confirmNewPassword')}  onChange={handleChange} className='w-full focus:border-0 focus:ring-0 focus:outline-none bg-transparent'/>
             <button onClick={() => setEyeConfirmPswrd(!eyeConfirmPswrd)} className={ ` transition-colors dark:text-white text-[#00000080] hover:text-[#000000] `}>
               {eyeConfirmPswrd ? <EyeOff size={20}/> : <Eye size={20}/>} 
             </button>
           </div>
           {error !=='' && <p className='text-redtheme text-sm flex gap-1 items-center'> <MessageCircleWarningIcon size={14}/> {error} {errorMessage}</p>}
-          <button className="btn-primary mt-3" onClick={handlePasswordChange}>Change password</button>
+          <button className="btn-primary mt-3" onClick={handlePasswordChange}>{t('profile.saveChanges')}</button>
         </div>
       </div>
     </div>

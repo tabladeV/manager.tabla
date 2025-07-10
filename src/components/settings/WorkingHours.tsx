@@ -305,7 +305,7 @@ const WorkingHours = () => {
           </CanAccess>
         </div> */}
         <div className="flex items-center gap-2 rounded-md shadow-sm">
-          <h4 className="font-semibold text-gray-700 dark:text-gray-300">Total Covers:</h4>
+          <h4 className="font-semibold text-gray-700 dark:text-gray-300">{t('settingsPage.workingHours.totalCovers')}</h4>
           <p className="text-gray-900 bg-gray-100 rounded-md px-3 dark:bg-darkthemeitems py-2 dark:text-white">{cover?.total_capacity}</p>
         </div>
       </div>
@@ -313,7 +313,7 @@ const WorkingHours = () => {
       <CanAccess resource='availabilityday' action='change'>
         <div className="flex justify-center mb-6">
           <button className="btn-primary w-full sm:w-auto" onClick={() => setManageWeekly(true)}>
-            Manage the whole week
+            {t('settingsPage.workingHours.manageWeek')}
           </button>
         </div>
       </CanAccess>
@@ -497,7 +497,7 @@ const WorkingHours = () => {
                       className="flex items-center mb-3 text-[#88AB61] hover:text-[#6A8A43]"
                     >
                       <Plus size={16} />
-                      <span className="ml-1 text-sm">Add slot</span>
+                      <span className="ml-1 text-sm">{t('settingsPage.workingHours.addSlot')}</span>
                     </button>
                   </CanAccess>
                 </div>

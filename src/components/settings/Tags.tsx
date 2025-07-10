@@ -198,12 +198,12 @@ const Tags = () => {
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
             <label htmlFor="tag" className="font-medium ml-2 dark:text-textdarktheme">
-              {editTagId !== null ? "Editing tag" : t("settingsPage.tags.label")}
+              {editTagId !== null ? t('settingsPage.tags.editingTag') : t("settingsPage.tags.label")}
             </label>
 
             {editTagId !== null && (
               <button onClick={cancelEdit} className="text-sm text-redtheme hover:underline">
-                Cancel editing
+                {t("settingsPage.tags.buttons.cancelEditing")}
               </button>
             )}
           </div>
@@ -239,14 +239,14 @@ const Tags = () => {
               className="flex items-center gap-2 text-sm text-greentheme hover:underline"
             >
               <Info className="w-4 h-4" />
-              <span>{showInfoTip ? "Hide tip" : "Show tip"}</span>
+              <span>{showInfoTip ? t('settingsPage.tags.showTip') : "Show tip"}</span>
             </button>
 
             {showInfoTip && (
               <div className="flex items-center gap-2 mt-2 p-3 bg-softgreentheme text-greentheme rounded-md">
                 <Info className="w-4 h-4 flex-shrink-0" />
                 <span className="text-sm">
-                  You can edit a tag by clicking on it, and save to return to adding new ones
+                  {t("settingsPage.tags.tip")}
                 </span>
               </div>
             )}
@@ -254,11 +254,11 @@ const Tags = () => {
         </div>
 
         <div className="mt-6">
-          <h3 className="font-medium mb-3 dark:text-textdarktheme">Your Tags</h3>
+          <h3 className="font-medium mb-3 dark:text-textdarktheme">{t("settingsPage.tags.yourTags")}</h3>
 
           {tags.length === 0 ? (
             <div className="text-center py-6 bg-softgreytheme dark:bg-darkthemeitems rounded-lg">
-              <p className="text-greytheme dark:text-textdarktheme">No tags added yet</p>
+              <p className="text-greytheme dark:text-textdarktheme">{t("settingsPage.tags.noTags")}</p>
             </div>
           ) : (
             <div className="flex flex-wrap gap-2 mt-2">
