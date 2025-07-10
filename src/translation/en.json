@@ -247,7 +247,11 @@
     "editPlace": {
         "title1":"Select a floor to modify",
         "title": "Edit On Your Roofs",
+        "placeholders": {
+            "placeAlias": "Place Name"
+        },
         "buttons": {
+            "addPlace": "Add Place",
             "addTable": "Add Table",
             "rectangleTable": "Rectangle Table",
             "circleTable": "Circle Table",
@@ -294,6 +298,38 @@
             "phone": "Phone Number"
         }
     },
+    
+  "calendar": {
+    "pageTitle": "Calendar Grid - Tabla | Taste Morocco's Best",
+    "title": "Calendar Grid",
+    "viewAgenda": "View Grid",
+    "navigation": {
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month"
+    },
+    "weekDays": {
+      "sun": "Sun",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat"
+    },
+    "status": {
+      "open": "Open",
+      "closed": "Closed"
+    },
+    "reservations": {
+      "count": "{{count}} Reservation",
+      "count_plural": "{{count}} Reservations"
+    },
+    "guests": {
+      "count": "{{count}} Person",
+      "count_plural": "{{count}} People"
+    }
+  },
+
 
     "clients": {
         "title": "Clients",
@@ -301,13 +337,19 @@
         "selectClient": "Select a client",
         "buttons":{
             "deselectAll": "Deselect All",
-            "selectAll": "Select All",
-            "deleteClient": "Delete Client"
+            "selectAll": "Select All Visible Clients",
+            "deleteClient": "Delete Client",
+            "sendToAll": "Send to All"
         },
         "linkers":{
             "and": "and",
             "or": "or",
             "more": "more"
+        },
+        "titles": {
+            "mr": "Mr.",
+            "mrs": "Mrs.",
+            "ms": "Ms."
         },
         "allClients": "All Clients",
         "sendNotificationButton": "Send a notification",
@@ -485,6 +527,7 @@
             "features": "Features",
             "users": "Users",
             "areas": "Areas",
+            "occasions": "Occasions",
             "billing": "Billing",
             "widget": "Reservation Widget",
             "roles": "Roles",
@@ -865,11 +908,261 @@
         
               
     },
+    "export": {
+        "title": "Export Data",
+        "selectFormat": "Select Format",
+        "formatSheet": "Sheet (CSV)",
+        "formatPDF": "PDF",
+        "pdfEngineTitle": "PDF Engine",
+        "pdfEngineStandard": "Standard (Web View)",
+        "pdfEngineAdvanced": "Advanced (Complex Tables)",
+        "pdfEngineStandardDesc": "Best for simple layouts and faster generation",
+        "pdfEngineAdvancedDesc": "Better for complex tables and advanced formatting",
+        "selectColumns": "Select Columns",
+        "selectAll": "Select All",
+        "columnsSelected": "{{count}} column selected",
+        "columnsSelected_plural": "{{count}} columns selected",
+        "customOptions": "Custom Options",
+        "closeButton": "Close",
+        "exportButton": "Export",
+        "exportingButton": "Exporting...",
+        "closeOverlay": "Click to close export modal",
+        "closeButtonAria": "Close export modal",
+        "exportButtonAria": "Export selected data",
+        "fields": {
+            "textPlaceholder": "Enter text...",
+            "numberPlaceholder": "Enter number...",
+            "selectPlaceholder": "Select an option..."
+        }
+    },
+"blockReservation": {
+    "title": "Block reservations",
+    "loading": "Loading...",
+    "actions": {
+      "close": "Close",
+      "cancel": "Cancel",
+      "changeDate": "Change date",
+      "blockSelectedHours": "BLOCK SELECTED HOURS",
+      "deleteBlock": "Delete block"
+    },
+    "dateRange": {
+      "from": "From",
+      "to": "To"
+    },
+    "form": {
+      "title": "BLOCK NEW RESERVATIONS",
+      "startBlockTime": "START BLOCK TIME",
+      "endBlockTime": "END BLOCK TIME",
+      "requiredField": "This field is required",
+      "selectFloor": "SELECT FLOOR",
+      "selectTable": "SELECT TABLE"
+    },
+    "periodTypes": {
+      "time": "Time",
+      "dateRange": "Date / Date Range"
+    },
+    "blockTypes": {
+      "all": "All",
+      "floor": "Floor",
+      "floors": "Floors",
+      "table": "Table",
+      "tables": "Tables",
+      "allTables": "All tables"
+    },
+    "channels": {
+      "online": "Online",
+      "backOffice": "Back office",
+      "onlineOnly": "Online only",
+      "backOfficeOnly": "Back-Office only",
+      "onlineAndBackOffice": "Online & Back-Office"
+    },
+    "currentlyBlocked": {
+      "title": "CURRENTLY BLOCKED RESERVATIONS",
+      "noBlocked": "No blocked reservations for this date"
+    },
+    "details": {
+      "floors": "Floors",
+      "tables": "Tables"
+    },
+    "confirmDelete": {
+      "title": "Are you sure you want to Delete this blocking rule?"
+    }
+  },
     "extra":{
         "title": "Widget",
         "activated": "Activated",
         "disactivated": "Disactivated"
+    },
+    "reservationWidget":{
+        "page": {
+            "title": "Tabla | Taste Morocco's best"
+        },
+        "common": {
+            "restaurant": "Restaurant",
+            "toggleDarkMode": "Toggle dark mode",
+            "back": "Back",
+            "continue": "Continue",
+            "close": "Close",
+            "readMore": "read more"
+        },
+        "reservation": {
+            "makeReservation": "Make a Reservation",
+            "date": "Date",
+            "time": "Time",
+            "guests": "Guests",
+            "bookNow": "Book Now",
+            "previewMenu": "Preview our menu"
+        },
+        "form": {
+            "yourInformation": "Your Information",
+            "title": "Title",
+            "mr": "Mr.",
+            "mrs": "Mrs.",
+            "ms": "Ms.",
+            "firstName": "First Name",
+            "lastName": "Last Name",
+            "email": "Email",
+            "phone": "Phone",
+            "allergies": "Allergies",
+            "preferences": "Preferences",
+            "occasion": "Occasion",
+            "areas": "Areas",
+            "dressCode": "Dress Code",
+            "firstNamePlaceholder": "Enter your first name",
+            "lastNamePlaceholder": "Enter your last name",
+            "emailPlaceholder": "Enter your email address",
+            "phonePlaceholder": "Enter your phone number",
+            "allergiesPlaceholder": "Please list any allergies",
+            "preferencesPlaceholder": "Any special requests or preferences",
+            "occasionPlaceholder": "Select an occasion (optional)",
+            "agreeToTerms": "I agree to",
+            "termsAndConditions": "the terms and conditions",
+            "agreeToDressCode": "I agree to the dress code",
+            "noDressCode": "No specific dress code"
+        },
+        "validation": {
+            "firstNameRequired": "First name is required",
+            "lastNameRequired": "Last name is required",
+            "emailRequired": "Email is required",
+            "emailInvalid": "Email is invalid",
+            "phoneRequired": "Phone number is required"
+        },
+        "confirmation": {
+            "title": "Confirm Your Information",
+            "name": "Name",
+            "email": "Email",
+            "phone": "Phone",
+            "dateTime": "Date & Time",
+            "guests": "Guests",
+            "occasion": "Occasion",
+            "allergies": "Allergies",
+            "preferences": "Preferences",
+            "at": "at",
+            "person": "person",
+            "people": "people",
+            "editDetails": "Edit Details",
+            "processing": "Processing...",
+            "confirm": "Confirm"
+        },
+        "success": {
+            "confirmed": "Reservation Confirmed!",
+            "completed": "Reservation Completed!",
+            "message": "Your reservation has been successfully made. You will receive a confirmation email shortly.",
+            "makeAnother": "Make Another Reservation"
+        },
+        "unavailable": {
+            "title": "Reservations Unavailable",
+            "description": "Online reservations are currently unavailable. Please contact the restaurant directly."
+        },
+        "errors": {
+            "serverError": "Something went wrong. Please try again or contact the restaurant directly."
+        },
+        "footer": {
+            "copyright": "© {{year}} Tabla. All rights reserved."
+        }
+    },
+  "modifyReservation": {
+    "page": {
+      "titlePreview": "Tabla | Taste Morocco's best",
+      "titleModify": "Modify Your Reservation | Tabla",
+      "titleContact": "Contact Us | Tabla",
+      "titleError": "Error | Tabla"
+    },
+    "common": {
+      "restaurant": "Restaurant",
+      "restaurantImage": "Restaurant image",
+      "toggleDarkMode": "Toggle dark mode",
+      "back": "Back"
+    },
+    "error": {
+      "title": "You can't modify your reservation",
+      "description": "Something went wrong, you might have already fulfilled a modification or canceled your reservation"
+    },
+    "preview": {
+      "title": "Your reservation details",
+      "specialRequest": "Special Request",
+      "allergies": "Allergies",
+      "occasion": "Occasion",
+      "areas": "Areas",
+      "date": "Date",
+      "time": "Time",
+      "guests": "Guests",
+      "modifyButton": "Modify",
+      "cancelButton": "Cancel",
+      "sendMessage": "Send a message",
+      "messageSent": "you already sent a message"
+    },
+    "modify": {
+      "title": "Modify your reservation",
+      "specialRequestPlaceholder": "Special request",
+      "allergiesPlaceholder": "Allergies",
+      "areas": "Areas",
+      "selectOccasion": "Select an occasion",
+      "date": "Date",
+      "time": "Time",
+      "guests": "Guests",
+      "confirmButton": "Confirm"
+    },
+    "contact": {
+      "title": "Send a message",
+      "messagePlaceholder": "Type your message here...",
+      "sendButton": "Send",
+      "successTitle": "Message Sent Successfully",
+      "successMessage": "We've received your message and will get back to you shortly.",
+      "backToReservation": "Back to Reservation"
+    },
+    "cancel": {
+      "keepReservation": "No, keep reservation",
+      "confirmMessage": "Are you sure you want to cancel this reservation? This action cannot be undone."
     }
+  },
+  "reviewPage": {
+    "page": {
+      "title": "Leave a Review | Tabla"
+    },
+    "common": {
+      "toggleDarkMode": "Toggle dark mode",
+      "restaurantAlt": "Restaurant"
+    },
+    "error": {
+      "title": "Error!"
+    },
+    "ratings": {
+      "service": "Service",
+      "ambiance": "Ambiance",
+      "food": "Food",
+      "valueForMoney": "Value for money"
+    },
+    "form": {
+      "reviewPlaceholder": "Write your review here",
+      "submitButton": "Send Review"
+    },
+    "success": {
+      "title": "Thank you for your review!",
+      "message": "Your review has been submitted successfully. We appreciate your feedback and will use it to improve our service."
+    }
+  }
+
 
   }
   

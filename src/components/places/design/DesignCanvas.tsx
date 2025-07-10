@@ -840,8 +840,8 @@ const DesignCanvas = (props: CanvasTypes) => {
         />
         {/* Save and Reset buttons */}
         <div className="absolute bottom-2 right-2 flex gap-2 z-[2]">
-          <button className="btn-primary" onClick={saveLayout}>Save</button>
-          <button className="btn-secondary" onClick={resetLayout}>Reset</button>
+          <button className="btn-primary" onClick={saveLayout}>{t('editPlace.buttons.save')}</button>
+          <button className="btn-secondary" onClick={resetLayout}>{t('editPlace.buttons.reset')}</button>
         </div>
         {/* Design Toolbar */}
         <DesignToolbar

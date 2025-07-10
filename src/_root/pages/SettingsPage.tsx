@@ -140,7 +140,7 @@ const SettingsPage = () => {
           >
             <Link to='/settings/occasions' className={`hover:underline flex items-center gap-3 ${pathname === '/settings/occasions' ? navigatedMenuClass : normalMenuClass}`}>
               <PartyPopper size={22}/>
-              {expanded && 'Occasions'}
+              {expanded && t('settingsPage.menuItems.occasions')}
             </Link>
           </CanAccess>
 

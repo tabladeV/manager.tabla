@@ -124,7 +124,7 @@
   "reservations": {
     "title": "Réservations",
     "searchPlaceholder": "Rechercher...",
-    "occasion": "Occasion",
+    "occasion": "Evénement",
     "deleteConfirm": {
       "message": "Êtes-vous sûr de vouloir supprimer cette réservation ?"
     },
@@ -241,8 +241,12 @@
   "editPlace": {
     "title1": "Sélectionnez un étage à modifier",
     "title": "Modifiez Vos Toits",
+    "placeholders": {
+      "placeAlias": "Nom de l'Espace"
+    },
     "buttons": {
       "addTable": "Ajouter une Table",
+      "addPlace": "Ajouter un espace",
       "rectangleTable": "Table Rectangle",
       "circleTable": "Table Ronde",
       "delete": "Supprimer la Table",
@@ -287,19 +291,55 @@
       "phone": "Numéro de Téléphone"
     }
   },
+  "calendar": {
+    "pageTitle": "Grille de Calendrier - Tabla | Goûtez le Meilleur du Maroc",
+    "title": "Grille de Calendrier",
+    "viewAgenda": "Voir la Grille",
+    "navigation": {
+      "previousMonth": "Mois précédent",
+      "nextMonth": "Mois suivant"
+    },
+    "weekDays": {
+      "sun": "Dim",
+      "mon": "Lun",
+      "tue": "Mar",
+      "wed": "Mer",
+      "thu": "Jeu",
+      "fri": "Ven",
+      "sat": "Sam"
+    },
+    "status": {
+      "open": "Ouvert",
+      "closed": "Fermé"
+    },
+    "reservations": {
+      "count": "{{count}} Réservation",
+      "count_plural": "{{count}} Réservations"
+    },
+    "guests": {
+      "count": "{{count}} Personne",
+      "count_plural": "{{count}} Personnes"
+    }
+  },
   "clients": {
     "title": "Clients",
     "searchPlaceholder": "Rechercher...",
     "selectClient": "Sélectionner un client",
     "buttons": {
       "deselectAll": "Tout Désélectionner",
-      "selectAll": "Tout Sélectionner",
-      "deleteClient": "Supprimer le Client"
+      "selectAll": "Sélectionner tous les clients visibles",
+      "deleteClient": "Supprimer le Client",
+      "sendToAll": "Envoyer à Tous"
     },
     "linkers": {
       "and": "et",
       "or": "ou",
       "more": "plus"
+    },
+    "titles":{
+      "mr": "Monsieur",
+      "mrs": "Madame",
+      "ms": "Mademoiselle"
     },
     "allClients": "Tous les Clients",
     "sendNotificationButton": "Envoyer une notification",
@@ -470,12 +510,13 @@
       "tags": "Étiquettes",
       "reviewWidget": "Widget d'Avis",
       "menu": "Menu",
-      "workingHours": "Heures de Travail",
+      "workingHours": "Horaires de Travail",
       "photos": "Photos",
       "messaging": "Messagerie",
       "features": "Fonctionnalités",
       "users": "Utilisateurs",
       "areas": "Zones",
+      "occasions": "Événements",
       "billing": "Facturation",
       "widget": "Widget de Réservation",
       "roles": "Rôles",
@@ -545,7 +586,7 @@
       "addTitlePlaceholder": "Ajouter un titre ici",
       "addDescriptionPlaceholder": "Ajouter une description ici",
       "dressCodePlaceholder": "Code vestimentaire",
-      "openMenu": "Prévisualiser votre menu",
+      "openMenu": "Voir votre menu",
       "noMenu": "Aucun menu disponible",
       "linkCopied": "Lien copié dans le presse-papiers",
       "copied": "Copié dans le presse-papiers",
@@ -604,7 +645,7 @@
       }
     },
     "occasions": {
-      "title": "Occasions",
+      "title": "Evénements",
       "tableHeaders": {
         "id": "ID",
         "name": "Nom",
@@ -614,27 +655,27 @@
         "actions": "Actions"
       },
       "actionPopup": {
-        "edit": "Modifier l'Occasion",
-        "delete": "Supprimer l'Occasion",
-        "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette occasion ?",
+        "edit": "Modifier l'Evénement",
+        "delete": "Supprimer l'Evénement",
+        "confirmDelete": "Êtes-vous sûr de vouloir supprimer cet Evénement ?",
         "confirmDeleteButton": "Oui, la supprimer",
         "cancelButton": "Annuler"
       },
       "placeHolders": {
-        "name": "Nom de l'Occasion",
-        "description": "Description de l'Occasion",
-        "color": "Couleur de l'Occasion"
+        "name": "Nom de l'Evénement",
+        "description": "Description de l'Evénement",
+        "color": "Couleur de l'Evénement"
       },
       "labels": {
-        "noOccasions": "Aucune occasion disponible",
+        "noOccasions": "Aucune Evénement disponible",
         "color": "Couleur",
-        "selectOccasion": "Sélectionner une occasion"
+        "selectOccasion": "Sélectionner un Evénement"
       },
       "buttons": {
-        "addOccasion": "Ajouter une Occasion",
+        "addOccasion": "Ajouter un Evénement",
         "cancel": "Annuler",
         "save": "Enregistrer",
-        "saveOccasion": "Enregistrer l'Occasion"
+        "saveOccasion": "Enregistrer l'Evénement"
       }
     },
     "billing": {
@@ -766,7 +807,7 @@
       "unavailable": "Fermé",
       "type": "Type",
       "from": "De",
-      "addSlot": "Ajouter un Créneau",
+      "addSlot": "Ajouter une Service",
       "cancel": "Annuler",
       "save": "Enregistrer",
       "puffer": "Durée de Réservation",
@@ -776,7 +817,7 @@
       "placeLimitLabel": "Limite de place en ligne"
     },
     "workingHours": {
-      "title": "Heures de Travail",
+      "title": "Horaires de Travail",
       "days": {
         "monday": "LUN",
         "tuesday": "MAR",
@@ -792,7 +833,7 @@
       "unavailable": "Fermé",
       "type": "Type",
       "from": "De",
-      "addSlot": "Ajouter un Créneau",
+      "addSlot": "Ajouter une Service",
       "cancel": "Annuler",
       "save": "Enregistrer",
       "puffer": "Durée de Réservation",
@@ -848,9 +889,259 @@
       "warning": "Nombre maximum d'images atteint"
     }
   },
+  "export": {
+      "title": "Exporter les Données",
+      "selectFormat": "Sélectionner le Format",
+      "formatSheet": "Feuille (CSV)",
+      "formatPDF": "PDF",
+      "pdfEngineTitle": "Moteur PDF",
+      "pdfEngineStandard": "Standard (Vue Web)",
+      "pdfEngineAdvanced": "Avancé (Tableaux Complexes)",
+      "pdfEngineStandardDesc": "Idéal pour les mises en page simples et une génération plus rapide",
+      "pdfEngineAdvancedDesc": "Meilleur pour les tableaux complexes et le formatage avancé",
+      "selectColumns": "Sélectionner les Colonnes",
+      "selectAll": "Tout Sélectionner",
+      "columnsSelected": "{{count}} colonne sélectionnée",
+      "columnsSelected_plural": "{{count}} colonnes sélectionnées",
+      "customOptions": "Options Personnalisées",
+      "closeButton": "Fermer",
+      "exportButton": "Exporter",
+      "exportingButton": "Exportation...",
+      "closeOverlay": "Cliquer pour fermer la modal d'exportation",
+      "closeButtonAria": "Fermer la modal d'exportation",
+      "exportButtonAria": "Exporter les données sélectionnées",
+      "fields": {
+        "textPlaceholder": "Saisir le texte...",
+        "numberPlaceholder": "Saisir un nombre...",
+        "selectPlaceholder": "Sélectionner une option..."
+      }
+  },
+  "blockReservation": {
+    "title": "Bloquer les réservations",
+    "loading": "Chargement...",
+    "actions": {
+      "close": "Fermer",
+      "cancel": "Annuler",
+      "changeDate": "Changer la date",
+      "blockSelectedHours": "BLOQUER LES HEURES SÉLECTIONNÉES",
+      "deleteBlock": "Supprimer le blocage"
+    },
+    "dateRange": {
+      "from": "Du",
+      "to": "Au"
+    },
+    "form": {
+      "title": "BLOQUER LES NOUVELLES RÉSERVATIONS",
+      "startBlockTime": "HEURE DE DÉBUT DE BLOCAGE",
+      "endBlockTime": "HEURE DE FIN DE BLOCAGE",
+      "requiredField": "Ce champ est obligatoire",
+      "selectFloor": "SÉLECTIONNER L'ÉTAGE",
+      "selectTable": "SÉLECTIONNER LA TABLE"
+    },
+    "periodTypes": {
+      "time": "Heure",
+      "dateRange": "Date / Plage de dates"
+    },
+    "blockTypes": {
+      "all": "Tout",
+      "floor": "Étage",
+      "floors": "Étages",
+      "table": "Table",
+      "tables": "Tables",
+      "allTables": "Toutes les tables"
+    },
+    "channels": {
+      "online": "En ligne",
+      "backOffice": "Back office",
+      "onlineOnly": "En ligne seulement",
+      "backOfficeOnly": "Back-Office seulement",
+      "onlineAndBackOffice": "En ligne et Back-Office"
+    },
+    "currentlyBlocked": {
+      "title": "RÉSERVATIONS ACTUELLEMENT BLOQUÉES",
+      "noBlocked": "Aucune réservation bloquée pour cette date"
+    },
+    "details": {
+      "floors": "Étages",
+      "tables": "Tables"
+    },
+    "confirmDelete": {
+      "title": "Êtes-vous sûr de vouloir supprimer cette règle de blocage ?"
+    }
+  },
   "extra": {
     "title": "Widget",
     "activated": "Activé",
     "disactivated": "Désactivé"
+  },
+  "reservationWidget": {
+    "page": {
+      "title": "Tabla | Goûtez le meilleur du Maroc"
+    },
+    "common": {
+      "restaurant": "Restaurant",
+      "toggleDarkMode": "Basculer le mode sombre",
+      "back": "Retour",
+      "continue": "Continuer",
+      "close": "Fermer",
+      "readMore": "lire plus"
+    },
+    "reservation": {
+      "makeReservation": "Faire une Réservation",
+      "date": "Date",
+      "time": "Heure",
+      "guests": "Invités",
+      "bookNow": "Réserver Maintenant",
+      "previewMenu": "Aperçu de notre menu"
+    },
+    "form": {
+      "yourInformation": "Vos Informations",
+      "title": "Titre",
+      "mr": "M.",
+      "mrs": "Mme.",
+      "ms": "Mlle.",
+      "firstName": "Prénom",
+      "lastName": "Nom de famille",
+      "email": "Email",
+      "phone": "Téléphone",
+      "allergies": "Allergies",
+      "preferences": "Préférences",
+      "occasion": "Evénement",
+      "areas": "Zones",
+      "dressCode": "Code Vestimentaire",
+      "firstNamePlaceholder": "Entrez votre prénom",
+      "lastNamePlaceholder": "Entrez votre nom de famille",
+      "emailPlaceholder": "Entrez votre adresse email",
+      "phonePlaceholder": "Entrez votre numéro de téléphone",
+      "allergiesPlaceholder": "Veuillez lister toute allergie",
+      "preferencesPlaceholder": "Toute demande spéciale ou préférence",
+      "occasionPlaceholder": "Sélectionnez un événement (optionnel)",
+      "agreeToTerms": "J'accepte",
+      "termsAndConditions": "les termes et conditions",
+      "agreeToDressCode": "J'accepte le code vestimentaire",
+      "noDressCode": "Aucun code vestimentaire spécifique"
+    },
+    "validation": {
+      "firstNameRequired": "Le prénom est requis",
+      "lastNameRequired": "Le nom de famille est requis",
+      "emailRequired": "L'email est requis",
+      "emailInvalid": "L'email est invalide",
+      "phoneRequired": "Le numéro de téléphone est requis"
+    },
+    "confirmation": {
+      "title": "Confirmez Vos Informations",
+      "name": "Nom",
+      "email": "Email",
+      "phone": "Téléphone",
+      "dateTime": "Date et Heure",
+      "guests": "Invités",
+      "occasion": "Evénement",
+      "allergies": "Allergies",
+      "preferences": "Préférences",
+      "at": "à",
+      "person": "personne",
+      "people": "personnes",
+      "editDetails": "Modifier les Détails",
+      "processing": "Traitement...",
+      "confirm": "Confirmer"
+    },
+    "success": {
+      "confirmed": "Réservation Confirmée !",
+      "completed": "Réservation Terminée !",
+      "message": "Votre réservation a été effectuée avec succès. Vous recevrez un email de confirmation sous peu.",
+      "makeAnother": "Faire une Autre Réservation"
+    },
+    "unavailable": {
+      "title": "Réservations Indisponibles",
+      "description": "Les réservations en ligne sont actuellement indisponibles. Veuillez contacter le restaurant directement."
+    },
+    "errors": {
+      "serverError": "Quelque chose s'est mal passé. Veuillez réessayer ou contacter le restaurant directement."
+    },
+    "footer": {
+      "copyright": "© {{year}} Tabla. Tous droits réservés."
+    }
+  },
+  "modifyReservation": {
+    "page": {
+      "titlePreview": "Tabla | Goûtez le meilleur du Maroc",
+      "titleModify": "Modifier Votre Réservation | Tabla",
+      "titleContact": "Nous Contacter | Tabla",
+      "titleError": "Erreur | Tabla"
+    },
+    "common": {
+      "restaurant": "Restaurant",
+      "restaurantImage": "Image du restaurant",
+      "toggleDarkMode": "Basculer le mode sombre",
+      "back": "Retour"
+    },
+    "error": {
+      "title": "Vous ne pouvez pas modifier votre réservation",
+      "description": "Quelque chose s'est mal passé, vous avez peut-être déjà effectué une modification ou annulé votre réservation"
+    },
+    "preview": {
+      "title": "Détails de votre réservation",
+      "specialRequest": "Demande Spéciale",
+      "allergies": "Allergies",
+      "occasion": "Occasion",
+      "areas": "Zones",
+      "date": "Date",
+      "time": "Heure",
+      "guests": "Invités",
+      "modifyButton": "Modifier",
+      "cancelButton": "Annuler",
+      "sendMessage": "Envoyer un message",
+      "messageSent": "vous avez déjà envoyé un message"
+    },
+    "modify": {
+      "title": "Modifier votre réservation",
+      "specialRequestPlaceholder": "Demande spéciale",
+      "allergiesPlaceholder": "Allergies",
+      "areas": "Zones",
+      "selectOccasion": "Sélectionner une occasion",
+      "date": "Date",
+      "time": "Heure",
+      "guests": "Invités",
+      "confirmButton": "Confirmer"
+    },
+    "contact": {
+      "title": "Envoyer un message",
+      "messagePlaceholder": "Tapez votre message ici...",
+      "sendButton": "Envoyer",
+      "successTitle": "Message Envoyé avec Succès",
+      "successMessage": "Nous avons reçu votre message et vous répondrons bientôt.",
+      "backToReservation": "Retour à la Réservation"
+    },
+    "cancel": {
+      "keepReservation": "Non, garder la réservation",
+      "confirmMessage": "Êtes-vous sûr de vouloir annuler cette réservation? Cette action ne peut pas être annulée."
+    }
+  },
+  "reviewPage": {
+    "page": {
+      "title": "Laisser un Avis | Tabla"
+    },
+    "common": {
+      "toggleDarkMode": "Basculer le mode sombre",
+      "restaurantAlt": "Restaurant"
+    },
+    "error": {
+      "title": "Erreur!"
+    },
+    "ratings": {
+      "service": "Service",
+      "ambiance": "Ambiance",
+      "food": "Nourriture",
+      "valueForMoney": "Rapport qualité-prix"
+    },
+    "form": {
+      "reviewPlaceholder": "Écrivez votre avis ici",
+      "submitButton": "Envoyer l'Avis"
+    },
+    "success": {
+      "title": "Merci pour votre avis!",
+      "message": "Votre avis a été soumis avec succès. Nous apprécions vos commentaires et les utiliserons pour améliorer notre service."
+    }
   }
+
 }

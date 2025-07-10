@@ -524,7 +524,7 @@ const ClientsPage = () => {
               className={`btn-secondary hover:bg-softgreentheme hover:text-greentheme ${selectedClient === clients ? "hidden" : ""}`}
               onClick={selectAll}
             >
-              {t("clients.buttons.selectAll")} Visible Clients
+              {t("clients.buttons.selectAll")} 
             </button>
           ) : (
             <button
@@ -562,7 +562,7 @@ const ClientsPage = () => {
               setSelectedClient([])
             }}
           >
-            Send a notification to all
+            {t("clients.buttons.sendToAll")}
           </button>
           <button
             className={` ${selectedClient.length === 0 ? "btn hover:border-[0px] border-[0px] cursor-not-allowed bg-softgreytheme dark:bg-subblack dark:text-softwhitetheme" : "btn-primary"}`}

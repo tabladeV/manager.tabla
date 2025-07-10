@@ -241,8 +241,12 @@
   "editPlace": {
     "title1": "Selecciona un piso para modificar",
     "title": "Edita En Tus Techos",
+    "placeholders": {
+      "placeAlias": "Nombre del Lugar"
+    },
     "buttons": {
       "addTable": "Agregar Mesa",
+      "addPlace": "Agregar Lugar",
       "rectangleTable": "Mesa Rectangular",
       "circleTable": "Mesa Circular",
       "delete": "Eliminar Mesa",
@@ -287,14 +291,52 @@
       "phone": "Número de Teléfono"
     }
   },
+  "calendar": {
+      "pageTitle": "Cuadrícula de Calendario - Tabla | Prueba lo Mejor de Marruecos",
+      "title": "Cuadrícula de Calendario",
+      "viewAgenda": "Ver Cuadrícula",
+      "navigation": {
+        "previousMonth": "Mes anterior",
+        "nextMonth": "Mes siguiente"
+      },
+      "weekDays": {
+        "sun": "Dom",
+        "mon": "Lun",
+        "tue": "Mar",
+        "wed": "Mié",
+        "thu": "Jue",
+        "fri": "Vie",
+        "sat": "Sáb"
+      },
+      "status": {
+        "open": "Abierto",
+        "closed": "Cerrado"
+      },
+      "reservations": {
+        "count": "{{count}} Reserva",
+        "count_plural": "{{count}} Reservas"
+      },
+      "guests": {
+        "count": "{{count}} Persona",
+        "count_plural": "{{count}} Personas"
+      }
+    },
+
+
   "clients": {
     "title": "Clientes",
     "searchPlaceholder": "Buscar...",
     "selectClient": "Seleccionar un cliente",
     "buttons": {
       "deselectAll": "Deseleccionar Todo",
-      "selectAll": "Seleccionar Todo",
-      "deleteClient": "Eliminar Cliente"
+      "selectAll": "Seleccionar Todo Los Clientes Visibles",
+      "deleteClient": "Eliminar Cliente",
+      "sendToAll": "Enviar a Todos"
+    },
+    "titles": {
+      "mr": "Sr.",
+      "mrs": "Sra.",
+      "ms": "Srta."
     },
     "linkers": {
       "and": "y",
@@ -475,6 +517,7 @@
       "messaging": "Mensajería",
       "features": "Características",
       "users": "Usuarios",
+      "occasions": "Ocasiones",
       "areas": "Áreas",
       "billing": "Facturación",
       "widget": "Widget de Reserva",
@@ -848,9 +891,258 @@
       "warning": "Número máximo de imágenes alcanzado"
     }
   },
+  "blockReservation": {
+    "title": "Bloquear reservas",
+    "loading": "Cargando...",
+    "actions": {
+      "close": "Cerrar",
+      "cancel": "Cancelar",
+      "changeDate": "Cambiar fecha",
+      "blockSelectedHours": "BLOQUEAR HORAS SELECCIONADAS",
+      "deleteBlock": "Eliminar bloqueo"
+    },
+    "dateRange": {
+      "from": "Desde",
+      "to": "Hasta"
+    },
+    "form": {
+      "title": "BLOQUEAR NUEVAS RESERVAS",
+      "startBlockTime": "HORA DE INICIO DE BLOQUEO",
+      "endBlockTime": "HORA DE FIN DE BLOQUEO",
+      "requiredField": "Este campo es obligatorio",
+      "selectFloor": "SELECCIONAR PISO",
+      "selectTable": "SELECCIONAR MESA"
+    },
+    "periodTypes": {
+      "time": "Hora",
+      "dateRange": "Fecha / Rango de fechas"
+    },
+    "blockTypes": {
+      "all": "Todo",
+      "floor": "Piso",
+      "floors": "Pisos",
+      "table": "Mesa",
+      "tables": "Mesas",
+      "allTables": "Todas las mesas"
+    },
+    "channels": {
+      "online": "En línea",
+      "backOffice": "Back office",
+      "onlineOnly": "Solo en línea",
+      "backOfficeOnly": "Solo Back-Office",
+      "onlineAndBackOffice": "En línea y Back-Office"
+    },
+    "currentlyBlocked": {
+      "title": "RESERVAS ACTUALMENTE BLOQUEADAS",
+      "noBlocked": "No hay reservas bloqueadas para esta fecha"
+    },
+    "details": {
+      "floors": "Pisos",
+      "tables": "Mesas"
+    },
+    "confirmDelete": {
+      "title": "¿Estás seguro de que quieres eliminar esta regla de bloqueo?"
+    }
+  },
+  "export": {
+    "title": "Exportar Datos",
+    "selectFormat": "Seleccionar Formato",
+    "formatSheet": "Hoja (CSV)",
+    "formatPDF": "PDF",
+    "pdfEngineTitle": "Motor PDF",
+    "pdfEngineStandard": "Estándar (Vista Web)",
+    "pdfEngineAdvanced": "Avanzado (Tablas Complejas)",
+    "pdfEngineStandardDesc": "Mejor para diseños simples y generación más rápida",
+    "pdfEngineAdvancedDesc": "Mejor para tablas complejas y formato avanzado",
+    "selectColumns": "Seleccionar Columnas",
+    "selectAll": "Seleccionar Todo",
+    "columnsSelected": "{{count}} columna seleccionada",
+    "columnsSelected_plural": "{{count}} columnas seleccionadas",
+    "customOptions": "Opciones Personalizadas",
+    "closeButton": "Cerrar",
+    "exportButton": "Exportar",
+    "exportingButton": "Exportando...",
+    "closeOverlay": "Hacer clic para cerrar el modal de exportación",
+    "closeButtonAria": "Cerrar modal de exportación",
+    "exportButtonAria": "Exportar datos seleccionados",
+    "fields": {
+      "textPlaceholder": "Introducir texto...",
+      "numberPlaceholder": "Introducir número...",
+      "selectPlaceholder": "Seleccionar una opción..."
+    }
+  },
   "extra": {
     "title": "Widget",
     "activated": "Activado",
     "disactivated": "Desactivado"
+  },
+  "reservationWidget": {
+    "page": {
+        "title": "Tabla | Prueba lo mejor de Marruecos"
+      },
+      "common": {
+        "restaurant": "Restaurante",
+        "toggleDarkMode": "Alternar modo oscuro",
+        "back": "Atrás",
+        "continue": "Continuar",
+        "close": "Cerrar",
+        "readMore": "leer más"
+      },
+      "reservation": {
+        "makeReservation": "Hacer una Reserva",
+        "date": "Fecha",
+        "time": "Hora",
+        "guests": "Invitados",
+        "bookNow": "Reservar Ahora",
+        "previewMenu": "Ver nuestro menú"
+      },
+      "form": {
+        "yourInformation": "Su Información",
+        "title": "Título",
+        "mr": "Sr.",
+        "mrs": "Sra.",
+        "ms": "Srta.",
+        "firstName": "Nombre",
+        "lastName": "Apellido",
+        "email": "Correo Electrónico",
+        "phone": "Teléfono",
+        "allergies": "Alergias",
+        "preferences": "Preferencias",
+        "occasion": "Ocasión",
+        "areas": "Áreas",
+        "dressCode": "Código de Vestimenta",
+        "firstNamePlaceholder": "Ingrese su nombre",
+        "lastNamePlaceholder": "Ingrese su apellido",
+        "emailPlaceholder": "Ingrese su dirección de correo",
+        "phonePlaceholder": "Ingrese su número de teléfono",
+        "allergiesPlaceholder": "Por favor liste cualquier alergia",
+        "preferencesPlaceholder": "Cualquier solicitud especial o preferencia",
+        "occasionPlaceholder": "Seleccione una ocasión (opcional)",
+        "agreeToTerms": "Acepto",
+        "termsAndConditions": "los términos y condiciones",
+        "agreeToDressCode": "Acepto el código de vestimenta",
+        "noDressCode": "Sin código de vestimenta específico"
+      },
+      "validation": {
+        "firstNameRequired": "El nombre es requerido",
+        "lastNameRequired": "El apellido es requerido",
+        "emailRequired": "El correo electrónico es requerido",
+        "emailInvalid": "El correo electrónico es inválido",
+        "phoneRequired": "El número de teléfono es requerido"
+      },
+      "confirmation": {
+        "title": "Confirme Su Información",
+        "name": "Nombre",
+        "email": "Correo Electrónico",
+        "phone": "Teléfono",
+        "dateTime": "Fecha y Hora",
+        "guests": "Invitados",
+        "occasion": "Ocasión",
+        "allergies": "Alergias",
+        "preferences": "Preferencias",
+        "at": "a las",
+        "person": "persona",
+        "people": "personas",
+        "editDetails": "Editar Detalles",
+        "processing": "Procesando...",
+        "confirm": "Confirmar"
+      },
+      "success": {
+        "confirmed": "¡Reserva Confirmada!",
+        "completed": "¡Reserva Completada!",
+        "message": "Su reserva ha sido realizada exitosamente. Recibirá un correo de confirmación en breve.",
+        "makeAnother": "Hacer Otra Reserva"
+      },
+      "unavailable": {
+        "title": "Reservas No Disponibles",
+        "description": "Las reservas en línea no están disponibles actualmente. Por favor contacte al restaurante directamente."
+      },
+      "errors": {
+        "serverError": "Algo salió mal. Por favor intente de nuevo o contacte al restaurante directamente."
+      },
+      "footer": {
+        "copyright": "© {{year}} Tabla. Todos los derechos reservados."
+      }
+    },
+  "modifyReservation": {
+    "page": {
+      "titlePreview": "Tabla | Prueba lo mejor de Marruecos",
+      "titleModify": "Modificar Su Reserva | Tabla",
+      "titleContact": "Contáctanos | Tabla",
+      "titleError": "Error | Tabla"
+    },
+    "common": {
+      "restaurant": "Restaurante",
+      "restaurantImage": "Imagen del restaurante",
+      "toggleDarkMode": "Alternar modo oscuro",
+      "back": "Atrás"
+    },
+    "error": {
+      "title": "No puedes modificar tu reserva",
+      "description": "Algo salió mal, es posible que ya hayas realizado una modificación o cancelado tu reserva"
+    },
+    "preview": {
+      "title": "Detalles de tu reserva",
+      "specialRequest": "Solicitud Especial",
+      "allergies": "Alergias",
+      "occasion": "Ocasión",
+      "areas": "Áreas",
+      "date": "Fecha",
+      "time": "Hora",
+      "guests": "Invitados",
+      "modifyButton": "Modificar",
+      "cancelButton": "Cancelar",
+      "sendMessage": "Enviar un mensaje",
+      "messageSent": "ya enviaste un mensaje"
+    },
+    "modify": {
+      "title": "Modificar tu reserva",
+      "specialRequestPlaceholder": "Solicitud especial",
+      "allergiesPlaceholder": "Alergias",
+      "areas": "Áreas",
+      "selectOccasion": "Seleccionar una ocasión",
+      "date": "Fecha",
+      "time": "Hora",
+      "guests": "Invitados",
+      "confirmButton": "Confirmar"
+    },
+    "contact": {
+      "title": "Enviar un mensaje",
+      "messagePlaceholder": "Escribe tu mensaje aquí...",
+      "sendButton": "Enviar",
+      "successTitle": "Mensaje Enviado Exitosamente",
+      "successMessage": "Hemos recibido tu mensaje y te responderemos pronto.",
+      "backToReservation": "Volver a la Reserva"
+    },
+    "cancel": {
+      "keepReservation": "No, mantener reserva",
+      "confirmMessage": "¿Estás seguro de que quieres cancelar esta reserva? Esta acción no se puede deshacer."
+    }
+  },
+  "reviewPage": {
+    "page": {
+      "title": "Dejar una Reseña | Tabla"
+    },
+    "common": {
+      "toggleDarkMode": "Alternar modo oscuro",
+      "restaurantAlt": "Restaurante"
+    },
+    "error": {
+      "title": "¡Error!"
+    },
+    "ratings": {
+      "service": "Servicio",
+      "ambiance": "Ambiente",
+      "food": "Comida",
+      "valueForMoney": "Relación calidad-precio"
+    },
+    "form": {
+      "reviewPlaceholder": "Escribe tu reseña aquí",
+      "submitButton": "Enviar Reseña"
+    },
+    "success": {
+      "title": "¡Gracias por tu reseña!",
+      "message": "Tu reseña ha sido enviada exitosamente. Apreciamos tus comentarios y los usaremos para mejorar nuestro servicio."
+    }
   }
 }

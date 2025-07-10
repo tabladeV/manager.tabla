@@ -580,7 +580,7 @@ const ClientInterface = () => {
                             <td className="p-2 ">
                               <span className="flex gap-3 w-full px-3 py-2 rounded cursor-pointer  transition-colors dark:bg-bgdarktheme2  bg-gray-100 items-start ">
                                 <label htmlFor="Mr" className="text-sm font-medium text-[#555555] dark:text-[#cccccc]">
-                                  Mr.
+                                  {t("clients.titles.mr")}
                                 </label>
                                 <input
                                   type="checkbox"
@@ -590,7 +590,7 @@ const ClientInterface = () => {
                                   onChange={() => handleTitleChange("mr")}
                                 />
                                 <label htmlFor="Mrs" className="text-sm font-medium text-[#555555] dark:text-[#cccccc]">
-                                  Mrs.
+                                  {t("clients.titles.mrs")}
                                 </label>
                                 <input
                                   type="checkbox"
@@ -600,7 +600,7 @@ const ClientInterface = () => {
                                   onChange={() => handleTitleChange("mrs")}
                                 />
                                 <label htmlFor="Ms" className="text-sm font-medium text-[#555555] dark:text-[#cccccc]">
-                                  Ms.
+                                  {t("clients.titles.ms")}
                                 </label>
                                 <input
                                   type="checkbox"

@@ -64,18 +64,18 @@ const DesignPlacesIndex = () => {
             e.preventDefault()
             handleAddFloor();
           }} >
-            <h1 className='text-3xl font-[700]'>Add Place</h1>
+            <h1 className='text-3xl font-[700]'>{t('editPlace.buttons.addPlace')}</h1>
             <input
               type="text"
               autoFocus={true}
               id='inputPlace'
-              placeholder='Place Alias'
+              placeholder={t('editPlace.placeholders.placeAlias')}
               className="inputs-unique bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme"
             />
             <button onSubmit={(e) => { e.preventDefault() }} onClick={(e) => {
               e.preventDefault();
               handleAddFloor();
-            }} className='btn-primary w-full'>Add Place</button>
+            }} className='btn-primary w-full'>{t('editPlace.buttons.save')}</button>
           </form>
         </div>
       )}

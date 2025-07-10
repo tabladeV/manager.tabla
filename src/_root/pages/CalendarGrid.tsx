@@ -1,5 +1,4 @@
 "use client"
-
 import { useState, useEffect } from "react"
 import {
   format,
@@ -18,7 +17,6 @@ import { useDateContext } from "../../context/DateContext"
 import { Link, useNavigate } from "react-router-dom"
 import { ChevronRight, Clock, TicketIcon as Tickets, Users } from "lucide-react"
 import { useList } from "@refinedev/core"
-import { DevOnly } from "../../components/DevOnly"
 
 // Define types for API responses
 type MonthRes = {
@@ -36,15 +34,14 @@ const CalendarGrid = () => {
   const { t } = useTranslation()
   const { chosenDay, setChosenDay } = useDateContext()
   const navigate = useNavigate()
-
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [availableDays, setAvailableDays] = useState<AvailabilityDay[]>([])
   const [monthlyRes, setMonthlyRes] = useState<MonthRes[]>([])
 
-  // Set page title
+  // Set page title with translation
   useEffect(() => {
-    document.title = "Calendar Grid - Tabla | Taste Morocco's Best"
-  }, [])
+    document.title = t("calendar.pageTitle", "Calendar Grid - Tabla | Taste Morocco's Best")
+  }, [t])
 
   // Fetch availability data
   const { refetch: getAvailableDays } = useList({
@@ -78,9 +75,9 @@ const CalendarGrid = () => {
   const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd })
   const startDay = getDay(monthStart)
 
-  // Week day headers
-  const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) =>
-    t(`calendar.weekDays.${day.toLowerCase()}`, day),
+  // Week day headers with translations
+  const weekDays = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"].map((day) =>
+    t(`calendar.weekDays.${day}`, day.charAt(0).toUpperCase() + day.slice(1)),
   )
 
   // Navigation handlers
@@ -110,7 +107,7 @@ const CalendarGrid = () => {
         <button
           onClick={prevMonth}
           className="p-2 rounded-lg hover:bg-softgreytheme dark:hover:bg-darkthemeitems transition-colors"
-          aria-label="Previous month"
+          aria-label={t("calendar.navigation.previousMonth", "Previous month")}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -127,15 +124,13 @@ const CalendarGrid = () => {
             <path d="m15 18-6-6 6-6" />
           </svg>
         </button>
-
         <h2 className="text-xl font-semibold text-blacktheme dark:text-textdarktheme">
           {format(currentMonth, "MMMM yyyy")}
         </h2>
-
         <button
           onClick={nextMonth}
           className="p-2 rounded-lg hover:bg-softgreytheme dark:hover:bg-darkthemeitems transition-colors"
-          aria-label="Next month"
+          aria-label={t("calendar.navigation.nextMonth", "Next month")}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -201,14 +196,15 @@ const CalendarGrid = () => {
                   >
                     {format(day, "d")}
                   </span>
-
-                  {isAvailable  ? (
+                  {isAvailable ? (
                     <div className="flex items-center gap-1 bg-softgreentheme rounded-xl py-1 px-2 text-greentheme text-sm">
-                      <span className="lt-sm:hidden block"> Open </span> <Clock size={13} />
+                      <span className="lt-sm:hidden block">{t("calendar.status.open", "Open")}</span>
+                      <Clock size={13} />
                     </div>
                   ) : (
                     <div className="flex items-center gap-1 bg-softredtheme rounded-xl py-1 px-2 text-redtheme text-sm">
-                      <span className="lt-sm:hidden block">Closed</span> <Clock size={13} />
+                      <span className="lt-sm:hidden block">{t("calendar.status.closed", "Closed")}</span>
+                      <Clock size={13} />
                     </div>
                   )}
                 </div>
@@ -217,12 +213,18 @@ const CalendarGrid = () => {
                 {dayData.total_reservations > 0 && (
                   <div className="mt-1 space-y-1">
                     <div className="text-sm flex items-center gap-2 p-1 rounded dark:bg-darkthemeitems bg-darkthemeitems/10 text-darkthemeitems dark:text-textdarktheme truncate">
-                      <Tickets size={17} /> {dayData.total_reservations}{" "}
-                      {dayData.total_reservations === 1 ? "Reservation" : "Reservations"}
+                      <Tickets size={17} />
+                      {t("calendar.reservations.count", "{{count}} Reservation", {
+                        count: dayData.total_reservations,
+                        defaultValue_plural: "{{count}} Reservations",
+                      })}
                     </div>
-
                     <div className="text-sm flex items-center gap-2 p-1 rounded dark:bg-darkthemeitems/40 bg-darkthemeitems/5 text-darkthemeitems dark:text-textdarktheme truncate">
-                      <Users size={17} /> {dayData.total_guests} {dayData.total_guests === 1 ? "Person" : "People"}
+                      <Users size={17} />
+                      {t("calendar.guests.count", "{{count}} Person", {
+                        count: dayData.total_guests,
+                        defaultValue_plural: "{{count}} People",
+                      })}
                     </div>
                   </div>
                 )}

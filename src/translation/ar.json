@@ -241,7 +241,11 @@
     "editPlace": {
         "title1": "اختر طابقاً للتعديل",
         "title": "تعديل على أسطحك",
+        "placeholders": {
+            "placeAlias": "اسم الفضاء"
+        },
         "buttons": {
+            "addPlace": "إضافة فضاء",
             "addTable": "إضافة طاولة",
             "rectangleTable": "طاولة مستطيلة",
             "circleTable": "طاولة دائرية",
@@ -287,19 +291,55 @@
             "phone": "رقم الهاتف"
         }
     },
+    "calendar": {
+        "pageTitle": "شبكة التقويم - طابلا | تذوق أفضل ما في المغرب",
+        "title": "شبكة التقويم",
+        "viewAgenda": "عرض الشبكة",
+        "navigation": {
+        "previousMonth": "الشهر السابق",
+        "nextMonth": "الشهر التالي"
+        },
+        "weekDays": {
+        "sun": "الأحد",
+        "mon": "الإثنين",
+        "tue": "الثلاثاء",
+        "wed": "الأربعاء",
+        "thu": "الخميس",
+        "fri": "الجمعة",
+        "sat": "السبت"
+        },
+        "status": {
+        "open": "مفتوح",
+        "closed": "مغلق"
+        },
+        "reservations": {
+        "count": "{{count}} حجز",
+        "count_plural": "{{count}} حجوزات"
+        },
+        "guests": {
+        "count": "{{count}} شخص",
+        "count_plural": "{{count}} أشخاص"
+        }
+    },
     "clients": {
         "title": "العملاء",
         "searchPlaceholder": "بحث...",
         "selectClient": "اختيار عميل",
         "buttons": {
             "deselectAll": "إلغاء تحديد الكل",
-            "selectAll": "تحديد الكل",
-            "deleteClient": "حذف العميل"
+            "selectAll": "تحديد جميع العملاء المرئيين",
+            "deleteClient": "حذف العميل",
+            "sendToAll": "إرسال إلى الجميع"
         },
         "linkers": {
             "and": "و",
             "or": "أو",
             "more": "المزيد"
+        },
+        "titles":{
+            "mr": "السيد",
+            "mrs": "السيدة",
+            "ms": "الآنسة"
         },
         "allClients": "جميع العملاء",
         "sendNotificationButton": "إرسال إشعار",
@@ -474,6 +514,7 @@
             "photos": "الصور",
             "messaging": "المراسلة",
             "features": "الميزات",
+            "occasions": "المناسبات",
             "users": "المستخدمون",
             "areas": "المناطق",
             "billing": "الفوترة",
@@ -848,9 +889,289 @@
             "warning": "تم الوصول إلى العدد الأقصى من الصور"
         }
     },
+    "export": {
+        "title": "تصدير البيانات",
+        "selectFormat": "اختيار التنسيق",
+        "formatSheet": "جدول بيانات (CSV)",
+        "formatPDF": "PDF",
+        "pdfEngineTitle": "محرك PDF",
+        "pdfEngineStandard": "قياسي (عرض الويب)",
+        "pdfEngineAdvanced": "متقدم (جداول معقدة)",
+        "pdfEngineStandardDesc": "الأفضل للتخطيطات البسيطة والإنتاج السريع",
+        "pdfEngineAdvancedDesc": "أفضل للجداول المعقدة والتنسيق المتقدم",
+        "selectColumns": "اختيار الأعمدة",
+        "selectAll": "اختيار الكل",
+        "columnsSelected": "{{count}} عمود محدد",
+        "columnsSelected_plural": "{{count}} أعمدة محددة",
+        "customOptions": "خيارات مخصصة",
+        "closeButton": "إغلاق",
+        "exportButton": "تصدير",
+        "exportingButton": "جاري التصدير...",
+        "closeOverlay": "انقر لإغلاق نافذة التصدير",
+        "closeButtonAria": "إغلاق نافذة التصدير",
+        "exportButtonAria": "تصدير البيانات المحددة",
+        "fields": {
+            "textPlaceholder": "أدخل النص...",
+            "numberPlaceholder": "أدخل رقم...",
+            "selectPlaceholder": "اختر خيار..."
+        }
+    },
+    "blockReservation": {
+    "title": "حجب الحجوزات",
+    "loading": "جاري التحميل...",
+    "actions": {
+      "close": "إغلاق",
+      "cancel": "إلغاء",
+      "changeDate": "تغيير التاريخ",
+      "blockSelectedHours": "حجب الساعات المحددة",
+      "deleteBlock": "حذف الحجب"
+    },
+    "dateRange": {
+      "from": "من",
+      "to": "إلى"
+    },
+    "form": {
+      "title": "حجب الحجوزات الجديدة",
+      "startBlockTime": "وقت بداية الحجب",
+      "endBlockTime": "وقت نهاية الحجب",
+      "requiredField": "هذا الحقل مطلوب",
+      "selectFloor": "اختيار الطابق",
+      "selectTable": "اختيار الطاولة"
+    },
+    "periodTypes": {
+      "time": "الوقت",
+      "dateRange": "التاريخ / نطاق التواريخ"
+    },
+    "blockTypes": {
+      "all": "الكل",
+      "floor": "طابق",
+      "floors": "طوابق",
+      "table": "طاولة",
+      "tables": "طاولات",
+      "allTables": "جميع الطاولات"
+    },
+    "channels": {
+      "online": "عبر الإنترنت",
+      "backOffice": "المكتب الخلفي",
+      "onlineOnly": "عبر الإنترنت فقط",
+      "backOfficeOnly": "المكتب الخلفي فقط",
+      "onlineAndBackOffice": "عبر الإنترنت والمكتب الخلفي"
+    },
+    "currentlyBlocked": {
+      "title": "الحجوزات المحجوبة حالياً",
+      "noBlocked": "لا توجد حجوزات محجوبة لهذا التاريخ"
+    },
+    "details": {
+      "floors": "الطوابق",
+      "tables": "الطاولات"
+    },
+    "confirmDelete": {
+      "title": "هل أنت متأكد من أنك تريد حذف قاعدة الحجب هذه؟"
+    }
+  },
     "extra": {
         "title": "الأداة",
         "activated": "مُفعّل",
         "disactivated": "مُعطّل"
+    },
+    "reservationWidget": {
+    "page": {
+      "title": "تابلا | تذوق أفضل ما في المغرب"
+    },
+    "common": {
+      "restaurant": "مطعم",
+      "toggleDarkMode": "تبديل الوضع المظلم",
+      "back": "رجوع",
+      "continue": "متابعة",
+      "close": "إغلاق",
+      "readMore": "اقرأ المزيد"
+    },
+    "reservation": {
+      "makeReservation": "إجراء حجز",
+      "date": "التاريخ",
+      "time": "الوقت",
+      "guests": "الضيوف",
+      "bookNow": "احجز الآن",
+      "previewMenu": "معاينة قائمتنا"
+    },
+    "form": {
+      "yourInformation": "معلوماتك",
+      "title": "اللقب",
+      "mr": "السيد",
+      "mrs": "السيدة",
+      "ms": "الآنسة",
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "allergies": "الحساسية",
+      "preferences": "التفضيلات",
+      "occasion": "المناسبة",
+      "areas": "المناطق",
+      "dressCode": "قواعد اللباس",
+      "firstNamePlaceholder": "أدخل اسمك الأول",
+      "lastNamePlaceholder": "أدخل اسم عائلتك",
+      "emailPlaceholder": "أدخل عنوان بريدك الإلكتروني",
+      "phonePlaceholder": "أدخل رقم هاتفك",
+      "allergiesPlaceholder": "يرجى إدراج أي حساسية",
+      "preferencesPlaceholder": "أي طلبات خاصة أو تفضيلات",
+      "occasionPlaceholder": "اختر مناسبة (اختياري)",
+      "agreeToTerms": "أوافق على",
+      "termsAndConditions": "الشروط والأحكام",
+      "agreeToDressCode": "أوافق على قواعد اللباس",
+      "noDressCode": "لا توجد قواعد لباس محددة"
+    },
+    "validation": {
+      "firstNameRequired": "الاسم الأول مطلوب",
+      "lastNameRequired": "اسم العائلة مطلوب",
+      "emailRequired": "البريد الإلكتروني مطلوب",
+      "emailInvalid": "البريد الإلكتروني غير صحيح",
+      "phoneRequired": "رقم الهاتف مطلوب"
+    },
+    "confirmation": {
+      "title": "تأكيد معلوماتك",
+      "name": "الاسم",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "dateTime": "التاريخ والوقت",
+      "guests": "الضيوف",
+      "occasion": "المناسبة",
+      "allergies": "الحساسية",
+      "preferences": "التفضيلات",
+      "at": "في",
+      "person": "شخص",
+      "people": "أشخاص",
+      "editDetails": "تعديل التفاصيل",
+      "processing": "جاري المعالجة...",
+      "confirm": "تأكيد"
+    },
+    "success": {
+      "confirmed": "تم تأكيد الحجز!",
+      "completed": "تم إكمال الحجز!",
+      "message": "تم إجراء حجزك بنجاح. ستتلقى رسالة تأكيد بالبريد الإلكتروني قريباً.",
+      "makeAnother": "إجراء حجز آخر"
+    },
+    "unavailable": {
+      "title": "الحجوزات غير متاحة",
+      "description": "الحجوزات عبر الإنترنت غير متاحة حالياً. يرجى الاتصال بالمطعم مباشرة."
+    },
+    "errors": {
+      "serverError": "حدث خطأ ما. يرجى المحاولة مرة أخرى أو الاتصال بالمطعم مباشرة."
+    },
+    "footer": {
+      "copyright": "© {{year}} تابلا. جميع الحقوق محفوظة."
     }
+  },
+  "modifyReservation": {
+    "page": {
+      "titlePreview": "طابلا | تذوق أفضل ما في المغرب",
+      "titleModify": "تعديل حجزك | طابلا",
+      "titleContact": "اتصل بنا | طابلا",
+      "titleError": "خطأ | طابلا"
+    },
+    "common": {
+      "restaurant": "مطعم",
+      "restaurantImage": "صورة المطعم",
+      "toggleDarkMode": "تبديل الوضع المظلم",
+      "back": "رجوع"
+    },
+    "error": {
+      "title": "لا يمكنك تعديل حجزك",
+      "description": "حدث خطأ ما، ربما تكون قد قمت بالفعل بتعديل أو إلغاء حجزك"
+    },
+    "preview": {
+      "title": "تفاصيل حجزك",
+      "specialRequest": "طلب خاص",
+      "allergies": "الحساسية",
+      "occasion": "المناسبة",
+      "areas": "المناطق",
+      "date": "التاريخ",
+      "time": "الوقت",
+      "guests": "الضيوف",
+      "modifyButton": "تعديل",
+      "cancelButton": "إلغاء",
+      "sendMessage": "إرسال رسالة",
+      "messageSent": "لقد أرسلت رسالة بالفعل"
+    },
+    "modify": {
+      "title": "تعديل حجزك",
+      "specialRequestPlaceholder": "طلب خاص",
+      "allergiesPlaceholder": "الحساسية",
+      "areas": "المناطق",
+      "selectOccasion": "اختر مناسبة",
+      "date": "التاريخ",
+      "time": "الوقت",
+      "guests": "الضيوف",
+      "confirmButton": "تأكيد"
+    },
+    "contact": {
+      "title": "إرسال رسالة",
+      "messagePlaceholder": "اكتب رسالتك هنا...",
+      "sendButton": "إرسال",
+      "successTitle": "تم إرسال الرسالة بنجاح",
+      "successMessage": "لقد تلقينا رسالتك وسنرد عليك قريباً.",
+      "backToReservation": "العودة إلى الحجز"
+    },
+    "cancel": {
+      "keepReservation": "لا، احتفظ بالحجز",
+      "confirmMessage": "هل أنت متأكد من أنك تريد إلغاء هذا الحجز؟ لا يمكن التراجع عن هذا الإجراء."
+    }
+  },
+  "reviewWidget": {
+    "page": {
+      "title": "إعدادات أداة المراجعات | طابلا"
+    },
+    "title": "إعدادات الأداة",
+    "forReviews": "المراجعات",
+    "labels": {
+      "logo": "الشعار",
+      "logoAlt": "الشعار",
+      "title": "العنوان",
+      "description": "الوصف",
+      "enableAutoSend": "تفعيل طلبات المراجعة التلقائية",
+      "reviewDelay": "تأخير المراجعة (ساعات)"
+    },
+    "placeholders": {
+      "title": "أدخل عنوان الأداة",
+      "description": "أدخل وصف الأداة"
+    },
+    "buttons": {
+      "uploadLogo": "رفع الشعار",
+      "deleteLogo": "حذف الشعار",
+      "save": "حفظ الإعدادات",
+      "saving": "جاري الحفظ...",
+      "preview": "معاينة",
+      "closeToast": "إغلاق"
+    },
+    "messages": {
+      "saveSuccess": "تم حفظ الإعدادات بنجاح!",
+      "saveError": "فشل في حفظ الإعدادات. يرجى المحاولة مرة أخرى."
+    }
+  },
+  "reviewPage": {
+    "page": {
+      "title": "اترك تقييماً | طابلا"
+    },
+    "common": {
+      "toggleDarkMode": "تبديل الوضع المظلم",
+      "restaurantAlt": "مطعم"
+    },
+    "error": {
+      "title": "خطأ!"
+    },
+    "ratings": {
+      "service": "الخدمة",
+      "ambiance": "الأجواء",
+      "food": "الطعام",
+      "valueForMoney": "القيمة مقابل المال"
+    },
+    "form": {
+      "reviewPlaceholder": "اكتب تقييمك هنا",
+      "submitButton": "إرسال التقييم"
+    },
+    "success": {
+      "title": "شكراً لك على تقييمك!",
+      "message": "تم إرسال تقييمك بنجاح. نحن نقدر ملاحظاتك وسنستخدمها لتحسين خدمتنا."
+    }
+  }
 }

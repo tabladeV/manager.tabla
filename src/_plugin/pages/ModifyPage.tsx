@@ -1,10 +1,18 @@
 "use client"
-
 import type React from "react"
 import { useEffect, useMemo, useState } from "react"
+import { useTranslation } from "react-i18next"
 import Logo from "../../components/header/Logo"
-import { ArrowLeft, Edit, Edit2, Expand, MessageCircle, MessageCircleOff, Send, SendHorizonalIcon, X, XCircle } from "lucide-react"
-import { BaseKey, type BaseRecord, useCreate, useCustom, useCustomMutation, useList, useOne } from "@refinedev/core"
+import { ArrowLeft, Edit, MessageCircle, MessageCircleOff, XCircle, ChevronDown } from "lucide-react"
+import {
+  type BaseKey,
+  type BaseRecord,
+  useCreate,
+  useCustom,
+  useCustomMutation,
+  useList,
+  useOne,
+} from "@refinedev/core"
 import { useLocation, useParams, useSearchParams } from "react-router-dom"
 import { format } from "date-fns"
 import { getSubdomain } from "../../utils/getSubdomain"
@@ -13,7 +21,10 @@ import { useClickAway } from "react-use"
 import BaseBtn from "../../components/common/BaseBtn"
 import WidgetReservationProcess from "../../components/reservation/WidgetReservationProcess"
 import ActionPopup from "../../components/popup/ActionPopup"
-import { ar } from "date-fns/locale"
+import spanish from "../../assets/spanish.png"
+import arabic from "../../assets/arabic.jpg"
+import english from "../../assets/english.png"
+import french from "../../assets/french.png"
 
 interface QuillPreviewProps {
   content: string
@@ -35,11 +46,77 @@ export function QuillPreview({ content, className = "" }: QuillPreviewProps) {
   )
 }
 
+// Language Selector Component
+const LanguageSelector = () => {
+  const { i18n } = useTranslation()
+  const [isOpen, setIsOpen] = useState(false)
+
+  const languages = [
+    { code: "en", name: "English", icon: english },
+    { code: "es", name: "Español", icon: spanish },
+    { code: "fr", name: "Français", icon: french },
+    { code: "ar", name: "العربية", icon: arabic },
+  ]
+
+  const currentLanguage = languages.find((lang) => lang.code === i18n.language) || languages[0]
+
+  const handleLanguageChange = (languageCode: string) => {
+    i18n.changeLanguage(languageCode)
+    setIsOpen(false)
+  }
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-2 p-2 rounded-full hover:bg-[#f5f5f5] dark:hover:bg-[#333333] transition-colors"
+        aria-label="Select language"
+      >
+        <img
+          src={currentLanguage.icon || "/placeholder.svg"}
+          alt={currentLanguage.name}
+          className="w-6 h-6 rounded-full object-cover"
+        />
+        <span className="text-sm font-medium hidden sm:block">{currentLanguage.name}</span>
+        <ChevronDown size={16} className={`transition-transform ${isOpen ? "rotate-180" : ""}`} />
+      </button>
+      {isOpen && (
+        <>
+          {/* Backdrop */}
+          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+          {/* Dropdown */}
+          <div className="absolute right-0 top-full mt-2 bg-white dark:bg-darkthemeitems rounded-lg shadow-lg border border-[#dddddd] dark:border-[#444444] z-50 min-w-[160px]">
+            {languages.map((language) => (
+              <button
+                key={language.code}
+                onClick={() => handleLanguageChange(language.code)}
+                className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-[#f5f5f5] dark:hover:bg-bgdarktheme2 transition-colors first:rounded-t-lg last:rounded-b-lg ${
+                  currentLanguage.code === language.code ? "bg-[#f0f7e6] dark:bg-bgdarktheme2" : ""
+                }`}
+              >
+                <img
+                  src={language.icon || "/placeholder.svg"}
+                  alt={language.name}
+                  className="w-5 h-5 rounded-full object-cover"
+                />
+                <span className="text-sm font-medium">{language.name}</span>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
 
 const Modify = () => {
+  const { t } = useTranslation()
+  const { pathname } = useLocation()
+
   interface LoadingRowProps {
     isDarkMode: boolean
   }
+
   const LoadingComponent: React.FC<LoadingRowProps> = ({ isDarkMode }) => {
     return (
       <tr>
@@ -115,30 +192,34 @@ const Modify = () => {
   useEffect(() => {
     console.log("updateInfo", updateInfo)
   }, [updateInfo])
+
   interface Area {
-      id: BaseKey
-      seq_id: BaseKey
-      name: string
-      restaurant: BaseKey
-    }
-    const [areas, setAreas] = useState<Area[]>([])
-  
-    const [areaSelected, setAreaSelected] = useState<BaseKey>()
+    id: BaseKey
+    seq_id: BaseKey
+    name: string
+    restaurant: BaseKey
+  }
 
-    useEffect(() => {
-      console.log("areaSelected", areaSelected)
-    }, [areaSelected])
+  const [areas, setAreas] = useState<Area[]>([])
 
-    
-  
-    const {data: areasList , isLoading: areasListLoading, error:areasEroor} = useList({
-      resource: `api/v1/bo/areas/`,
-      queryOptions: {
-        onSuccess: (data) => {
-          setAreas(data.data as Area[])
-        } 
-      }
-    })
+  const [areaSelected, setAreaSelected] = useState<BaseKey>()
+
+  useEffect(() => {
+    console.log("areaSelected", areaSelected)
+  }, [areaSelected])
+
+  const {
+    data: areasList,
+    isLoading: areasListLoading,
+    error: areasEroor,
+  } = useList({
+    resource: `api/v1/bo/areas/`,
+    queryOptions: {
+      onSuccess: (data) => {
+        setAreas(data.data as Area[])
+      },
+    },
+  })
 
   const modifyReservation = () => {
     console.log("updateInfo", updateInfo?.occasion)
@@ -163,8 +244,7 @@ const Modify = () => {
         preferences: updateInfo?.preferences,
         restaurant: updateInfo?.restaurant,
         offer: 0,
-        area: 2 ,
-
+        area: 2,
         occasion: updateInfo?.occasion,
       },
     })
@@ -177,9 +257,7 @@ const Modify = () => {
   }, [reservation])
 
   const subdomain = getSubdomain()
-
   const [occasions, setOccasions] = useState<BaseRecord[]>()
-
   const { data: posts } = useCustom({
     url: `api/v1/bo/restaurants/subdomain/occasions`,
     method: "get",
@@ -208,20 +286,20 @@ const Modify = () => {
 
   const [searchParams, setSearchParams] = useSearchParams()
   const activeTab = searchParams.get("tab") || "preview"
-
   const [tab, setTab] = useState("preview")
-  const [pathname] = useLocation().pathname.split("?")
+  const [pathname2] = useLocation().pathname.split("?")
+
   useEffect(() => {
     if (tab === "preview") {
-      document.title = "Tabla | Taste Morocco's best"
+      document.title = t("modifyReservation.page.titlePreview")
     } else if (tab === "modify") {
-      document.title = "Modify Your Reservation | Tabla"
+      document.title = t("modifyReservation.page.titleModify")
     } else if (tab === "contact") {
-      document.title = "Contact Us | Tabla"
+      document.title = t("modifyReservation.page.titleContact")
     } else if (tab === "error") {
-      document.title = "Error | Tabla"
+      document.title = t("modifyReservation.page.titleError")
     }
-  }, [tab, pathname])
+  }, [tab, pathname2, t])
 
   useEffect(() => {
     if (errorPage) {
@@ -251,12 +329,14 @@ const Modify = () => {
   }
 
   const [reason, setReason] = useState<CancelationReason>()
-
   const [otherReason, setOtherReason] = useState<string>("")
-
   const [cancelationReasons, setCancelationReasons] = useState<CancelationReason[]>()
 
-  const { data: cancelReasons, isLoading: cancelReasonsLoading,error: cancelationError } = useList({
+  const {
+    data: cancelReasons,
+    isLoading: cancelReasonsLoading,
+    error: cancelationError,
+  } = useList({
     resource: `api/v1/bo/reservations/cancellation-reasons/`,
     filters: [
       {
@@ -285,7 +365,6 @@ const Modify = () => {
         message: error?.formattedMessage,
       }
     },
-
   })
 
   useEffect(() => {
@@ -298,9 +377,6 @@ const Modify = () => {
     setTab(activeTab)
   }, [activeTab])
 
-  
-  
-
   const [restaurantID, setRestaurantID] = useState<string>()
 
   useEffect(() => {
@@ -312,11 +388,12 @@ const Modify = () => {
     }
   }, [widgetData])
 
-  useEffect(()=>{
+  useEffect(() => {
     setAreaSelected(reservationInfo?.area)
   }, [reservationInfo])
 
   const [isDarkMode, setIsDarkMode] = useState(false)
+
   const toggleDarkMode = () => {
     setIsDarkMode((prev) => !prev)
     document.documentElement.classList.toggle("dark")
@@ -324,6 +401,7 @@ const Modify = () => {
   }
 
   const [showProcess, setShowProcess] = useState(false)
+
   interface dataTypes {
     reserveDate: string
     time: string
@@ -364,7 +442,6 @@ const Modify = () => {
   }
 
   const occasionRef = useRef(null)
-
   useClickAway(occasionRef, () => {
     setShowOccasions(false)
   })
@@ -375,93 +452,103 @@ const Modify = () => {
 
   const [showOccasions, setShowOccasions] = useState(false)
 
-    const [showConfirmPopup, setShowConfirmPopup] = useState(false);
-    
-    const confirmCancel = () => {
-      
-      cancelReservation({
-        resource: `api/v1/bo/subdomains/public/cutomer/reservations/${token}/cancel`,
-        values: {
-          cancellation_reason: (reason && reason?.id !== 0) ? reason?.id : null,
-          cancellation_note: (reason && reason?.id !== 0) ? reason?.name : otherReason,
-          other_cancellation_reason: otherReason === "" ? false : true,
-        },
-      })
-      
-      setErrorPage(true)
-      setShowConfirmPopup(false)
+  const [showConfirmPopup, setShowConfirmPopup] = useState(false)
+
+  const confirmCancel = () => {
+    cancelReservation({
+      resource: `api/v1/bo/subdomains/public/cutomer/reservations/${token}/cancel`,
+      values: {
+        cancellation_reason: reason && reason?.id !== 0 ? reason?.id : null,
+        cancellation_note: reason && reason?.id !== 0 ? reason?.name : otherReason,
+        other_cancellation_reason: otherReason === "" ? false : true,
+      },
+    })
+
+    setErrorPage(true)
+    setShowConfirmPopup(false)
+  }
+
+  // Initialize dark mode from localStorage
+  useEffect(() => {
+    const isDarkMode = localStorage.getItem("darkMode") === "true"
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark")
     }
+  }, [])
 
   return (
     <div className="min-h-screen bg-white  dark:bg-bgdarktheme2 text-black dark:text-white">
-      {<ActionPopup
-        action="cancel"
-        secondActionText="No, keep reservation"
-        message="Are you sure you want to cancel this reservation? This action cannot be undone."
-        actionFunction={confirmCancel}
-        showPopup={showConfirmPopup}
-        setShowPopup={setShowConfirmPopup}
-        cancelReason={cancelationReasons}
-        reasonSelected={(reason) => { setReason(reason); }}
-        otherReasonSelected={(otherReasonSent) => {
-          setOtherReason(otherReasonSent)
-        }}
-      />
-
+      {
+        <ActionPopup
+          action="cancel"
+          secondActionText={t("modifyReservation.cancel.keepReservation")}
+          message={t("modifyReservation.cancel.confirmMessage")}
+          actionFunction={confirmCancel}
+          showPopup={showConfirmPopup}
+          setShowPopup={setShowConfirmPopup}
+          cancelReason={cancelationReasons}
+          reasonSelected={(reason) => {
+            setReason(reason)
+          }}
+          otherReasonSelected={(otherReasonSent) => {
+            setOtherReason(otherReasonSent)
+          }}
+        />
       }
-
       {/* Header */}
       <header className="h-16 z-[300] w-full fixed flex items-center justify-between px-4 sm:px-10 shadow-md bg-white dark:bg-bgdarktheme">
         <Logo className="horizontal" nolink={true} />
-        <button
-          onClick={toggleDarkMode}
-          aria-label="Toggle dark mode"
-          className="p-2 rounded-full hover:bg-[#f5f5f5] dark:hover:bg-[#333333] transition-colors"
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="dark:hidden"
+        <div className="flex items-center gap-2">
+          {/* Language Selector */}
+          <LanguageSelector />
+          {/* Dark Mode Toggle */}
+          <button
+            onClick={toggleDarkMode}
+            aria-label={t("modifyReservation.common.toggleDarkMode")}
+            className="p-2 rounded-full hover:bg-[#f5f5f5] dark:hover:bg-[#333333] transition-colors"
           >
-            <path
-              d="M12 7C9.24 7 7 9.24 7 12C7 14.76 9.24 17 12 17C14.76 17 17 14.76 17 12C17 9.24 14.76 7 12 7ZM11 1V5H13V1H11ZM11 19V23H13V19H11ZM23 11H19V13H23V11ZM5 11H1V13H5V11ZM16.24 17.66L18.71 20.13L20.12 18.72L17.65 16.25L16.24 17.66ZM3.87 5.28L6.34 7.75L7.75 6.34L5.28 3.87L3.87 5.28ZM6.34 16.24L3.87 18.71L5.28 20.12L7.75 17.65L6.34 16.24ZM18.72 3.87L16.25 6.34L17.66 7.75L20.13 5.28L18.72 3.87Z"
-              fill="#88AB61"
-            />
-          </svg>
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="hidden dark:block"
-          >
-            <path
-              d="M12.0581 20C9.83544 20 7.94644 19.2223 6.39111 17.667C4.83577 16.1117 4.05811 14.2227 4.05811 12C4.05811 9.97401 4.71811 8.21734 6.03811 6.73001C7.35811 5.24267 8.99277 4.36467 10.9421 4.09601C10.9961 4.09601 11.0491 4.09801 11.1011 4.10201C11.1531 4.10601 11.2041 4.11167 11.2541 4.11901C10.9168 4.58967 10.6498 5.11301 10.4531 5.68901C10.2564 6.26501 10.1581 6.86867 10.1581 7.50001C10.1581 9.27801 10.7801 10.789 12.0241 12.033C13.2681 13.277 14.7794 13.8993 16.5581 13.9C17.1921 13.9 17.7964 13.8017 18.3711 13.605C18.9458 13.4083 19.4618 13.1413 19.9191 12.804C19.9271 12.854 19.9328 12.905 19.9361 12.957C19.9394 13.009 19.9414 13.062 19.9421 13.116C19.6861 15.0647 18.8144 16.699 17.3271 18.019C15.8398 19.339 14.0841 19.9993 12.0581 20Z"
-              fill="#88AB61"
-            />
-          </svg>
-        </button>
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="dark:hidden"
+            >
+              <path
+                d="M12 7C9.24 7 7 9.24 7 12C7 14.76 9.24 17 12 17C14.76 17 17 14.76 17 12C17 9.24 14.76 7 12 7ZM11 1V5H13V1H11ZM11 19V23H13V19H11ZM23 11H19V13H23V11ZM5 11H1V13H5V11ZM16.24 17.66L18.71 20.13L20.12 18.72L17.65 16.25L16.24 17.66ZM3.87 5.28L6.34 7.75L7.75 6.34L5.28 3.87L3.87 5.28ZM6.34 16.24L3.87 18.71L5.28 20.12L7.75 17.65L6.34 16.24ZM18.72 3.87L16.25 6.34L17.66 7.75L20.13 5.28L18.72 3.87Z"
+                fill="#88AB61"
+              />
+            </svg>
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="hidden dark:block"
+            >
+              <path
+                d="M12.0581 20C9.83544 20 7.94644 19.2223 6.39111 17.667C4.83577 16.1117 4.05811 14.2227 4.05811 12C4.05811 9.97401 4.71811 8.21734 6.03811 6.73001C7.35811 5.24267 8.99277 4.36467 10.9421 4.09601C10.9961 4.09601 11.0491 4.09801 11.1011 4.10201C11.1531 4.10601 11.2041 4.11167 11.2541 4.11901C10.9168 4.58967 10.6498 5.11301 10.4531 5.68901C10.2564 6.26501 10.1581 6.86867 10.1581 7.50001C10.1581 9.27801 10.7801 10.789 12.0241 12.033C13.2681 13.277 14.7794 13.8993 16.5581 13.9C17.1921 13.9 17.7964 13.8017 18.3711 13.605C18.9458 13.4083 19.4618 13.1413 19.9191 12.804C19.9271 12.854 19.9328 12.905 19.9361 12.957C19.9394 13.009 19.9414 13.062 19.9421 13.116C19.6861 15.0647 18.8144 16.699 17.3271 18.019C15.8398 19.339 14.0841 19.9993 12.0581 20Z"
+                fill="#88AB61"
+              />
+            </svg>
+          </button>
+        </div>
       </header>
       <div className="h-16 w-full opacity-0"></div>
-      
 
       <div className="h-[90vh] items-start xl:max-w-[1200px] no-scrollbar mx-auto  overflow-y-auto w-full flex  p-5 gap-8 px-10 justify-center mb-5">
         <div className="w-full sm:w-3/5">
           {widgetInfo?.image && (
             <img
               src={widgetInfo.image || "/placeholder.svg"}
-              alt="Restaurant"
+              alt={t("modifyReservation.common.restaurant")}
               className="w-full h-[7em] object-scale-down "
             />
-          ) }
+          )}
           <h1 className={`text-4xl text-center font-bold dark:text-white mb-2`}>{widgetInfo?.title}</h1>
-
           <div>
-            {/* <p className={`text-md mt-1 dark:text-[#ffffff85] text-subblack`}>{widgetInfo?.description}</p> */}
             <QuillPreview content={widgetInfo?.content} className="mt-2" />
           </div>
           {reservationLoading ? (
@@ -472,9 +559,9 @@ const Modify = () => {
             </div>
           ) : errorPage ? (
             <div className="flex flex-col gap-3 cursor-default bg-softredtheme p-5 text-center mt-4 items-center rounded-lg shadow-sm">
-              <h1 className="text-2xl font-bold text-redtheme">You can't modify your reservation</h1>
+              <h1 className="text-2xl font-bold text-redtheme">{t("modifyReservation.error.title")}</h1>
               <p className="text-md text-blacktheme dark:text-textdarktheme">
-                Something went wrong, you might have already fulfilled a modification or canceled your reservation
+                {t("modifyReservation.error.description")}
               </p>
             </div>
           ) : (
@@ -482,59 +569,67 @@ const Modify = () => {
               {tab === "preview" && (
                 <div>
                   <div className="flex flex-col gap-2">
-                    <h3 className={`text-xl font-bold mt-6 mb-3 dark:text-white`}>Your reservation details</h3>
+                    <h3 className={`text-xl font-bold mt-6 mb-3 dark:text-white`}>
+                      {t("modifyReservation.preview.title")}
+                    </h3>
                     <div className="space-y-3 mb-1">
                       <p
                         className={`text-md inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm transition-all hover:shadow-md`}
                       >
-                        <span className="font-bold mx-4">Special Request</span>
-                        {updateInfo?.commenter || '--'}
+                        <span className="font-bold mx-4">{t("modifyReservation.preview.specialRequest")}</span>
+                        {updateInfo?.commenter || "--"}
                       </p>
                       <p
                         className={`text-md inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm transition-all hover:shadow-md`}
                       >
-                        <span className="font-bold mx-4">Allergies</span>
-                        {updateInfo?.allergies || '--'}
+                        <span className="font-bold mx-4">{t("modifyReservation.preview.allergies")}</span>
+                        {updateInfo?.allergies || "--"}
                       </p>
-                      
+
                       {selectedOccasion ? (
                         <p
                           className={`text-md inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm transition-all hover:shadow-md`}
                         >
-                          <span className="font-bold mx-4">Occasion</span>
-                          {selectedOccasion|| '--'}
+                          <span className="font-bold mx-4">{t("modifyReservation.preview.occasion")}</span>
+                          {selectedOccasion || "--"}
                         </p>
                       ) : (
                         <></>
                       )}
                     </div>
-                    {widgetInfo?.enbale_area_selection&&
-                    <p
-                          className={`text-md flex items-center inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm transition-all hover:shadow-md`}
-                        >
-                      <span className="font-bold mx-4">Areas</span>
-                      <div className="flex flex-wrap gap-2">
-                        {areas.find((area) => area.id === areaSelected)?.name || '--'}
-                      </div>
+                    {widgetInfo?.enbale_area_selection && (
+                      <p
+                        className={`text-md flex items-center inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm transition-all hover:shadow-md`}
+                      >
+                        <span className="font-bold mx-4">{t("modifyReservation.preview.areas")}</span>
+                        <div className="flex flex-wrap gap-2">
+                          {areas.find((area) => area.id === areaSelected)?.name || "--"}
+                        </div>
                       </p>
-                    }           
+                    )}
+
                     <p
                       className={`text-md flex justify-around  inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm p-4`}
                     >
                       <div className={`text-md flex  gap-2 items-center  dark:text-[#ffffffd5]`}>
-                        <span className="font-bold text-greentheme dark:text-greentheme">Date</span>
+                        <span className="font-bold text-greentheme dark:text-greentheme">
+                          {t("modifyReservation.preview.date")}
+                        </span>
                         <span className="text-lg">{reservationInfo?.date}</span>
                       </div>
                       <div className={`text-md flex  gap-2 items-center  dark:text-[#ffffffd5]`}>
-                        <span className="font-bold text-greentheme dark:text-greentheme">Time</span>
+                        <span className="font-bold text-greentheme dark:text-greentheme">
+                          {t("modifyReservation.preview.time")}
+                        </span>
                         <span className="text-lg">{reservationInfo?.time.slice(0, 5)}</span>
                       </div>
                       <div className={`text-md flex  gap-2 items-center  dark:text-[#ffffffd5]`}>
-                        <span className="font-bold text-greentheme dark:text-greentheme">Guests</span>
+                        <span className="font-bold text-greentheme dark:text-greentheme">
+                          {t("modifyReservation.preview.guests")}
+                        </span>
                         <span className="text-lg">{reservationInfo?.number_of_guests}</span>
                       </div>
                     </p>
-                    
                   </div>
                   <div className="w-full">
                     <div className="flex w-full gap-3 mt-5">
@@ -542,7 +637,7 @@ const Modify = () => {
                         className={`btn-secondary w-full py-3 rounded-lg transition-all hover:shadow-md flex items-center justify-center gap-2`}
                         onClick={() => setSearchParams("tab=modify")}
                       >
-                        <Edit size={18} /> Modify
+                        <Edit size={18} /> {t("modifyReservation.preview.modifyButton")}
                       </button>
                       <BaseBtn
                         variant="secondary"
@@ -550,7 +645,7 @@ const Modify = () => {
                         loading={cancelLoading}
                         onClick={handleCancel}
                       >
-                        <XCircle size={18}/> Cancel
+                        <XCircle size={18} /> {t("modifyReservation.preview.cancelButton")}
                       </BaseBtn>
                     </div>
                     <div className="mt-3">
@@ -560,7 +655,13 @@ const Modify = () => {
                           setSearchParams("tab=contact")
                         }}
                       >
-                        {messageSent?<MessageCircleOff size={18}/> :<MessageCircle size={18} />} Send a message {messageSent? <span className="text-xs font-light">{'(you already sent a message)'}</span>:''}
+                        {messageSent ? <MessageCircleOff size={18} /> : <MessageCircle size={18} />}{" "}
+                        {t("modifyReservation.preview.sendMessage")}{" "}
+                        {messageSent ? (
+                          <span className="text-xs font-light">({t("modifyReservation.preview.messageSent")})</span>
+                        ) : (
+                          ""
+                        )}
                       </button>
                     </div>
                   </div>
@@ -568,13 +669,13 @@ const Modify = () => {
               )}
               {tab === "modify" && (
                 <div className="flex flex-col gap-2">
-                  <h3 className={`text-xl font-bold mt-5 dark:text-white`}>Modify your reservation</h3>
+                  <h3 className={`text-xl font-bold mt-5 dark:text-white`}>{t("modifyReservation.modify.title")}</h3>
                   <input
                     type="text"
                     defaultValue={reservationInfo?.commenter}
                     name="Special request"
                     className={`text-md inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm focus:shadow-md focus:outline-none focus:ring-1 focus:ring-greentheme transition-all`}
-                    placeholder="Special request"
+                    placeholder={t("modifyReservation.modify.specialRequestPlaceholder")}
                     onChange={(e) => {
                       setUpdateInfo({ ...updateInfo, commenter: e.target.value })
                     }}
@@ -584,23 +685,30 @@ const Modify = () => {
                     defaultValue={reservationInfo?.allergies}
                     name="Allergies"
                     className={`text-md inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm focus:shadow-md focus:outline-none focus:ring-1 focus:ring-greentheme transition-all`}
-                    placeholder="Allergies"
+                    placeholder={t("modifyReservation.modify.allergiesPlaceholder")}
                     onChange={(e) => {
                       setUpdateInfo({ ...updateInfo, allergies: e.target.value })
                     }}
                   />
-                  <p className={`text-md flex items-center inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm transition-all hover:shadow-md`}>
-                    <span className="font-[400] ">Areas</span>
-                    
+                  <p
+                    className={`text-md flex items-center inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm transition-all hover:shadow-md`}
+                  >
+                    <span className="font-[400] ">{t("modifyReservation.modify.areas")}</span>
+
                     <div className="flex flex-wrap gap-2 ">
-                      
                       {areas.map((area: Area, index: number) => (
-                        <label key={index} className="inline-flex items-center bg-softgreentheme text-greentheme p-2 rounded-md cursor-pointer">
+                        <label
+                          key={index}
+                          className="inline-flex items-center bg-softgreentheme text-greentheme p-2 rounded-md cursor-pointer"
+                        >
                           <input
                             type="checkbox"
                             value={area.id}
                             checked={areaSelected === area.id}
-                            onChange={()=>{setAreaSelected(area.id);setUpdateInfo({ ...updateInfo, area: area.id })}}
+                            onChange={() => {
+                              setAreaSelected(area.id)
+                              setUpdateInfo({ ...updateInfo, area: area.id })
+                            }}
                             className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]"
                           />
                           <span className="ml-2 text-sm ">{area.name}</span>
@@ -621,7 +729,7 @@ const Modify = () => {
                         >
                           <span>
                             {occasions?.find((occasion) => occasion.id === updateInfo?.occasion)?.name ||
-                              "Select an occasion"}
+                              t("modifyReservation.modify.selectOccasion")}
                           </span>
                           {!showOccasions ? (
                             <svg
@@ -680,9 +788,7 @@ const Modify = () => {
                   ) : (
                     ""
                   )}
-                  <div
-                    className={`bg-[#f9f9f9] dark:bg-darkthemeitems rounded-lg mb-2 shadow-sm`}
-                  >
+                  <div className={`bg-[#f9f9f9] dark:bg-darkthemeitems rounded-lg mb-2 shadow-sm`}>
                     <div
                       onClick={() => {
                         setShowProcess(true)
@@ -696,7 +802,7 @@ const Modify = () => {
                           }}
                           className={`font-[600] dark:text-greentheme text-greentheme`}
                         >
-                          Date{" "}
+                          {t("modifyReservation.modify.date")}{" "}
                         </div>
                         {data.reserveDate === "" ? (
                           <span
@@ -723,7 +829,7 @@ const Modify = () => {
                           }}
                           className={`font-[600] dark:text-greentheme text-greentheme`}
                         >
-                          Time{" "}
+                          {t("modifyReservation.modify.time")}{" "}
                         </div>
                         {data.time === "" ? (
                           <span
@@ -750,7 +856,7 @@ const Modify = () => {
                           }}
                           className={`font-[600] dark:text-greentheme text-greentheme`}
                         >
-                          Guests{" "}
+                          {t("modifyReservation.modify.guests")}{" "}
                         </div>
                         {data.guests === 0 ? (
                           <span
@@ -773,10 +879,10 @@ const Modify = () => {
                     </div>
                   </div>
                   <BaseBtn variant="primary" className="" loading={widgetLoading} onClick={modifyReservation}>
-                    Confirm
+                    {t("modifyReservation.modify.confirmButton")}
                   </BaseBtn>
                   <button className={`btn dark:text-white`} onClick={() => setSearchParams("tab=preview")}>
-                    Back
+                    {t("modifyReservation.common.back")}
                   </button>
                 </div>
               )}
@@ -790,17 +896,19 @@ const Modify = () => {
                     </div>
                   ) : !messageSent ? (
                     <div className="flex flex-col gap-2">
-                      <h3 className={`text-xl font-bold mt-5 dark:text-white`}>Send a message</h3>
+                      <h3 className={`text-xl font-bold mt-5 dark:text-white`}>
+                        {t("modifyReservation.contact.title")}
+                      </h3>
                       <textarea
                         name="Message"
                         className={`text-md inputs gap-3 dark:text-[#ffffffd5] dark:bg-darkthemeitems rounded-lg shadow-sm focus:shadow-md focus:outline-none focus:ring-1 focus:ring-greentheme transition-all min-h-[150px] p-4`}
-                        placeholder="Type your message here..."
+                        placeholder={t("modifyReservation.contact.messagePlaceholder")}
                         onChange={(e) => {
                           setMessage(e.target.value)
                         }}
                       />
                       <BaseBtn variant="primary" className="" loading={loadingMessage} onClick={handleSendMessage}>
-                        Send
+                        {t("modifyReservation.contact.sendButton")}
                       </BaseBtn>
                       <button
                         className={`btn dark:text-white`}
@@ -809,7 +917,7 @@ const Modify = () => {
                           setSearchParams("tab=preview")
                         }}
                       >
-                        Back
+                        {t("modifyReservation.common.back")}
                       </button>
                     </div>
                   ) : (
@@ -822,9 +930,11 @@ const Modify = () => {
                         />
                         <circle cx="11.5" cy="11.5" r="9.5" stroke="#88AB61" strokeWidth="2" />
                       </svg>
-                      <h3 className={`text-2xl font-bold text-greentheme mb-2`}>Message Sent Successfully</h3>
+                      <h3 className={`text-2xl font-bold text-greentheme mb-2`}>
+                        {t("modifyReservation.contact.successTitle")}
+                      </h3>
                       <p className="text-center text-subblack dark:text-[#ffffff85] mb-2">
-                        We've received your message and will get back to you shortly.
+                        {t("modifyReservation.contact.successMessage")}
                       </p>
                       <button
                         className={`btn-secondary flex gap-2 items-center py-3 px-5 rounded-lg transition-all hover:shadow-md`}
@@ -833,7 +943,7 @@ const Modify = () => {
                           setSearchParams("tab=preview")
                         }}
                       >
-                        <ArrowLeft size={15} /> <span>Back to Reservation</span>
+                        <ArrowLeft size={15} /> <span>{t("modifyReservation.contact.backToReservation")}</span>
                       </button>
                     </div>
                   )}
@@ -842,19 +952,21 @@ const Modify = () => {
             </div>
           )}
         </div>
-        {widgetInfo?.image_2 && <div className="hidden sm:block w-2/5 sticky top-0 h-[83vh]">
-          {widgetInfo?.image_2 ? (
-            <img
-              src={widgetInfo.image_2 || "/placeholder.svg"}
-              alt="Restaurant"
-              className="w-full h-full object-cover rounded-lg shadow-md"
-            />
-          ) : (
-            <div className="w-full h-full bg-[#f5f5f5] dark:bg-[#2a2a2a] rounded-lg flex items-center justify-center">
-              <p className="text-[#888888] dark:text-[#666666]">Restaurant image</p>
-            </div>
-          )}
-        </div>}
+        {widgetInfo?.image_2 && (
+          <div className="hidden sm:block w-2/5 sticky top-0 h-[83vh]">
+            {widgetInfo?.image_2 ? (
+              <img
+                src={widgetInfo.image_2 || "/placeholder.svg"}
+                alt={t("modifyReservation.common.restaurant")}
+                className="w-full h-full object-cover rounded-lg shadow-md"
+              />
+            ) : (
+              <div className="w-full h-full bg-[#f5f5f5] dark:bg-[#2a2a2a] rounded-lg flex items-center justify-center">
+                <p className="text-[#888888] dark:text-[#666666]">{t("modifyReservation.common.restaurantImage")}</p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
       {showProcess && (
         <div className="">
