@@ -28,8 +28,19 @@ const LanguageSelector = () => {
 
   const handleLanguageChange = (languageCode: string) => {
     i18n.changeLanguage(languageCode)
+    localStorage.setItem("preferredLanguage", languageCode);
     setIsOpen(false)
   }
+
+
+  useEffect(() => {
+    const storedLang = localStorage.getItem("preferredLanguage")
+    if (storedLang && languages.some((lang) => lang.code === storedLang)) {
+      i18n.changeLanguage(storedLang)
+    } else {
+      i18n.changeLanguage("en") // Default to English if no valid language is stored
+    }
+  }, [i18n, languages])
 
   return (
     <div className="relative">

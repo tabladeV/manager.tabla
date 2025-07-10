@@ -63,6 +63,7 @@ const LanguageSelector = () => {
 
   const handleLanguageChange = (languageCode: string) => {
     i18n.changeLanguage(languageCode)
+    localStorage.setItem("preferredLanguage", languageCode)
     setIsOpen(false)
   }
 
@@ -478,6 +479,18 @@ const Modify = () => {
   }, [])
 
     const { preferredLanguage } = useDateContext() 
+
+    const { i18n } = useTranslation()
+
+  useEffect(() => {
+    const storedLang = localStorage.getItem("preferredLanguage")
+    if (storedLang) {
+      i18n.changeLanguage(storedLang)
+    } else {
+      localStorage.setItem("preferredLanguage", "en")
+      i18n.changeLanguage("en")
+    }
+  }, [i18n])
 
 
   return (
