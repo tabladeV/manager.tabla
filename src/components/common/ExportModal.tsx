@@ -356,7 +356,7 @@ const ExportModal = ({
           {customFields.length > 0 && (
             <div>
               <h3 className="text-lg font-medium mb-2">
-                {customOptionsTitle || t("export.customOptions", "Custom Options")}
+                {customOptionsTitle || t("export.customOptions")}
               </h3>
               <div className="space-y-3">{customFields.map((field) => renderFieldWithChildren(field))}</div>
             </div>

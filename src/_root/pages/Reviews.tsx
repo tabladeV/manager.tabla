@@ -327,7 +327,7 @@ const Reviews = () => {
         <h1>{t("reviews.title")}</h1>
         <button onClick={() => setShowExportModal(true)} className={`dark:text-whitetheme btn-primary`}>
           {/* {t('reviews.filters.all')} */}
-          export
+          {t("reviews.buttons.export")}
         </button>
       </div>
       <div className="flex lt-sm:flex-col lt-sm:gap-2 justify-between">
