@@ -7,6 +7,7 @@ import { useDarkContext } from '../../../context/DarkContext';
 import axiosInstance from '../../../providers/axiosInstance';
 import axios from 'axios'; // Import axios to use isAxiosError
 import { useNavigate } from 'react-router-dom';
+import { NotificationService } from '../../../services/notifications/NotificationService';
 
 // Define a more specific type for the API response if known, e.g.:
 interface NotificationsApiResponse {
@@ -111,12 +112,27 @@ const NotificationsDropdown = () => {
   }, [isOpen, permissionStatus, activeTab, fetchData]);
 
   useEffect(() => {
-    if (!('Notification' in window)) return;
-
-    const checkPermission = () => {
-      const currentBrowserPermission = Notification.permission;
-      if (currentBrowserPermission !== permissionStatus) {
-        setPermissionStatus(currentBrowserPermission);
+    const checkPermission = async () => {
+      try {
+        const notificationService = NotificationService.getInstance();
+        
+        if (NotificationService.isNativePlatform()) {
+          // On native platforms, assume granted if the service is supported
+          if (notificationService.isSupported()) {
+            setPermissionStatus('granted');
+          } else {
+            setPermissionStatus('denied');
+          }
+        } else {
+          // On web platforms, check Notification API
+          const currentBrowserPermission = typeof Notification !== 'undefined' ? Notification.permission : 'default';
+          if (currentBrowserPermission !== permissionStatus) {
+            setPermissionStatus(currentBrowserPermission);
+          }
+        }
+      } catch (error) {
+        console.error('[NotificationsDropdown] Error checking permission:', error);
+        setPermissionStatus('default');
       }
     };
 
@@ -285,9 +301,22 @@ const NotificationsDropdown = () => {
   };
 
   useEffect(()=>{
-    if (Notification.permission === 'granted') {
-      fetchGlobalCounts();
-    }
+    const checkAndFetch = async () => {
+      if (NotificationService.isNativePlatform()) {
+        // On native platforms, always fetch if service is supported
+        const notificationService = NotificationService.getInstance();
+        if (notificationService.isSupported()) {
+          fetchGlobalCounts();
+        }
+      } else {
+        // On web platforms, check Notification permission
+        if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+          fetchGlobalCounts();
+        }
+      }
+    };
+    
+    checkAndFetch();
   },[]);
 
   const bgColor = isDarkMode ? 'bg-bgdarktheme' : 'bg-white';

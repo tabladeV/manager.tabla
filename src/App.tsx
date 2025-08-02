@@ -1,4 +1,4 @@
-import { Refine, Authenticated, CanAccess, useUpdate } from "@refinedev/core";
+import { Refine, Authenticated, CanAccess } from "@refinedev/core";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 import dataProvider from "@refinedev/simple-rest";
@@ -66,11 +66,11 @@ import FAQPage from "./_root/pages/FAQPage";
 import TermsAndConditions from "./_root/pages/TermsAndConditions";
 import CalendarGrid from "./_root/pages/CalendarGrid";
 import WorkingHours from "./components/settings/WorkingHours";
-import NotificationsProvider from "./providers/NotificationsProvider";
+import NotificationsProviderV2 from "./providers/NotificationsProviderV2";
 import Areas from "./components/settings/Areas";
+import ErrorBoundary from "./components/ErrorBoundary";
 const API_HOST = import.meta.env.VITE_API_URL || "https://api.dev.tabla.ma";
 function App() {
-
   useEffect(() => {
     document.title = "Tabla | Taste Morocco's best ";
   }, []);
@@ -95,13 +95,14 @@ function App() {
 
 
   return (
-    <PowerProvider>
-      <DarkProvider>
-        <DateProvider>
-          <BrowserRouter>
-            <RefineKbarProvider>
-                <DevtoolsProvider>
-                <Refine
+    <ErrorBoundary>
+      <PowerProvider>
+        <DarkProvider>
+          <DateProvider>
+            <BrowserRouter>
+              <RefineKbarProvider>
+                  <DevtoolsProvider>
+                  <Refine
                   authProvider={authProvider}
                   dataProvider={dataProvider(API_HOST, customAxiosInstance)}
                   routerProvider={routerBindings}
@@ -115,7 +116,7 @@ function App() {
                   }}
                 >
                   {isManager ? (
-                  <NotificationsProvider>
+                  <NotificationsProviderV2>
                     <Routes>
                       <Route
                         element={
@@ -439,7 +440,7 @@ function App() {
                         <Route path="*" element={<ErrorPage />} />
                       </Route>
                     </Routes>
-                    </NotificationsProvider>
+                    </NotificationsProviderV2>
                   ) : (
                     <Routes>
                       <Route element={<Plugins />}>
@@ -467,6 +468,7 @@ function App() {
         </DateProvider>
       </DarkProvider>
     </PowerProvider>
+    </ErrorBoundary>
   );
 }
 

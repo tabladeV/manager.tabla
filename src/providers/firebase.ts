@@ -15,12 +15,17 @@ const firebaseConfig = {
 };
 
 
-const app = initializeApp(firebaseConfig);
+let app = null;
 let messagingInstance = null;
-try {
-    messagingInstance = getMessaging(app);
-} catch (error) {
-    console.error("Failed to initialize Firebase Messaging, possibly due to unsupported environment (e.g., non-browser).", error);
+
+// Only initialize Firebase on web platforms
+if (typeof window !== 'undefined' && typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+    try {
+        app = initializeApp(firebaseConfig);
+        messagingInstance = getMessaging(app);
+    } catch (error) {
+        console.error("Failed to initialize Firebase Messaging, possibly due to unsupported environment (e.g., non-browser).", error);
+    }
 }
 
 const registerTokenWithBackend = async (fcmToken: string) => {
