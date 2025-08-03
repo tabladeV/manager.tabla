@@ -1,6 +1,7 @@
 import { NotificationManager, NotificationPayload } from './types';
 import { PushNotifications, Token, PushNotificationSchema, ActionPerformed } from '@capacitor/push-notifications';
-import axiosInstance from '../../providers/axiosInstance';
+import { httpClient } from '../httpClient';
+import { Capacitor } from '@capacitor/core';
 
 export class CapacitorNotificationManager implements NotificationManager {
   private messageListeners: Array<(payload: NotificationPayload) => void> = [];
@@ -133,9 +134,13 @@ export class CapacitorNotificationManager implements NotificationManager {
         return;
       }
 
-      await axiosInstance.post('api/v1/device-tokens/', {
+      // Detect platform for device type
+      const platform = Capacitor.getPlatform();
+      const deviceType = platform === 'ios' ? 'IOS' : 'ANDROID';
+      
+      await httpClient.post('api/v1/device-tokens/', {
         token,
-        device_type: 'ANDROID' // Will need to detect iOS later
+        device_type: deviceType
       });
     } catch (error) {
       console.error('[CapacitorNotificationManager] Failed to register token:', error);

@@ -2,7 +2,7 @@ import { useState, useCallback, useRef, useEffect } from "react"
 import { toast } from "react-toastify"
 import { saveAs } from "file-saver"
 import { Check, Download, Loader, X } from "lucide-react"
-import axiosInstance from "../providers/axiosInstance"
+import { httpClient } from "../services/httpClient"
 import ActionPopup from "../components/popup/ActionPopup"
 
 interface Task {
@@ -54,7 +54,7 @@ export const useAsyncTaskManager = () => {
         render: "Downloading your report...",
         icon: <Loader className="animate-spin" />,
       })
-      const response = await axiosInstance.get(downloadUrl, { responseType: "blob" })
+      const response = await httpClient.get(downloadUrl, { responseType: 'blob' })
       const header = response.headers["content-disposition"]
       const filename = header ? header.split("filename=")[1].replace(/"/g, "") : "report.xlsx"
       saveAs(response.data, filename)
@@ -84,7 +84,7 @@ export const useAsyncTaskManager = () => {
       const { toastId } = tasksRef.current[taskId]
 
       try {
-        const response = await axiosInstance.get(`/api/v1/bo/reports/status/${taskId}/`)
+        const response = await httpClient.get(`/api/v1/bo/reports/status/${taskId}/`)
         const { status, download_url } = response.data
 
         if (status === "completed") {

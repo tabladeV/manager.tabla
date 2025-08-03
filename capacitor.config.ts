@@ -6,6 +6,7 @@ const config: CapacitorConfig = {
   webDir: 'dist',
   server: {
     androidScheme: 'https',
+    iosScheme: 'https',
     // Uncomment for development with live reload
     // url: 'http://192.168.1.100:5173',
     // cleartext: true

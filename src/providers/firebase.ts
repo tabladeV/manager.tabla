@@ -1,7 +1,7 @@
 // src/providers/firebase.js
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, MessagePayload, onMessage } from 'firebase/messaging';
-import axiosInstance from './axiosInstance';
+import { httpClient } from '../services/httpClient';
 import { getSWRegistration } from './swManager';
 
 const firebaseConfig = {
@@ -31,7 +31,7 @@ if (typeof window !== 'undefined' && typeof navigator !== 'undefined' && 'servic
 const registerTokenWithBackend = async (fcmToken: string) => {
     try {
         console.log('Registering FCM token with backend:', fcmToken);
-        await axiosInstance.post('api/v1/device-tokens/', { // Assumes your Django API for device tokens
+        await httpClient.post('api/v1/device-tokens/', { // Assumes your Django API for device tokens
             token: fcmToken,
             device_type: 'WEB'
         });

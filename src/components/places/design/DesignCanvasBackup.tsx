@@ -14,7 +14,7 @@ import { generateRandomNumber } from '../../../utils/helpers';
 import Konva from 'konva';
 import ZoomControls from '../ZoomControls';
 import dataProvider from '@refinedev/simple-rest';
-import axiosInstance from '../../../providers/axiosInstance';
+import { httpClient } from '../../../services/httpClient';
 import { off } from 'process';
 import BaseBtn from '../../common/BaseBtn';
 import { useDarkContext } from '../../../context/DarkContext';
@@ -577,7 +577,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
   const checkTableExists = useCallback(async (tableName: string) => {
     try {
       setLoading(true);
-      const { data } = await axiosInstance.get('api/v1/bo/tables/',{
+      const { data } = await httpClient.get('api/v1/bo/tables/',{
         params: {
           search: tableName
         }

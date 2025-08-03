@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Capacitor } from '@capacitor/core';
 
 /**
  * Formats Django API errors into a readable message
@@ -57,11 +58,24 @@ const formatDjangoErrorMessage = (error: { response: { data: any; status: any; s
   return messages.join('\n');
 };
 
-axios.defaults.withCredentials = true;
+// Check if running on iOS platform
+const isIOS = Capacitor.getPlatform() === 'ios';
+
+// On iOS, withCredentials can cause CORS issues
+const useCredentials = !isIOS;
+
+if (useCredentials) {
+  axios.defaults.withCredentials = true;
+}
+
 const API_HOST = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL : "https://api.dev.tabla.ma";
 const axiosInstance = axios.create({
   baseURL: API_HOST,
-  withCredentials: true
+  withCredentials: useCredentials,
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }
 });
 
 // Request interceptor to add the restaurant header from localStorage.

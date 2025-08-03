@@ -8,6 +8,7 @@
     "@capacitor/app": "6",
     "@capacitor/cli": "6",
     "@capacitor/core": "6",
+    "@capacitor/ios": "6",
     "@capacitor/push-notifications": "6",
     "@chakra-ui/cli": "^3.1.2",
     "@chakra-ui/react": "^3.1.2",
@@ -99,7 +100,8 @@
     "start": "refine start",
     "refine": "refine",
     "cap:sync": "cap sync",
-    "cap:android": "cap open android"
+    "cap:android": "cap open android",
+    "cap:ios": "cap open ios"
   },
   "browserslist": {
     "production": [

@@ -2,7 +2,7 @@ import { NotificationManager, NotificationPayload } from './types';
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage, MessagePayload } from 'firebase/messaging';
 import { getSWRegistration } from '../../providers/swManager';
-import axiosInstance from '../../providers/axiosInstance';
+import { httpClient } from '../httpClient';
 
 const firebaseConfig = {
   apiKey: "AIzaSyASiN6DhFjj2kPJbke_MIXmLdRD0A7A1IU",
@@ -106,7 +106,7 @@ export class WebNotificationManager implements NotificationManager {
   private async registerTokenWithBackend(token: string): Promise<void> {
     try {
       console.log('[WebNotificationManager] Registering token with backend');
-      await axiosInstance.post('api/v1/device-tokens/', {
+      await httpClient.post('api/v1/device-tokens/', {
         token,
         device_type: 'WEB'
       });

@@ -1,7 +1,7 @@
 import { Refine, Authenticated, CanAccess } from "@refinedev/core";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
-import dataProvider from "@refinedev/simple-rest";
+import createDataProvider from "./providers/dataProvider";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import routerBindings, {
   UnsavedChangesNotifier,
@@ -50,7 +50,6 @@ import WidgetPage from "./_plugin/pages/WidgetPage";
 import DesignPlacesIndex from "./_root/pages/DesignPlacesIndex";
 import ErrorPage from "./_root/pages/ErrorPage";
 
-import customAxiosInstance from "./providers/axiosInstance";
 import authProvider from "./providers/authProvider";
 import accessControlProvider from "./providers/accessControl";
 import { useEffect } from "react";
@@ -76,7 +75,7 @@ function App() {
   }, []);
 
   const subdomain = getSubdomain();
-  const isManager = subdomain === "manager";
+  const isManager = subdomain === "manager" || true;
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLogedIn") === "true";
     const refreshToken = localStorage.getItem("refresh");
@@ -104,7 +103,7 @@ function App() {
                   <DevtoolsProvider>
                   <Refine
                   authProvider={authProvider}
-                  dataProvider={dataProvider(API_HOST, customAxiosInstance)}
+                  dataProvider={createDataProvider(API_HOST)}
                   routerProvider={routerBindings}
                   accessControlProvider={accessControlProvider}
                   notificationProvider={notificationProvider}

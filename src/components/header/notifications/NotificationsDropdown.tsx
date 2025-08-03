@@ -4,8 +4,7 @@ import NotificationItem from './NotificationItem';
 import { NotificationType } from './notificationsData'; // Corrected import to NotificationType
 import DeviceRegistration from '../DeviceRegistration';
 import { useDarkContext } from '../../../context/DarkContext';
-import axiosInstance from '../../../providers/axiosInstance';
-import axios from 'axios'; // Import axios to use isAxiosError
+import { httpClient, isHttpError, getErrorMessage } from '../../../services/httpClient';
 import { useNavigate } from 'react-router-dom';
 import { NotificationService } from '../../../services/notifications/NotificationService';
 
@@ -44,7 +43,7 @@ const NotificationsDropdown = () => {
   
   const fetchGlobalCounts = useCallback(async () => {
     try {
-      const countResponse = await axiosInstance.get<NotificationCount>('api/v1/notifications/count/');
+      const countResponse = await httpClient.get('api/v1/notifications/count/');
       const countData = countResponse.data || { read: 0, total: 0, unread: 0 };
       setNotificationCount(countData);
     } catch (err) {
@@ -66,7 +65,7 @@ const NotificationsDropdown = () => {
     setError(null);
     try {
       const params = { page_size: PAGE_SIZE, page, read: tab === 'read' };
-      const response = await axiosInstance.get<NotificationsApiResponse>('api/v1/notifications/', { params });
+      const response = await httpClient.get('api/v1/notifications/', { params });
       
       const apiResults = response.data.results || [];
       const totalItemsForCurrentTab = response.data.count || 0;
@@ -84,8 +83,8 @@ const NotificationsDropdown = () => {
 
     } catch (err: unknown) {
       let errorMsg = 'Failed to fetch notifications';
-      if (axios.isAxiosError(err)) {
-        errorMsg = err.response?.data?.detail || err.message;
+      if (isHttpError(err)) {
+        errorMsg = getErrorMessage(err);
       } else if (err instanceof Error) {
         errorMsg = err.message;
       }
@@ -171,7 +170,7 @@ const NotificationsDropdown = () => {
 
 
     try {
-      await axiosInstance.post(`api/v1/notifications/${notification.user_notification_id}/mark-read/`);
+      await httpClient.post(`api/v1/notifications/${notification.user_notification_id}/mark-read/`);
       await fetchGlobalCounts(); // Refresh global counts
       // Refresh current tab's first page to ensure consistency
       // If on unread tab, item should disappear. If on read tab, it should appear/update.
@@ -187,8 +186,8 @@ const NotificationsDropdown = () => {
       setNotifications(originalNotifications); // Revert optimistic update on error
       await fetchGlobalCounts(); // Still try to refresh counts
       let errorMsg = 'Error marking notification as read';
-      if (axios.isAxiosError(err)) {
-        errorMsg = err.response?.data?.detail || err.message;
+      if (isHttpError(err)) {
+        errorMsg = getErrorMessage(err);
       } else if (err instanceof Error) {
         errorMsg = err.message;
       }
@@ -258,13 +257,13 @@ const NotificationsDropdown = () => {
     if (isLoading || (notificationCount?.total || 0) === 0) return;
     setIsLoading(true);
     try {
-      await axiosInstance.delete('api/v1/notifications/clear-all/');
+      await httpClient.delete('api/v1/notifications/clear-all/');
       await fetchGlobalCounts();
       fetchData(1, activeTab); // Refresh current tab
     } catch (err) {
       let errorMsg = 'Failed to clear notifications';
-      if (axios.isAxiosError(err)) {
-        errorMsg = err.response?.data?.detail || err.message;
+      if (isHttpError(err)) {
+        errorMsg = getErrorMessage(err);
       } else if (err instanceof Error) {
         errorMsg = err.message;
       }
@@ -278,14 +277,14 @@ const NotificationsDropdown = () => {
     if (isLoading || (notificationCount?.unread || 0) === 0) return;
     setIsLoading(true);
     try {
-      await axiosInstance.post('api/v1/notifications/mark-all-read/');
+      await httpClient.post('api/v1/notifications/mark-all-read/');
       await fetchGlobalCounts();
       setActiveTab('unread'); // Switch to unread tab as it should be empty or updated
       fetchData(1, 'unread'); 
     } catch (err) {
       let errorMsg = 'Failed to mark all notifications as read';
-      if (axios.isAxiosError(err)) {
-        errorMsg = err.response?.data?.detail || err.message;
+      if (isHttpError(err)) {
+        errorMsg = getErrorMessage(err);
       } else if (err instanceof Error) {
         errorMsg = err.message;
       }
