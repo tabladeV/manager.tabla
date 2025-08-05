@@ -1,0 +1,10 @@
+{
+    "i18n-ally.localesPaths": [
+        "public/gridpack_trial/codebase/types/ts-colorpicker/sources/locales",
+        "public/gridpack_trial/codebase/types/ts-combobox/sources/locales",
+        "public/gridpack_trial/codebase/types/ts-form/sources/locales",
+        "public/gridpack_trial/codebase/types/ts-message/sources/locales",
+        "public/gridpack_trial/codebase/types/ts-timepicker/sources/locales",
+        "public/gridpack_trial/codebase/types/ts-vault/sources/locales"
+    ]
+}

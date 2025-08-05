@@ -75,6 +75,8 @@ function App() {
     document.title = "Tabla | Taste Morocco's best ";
   }, []);
 
+
+
   const subdomain = getSubdomain();
   const isManager = subdomain === "manager";
   useEffect(() => {

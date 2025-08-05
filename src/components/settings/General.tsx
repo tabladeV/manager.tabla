@@ -17,6 +17,7 @@ import BaseBtn from '../common/BaseBtn';
 interface Restaurant {
   id: BaseKey;
   name: string;
+  preferred_language: "en" | "fr" | "ar" | "es";
   email: string;
   website: string;
   phone: string;
@@ -114,6 +115,7 @@ const General = () => {
   const [formData, setFormData] = useState({
     name: restaurant?.name || '',
     email: restaurant?.email || '',
+    preferred_language: restaurant?.preferred_language || '',
     address: restaurant?.address || '',
     city: restaurant?.city || '',
     country: restaurant?.country || '',
@@ -130,6 +132,7 @@ const General = () => {
         email: restaurant.email,
         city: restaurant.city,
         address: restaurant.address,
+        preferred_language: restaurant.preferred_language,
         average_price: restaurant.average_price,
         country: restaurant.country,
         description: restaurant.description,
@@ -229,6 +232,7 @@ const General = () => {
       email: formData.email,
       website: formData.website,
       phone: formData.phone,
+      preferred_language: formData.preferred_language,
       address: formData.address || 'N/A',
       description: formData.description,
       country: formData.country,
@@ -432,6 +436,17 @@ const General = () => {
               value={formData.address}
               onChange={handleInputChange}
             />
+            <select
+              id="preferred_language"
+              className={`inputs w-1/2 dark:bg-darkthemeitems bg-white `}
+              value={formData.preferred_language}
+              onChange={handleSelectChange}
+            >
+              <option value="en">English</option>
+              <option value="fr">Français</option>
+              <option value="ar">العربية</option>
+              <option value="es">Español</option>
+            </select>
           </div>
           <div className="flex gap-3">
             <textarea
