@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.tabla.tablabomobile',
+  appId: 'com.tabla.tablamanager',
   appName: 'Tabla Back Office',
   webDir: 'dist',
   server: {
