@@ -162,7 +162,7 @@ const WorkingHours = () => {
   const applyWeeklyChanges = () => {
     const newData = data.map((day) => ({
       ...day,
-      availability_hours: [...weeklySlots],
+      availability_hours: weeklySlots.map(slot => ({ ...slot })),
       closed_day: weeklySlots.length === 0,
     }));
     setData(newData);
