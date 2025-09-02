@@ -892,6 +892,171 @@
                 "cancel": "إلغاء"
             },
             "warning": "تم الوصول إلى العدد الأقصى من الصور"
+        },
+        "selectSettings": {
+            "title": "إعداد التكوين",
+            "subtitle": "اختر الإعدادات التي تريد تكوينها. يمكنك إدارة إعدادات مطعمك العامة أو تكوينات السوق المحددة.",
+            "buttons": {
+                "generalSettings": {
+                    "title": "الإعدادات العامة",
+                    "description": "تكوين معلومات المطعم والمناسبات وساعات العمل والأدوار والإعدادات العامة الأخرى."
+                },
+                "marketplaceSettings": {
+                    "title": "إعدادات السوق",
+                    "description": "إدارة تكوينات السوق وإعداد حضور مطعمك في السوق."
+                }
+            }
+        }
+    },
+    "marketplaceSettings": {
+        "title": "إعدادات السوق",
+        "chooseSettingPrompt": "اختر إعداد السوق الذي تريد تعديله",
+        "menuItems": {
+            "gallery": "المعرض",
+            "basicInfo": "المعلومات الأساسية",
+            "menu": "القائمة والأسعار",
+            "offers": "العروض والترويجات",
+            "reviews": "إدارة المراجعات",
+            "workingHours": "ساعات العمل عبر الإنترنت",
+            "extraServices": "الخدمات الإضافية",
+            "onlineBookingBlockage": "قيود الحجز"
+        },
+        "gallery": {
+            "title": "إدارة المعرض",
+            "description": "إدارة معرض صور مطعمك للسوق. ارفع صور عالية الجودة لعرض أجواء مطعمك والأطباق والمرافق."
+        },
+        "menu": {
+            "title": "القائمة والأسعار",
+            "description": "تكوين عناصر القائمة والفئات والأسعار المتوسطة لعرض السوق. حدد أسعار تنافسية ونظم عروضك."
+        },
+        "offers": {
+            "title": "العروض والترويجات",
+            "description": "إنشاء وإدارة العروض الخاصة والخصومات والحملات الترويجية لعملاء السوق."
+        },
+        "reviews": {
+            "title": "إدارة المراجعات",
+            "description": "مراقبة والرد على مراجعات العملاء من السوق. إدارة سمعتك على الإنترنت وتعليقات العملاء."
+        },
+        "extraServices": {
+            "title": "الخدمات الإضافية",
+            "description": "تكوين الخدمات الإضافية التي تقدمها مثل التوصيل والطعام الخارجي والأحداث الخاصة وخدمات أخرى مميزة."
+        },
+        "onlineBookingBlockage": {
+            "title": "قيود الحجز",
+            "description": "إعداد قيود الحجز وتواريخ عدم التوفر لحجوزات السوق. التحكم في التوفر للحجوزات عبر الإنترنت."
+        }
+    },
+    "unifiedSettings": {
+        "subtitle": "إدارة جميع إعدادات مطعمك من موقع مركزي واحد",
+        "categories": {
+            "restaurant": {
+                "title": "المطعم",
+                "description": "المعلومات الأساسية والتوفر وساعات العمل"
+            },
+            "customer": {
+                "title": "العملاء",
+                "description": "العلامات والمناطق وإدارة العملاء"
+            },
+            "team": {
+                "title": "الفريق",
+                "description": "المستخدمون والأدوار والصلاحيات"
+            },
+            "marketplace": {
+                "title": "السوق الإلكتروني",
+                "description": "المعرض والقائمة والعروض والتقييمات والخدمات"
+            },
+            "system": {
+                "title": "النظام",
+                "description": "الميزات التقنية والتكاملات"
+            }
+        }
+    },
+    "marketplace": {
+        "offers": {
+            "title": "العروض والترويجات",
+            "subtitle": "إدارة العروض الخاصة والحملات الترويجية لمطعمك",
+            "addOffer": "إضافة عرض جديد",
+            "createOffer": "إنشاء عرض جديد",
+            "name": "اسم العرض",
+            "namePlaceholder": "مثال: عرض الساعة السعيدة",
+            "type": "نوع العرض",
+            "percentage": "خصم بالنسبة المئوية",
+            "fixedAmount": "مبلغ ثابت",
+            "freeItem": "عنصر مجاني",
+            "value": "القيمة",
+            "description": "الوصف",
+            "descriptionPlaceholder": "اوصف عرضك بالتفصيل...",
+            "validFrom": "صالح من",
+            "validTo": "صالح حتى",
+            "conditions": "الشروط",
+            "conditionsPlaceholder": "مثال: صالح من 5 مساءً إلى 7 مساءً"
+        },
+        "reviews": {
+            "title": "إدارة التقييمات",
+            "subtitle": "راقب وارد على تعليقات العملاء",
+            "reviews": "تقييمات",
+            "overall": "التقييم العام",
+            "service": "الخدمة",
+            "environment": "البيئة",
+            "food": "الطعام",
+            "valueForMoney": "القيمة مقابل المال",
+            "distribution": "توزيع التقييمات",
+            "summary": "الملخص",
+            "total": "إجمالي التقييمات",
+            "visible": "مرئي",
+            "hidden": "مخفي",
+            "allReviews": "جميع التقييمات",
+            "hide": "إخفاء التقييم",
+            "show": "إظهار التقييم",
+            "restaurantResponse": "رد المطعم",
+            "respond": "الرد على التقييم",
+            "addResponse": "إضافة رد",
+            "responsePlaceholder": "شكراً لك على تعليقك..."
+        },
+        "extraServices": {
+            "title": "الخدمات الإضافية",
+            "subtitle": "تكوين خدمات ووسائل راحة إضافية",
+            "addService": "إضافة خدمة جديدة",
+            "editService": "تعديل الخدمة",
+            "name": "اسم الخدمة",
+            "namePlaceholder": "مثال: واي فاي مجاني",
+            "category": "الفئة",
+            "amenity": "وسائل الراحة",
+            "service": "خدمة",
+            "feature": "ميزة",
+            "amenities": "وسائل الراحة",
+            "services": "الخدمات",
+            "features": "الميزات",
+            "icon": "الأيقونة",
+            "price": "السعر",
+            "description": "الوصف",
+            "descriptionPlaceholder": "اوصف هذه الخدمة...",
+            "noServices": "لا توجد خدمات في هذه الفئة حتى الآن"
+        },
+        "booking": {
+            "title": "قيود الحجز عبر الإنترنت",
+            "subtitle": "إدارة توفر الحجز والقيود",
+            "addBlockage": "إضافة قيد",
+            "createBlockage": "إنشاء قيد حجز",
+            "type": "نوع القيد",
+            "specificDate": "تاريخ محدد",
+            "dailyTime": "كتلة وقت يومية",
+            "recurringTime": "كتلة وقت متكررة",
+            "date": "قيد التاريخ",
+            "time": "قيد الوقت",
+            "recurring": "قيد متكرر",
+            "description": "الوصف",
+            "descriptionPlaceholder": "سبب هذا القيد...",
+            "startDate": "تاريخ البداية",
+            "endDate": "تاريخ النهاية",
+            "effectiveFrom": "فعال اعتباراً من",
+            "startTime": "وقت البداية",
+            "endTime": "وقت النهاية",
+            "recurringDays": "الأيام المتكررة",
+            "titlePlaceholder": "مثال: إغلاق عيد الميلاد",
+            "conditionsPlaceholder": "شروط إضافية...",
+            "activeBlockages": "القيود النشطة",
+            "noBlockages": "لم يتم إعداد قيود حجز حتى الآن"
         }
     },
     "export": {
@@ -1419,7 +1584,25 @@
     "availableTimes": "الأوقات المتاحة",
     "at": "في",
     "for": "لـ",
-    "yourReservationIsSetFor": "تم تحديد حجزك لـ"
+    "yourReservationIsSetFor": "تم تحديد حجزك لـ",
+    "common": {
+        "cancel": "إلغاء",
+        "add": "إضافة",
+        "update": "تحديث",
+        "delete": "حذف",
+        "active": "نشط",
+        "inactive": "غير نشط",
+        "optional": "اختياري",
+        "days": {
+            "sunday": "الأحد",
+            "monday": "الاثنين",
+            "tuesday": "الثلاثاء",
+            "wednesday": "الأربعاء",
+            "thursday": "الخميس",
+            "friday": "الجمعة",
+            "saturday": "السبت"
+        }
+    }
 }
 
 }
