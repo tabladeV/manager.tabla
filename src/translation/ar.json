@@ -1349,7 +1349,8 @@
       "back": "رجوع",
       "continue": "متابعة",
       "close": "إغلاق",
-      "readMore": "اقرأ المزيد"
+      "readMore": "اقرأ المزيد",
+      "showLess": "أظهر أقل"
     },
     "reservation": {
       "makeReservation": "إجراء حجز",
