@@ -1351,7 +1351,8 @@
         "back": "Atrás",
         "continue": "Continuar",
         "close": "Cerrar",
-        "readMore": "leer más"
+        "readMore": "leer más",
+        "showLess": "mostrar menos"
       },
       "reservation": {
         "makeReservation": "Hacer una Reserva",

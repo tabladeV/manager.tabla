@@ -1368,7 +1368,8 @@
             "back": "Back",
             "continue": "Continue",
             "close": "Close",
-            "readMore": "read more"
+            "readMore": "read more",
+            "showLess": "show less"
         },
         "reservation": {
             "makeReservation": "Make a Reservation",
