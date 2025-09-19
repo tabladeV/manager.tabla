@@ -76,7 +76,7 @@ function App() {
         });
     }
   }, []);
-  
+
 
 
   return (
@@ -85,7 +85,7 @@ function App() {
         <DateProvider>
           <BrowserRouter>
             <RefineKbarProvider>
-                <DevtoolsProvider>
+              <DevtoolsProvider>
                 <Refine
                   authProvider={authProvider}
                   dataProvider={dataProvider(API_HOST, customAxiosInstance)}
@@ -100,232 +100,232 @@ function App() {
                   }}
                 >
                   {isManager ? (
-                  <NotificationsProvider>
-                    <Routes>
-                      <Route
-                        element={
-                          <div>
-                            <Outlet />
-                            <ToastContainer
-                              position="bottom-right"
-                              autoClose={2000}
-                              hideProgressBar={false}
-                              newestOnTop
-                              closeOnClick
-                              rtl={false}
-                              stacked
-                              pauseOnFocusLoss
-                              draggable
-                              pauseOnHover
-                              theme={localStorage.getItem('darkMode')==='true' ? "dark":"light"} // or "dark" based on your isDarkMode
-                            />
-                          </div>
-                        }
-                      >
-
-                        {/* Public Routes */}
-
-                        <Route element={<BlankLayout />}>
-                          <Route path="/select-restaurant" element={
-                            <Authenticated key="*" redirectOnFail="/sign-in">
-                              <RestaurantSelection />
-                            </Authenticated>
-                          } />
-                        </Route>
-                        <Route element={<AuthLayout />}>
-                          <Route path="/sign-in" element={<LogIn />} />
-                          <Route path="/sign-up" element={<LogIn />} />
-                        </Route>
-                        {/* Private Routes */}
+                    <NotificationsProvider>
+                      <Routes>
                         <Route
                           element={
-                            <Authenticated key="*" redirectOnFail="/sign-in">
-                              <RootLayout />
-                            </Authenticated>
+                            <div>
+                              <Outlet />
+                              <ToastContainer
+                                position="bottom-right"
+                                autoClose={2000}
+                                hideProgressBar={false}
+                                newestOnTop
+                                closeOnClick
+                                rtl={false}
+                                stacked
+                                pauseOnFocusLoss
+                                draggable
+                                pauseOnHover
+                                theme={localStorage.getItem('darkMode') === 'true' ? "dark" : "light"} // or "dark" based on your isDarkMode
+                              />
+                            </div>
                           }
                         >
-                          <Route index element={
-                            <CanAccess
-                              resource="dashboard"
-                              action="view"
-                              fallback="You don't have access to view dashboard"
-                            >
-                              <Home />
-                            </CanAccess>
-                          } />
 
-                          {/* Reservations */}
-                          <Route
-                            path="/reservations"
-                            element={
-                              <CanAccess
-                                resource="reservation"
-                                action="view"
-                                fallback="You don't have access to this page"
-                              >
-                                <ReservationsPage />
-                              </CanAccess>
-                            }
-                          />
+                          {/* Public Routes */}
 
-                          {/* Places */}
+                          <Route element={<BlankLayout />}>
+                            <Route path="/select-restaurant" element={
+                              <Authenticated key="*" redirectOnFail="/sign-in">
+                                <RestaurantSelection />
+                              </Authenticated>
+                            } />
+                          </Route>
+                          <Route element={<AuthLayout />}>
+                            <Route path="/sign-in" element={<LogIn />} />
+                            <Route path="/sign-up" element={<LogIn />} />
+                          </Route>
+                          {/* Private Routes */}
                           <Route
-                            path="/places"
                             element={
-                              <CanAccess
-                                resource="floor"
-                                action="view"
-                                fallback="You don't have access to places"
-                              >
-                                <PlacesPage />
-                              </CanAccess>
-                            }
-                          />
-                          <Route
-                            path="/places/design"
-                            element={
-                              <CanAccess
-                                resource="floor"
-                                action="view"
-                                fallback="You don't have access to design places"
-                              >
-                                <DesignPlacesIndex />
-                              </CanAccess>
+                              <Authenticated key="*" redirectOnFail="/sign-in">
+                                <RootLayout />
+                              </Authenticated>
                             }
                           >
+                            <Route index element={
+                              <CanAccess
+                                resource="dashboard"
+                                action="view"
+                                fallback="You don't have access to view dashboard"
+                              >
+                                <Home />
+                              </CanAccess>
+                            } />
+
+                            {/* Reservations */}
                             <Route
-                              path="/places/design/:roofId"
+                              path="/reservations"
                               element={
                                 <CanAccess
-                                  resource="table"
+                                  resource="reservation"
                                   action="view"
-                                  fallback="You don't have access to design places"
+                                  fallback="You don't have access to this page"
                                 >
-                                  <DesignPlaces />
+                                  <ReservationsPage />
                                 </CanAccess>
                               }
                             />
-                          </Route>
 
-                          <Route path="/agenda" element={
-                            <CanAccess resource="reservation"
-                              action="view"
-                              fallback="You don't have access to this page"
+                            {/* Places */}
+                            <Route
+                              path="/places"
+                              element={
+                                <CanAccess
+                                  resource="floor"
+                                  action="view"
+                                  fallback="You don't have access to places"
+                                >
+                                  <PlacesPage />
+                                </CanAccess>
+                              }
+                            />
+                            <Route
+                              path="/places/design"
+                              element={
+                                <CanAccess
+                                  resource="floor"
+                                  action="view"
+                                  fallback="You don't have access to design places"
+                                >
+                                  <DesignPlacesIndex />
+                                </CanAccess>
+                              }
                             >
-                              <AgendaPage />
-                            </CanAccess>
-                          } />
-                          <Route path="/agenda/calendar" element={
-                            <CanAccess resource="reservation"
-                              action="view"
-                              fallback="You don't have access to this page"
-                            >
-                              <CalendarGrid />
-                            </CanAccess>
-                          } />
-                          <Route path="/agenda/grid" element={
-                            <CanAccess resource="reservation"
-                              action="view"
-                              fallback="You don't have access to this page"
-                            >
-                              <GridPage />
-                            </CanAccess>
-                          } />
+                              <Route
+                                path="/places/design/:roofId"
+                                element={
+                                  <CanAccess
+                                    resource="table"
+                                    action="view"
+                                    fallback="You don't have access to design places"
+                                  >
+                                    <DesignPlaces />
+                                  </CanAccess>
+                                }
+                              />
+                            </Route>
 
-                          {/* Payment - not restricted */}
-                          <Route path="/payment" element={<PaymentPage />} />
-
-
-                          {/* Reviews */}
-                          <Route
-                            path="/reviews"
-                            element={
-                              <CanAccess
-                                resource="review"
+                            <Route path="/agenda" element={
+                              <CanAccess resource="reservation"
                                 action="view"
-                                fallback="You don't have access to reviews"
+                                fallback="You don't have access to this page"
                               >
-                                <Reviews />
-                              </CanAccess>
-                            }
-                          />
-
-                          {/* Profile - left unprotected */}
-                          <Route path="/profile" element={<Profile />} />
-
-                          {/* Clients */}
-                          <Route
-                            path="/clients"
-                            element={
-                              <CanAccess
-                                resource="customer"
-                                action="view"
-                                fallback="You don't have access to clients"
-                              >
-                                <ClientsPage />
-                              </CanAccess>
-                            }
-                          >
-                            <Route path="/clients/:id" element={
-                              <CanAccess
-                                resource="customer"
-                                action="view"
-                                fallback="You don't have access to clients"
-                              >
-                                <ClientInterface />
+                                <AgendaPage />
                               </CanAccess>
                             } />
+                            <Route path="/agenda/calendar" element={
+                              <CanAccess resource="reservation"
+                                action="view"
+                                fallback="You don't have access to this page"
+                              >
+                                <CalendarGrid />
+                              </CanAccess>
+                            } />
+                            <Route path="/agenda/grid" element={
+                              <CanAccess resource="reservation"
+                                action="view"
+                                fallback="You don't have access to this page"
+                              >
+                                <GridPage />
+                              </CanAccess>
+                            } />
+
+                            {/* Payment - not restricted */}
+                            <Route path="/payment" element={<PaymentPage />} />
+
+
+                            {/* Reviews */}
+                            <Route
+                              path="/reviews"
+                              element={
+                                <CanAccess
+                                  resource="review"
+                                  action="view"
+                                  fallback="You don't have access to reviews"
+                                >
+                                  <Reviews />
+                                </CanAccess>
+                              }
+                            />
+
+                            {/* Profile - left unprotected */}
+                            <Route path="/profile" element={<Profile />} />
+
+                            {/* Clients */}
+                            <Route
+                              path="/clients"
+                              element={
+                                <CanAccess
+                                  resource="customer"
+                                  action="view"
+                                  fallback="You don't have access to clients"
+                                >
+                                  <ClientsPage />
+                                </CanAccess>
+                              }
+                            >
+                              <Route path="/clients/:id" element={
+                                <CanAccess
+                                  resource="customer"
+                                  action="view"
+                                  fallback="You don't have access to clients"
+                                >
+                                  <ClientInterface />
+                                </CanAccess>
+                              } />
+                            </Route>
+
+                            <Route path="/change-restaurant" element={<RestaurantSelection showLogo={false} />} />
+
+                            {/* Messages - not restricted yet */}
+                            <Route path="/messages" element={
+                              <CanAccess
+                                resource="message"
+                                action="view"
+                                fallback="You don't have access to Messaging"
+                              >
+                                <MessagesPage />
+                              </CanAccess>
+                            }
+                            />
+
+                            {/* Support - not restricted */}
+                            <Route path="/support" element={<SupportPage />} />
+
+                            {/* FAQ - not restricted */}
+                            <Route path="/faq" element={<FAQPage />} />
+
+                            {/* Design Places - not restricted */}
+
+                            {/* Choice of settings */}
+
+                            <Route path="/select-settings" element={
+                              <CanAccess
+                                resource="restaurant"
+                                action="view"
+                                fallback="You don't have access to Settings"
+                              >
+                                <SelectSettings />
+                              </CanAccess>
+                            } />
+
+                            {/* Settings - Unified */}
+                            <Route path="/settings" element={
+                              <CanAccess
+                                resource="restaurant"
+                                action="view"
+                                fallback="You don't have access to Settings"
+                              >
+                                <UnifiedSettings />
+                              </CanAccess>
+                            } />
+
                           </Route>
-
-                          <Route path="/change-restaurant" element={<RestaurantSelection showLogo={false} />} />
-
-                          {/* Messages - not restricted yet */}
-                          <Route path="/messages" element={
-                            <CanAccess
-                              resource="message"
-                              action="view"
-                              fallback="You don't have access to Messaging"
-                            >
-                              <MessagesPage />
-                            </CanAccess>
-                          }
-                          />
-
-                          {/* Support - not restricted */}
-                          <Route path="/support" element={<SupportPage />} />
-                          
-                          {/* FAQ - not restricted */}
-                          <Route path="/faq" element={<FAQPage />} />
-
-                          {/* Design Places - not restricted */}
-
-                          {/* Choice of settings */}
-                          
-                          <Route path="/select-settings" element={
-                            <CanAccess 
-                              resource="restaurant"
-                              action="view"
-                              fallback="You don't have access to Settings"
-                            >
-                              <SelectSettings />
-                            </CanAccess>
-                          } />
-
-                          {/* Settings - Unified */}
-                          <Route path="/settings" element={
-                            <CanAccess
-                              resource="restaurant"
-                              action="view"
-                              fallback="You don't have access to Settings"
-                            >
-                              <UnifiedSettings />
-                            </CanAccess>
-                          } />
-                          
+                          <Route path="*" element={<ErrorPage />} />
                         </Route>
-                        <Route path="*" element={<ErrorPage />} />
-                      </Route>
-                    </Routes>
+                      </Routes>
                     </NotificationsProvider>
                   ) : (
                     <Routes>
@@ -348,7 +348,7 @@ function App() {
                   <DocumentTitleHandler />
                 </Refine>
                 <DevtoolsPanel />
-                </DevtoolsProvider>
+              </DevtoolsProvider>
             </RefineKbarProvider>
           </BrowserRouter>
         </DateProvider>

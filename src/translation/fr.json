@@ -1349,7 +1349,8 @@
       "back": "Retour",
       "continue": "Continuer",
       "close": "Fermer",
-      "readMore": "lire plus"
+      "readMore": "lire plus",
+      "showLess": "montrer moins"
     },
     "reservation": {
       "makeReservation": "Faire une Réservation",
