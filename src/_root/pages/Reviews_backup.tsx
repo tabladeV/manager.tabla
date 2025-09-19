@@ -42,7 +42,7 @@ const Reviews = () => {
 
   const [page, setPage] = useState(1)
   const [count, setCount] = useState(0)
-  const [size] = useState(10)
+  const [size, setSize] = useState(10)
 
   const [reviews, setReviews] = useState<Review[]>([])
 
@@ -52,7 +52,7 @@ const Reviews = () => {
   const { reviews: reviewsExportConfig } = useExportConfig()
   const { startTask, AsyncTaskManager } = useAsyncTaskManager()
 
-  const handleExport = async (format: 'sheet' | 'pdf', selectedColumns: string[], customValues: Record<string, unknown>, pdfEngine?: 'xhtml2pdf' | 'reportlab') => {
+  const handleExport = async (format: 'sheet' | 'pdf', selectedColumns: string[], customValues: Record<string, any>, pdfEngine?: 'xhtml2pdf' | 'reportlab') => {
     const {
       created_at__gte,
       created_at__lte,
@@ -62,7 +62,7 @@ const Reviews = () => {
       email
     } = customValues
 
-    const requestBody: Record<string, unknown> = {
+    const requestBody: any = {
       format,
       selected_columns: selectedColumns,
       async_generation: asyncGeneration,
@@ -105,6 +105,7 @@ const Reviews = () => {
       setLoading(false)
     }
   }
+  // const {reviews: reviewsExportConfig} = useAdvancedExportConfig();
 
   const searchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
     const keyword = e.target.value.toLowerCase()
@@ -122,7 +123,7 @@ const Reviews = () => {
     end: null,
   })
 
-  const { isLoading } = useList({
+  const { data, isLoading, error } = useList({
     resource: "api/v1/reviews/",
     filters: [
       {
@@ -182,6 +183,8 @@ const Reviews = () => {
   const [selectingDay, setSelectingDay] = useState("")
   const [focusedDate, setFocusedDate] = useState(false)
   const [searchResults, setSearchResults] = useState<Review[]>([])
+  const [focusReview, setFocusReview] = useState(false)
+  const [showModal, setShowModal] = useState(false)
   const [selectedClient, setSelectedClient] = useState<BaseKey>(0)
   const [selectedReview, setSelectedReview] = useState<Review>()
 
@@ -192,7 +195,7 @@ const Reviews = () => {
         setSelectedReview(review)
       }
     }
-  }, [selectedClient, reviews])
+  }, [selectedClient])
 
   const handleDateClick = (range: { start: Date; end: Date }) => {
     setSelectedDateRange(range)
@@ -216,13 +219,15 @@ const Reviews = () => {
     setSelectedDateRange({ start: null, end: null })
   }
 
+  let filteredReviews = reviews as Review[]
+
   useEffect(() => {
     if (searchResults.length === 0) {
       setSearchResults(reviews as Review[])
     }
-  }, [reviews, searchResults.length])
+  }, [reviews])
 
-  const filteredReviews = searchResults?.filter((reservation: Review) => {
+  filteredReviews = searchResults?.filter((reservation: Review) => {
     if (focusedFilter !== "") return false
     if (selectedDateRange.start && selectedDateRange.end && reservation.created_at) {
       try {
@@ -244,24 +249,6 @@ const Reviews = () => {
       number += "⭐"
     }
     return number
-  }
-
-  // Helper function to safely get customer name
-  const getCustomerName = (customer?: { first_name?: string | null; last_name?: string | null } | null) => {
-    if (!customer) return "Unknown User"
-    const firstName = customer.first_name || "Unknown"
-    const lastName = customer.last_name || "User"
-    return `${firstName} ${lastName}`
-  }
-
-  // Helper function to safely get rating value
-  const getRatingValue = (rating?: string | null) => {
-    return rating || "No rating"
-  }
-
-  // Helper function to safely get rating number
-  const getRatingNumber = (rating?: string | null) => {
-    return Number(rating) || 0
   }
 
   return (
@@ -286,7 +273,7 @@ const Reviews = () => {
             <h1 className="text-2xl font-[600] mb-4">
               {t("reviews.view.title")} by{" "}
               <span className="font-[800]">
-                {getCustomerName(selectedReview?.customer)}
+                {selectedReview?.customer?.first_name || 'Unknown'} {selectedReview?.customer?.last_name || 'User'}
               </span>
             </h1>
             <div className="space-y-2">
@@ -302,39 +289,39 @@ const Reviews = () => {
                   <>
                     <div className="flex mt-4 gap-4">
                       <div className="font-[600]">{t("reviews.view.food")}:</div>
-                      {stars(getRatingNumber(selectedReview.food_rating))}
-                      <span>{`(${getRatingValue(selectedReview.food_rating)})`}</span>
+                      {stars(Number(selectedReview.food_rating) || 0)}
+                      <span>{`(${selectedReview.food_rating || 'N/A'})`}</span>
                     </div>
                     <div className="flex mt-4 gap-4">
                       <div className="font-[600]">{t("reviews.view.service")}:</div>
-                      {stars(getRatingNumber(selectedReview.service_rating))}
-                      <span>{`(${getRatingValue(selectedReview.service_rating)})`}</span>
+                      {stars(Number(selectedReview.service_rating) || 0)}
+                      <span>{`(${selectedReview.service_rating || 'N/A'})`}</span>
                     </div>
                     <div className="flex mt-4 gap-4">
                       <div className="font-[600]">{t("reviews.view.environment")}:</div>
-                      {stars(getRatingNumber(selectedReview.ambience_rating))}
-                      <span>{`(${getRatingValue(selectedReview.ambience_rating)})`}</span>
+                      {stars(Number(selectedReview.ambience_rating) || 0)}
+                      <span>{`(${selectedReview.ambience_rating || 'N/A'})`}</span>
                     </div>
                     <div className="flex mt-4 gap-4">
                       <div className="font-[600]">{t("reviews.view.valueForMoney")}:</div>
-                      {stars(getRatingNumber(selectedReview.value_for_money))}
-                      <span>{`(${getRatingValue(selectedReview.value_for_money)})`}</span>
+                      {stars(Number(selectedReview.value_for_money) || 0)}
+                      <span>{`(${selectedReview.value_for_money || 'N/A'})`}</span>
                     </div>
 
                     <div className="flex mt-4 gap-4">
                       <div className="font-[600]">{t("reviews.view.total")}:</div>
                       {stars(
-                        (getRatingNumber(selectedReview.ambience_rating) +
-                          getRatingNumber(selectedReview.service_rating) +
-                          getRatingNumber(selectedReview.food_rating) +
-                          getRatingNumber(selectedReview.value_for_money)) /
+                        (Number(selectedReview.ambience_rating) +
+                          Number(selectedReview.service_rating) +
+                          Number(selectedReview.food_rating) +
+                          Number(selectedReview.value_for_money)) /
                           4,
                       )}
                       <span>{`(${(
-                        (getRatingNumber(selectedReview.ambience_rating) +
-                          getRatingNumber(selectedReview.service_rating) +
-                          getRatingNumber(selectedReview.food_rating) +
-                          getRatingNumber(selectedReview.value_for_money)) /
+                        (Number(selectedReview.ambience_rating) +
+                          Number(selectedReview.service_rating) +
+                          Number(selectedReview.food_rating) +
+                          Number(selectedReview.value_for_money)) /
                           4
                       ).toFixed(2)})`}</span>
                     </div>
@@ -348,6 +335,7 @@ const Reviews = () => {
       <div className="flex justify-between items-center mb-2">
         <h1>{t("reviews.title")}</h1>
         <button onClick={() => setShowExportModal(true)} className={`dark:text-whitetheme btn-primary`}>
+          {/* {t('reviews.filters.all')} */}
           {t("reviews.buttons.export")}
         </button>
       </div>
@@ -436,13 +424,13 @@ const Reviews = () => {
                       className="px-6 py-4 whitespace-nowrap cursor-pointer"
                       onClick={() => setSelectedClient(review.id)}
                     >
-                      {review.id || 'N/A'}
+                      {review.id||'N/A'}
                     </td>
                     <td
                       className="px-6 py-4 whitespace-nowrap cursor-pointer"
                       onClick={() => setSelectedClient(review.id)}
                     >
-                      {getCustomerName(review.customer)}
+                      {review.customer?.first_name || 'Unknown'} {review.customer?.last_name || 'User'}
                     </td>
                     <td
                       className="px-6 py-4 max-w-[20em] whitespace-nowrap cursor-pointer"
@@ -456,27 +444,27 @@ const Reviews = () => {
                       className="px-6 py-4 whitespace-nowrap cursor-pointer"
                       onClick={() => setSelectedClient(review.id)}
                     >
-                      {getRatingValue(review.food_rating)}
+                      {review.food_rating || 'No rating'}
                     </td>
                     <td
                       className="px-6 py-4 whitespace-nowrap cursor-pointer"
                       onClick={() => setSelectedClient(review.id)}
                     >
-                      {getRatingValue(review.service_rating)}
+                      {review.service_rating || 'No rating'}
                     </td>
                     <td
                       className="px-6 py-4 whitespace-nowrap cursor-pointer"
                       onClick={() => setSelectedClient(review.id)}
                     >
-                      {getRatingValue(review.ambience_rating)}
+                      {review.ambience_rating || 'No rating'}
                     </td>
                     <td
                       className="px-6 py-4 whitespace-nowrap cursor-pointer"
                       onClick={() => setSelectedClient(review.id)}
                     >
-                      {getRatingValue(review.value_for_money)}
+                      {review.value_for_money || 'No rating'}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => setSelectedClient(review.id)}>
+                    <td className="px-6 py-4 whitespace-nowrap" onClick={() => setSelectedClient(review.id)}>
                       {avg(
                         review.food_rating,
                         review.service_rating,

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Star, MessageSquare, User, Eye, EyeOff, Trash2 } from 'lucide-react'
+import { Star, MessageSquare, User } from 'lucide-react'
 
 interface Review {
   id: string
@@ -76,15 +76,13 @@ const Reviews: React.FC = () => {
   }
 
   const getAverageRating = () => {
-    const visibleReviews = reviews.filter(review => review.isVisible)
-    if (visibleReviews.length === 0) return 0
-    const total = visibleReviews.reduce((sum, review) => sum + review.rating, 0)
-    return (total / visibleReviews.length).toFixed(1)
+    if (reviews.length === 0) return 0
+    const total = reviews.reduce((sum, review) => sum + review.rating, 0)
+    return (total / reviews.length).toFixed(1)
   }
 
   const getCategoryAverages = () => {
-    const visibleReviews = reviews.filter(review => review.isVisible)
-    if (visibleReviews.length === 0) return {
+    if (reviews.length === 0) return {
       service: 0,
       environment: 0,
       food: 0,
@@ -92,30 +90,19 @@ const Reviews: React.FC = () => {
     }
     
     return {
-      service: (visibleReviews.reduce((sum, review) => sum + review.serviceRating, 0) / visibleReviews.length).toFixed(1),
-      environment: (visibleReviews.reduce((sum, review) => sum + review.environmentRating, 0) / visibleReviews.length).toFixed(1),
-      food: (visibleReviews.reduce((sum, review) => sum + review.foodRating, 0) / visibleReviews.length).toFixed(1),
-      value: (visibleReviews.reduce((sum, review) => sum + review.valueRating, 0) / visibleReviews.length).toFixed(1)
+      service: (reviews.reduce((sum, review) => sum + review.serviceRating, 0) / reviews.length).toFixed(1),
+      environment: (reviews.reduce((sum, review) => sum + review.environmentRating, 0) / reviews.length).toFixed(1),
+      food: (reviews.reduce((sum, review) => sum + review.foodRating, 0) / reviews.length).toFixed(1),
+      value: (reviews.reduce((sum, review) => sum + review.valueRating, 0) / reviews.length).toFixed(1)
     }
   }
 
   const getRatingDistribution = () => {
-    const visibleReviews = reviews.filter(review => review.isVisible)
     const distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }
-    visibleReviews.forEach(review => {
+    reviews.forEach(review => {
       distribution[review.rating as keyof typeof distribution]++
     })
     return distribution
-  }
-
-  const toggleReviewVisibility = (id: string) => {
-    setReviews(prev => prev.map(review => 
-      review.id === id ? { ...review, isVisible: !review.isVisible } : review
-    ))
-  }
-
-  const deleteReview = (id: string) => {
-    setReviews(prev => prev.filter(review => review.id !== id))
   }
 
   const addResponse = (reviewId: string) => {
@@ -135,7 +122,6 @@ const Reviews: React.FC = () => {
   }
 
   const distribution = getRatingDistribution()
-  const visibleReviews = reviews.filter(review => review.isVisible)
   const categoryAverages = getCategoryAverages()
 
   return (
@@ -162,7 +148,7 @@ const Reviews: React.FC = () => {
                 {getRatingStars(Math.round(Number(getAverageRating())))}
               </div>
               <p className="text-sm text-subblack dark:text-softwhitetheme mt-1">
-                {visibleReviews.length} {t('marketplace.reviews.reviews')}
+                {reviews.length} {t('marketplace.reviews.reviews')}
               </p>
             </div>
           </div>
@@ -257,7 +243,7 @@ const Reviews: React.FC = () => {
                   <div
                     className="bg-greentheme h-2 rounded-full"
                     style={{
-                      width: `${visibleReviews.length > 0 ? (distribution[rating as keyof typeof distribution] / visibleReviews.length) * 100 : 0}%`
+                      width: `${reviews.length > 0 ? (distribution[rating as keyof typeof distribution] / reviews.length) * 100 : 0}%`
                     }}
                   />
                 </div>
@@ -275,29 +261,13 @@ const Reviews: React.FC = () => {
         <h3 className="text-lg font-semibold mb-4 text-blacktheme dark:text-textdarktheme">
           {t('marketplace.reviews.summary')}
         </h3>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           <div className="text-center">
             <div className="text-2xl font-bold text-blacktheme dark:text-textdarktheme">
               {reviews.length}
             </div>
             <p className="text-subblack dark:text-softwhitetheme">
               {t('marketplace.reviews.total')}
-            </p>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-greentheme">
-              {visibleReviews.length}
-            </div>
-            <p className="text-subblack dark:text-softwhitetheme">
-              {t('marketplace.reviews.visible')}
-            </p>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-redtheme">
-              {reviews.length - visibleReviews.length}
-            </div>
-            <p className="text-subblack dark:text-softwhitetheme">
-              {t('marketplace.reviews.hidden')}
             </p>
           </div>
         </div>
@@ -312,9 +282,7 @@ const Reviews: React.FC = () => {
         {reviews.map((review) => (
           <div
             key={review.id}
-            className={`bg-whitetheme dark:bg-darkthemeitems p-6 rounded-lg shadow-md border border-softgreytheme dark:border-bgdarktheme2 ${
-              !review.isVisible ? 'opacity-60' : ''
-            }`}
+            className="bg-whitetheme dark:bg-darkthemeitems p-6 rounded-lg shadow-md border border-softgreytheme dark:border-bgdarktheme2"
           >
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center gap-3">
@@ -334,27 +302,6 @@ const Reviews: React.FC = () => {
                     </span>
                   </div>
                 </div>
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => toggleReviewVisibility(review.id)}
-                  className={`p-2 rounded-lg transition-colors ${
-                    review.isVisible
-                      ? 'text-greentheme hover:bg-softgreentheme dark:hover:bg-bgdarktheme'
-                      : 'text-redtheme hover:bg-softredtheme dark:hover:bg-bgdarktheme'
-                  }`}
-                  title={review.isVisible ? t('marketplace.reviews.hide') : t('marketplace.reviews.show')}
-                >
-                  {review.isVisible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                </button>
-                <button
-                  onClick={() => deleteReview(review.id)}
-                  className="p-2 text-redtheme hover:bg-softredtheme dark:hover:bg-bgdarktheme rounded-lg transition-colors"
-                  title={t('common.delete')}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
               </div>
             </div>
 

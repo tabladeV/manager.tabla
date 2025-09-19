@@ -358,18 +358,11 @@ const UnifiedSettings = () => {
 
         {/* Main Content */}
         <div className="flex-1 h-full overflow-y-auto">
-          <div className="bg-whitetheme dark:bg-darkthemeitems rounded-lg border border-softgreytheme dark:border-bgdarktheme2 h-full">
-            {/* Content Header */}
-            <div className="p-6 border-b border-softgreytheme dark:border-bgdarktheme2">
-              <h2 className="text-xl font-semibold text-blacktheme dark:text-textdarktheme">
-                {getCurrentTitle()}
-              </h2>
-            </div>
+          <div >
+            
             
             {/* Component Content */}
-            <div className="p-6">
               <Component />
-            </div>
           </div>
         </div>
       </div>
