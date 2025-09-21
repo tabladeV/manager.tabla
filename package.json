@@ -4,6 +4,12 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@capacitor/android": "6",
+    "@capacitor/app": "6",
+    "@capacitor/cli": "6",
+    "@capacitor/core": "6",
+    "@capacitor/ios": "6",
+    "@capacitor/push-notifications": "6",
     "@chakra-ui/cli": "^3.1.2",
     "@chakra-ui/react": "^3.1.2",
     "@radix-ui/react-icons": "^1.3.0",
@@ -63,6 +69,7 @@
     "utils": "link:/utils"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@types/chart.js": "^2.9.41",
     "@types/draft-js": "^0.11.18",
     "@types/file-saver": "^2.0.7",
@@ -89,8 +96,12 @@
   "scripts": {
     "dev": "refine dev",
     "build": "tsc && refine build",
+    "build:cap": "tsc && CAPACITOR_BUILD=true refine build",
     "start": "refine start",
-    "refine": "refine"
+    "refine": "refine",
+    "cap:sync": "cap sync",
+    "cap:android": "cap open android",
+    "cap:ios": "cap open ios"
   },
   "browserslist": {
     "production": [

@@ -1,11 +1,31 @@
-// src/authProvider.ts
 import { AuthProvider } from "@refinedev/core";
-import axiosInstance from "./axiosInstance";
+import { httpClient } from "../services/httpClient";
 
-// We extend AuthProvider with our custom refresh method.
-type ExtendedAuthProvider = AuthProvider & {
-    refresh?: () => Promise<any>;
-};
+/**
+ * Extended AuthProvider with custom refresh method
+ */
+interface ExtendedAuthProvider extends AuthProvider {
+    refresh?: () => Promise<{ success: boolean }>;
+}
+
+/**
+ * Login credentials interface
+ */
+interface LoginCredentials {
+    email: string;
+    password: string;
+}
+
+/**
+ * Auth response interface
+ */
+interface AuthResponse {
+    token: string;
+    refresh: string;
+    user: {
+        is_manager: boolean;
+    };
+}
 
 let refreshInterval: ReturnType<typeof setInterval> | null = null;
 
@@ -34,9 +54,9 @@ const authProvider: ExtendedAuthProvider = {
         return Promise.reject(error);
     },
 
-    login: async ({ email, password }) => {
+    login: async ({ email, password }: LoginCredentials) => {
         try {
-            const response = await axiosInstance.post("/api/v1/bo/managers/login/", { email, password });
+            const response = await httpClient.post("/api/v1/bo/managers/login/", { email, password });
             if (response.data.token) {
                 localStorage.setItem("isLogedIn", "true");
                 localStorage.setItem("refresh", response.data.refresh);
@@ -59,7 +79,7 @@ const authProvider: ExtendedAuthProvider = {
 
     logout: async () => {
         try {
-            const response = await axiosInstance.post("/api/v1/auth/logout/");
+            const response = await httpClient.post("/api/v1/auth/logout/");
             if (response.status === 204 || response.status === 200) {
                 localStorage.removeItem("isLogedIn");
                 localStorage.removeItem("refresh");
@@ -102,7 +122,7 @@ const authProvider: ExtendedAuthProvider = {
         const token = localStorage.getItem("token");
         if (!token) return Promise.reject({ message: "No token available" });
         try {
-            const response = await axiosInstance.get("/api/v1/bo/restaurants/users/me/");
+            const response = await httpClient.get("/api/v1/bo/restaurants/users/me/");
 
             if (response.data.permissions) {
                 localStorage.setItem("permissions", JSON.stringify(response.data.permissions));
@@ -126,7 +146,7 @@ const authProvider: ExtendedAuthProvider = {
             if (!refreshToken) {
                 return Promise.reject("No refresh token available");
             }
-            const response = await axiosInstance.post("/api/v1/auth/token/refresh/", { refresh: refreshToken });
+            const response = await httpClient.post("/api/v1/auth/token/refresh/", { refresh: refreshToken });
             if (response.data.refresh) {
                 localStorage.setItem("refresh", response.data.refresh);
                 return Promise.resolve({ success: true });

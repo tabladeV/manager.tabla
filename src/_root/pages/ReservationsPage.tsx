@@ -41,7 +41,7 @@ import ResevrationCard from '../../components/places/ResevrationCard';
 import { Tag } from 'react-konva';
 import { getTextColor } from '../../utils/helpers';
 import { useAsyncTaskManager } from '../../hooks/useAsyncTaskManager';
-import axiosInstance from '../../providers/axiosInstance';
+import { httpClient } from '../../services/httpClient';
 import { saveAs } from 'file-saver';
 
 // Types and Interfaces
@@ -1348,7 +1348,7 @@ const ReservationsPage: React.FC = () => {
 
     try {
       setShowExportLoading(true);
-      const response = await axiosInstance.post('/api/v1/bo/reports/reservations/', requestBody, {
+      const response = await httpClient.post('/api/v1/bo/reports/reservations/', requestBody, {
         responseType: asyncGeneration ? 'json' : 'blob',
       });
 

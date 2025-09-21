@@ -27,3 +27,9 @@ _.njsproj
 _.sln
 \*.sw?
 .env
+
+# Capacitor
+android/
+ios/
+.capacitor/
+
