@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import { updateStatusBarStyle } from "../utils/statusBarConfig";
 
 // Create the context
 interface DarkContextType {
@@ -37,13 +38,16 @@ export const DarkProvider: React.FC<DarkProviderProps> = ({ children }) => {
     try {
       // Update localStorage
       localStorage.setItem('darkMode', darkMode.toString());
-      
+
       // Apply or remove dark class from document
       if (darkMode) {
         document.documentElement.classList.add('dark');
       } else {
         document.documentElement.classList.remove('dark');
       }
+
+      // Update status bar style for mobile platforms
+      updateStatusBarStyle(darkMode);
     } catch (error) {
       console.error('Failed to update dark mode settings:', error);
     }

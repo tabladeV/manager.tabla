@@ -169,9 +169,9 @@ const RootLayout = () => {
       <div
         className={`transition-all duration-300 ease-in-out lt-sm:w-full ${
           stateOfSideBar ? "gt-sm:w-[calc(100%-300px)]" : "gt-sm:w-[calc(100%-100px)]"
-        }`}
+        } pt-[env(safe-area-inset-top)]`}
       >
-        <header className="h-[80px] items-center flex justify-between gap-1 px-6 lt-sm:px-2">
+        <header className="h-[80px] items-center flex justify-between gap-1 px-6 lt-sm:px-2 pt-[env(safe-area-inset-top)]">
           <div className="sm:hidden">
             <Logo />
           </div>
@@ -269,7 +269,7 @@ const RootLayout = () => {
           <DateSelection />
           <UserBar />
         </header>
-        <section className="flex justify-between h-[calc(100vh-80px)]">
+        <section className="flex justify-between h-[calc(100vh-80px-env(safe-area-inset-top))]">
           <div
             className={`p-[1em] w-full h-full lt-sm:pb-[10em] overflow-x-hidden overflow-y-scroll bg-[#F6F6F6] dark:bg-bgdarktheme2 dark:text-textdarktheme`}
           >
