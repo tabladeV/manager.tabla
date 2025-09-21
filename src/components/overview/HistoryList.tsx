@@ -3,7 +3,6 @@ import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { ArrowRight } from "lucide-react"
 import { BaseKey, useList } from "@refinedev/core"
-import { useDarkContext } from "../../context/DarkContext"
 
 interface Review {
     id: BaseKey
@@ -20,7 +19,7 @@ interface Review {
         
         email: string
         phone: string
-    }
+    } | null
     source: string
 }
 
@@ -36,9 +35,8 @@ const HistoryList  = () => {
   const [reviewsAPIInfo, setReviewsAPIInfo] =useState<ReviewsType>()
 
   const { t } = useTranslation()
-  const { darkMode } = useDarkContext()
 
-  const {data: reviewsData, isLoading, error} = useList({
+  useList({
           resource: 'api/v1/reviews/',
           filters:[
             {
