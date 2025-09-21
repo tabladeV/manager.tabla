@@ -892,6 +892,171 @@
         "cancel": "Annuler"
       },
       "warning": "Nombre maximum d'images atteint"
+    },
+    "selectSettings": {
+      "title": "Configuration des Paramètres",
+      "subtitle": "Choisissez quels paramètres vous souhaitez configurer. Vous pouvez gérer les paramètres généraux de votre restaurant ou les configurations spécifiques au marketplace.",
+      "buttons": {
+        "generalSettings": {
+          "title": "Paramètres Généraux",
+          "description": "Configurer les informations du restaurant, les occasions, les heures de travail, les rôles et autres paramètres généraux."
+        },
+        "marketplaceSettings": {
+          "title": "Paramètres du Marketplace",
+          "description": "Gérer les configurations du marketplace et configurer la présence de votre restaurant sur le marketplace."
+        }
+      }
+    }
+  },
+  "marketplaceSettings": {
+    "title": "Paramètres du Marketplace",
+    "chooseSettingPrompt": "Choisissez un paramètre du marketplace à modifier",
+    "menuItems": {
+      "gallery": "Galerie",
+      "basicInfo": "Informations de Base",
+      "menu": "Menu et Prix",
+      "offers": "Offres et Promotions",
+      "reviews": "Gestion des Avis",
+      "workingHours": "Heures de Travail en Ligne",
+      "extraServices": "Services Supplémentaires",
+      "onlineBookingBlockage": "Restrictions de Réservation"
+    },
+    "gallery": {
+      "title": "Gestion de la Galerie",
+      "description": "Gérez la galerie photo de votre restaurant pour le marketplace. Téléchargez des images de haute qualité pour présenter l'ambiance, les plats et les installations de votre restaurant."
+    },
+    "menu": {
+      "title": "Menu et Prix",
+      "description": "Configurez vos éléments de menu, catégories et prix moyens pour l'affichage sur le marketplace. Fixez des prix compétitifs et organisez vos offres."
+    },
+    "offers": {
+      "title": "Offres et Promotions",
+      "description": "Créez et gérez des offres spéciales, des réductions et des campagnes promotionnelles pour les clients du marketplace."
+    },
+    "reviews": {
+      "title": "Gestion des Avis",
+      "description": "Surveillez et répondez aux avis des clients du marketplace. Gérez votre réputation en ligne et les commentaires des clients."
+    },
+    "extraServices": {
+      "title": "Services Supplémentaires",
+      "description": "Configurez les services supplémentaires que vous offrez comme la livraison, le traiteur, les événements privés et autres services premium."
+    },
+    "onlineBookingBlockage": {
+      "title": "Restrictions de Réservation",
+      "description": "Configurez les restrictions de réservation et les dates d'indisponibilité pour les réservations du marketplace. Contrôlez la disponibilité pour les réservations en ligne."
+    }
+  },
+  "unifiedSettings": {
+    "subtitle": "Gérez tous vos paramètres de restaurant depuis un emplacement centralisé",
+    "categories": {
+      "restaurant": {
+        "title": "Restaurant",
+        "description": "Informations de base, disponibilité et horaires de travail"
+      },
+      "customer": {
+        "title": "Client",
+        "description": "Tags, zones et gestion des clients"
+      },
+      "team": {
+        "title": "Équipe",
+        "description": "Utilisateurs, rôles et permissions"
+      },
+      "marketplace": {
+        "title": "Marketplace",
+        "description": "Galerie, menu, offres, avis et services"
+      },
+      "system": {
+        "title": "Système",
+        "description": "Fonctionnalités techniques et intégrations"
+      }
+    }
+  },
+  "marketplace": {
+    "offers": {
+      "title": "Offres et Promotions",
+      "subtitle": "Gérez les offres spéciales et campagnes promotionnelles de votre restaurant",
+      "addOffer": "Ajouter une Nouvelle Offre",
+      "createOffer": "Créer une Nouvelle Offre",
+      "name": "Nom de l'Offre",
+      "namePlaceholder": "ex., Spécial Happy Hour",
+      "type": "Type d'Offre",
+      "percentage": "Remise en Pourcentage",
+      "fixedAmount": "Montant Fixe",
+      "freeItem": "Article Gratuit",
+      "value": "Valeur",
+      "description": "Description",
+      "descriptionPlaceholder": "Décrivez votre offre en détail...",
+      "validFrom": "Valide À Partir Du",
+      "validTo": "Valide Jusqu'Au",
+      "conditions": "Conditions",
+      "conditionsPlaceholder": "ex., Valable de 17h à 19h"
+    },
+    "reviews": {
+      "title": "Gestion des Avis",
+      "subtitle": "Surveillez et répondez aux commentaires des clients",
+      "reviews": "avis",
+      "overall": "Note Globale",
+      "service": "Service",
+      "environment": "Environnement",
+      "food": "Nourriture",
+      "valueForMoney": "Rapport Qualité-Prix",
+      "distribution": "Répartition des Notes",
+      "summary": "Résumé",
+      "total": "Total des Avis",
+      "visible": "Visible",
+      "hidden": "Masqué",
+      "allReviews": "Tous les Avis",
+      "hide": "Masquer l'Avis",
+      "show": "Afficher l'Avis",
+      "restaurantResponse": "Réponse du Restaurant",
+      "respond": "Répondre à l'Avis",
+      "addResponse": "Ajouter une Réponse",
+      "responsePlaceholder": "Merci pour vos commentaires..."
+    },
+    "extraServices": {
+      "title": "Services Supplémentaires",
+      "subtitle": "Configurez des services et commodités supplémentaires",
+      "addService": "Ajouter un Nouveau Service",
+      "editService": "Modifier le Service",
+      "name": "Nom du Service",
+      "namePlaceholder": "ex., WiFi Gratuit",
+      "category": "Catégorie",
+      "amenity": "Commodité",
+      "service": "Service",
+      "feature": "Fonctionnalité",
+      "amenities": "Commodités",
+      "services": "Services",
+      "features": "Fonctionnalités",
+      "icon": "Icône",
+      "price": "Prix",
+      "description": "Description",
+      "descriptionPlaceholder": "Décrivez ce service...",
+      "noServices": "Aucun service dans cette catégorie pour le moment"
+    },
+    "booking": {
+      "title": "Restrictions de Réservation en Ligne",
+      "subtitle": "Gérez la disponibilité et les restrictions de réservation",
+      "addBlockage": "Ajouter une Restriction",
+      "createBlockage": "Créer une Restriction de Réservation",
+      "type": "Type de Restriction",
+      "specificDate": "Date Spécifique",
+      "dailyTime": "Bloc de Temps Quotidien",
+      "recurringTime": "Bloc de Temps Récurrent",
+      "date": "Restriction de Date",
+      "time": "Restriction d'Heure",
+      "recurring": "Restriction Récurrente",
+      "description": "Description",
+      "descriptionPlaceholder": "Raison de cette restriction...",
+      "startDate": "Date de Début",
+      "endDate": "Date de Fin",
+      "effectiveFrom": "En Vigueur À Partir Du",
+      "startTime": "Heure de Début",
+      "endTime": "Heure de Fin",
+      "recurringDays": "Jours Récurrents",
+      "titlePlaceholder": "ex., Fermeture de Noël",
+      "conditionsPlaceholder": "Conditions supplémentaires...",
+      "activeBlockages": "Restrictions Actives",
+      "noBlockages": "Aucune restriction de réservation configurée pour le moment"
     }
   },
   "export": {
@@ -1184,7 +1349,8 @@
       "back": "Retour",
       "continue": "Continuer",
       "close": "Fermer",
-      "readMore": "lire plus"
+      "readMore": "lire plus",
+      "showLess": "montrer moins"
     },
     "reservation": {
       "makeReservation": "Faire une Réservation",
@@ -1388,7 +1554,25 @@
     "availableTimes": "Heures disponibles",
     "at": "à",
     "for": "pour",
-    "yourReservationIsSetFor": "Votre réservation est fixée pour"
+    "yourReservationIsSetFor": "Votre réservation est fixée pour",
+    "common": {
+        "cancel": "Annuler",
+        "add": "Ajouter",
+        "update": "Mettre à jour",
+        "delete": "Supprimer",
+        "active": "Actif",
+        "inactive": "Inactif",
+        "optional": "Optionnel",
+        "days": {
+            "sunday": "Dimanche",
+            "monday": "Lundi",
+            "tuesday": "Mardi",
+            "wednesday": "Mercredi",
+            "thursday": "Jeudi",
+            "friday": "Vendredi",
+            "saturday": "Samedi"
+        }
+    }
 }
 
 }

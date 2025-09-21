@@ -905,6 +905,20 @@
                 "cancel": "Cancel"
             },
             "warning": "Maximum number of images reached"
+        },
+        "selectSettings": {
+            "title": "Settings Configuration",
+            "subtitle": "Choose which settings you would like to configure. You can manage your general restaurant settings or marketplace-specific configurations.",
+            "buttons": {
+                "generalSettings": {
+                    "title": "General Settings",
+                    "description": "Configure restaurant information, occasions, working hours, roles, and other general settings."
+                },
+                "marketplaceSettings": {
+                    "title": "Marketplace Settings", 
+                    "description": "Manage marketplace configurations, and set up your restaurant's presence on the marketplace."
+                }
+            }
         }
         
         
@@ -912,6 +926,157 @@
         
         
               
+    },
+    "marketplaceSettings": {
+        "title": "Marketplace Settings",
+        "chooseSettingPrompt": "Choose a marketplace setting to modify",
+        "menuItems": {
+            "gallery": "Gallery",
+            "basicInfo": "Basic Information",
+            "menu": "Menu & Pricing",
+            "offers": "Offers & Promotions",
+            "reviews": "Reviews Management",
+            "workingHours": "Online Working Hours",
+            "extraServices": "Extra Services",
+            "onlineBookingBlockage": "Booking Restrictions"
+        },
+        "gallery": {
+            "title": "Gallery Management",
+            "description": "Manage your restaurant's photo gallery for the marketplace. Upload high-quality images to showcase your restaurant's ambiance, dishes, and facilities."
+        },
+        "menu": {
+            "title": "Menu & Pricing",
+            "description": "Configure your menu items, categories, and average pricing for marketplace display. Set competitive prices and organize your offerings."
+        },
+        "offers": {
+            "title": "Offers & Promotions",
+            "description": "Create and manage special offers, discounts, and promotional campaigns for marketplace customers."
+        },
+        "reviews": {
+            "title": "Reviews Management", 
+            "description": "Monitor and respond to customer reviews from the marketplace. Manage your online reputation and customer feedback."
+        },
+        "extraServices": {
+            "title": "Extra Services",
+            "description": "Configure additional services you offer such as delivery, catering, private events, and other premium services."
+        },
+        "onlineBookingBlockage": {
+            "title": "Booking Restrictions",
+            "description": "Set up booking restrictions and blackout dates for marketplace reservations. Control availability for online bookings."
+        }
+    },
+    "unifiedSettings": {
+        "subtitle": "Manage all your restaurant settings from one centralized location",
+        "categories": {
+            "restaurant": {
+                "title": "Restaurant",
+                "description": "Basic information, availability, and working hours"
+            },
+            "customer": {
+                "title": "Customer", 
+                "description": "Tags, areas, and customer management"
+            },
+            "team": {
+                "title": "Team",
+                "description": "Users, roles, and permissions"
+            },
+            "marketplace": {
+                "title": "Marketplace",
+                "description": "Gallery, menu, offers, reviews, and services"
+            },
+            "system": {
+                "title": "System",
+                "description": "Technical features and integrations"
+            }
+        }
+    },
+    "marketplace": {
+        "offers": {
+            "title": "Offers & Promotions",
+            "subtitle": "Manage your restaurant's special offers and promotional campaigns",
+            "addOffer": "Add New Offer",
+            "createOffer": "Create New Offer",
+            "name": "Offer Name",
+            "namePlaceholder": "e.g., Happy Hour Special",
+            "type": "Offer Type",
+            "percentage": "Percentage Discount",
+            "fixedAmount": "Fixed Amount",
+            "freeItem": "Free Item",
+            "value": "Value",
+            "description": "Description",
+            "descriptionPlaceholder": "Describe your offer in detail...",
+            "validFrom": "Valid From",
+            "validTo": "Valid To",
+            "conditions": "Conditions",
+            "conditionsPlaceholder": "e.g., Valid from 5 PM to 7 PM"
+        },
+        "reviews": {
+            "title": "Reviews Management",
+            "subtitle": "Monitor and respond to customer feedback",
+            "reviews": "reviews",
+            "overall": "Overall Rating",
+            "service": "Service",
+            "environment": "Environment",
+            "food": "Food",
+            "valueForMoney": "Value for Money",
+            "distribution": "Rating Distribution",
+            "summary": "Summary",
+            "total": "Total Reviews",
+            "visible": "Visible",
+            "hidden": "Hidden",
+            "allReviews": "All Reviews",
+            "hide": "Hide Review",
+            "show": "Show Review",
+            "restaurantResponse": "Restaurant Response",
+            "respond": "Respond to Review",
+            "addResponse": "Add Response",
+            "responsePlaceholder": "Thank you for your feedback..."
+        },
+        "extraServices": {
+            "title": "Extra Services",
+            "subtitle": "Configure additional services and amenities",
+            "addService": "Add New Service",
+            "editService": "Edit Service",
+            "name": "Service Name",
+            "namePlaceholder": "e.g., Free WiFi",
+            "category": "Category",
+            "amenity": "Amenity",
+            "service": "Service",
+            "feature": "Feature",
+            "amenities": "Amenities",
+            "services": "Services",
+            "features": "Features",
+            "icon": "Icon",
+            "price": "Price",
+            "description": "Description",
+            "descriptionPlaceholder": "Describe this service...",
+            "noServices": "No services in this category yet"
+        },
+        "booking": {
+            "title": "Online Booking Restrictions",
+            "subtitle": "Manage booking availability and restrictions",
+            "addBlockage": "Add Restriction",
+            "createBlockage": "Create Booking Restriction",
+            "type": "Restriction Type",
+            "specificDate": "Specific Date",
+            "dailyTime": "Daily Time Block",
+            "recurringTime": "Recurring Time Block",
+            "date": "Date Restriction",
+            "time": "Time Restriction",
+            "recurring": "Recurring Restriction",
+            "description": "Description",
+            "descriptionPlaceholder": "Reason for this restriction...",
+            "startDate": "Start Date",
+            "endDate": "End Date",
+            "effectiveFrom": "Effective From",
+            "startTime": "Start Time",
+            "endTime": "End Time",
+            "recurringDays": "Recurring Days",
+            "titlePlaceholder": "e.g., Christmas Closure",
+            "conditionsPlaceholder": "Additional conditions...",
+            "activeBlockages": "Active Restrictions",
+            "noBlockages": "No booking restrictions set up yet"
+        }
     },
     "export": {
     "dateRange": "Date Range",
@@ -1203,7 +1368,8 @@
             "back": "Back",
             "continue": "Continue",
             "close": "Close",
-            "readMore": "read more"
+            "readMore": "read more",
+            "showLess": "show less"
         },
         "reservation": {
             "makeReservation": "Make a Reservation",
@@ -1407,7 +1573,25 @@
     "availableTimes": "Available Times",
     "at": "at",
     "for": "for",
-    "yourReservationIsSetFor": "Your reservation is set for"
+    "yourReservationIsSetFor": "Your reservation is set for",
+    "common": {
+        "cancel": "Cancel",
+        "add": "Add",
+        "update": "Update",
+        "delete": "Delete",
+        "active": "Active",
+        "inactive": "Inactive",
+        "optional": "Optional",
+        "days": {
+            "sunday": "Sunday",
+            "monday": "Monday",
+            "tuesday": "Tuesday",
+            "wednesday": "Wednesday",
+            "thursday": "Thursday",
+            "friday": "Friday",
+            "saturday": "Saturday"
+        }
+    }
   }
 
 
