@@ -47,7 +47,7 @@ import BlankLayout from "./_root/BlankLayout";
 import FAQPage from "./_root/pages/FAQPage";
 import TermsAndConditions from "./_root/pages/TermsAndConditions";
 import CalendarGrid from "./_root/pages/CalendarGrid";
-<!-- import NotificationsProvider from "./providers/NotificationsProvider"; -->
+//import NotificationsProvider from "./providers/NotificationsProvider";
 import SelectSettings from "./_root/pages/SelectSettings";
 import UnifiedSettings from "./components/settings/UnifiedSettings";
 import WorkingHours from "./components/settings/WorkingHours";
