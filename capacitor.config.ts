@@ -14,6 +14,10 @@ const config: CapacitorConfig = {
   plugins: {
     PushNotifications: {
       presentationOptions: ["badge", "sound", "alert"]
+    },
+    StatusBar: {
+      style: "DEFAULT",
+      overlaysWebView: false
     }
   }
 };

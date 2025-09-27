@@ -41,6 +41,8 @@ import { ToastContainer } from "react-toastify";
 import { getSubdomain } from "./utils/getSubdomain";
 import "react-toastify/dist/ReactToastify.css";
 import { notificationProvider } from "./providers/notificationProvider";
+import { StatusBar, Style } from "@capacitor/status-bar";
+import { Capacitor } from "@capacitor/core";
 import MessagesPage from "./_root/pages/MessagesPage";
 import RestaurantSelection from "./components/settings/RestaurantSelection";
 import BlankLayout from "./_root/BlankLayout";
@@ -60,6 +62,12 @@ const API_HOST = import.meta.env.VITE_API_URL || "https://api.dev.tabla.ma";
 function App() {
   useEffect(() => {
     document.title = "Tabla | Taste Morocco's best ";
+
+    // Initialize status bar for mobile apps
+    if (Capacitor.isNativePlatform()) {
+      StatusBar.setStyle({ style: Style.Default }).catch(console.error);
+      StatusBar.setOverlaysWebView({ overlay: false }).catch(console.error);
+    }
   }, []);
 
 

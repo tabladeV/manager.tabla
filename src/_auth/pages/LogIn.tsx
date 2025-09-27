@@ -6,6 +6,8 @@ import Alert from "../../components/common/Alert";
 import BaseBtn from "../../components/common/BaseBtn";
 import { useDateContext } from "../../context/DateContext";
 import { Eye, EyeOff, CheckCircle2, ChevronRight } from 'lucide-react';
+import { Capacitor } from "@capacitor/core";
+import { useIOSNotchHeight } from "../../hooks/useStatusBarHeight";
 
 import image from "../../assets/login-image2.png";
 import circle from "../../assets/circle.png";
@@ -18,8 +20,8 @@ const LogIn: React.FC = () => {
   , []);
   
   const navigate = useNavigate();
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [email, setEmail] = useState<string>("tester@test.com");
+  const [password, setPassword] = useState<string>("123456@@@");
   const { setUserData } = useDateContext();
   const [eyeOn, setEyeOn] = useState(false);
   const pswrdRef = useRef<HTMLInputElement>(null);
@@ -71,8 +73,20 @@ const LogIn: React.FC = () => {
     login({ values: { email, password } });
   };
 
+  // iOS-specific spacing (Android handles automatically via StatusBar plugin)
+  const isIOS = Capacitor.getPlatform() === 'ios';
+  const headerSpacingClass = isIOS ? 'ios-header-spacing' : '';
+  const iosNotchHeight = useIOSNotchHeight();
+
+  // Set CSS custom property for iOS dynamic spacing based on notch height
+  useEffect(() => {
+    if (isIOS && iosNotchHeight > 0) {
+      document.documentElement.style.setProperty('--ios-notch-height', `${iosNotchHeight}px`);
+    }
+  }, [isIOS, iosNotchHeight]);
+
   return (
-    <div className="flex h-screen w-full bg-gradient-to-tr from-[#081c15] to-darkthemeitems p-4">
+    <div className={`flex h-screen w-full bg-gradient-to-tr from-[#081c15] to-darkthemeitems p-4 ${headerSpacingClass}`}>
       {/* Left side - Login Form */}
       <div className="w-1/2 lt-sm:w-full flex flex-col items-center justify-center px-6 py-10">
         <div className="w-full max-w-md">

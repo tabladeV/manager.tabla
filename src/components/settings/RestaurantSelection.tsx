@@ -6,6 +6,8 @@ import { BaseKey, useList } from "@refinedev/core";
 import authProvider from "../../providers/authProvider";
 import { useDateContext } from "../../context/DateContext";
 import { useTranslation } from "react-i18next";
+import { Capacitor } from "@capacitor/core";
+import { useIOSNotchHeight } from "../../hooks/useStatusBarHeight";
 
 interface RestaurantType {
     id: BaseKey;
@@ -77,14 +79,28 @@ const RestaurantSelection: React.FC<{showLogo?: boolean}> = ({showLogo=true}) =>
   };
 
   const { t } = useTranslation();
-  
+
+  // iOS-specific spacing (Android handles automatically via StatusBar plugin)
+  const isIOS = Capacitor.getPlatform() === 'ios';
+  const headerSpacingClass = isIOS ? 'ios-header-spacing' : '';
+  const iosNotchHeight = useIOSNotchHeight();
+
+  // Set CSS custom property for iOS dynamic spacing based on notch height
+  useEffect(() => {
+    if (isIOS && iosNotchHeight > 0) {
+      document.documentElement.style.setProperty('--ios-notch-height', `${iosNotchHeight}px`);
+    }
+  }, [isIOS, iosNotchHeight]);
+
+  const buttonTopPos = isIOS ? `${iosNotchHeight + 56}px` : '70px';
+
   return (
     <div className="flex bg-cover flex-col items-center w-full min-h-screen max-h-screen overflow-y-auto dark:bg-bgdarktheme">
-      
-      <div className="relative w-full flex items-center justify-center">
+
+      <div className={`relative w-full flex items-center justify-center ${headerSpacingClass}`}>
         {showLogo && <>
           <Logo className="horizontal" nolink />
-          <button className="btn-primary fixed top-[10px] left-[10px] z-10" onClick={() => handleLogout()}>
+          <button className="btn-primary fixed z-10" style={{top: buttonTopPos, left: '16px'}} onClick={() => handleLogout()}>
             {t('restaurantSelection.changeUser') || "Change User"}
           </button>
         </>}

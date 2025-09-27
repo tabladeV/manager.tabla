@@ -8,6 +8,7 @@ import { useEffect, useState } from "react"
 import DateSelection from "../components/header/DateSelection"
 import i18n from "i18next"
 import { useDarkContext } from "../context/DarkContext"
+import { useIOSNotchHeight } from "../hooks/useStatusBarHeight"
 import confirm from "../assets/confirmedNew.png"
 import cancel from "../assets/canceledNew.png"
 import pending from "../assets/pendingNew.png"
@@ -19,6 +20,7 @@ import pendingDark from "../assets/pendingNewDark.png"
 import { useList } from "@refinedev/core"
 import { useDateContext } from "../context/DateContext"
 import { format } from "date-fns"
+import { Capacitor } from "@capacitor/core"
 
 const RootLayout = () => {
   const { darkMode } = useDarkContext()
@@ -137,6 +139,18 @@ const RootLayout = () => {
   const [stateOfSideBar, setStateOfSideBar] = useState(false)
   const strokeColor = "stroke-[#1e1e1e70] dark:stroke-[#ffffff70]"
 
+  // iOS-specific styling (Android handles automatically via StatusBar plugin)
+  const isIOS = Capacitor.getPlatform() === 'ios'
+  const headerSpacingClass = isIOS ? 'ios-header-spacing' : ''
+  const iosNotchHeight = useIOSNotchHeight();
+
+  // Set CSS custom property for iOS dynamic spacing based on notch height
+  useEffect(() => {
+    if (isIOS && iosNotchHeight > 0) {
+      document.documentElement.style.setProperty('--ios-notch-height', `${iosNotchHeight}px`);
+    }
+  }, [isIOS, iosNotchHeight]);
+
   return (
     <div
       className={`flex overflow-hidden ${
@@ -156,7 +170,7 @@ const RootLayout = () => {
           stateOfSideBar ? "w-[300px]" : "w-[100px]"
         }`}
       >
-        <div className="transition-all duration-300 ease-in-out">
+        <div className={`transition-all duration-300 ease-in-out ${headerSpacingClass}`}>
           <Logo className={stateOfSideBar ? "horizontal" : ""} />
         </div>
         <NavigationMenu
@@ -171,7 +185,7 @@ const RootLayout = () => {
           stateOfSideBar ? "gt-sm:w-[calc(100%-300px)]" : "gt-sm:w-[calc(100%-100px)]"
         }`}
       >
-        <header className="h-[80px] items-center flex justify-between gap-1 px-6 lt-sm:px-2">
+        <header className={`h-[80px] items-center flex justify-between gap-1 px-6 lt-sm:px-2 ${headerSpacingClass}`}>
           <div className="sm:hidden">
             <Logo />
           </div>
