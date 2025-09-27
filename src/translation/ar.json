@@ -504,7 +504,13 @@
     "restaurantSelection": {
         "title": "اختيار مطعم",
         "description": "اختر المطعم الذي تريد إدارته",
-        "changeUser": "تغيير المستخدم"
+        "changeUser": "تغيير المستخدم",
+        "logout": "تسجيل الخروج",
+        "select": "اختيار",
+        "loading": "جاري التحميل...",
+        "current": "الحالي",
+        "noRestaurants": "لا توجد مطاعم متاحة",
+        "contactSupport": "يرجى الاتصال بالدعم إذا كنت تعتقد أن هذا خطأ"
     },
     "settingsPage": {
         "title": "الإعدادات",
