@@ -54,15 +54,12 @@ import WorkingHours from "./components/settings/WorkingHours";
 import NotificationsProviderV2 from "./providers/NotificationsProviderV2";
 import Areas from "./components/settings/Areas";
 import ErrorBoundary from "./components/ErrorBoundary";
-import { initializeStatusBar } from "./utils/statusBarConfig";
 
 const API_HOST = import.meta.env.VITE_API_URL || "https://api.dev.tabla.ma";
 
 function App() {
   useEffect(() => {
     document.title = "Tabla | Taste Morocco's best ";
-    // Initialize StatusBar for mobile platforms
-    initializeStatusBar();
   }, []);
 
 

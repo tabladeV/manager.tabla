@@ -26,9 +26,6 @@ importers:
       '@capacitor/push-notifications':
         specifier: '6'
         version: 6.0.4(@capacitor/core@6.2.1)
-      '@capacitor/status-bar':
-        specifier: '6'
-        version: 6.0.2(@capacitor/core@6.2.1)
       '@chakra-ui/cli':
         specifier: ^3.1.2
         version: 3.19.0(@chakra-ui/react@3.19.0(@emotion/react@11.14.0(@types/react@18.3.21)(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
@@ -889,11 +886,6 @@ packages:
 
   '@capacitor/push-notifications@6.0.4':
     resolution: {integrity: sha512-ZUxrHG17NztdcRMvual7b2GY45hcEWTLCjV01BjhyooDOUpvUGneFd95g+sJ6WhQTc90uVuaLuWl1xhXsBvBbg==}
-    peerDependencies:
-      '@capacitor/core': ^6.0.0
-
-  '@capacitor/status-bar@6.0.2':
-    resolution: {integrity: sha512-AmRIX6QvFemItlY7/69ARkIAqitRQqJ2qwgZmD1KqgFb78pH+XFXm1guvS/a8CuOOm/IqZ4ddDbl20yxtBqzGA==}
     peerDependencies:
       '@capacitor/core': ^6.0.0
 
@@ -8026,10 +8018,6 @@ snapshots:
       '@capacitor/core': 6.2.1
 
   '@capacitor/push-notifications@6.0.4(@capacitor/core@6.2.1)':
-    dependencies:
-      '@capacitor/core': 6.2.1
-
-  '@capacitor/status-bar@6.0.2(@capacitor/core@6.2.1)':
     dependencies:
       '@capacitor/core': 6.2.1
 
