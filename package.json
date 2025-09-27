@@ -102,7 +102,9 @@
     "refine": "refine",
     "cap:sync": "cap sync",
     "cap:android": "cap open android",
-    "cap:ios": "cap open ios"
+    "cap:ios": "cap open ios",
+    "build:android:debug": "npm run build:cap && npx cap sync && cd android && ./gradlew assembleDebug",
+    "build:android:release": "npm run build:cap && npx cap sync && cd android && KEYSTORE_PASSWORD=tabla2024 KEY_PASSWORD=tabla2024 ./gradlew assembleRelease"
   },
   "browserslist": {
     "production": [
