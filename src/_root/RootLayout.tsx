@@ -45,9 +45,6 @@ const RootLayout = () => {
       },
     ],
     queryOptions: {
-      onSuccess: (data) => {
-        console.log("Data fetched successfully:", data)
-      },
     },
   })
 

@@ -80,9 +80,7 @@ function App() {
     if (isLoggedIn && refreshToken && authProvider.refresh) {
       authProvider
         .refresh()
-        .then(() => {
-          console.log("Token refreshed on app load");
-        })
+        .then(() => {})
         .catch((error) => {
           console.error("Token refresh on app load failed", error);
         });

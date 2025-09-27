@@ -4,7 +4,6 @@ export const getSubdomain = (): string | null => {
     const parts = host.split(".");
     // Assuming your domain is tabla.ma (two parts), anything extra is a subdomain.
 
-    console.log(parts)
     if (parts.length = 2) {
         return parts[0];
     }

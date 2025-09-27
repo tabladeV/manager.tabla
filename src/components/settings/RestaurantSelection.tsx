@@ -82,7 +82,6 @@ const RestaurantSelection: React.FC<{ showLogo?: boolean }> = ({ showLogo = true
     } catch (e) {
       localStorage.removeItem("restaurant_id");
       setSelectedId(null);
-      console.log(e);
     }
   };
 
