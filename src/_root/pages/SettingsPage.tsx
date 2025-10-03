@@ -211,7 +211,7 @@ const SettingsPage = () => {
 
           {/* <DevOnly> */}
             <CanAccess 
-              resource="tags"
+              resource="tag"
               action="view"
               >
                 <Link to='/settings/tags' 
@@ -224,7 +224,7 @@ const SettingsPage = () => {
                 </Link>
             </CanAccess>
             <CanAccess 
-              resource="areas"
+              resource="area"
               action="view"
               >
                 <Link to='/settings/areas' 

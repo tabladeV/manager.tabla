@@ -364,7 +364,7 @@ function App() {
                             } />
                             <Route path="/settings/areas" element={
                               <CanAccess
-                                resource="areas"
+                                resource="area"
                                 action="view"
                                 fallback="You don't have access to Areas"
                               >
