@@ -40,7 +40,6 @@ const startRefreshTimer = (authProvider: ExtendedAuthProvider) => {
         if (isLoggedIn && refreshToken) {
             try {
                 await authProvider.refresh?.();
-                console.log("Token refreshed successfully");
             } catch (error) {
                 console.error("Token refresh failed", error);
             }
@@ -134,7 +133,6 @@ const authProvider: ExtendedAuthProvider = {
 
             return Promise.resolve(response.data);
         } catch (error) {
-            console.log("getIdentity error", error);
             return Promise.reject(error);
         }
     },

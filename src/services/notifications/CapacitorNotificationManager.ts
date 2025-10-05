@@ -11,6 +11,8 @@ export class CapacitorNotificationManager implements NotificationManager {
     if (this.initialized) return;
 
     try {
+      const platform = Capacitor.getPlatform();
+
       // Add listeners for push notification events
       await PushNotifications.addListener('registration', (token: Token) => {
         // Use setTimeout to avoid blocking the initialization
@@ -19,11 +21,23 @@ export class CapacitorNotificationManager implements NotificationManager {
 
       await PushNotifications.addListener('registrationError', (error: any) => {
         console.error('[CapacitorNotificationManager] Push registration error:', error);
+        
+        // iOS-specific error handling
+        if (platform === 'ios') {
+          if (error.error?.includes('simulator')) {
+            console.warn('[CapacitorNotificationManager] Push notifications not supported on iOS Simulator');
+          } else if (error.error?.includes('aps-environment')) {
+            console.error('[CapacitorNotificationManager] iOS Push capability not configured. Check Xcode project settings.');
+          } else if (error.error?.includes('network')) {
+            console.error('[CapacitorNotificationManager] Network error. Check device connectivity.');
+          }
+        }
       });
 
       // Handle foreground notifications
       await PushNotifications.addListener('pushNotificationReceived', (notification: PushNotificationSchema) => {
         try {
+          
           const payload: NotificationPayload = {
             notification: {
               title: notification.title || '',
@@ -31,6 +45,10 @@ export class CapacitorNotificationManager implements NotificationManager {
             },
             data: notification.data || {}
           };
+
+          // iOS-specific: Check if notification has APNs data
+          if (platform === 'ios' && notification.data) {
+          }
 
           // Notify all listeners safely
           this.messageListeners.forEach(listener => {
@@ -48,6 +66,7 @@ export class CapacitorNotificationManager implements NotificationManager {
       // Handle notification tap
       await PushNotifications.addListener('pushNotificationActionPerformed', (notification: ActionPerformed) => {
         try {
+          
           const data = notification.notification.data;
           if (data?.reservation_id) {
             // Navigate to reservation - this will be handled by the app
@@ -68,11 +87,21 @@ export class CapacitorNotificationManager implements NotificationManager {
 
   async requestPermission(): Promise<boolean> {
     try {
+      const platform = Capacitor.getPlatform();
       const permStatus = await PushNotifications.checkPermissions();
       
       if (permStatus.receive === 'prompt') {
         const result = await PushNotifications.requestPermissions();
+        
+        // iOS-specific: Check if permission was denied
+        if (platform === 'ios' && result.receive === 'denied') {
+        }
+        
         return result.receive === 'granted';
+      }
+      
+      // iOS-specific: Check for provisional authorization
+      if (platform === 'ios' && permStatus.receive === 'denied') {
       }
       
       return permStatus.receive === 'granted';
@@ -84,14 +113,30 @@ export class CapacitorNotificationManager implements NotificationManager {
 
   async getToken(): Promise<string | null> {
     try {
+      const platform = Capacitor.getPlatform();
       const permStatus = await PushNotifications.checkPermissions();
       
       if (permStatus.receive !== 'granted') {
         return null;
       }
 
-      // Register with APNS/FCM to get a token
-      await PushNotifications.register();
+      
+      // iOS-specific: Check if running on simulator
+      if (platform === 'ios') {
+        // Check if we're on a simulator (this will fail on simulator)
+        try {
+          await PushNotifications.register();
+        } catch (registerError: any) {
+          if (registerError.message?.includes('simulator')) {
+          } else {
+            console.error('[CapacitorNotificationManager] iOS: Registration error:', registerError);
+          }
+          throw registerError;
+        }
+      } else {
+        // Android registration
+        await PushNotifications.register();
+      }
       
       // Token will be received in the 'registration' listener
       // For now, we'll return null as the token is handled asynchronously
@@ -138,12 +183,24 @@ export class CapacitorNotificationManager implements NotificationManager {
       const platform = Capacitor.getPlatform();
       const deviceType = platform === 'ios' ? 'IOS' : 'ANDROID';
       
-      await httpClient.post('api/v1/device-tokens/', {
+      
+      const response = await httpClient.post('api/v1/device-tokens/', {
         token,
         device_type: deviceType
       });
-    } catch (error) {
+      
+    } catch (error: any) {
       console.error('[CapacitorNotificationManager] Failed to register token:', error);
+      
+      // Log more details for iOS-specific issues
+      if (Capacitor.getPlatform() === 'ios') {
+        if (error.response?.status === 400) {
+          console.error('[CapacitorNotificationManager] iOS: Bad request - check token format');
+        } else if (error.response?.status === 401) {
+          console.error('[CapacitorNotificationManager] iOS: Unauthorized - check authentication');
+        }
+      }
+      
       // Don't throw the error - just log it and continue
     }
   }

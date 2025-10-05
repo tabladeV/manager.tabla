@@ -64,7 +64,6 @@ export class UnifiedHttpClient {
   static async request<T = any>(config: HttpRequestConfig): Promise<UnifiedHttpResponse<T>> {
     const useCapacitorHttp = PlatformDetector.shouldUseCapacitorHttp();
     
-    console.log(`[HttpClient] Platform: ${Capacitor.getPlatform()}, Using: ${useCapacitorHttp ? 'CapacitorHttp' : 'Axios'}`);
     
     if (useCapacitorHttp) {
       return this.makeCapacitorRequest<T>(config);
@@ -167,7 +166,6 @@ export class UnifiedHttpClient {
       requestConfig.responseType = config.responseType;
     }
     
-    console.log(`[HttpClient] CapacitorHttp ${config.method} ${fullUrl}`, isFormData ? '(FormData)' : '');
     
     try {
       const response: HttpResponse = await CapacitorHttp.request(requestConfig);
@@ -195,7 +193,6 @@ export class UnifiedHttpClient {
    */
   private static async makeAxiosRequest<T>(config: HttpRequestConfig): Promise<UnifiedHttpResponse<T>> {
     const isFormData = config.data instanceof FormData;
-    console.log(`[HttpClient] Axios ${config.method} ${config.url}`, isFormData ? '(FormData)' : '');
     
     try {
       let response;

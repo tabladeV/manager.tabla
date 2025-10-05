@@ -86,6 +86,11 @@
   .input-primary{
     @apply border border-[#d1d2cf] text-subblack font-[500] py-2 px-4 rounded-[10px];
   }
+
+  /* iOS-specific spacing utility - Android handles spacing automatically via StatusBar plugin */
+  .ios-header-spacing {
+    margin-top: var(--ios-notch-height, 70px); /* Dynamic spacing based on iOS notch/safe area height */
+  }
 }
 
 .tables-cont{

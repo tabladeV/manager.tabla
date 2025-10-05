@@ -515,7 +515,13 @@
     "restaurantSelection":{
         "title": "Choose a Restaurant",
         "description": "Select the restaurant you want to manage",
-        "changeUser": "Change User"
+        "changeUser": "Change User",
+        "logout": "Logout",
+        "select": "Select",
+        "loading": "Loading...",
+        "current": "Current",
+        "noRestaurants": "No restaurants available",
+        "contactSupport": "Please contact support if you believe this is an error"
     },
      "settingsPage": {
         "title": "Settings",

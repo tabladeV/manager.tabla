@@ -506,7 +506,13 @@
   "restaurantSelection": {
     "title": "Elegir un Restaurante",
     "description": "Selecciona el restaurante que quieres gestionar",
-    "changeUser": "Cambiar Usuario"
+    "changeUser": "Cambiar Usuario",
+    "logout": "Cerrar sesión",
+    "select": "Seleccionar",
+    "loading": "Cargando...",
+    "current": "Actual",
+    "noRestaurants": "No hay restaurantes disponibles",
+    "contactSupport": "Por favor, contacta con soporte si crees que esto es un error"
   },
   "settingsPage": {
     "title": "Configuración",

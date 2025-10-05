@@ -29,7 +29,7 @@ _.sln
 .env
 
 # Capacitor
-android/
-ios/
 .capacitor/
+CLAUDE.md
+ios-notifications-guide.md
 
