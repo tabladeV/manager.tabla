@@ -52,6 +52,13 @@ import CalendarGrid from "./_root/pages/CalendarGrid";
 //import NotificationsProvider from "./providers/NotificationsProvider";
 import SelectSettings from "./_root/pages/SelectSettings";
 import UnifiedSettings from "./components/settings/UnifiedSettings";
+import WorkingHours from "./components/settings/WorkingHours";
+import NotificationsProviderV2 from "./providers/NotificationsProviderV2";
+import Areas from "./components/settings/Areas";
+import ErrorBoundary from "./components/ErrorBoundary";
+
+import PaymentSuccessPage from "./_plugin/pages/PaymentSuccessPage";
+import PaymentFailurePage from "./_plugin/pages/PaymentFailurePage";
 const API_HOST = import.meta.env.VITE_API_URL || "https://api.dev.tabla.ma";
 
 function App() {
