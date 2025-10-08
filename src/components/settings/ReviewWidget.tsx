@@ -6,7 +6,7 @@ import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
-import axiosInstance from "../../providers/axiosInstance"
+import { httpClient } from "../../services/httpClient"
 
 interface ReviewSettings {
   id: BaseKey
@@ -151,7 +151,8 @@ const ReviewWidget = () => {
         formData.append("clear_logo", "true")
       }
 
-      await axiosInstance.patch("/api/v1/reviews/widget", formData)
+      // Let the unified HTTP client handle FormData automatically
+      await httpClient.patch("/api/v1/reviews/widget", formData)
       showToast("success", "Configuration saved successfully!")
       refetch() // Refresh data after successful update
       setFormChanged(false)

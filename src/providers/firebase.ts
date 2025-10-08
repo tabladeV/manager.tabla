@@ -1,7 +1,7 @@
 // src/providers/firebase.js
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, MessagePayload, onMessage } from 'firebase/messaging';
-import axiosInstance from './axiosInstance';
+import { httpClient } from '../services/httpClient';
 import { getSWRegistration } from './swManager';
 
 const firebaseConfig = {
@@ -15,22 +15,25 @@ const firebaseConfig = {
 };
 
 
-const app = initializeApp(firebaseConfig);
+let app = null;
 let messagingInstance = null;
-try {
-    messagingInstance = getMessaging(app);
-} catch (error) {
-    console.error("Failed to initialize Firebase Messaging, possibly due to unsupported environment (e.g., non-browser).", error);
+
+// Only initialize Firebase on web platforms
+if (typeof window !== 'undefined' && typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+    try {
+        app = initializeApp(firebaseConfig);
+        messagingInstance = getMessaging(app);
+    } catch (error) {
+        console.error("Failed to initialize Firebase Messaging, possibly due to unsupported environment (e.g., non-browser).", error);
+    }
 }
 
 const registerTokenWithBackend = async (fcmToken: string) => {
     try {
-        console.log('Registering FCM token with backend:', fcmToken);
-        await axiosInstance.post('api/v1/device-tokens/', { // Assumes your Django API for device tokens
+        await httpClient.post('api/v1/device-tokens/', { // Assumes your Django API for device tokens
             token: fcmToken,
             device_type: 'WEB'
         });
-        console.log('FCM Token registered with backend successfully.');
     } catch (error: unknown) {
         if (error instanceof Error) {
             const axiosError = error as any;
@@ -54,22 +57,18 @@ export const requestNotificationPermissionAndToken = async () => {
     try {
         const permission = await Notification.requestPermission();
         if (permission === 'granted') {
-            console.log('Notification permission granted.');
             const registration = await getSWRegistration();
             const currentToken = await getToken(messagingInstance, { // Use the initialized instance
                 vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY || "BPO3O19QxBcc-j1k4wIZsrgxaFkqi8svWVMriCMltjFr1E1e58FcnAw-2Ogyttiryb7508I4O45fwDWnKpOf6FA",
                 serviceWorkerRegistration: registration
             });
             if (currentToken) {
-                console.log('FCM Token:', currentToken);
                 await registerTokenWithBackend(currentToken);
                 return currentToken;
             } else {
-                console.log('No registration token available.');
                 return null;
             }
         } else {
-            console.log('Unable to get permission to notify.');
             return null;
         }
     } catch (err) {
@@ -96,11 +95,9 @@ export const requestTokenOnly = async () => {
         });
 
         if (currentToken) {
-            console.log('FCM Token retrieved:', currentToken);
             await registerTokenWithBackend(currentToken);
             return currentToken;
         } else {
-            console.log('No registration token available. Request permission first or check service worker.');
             return null;
         }
     } catch (err) {
@@ -116,7 +113,6 @@ export const onForegroundMessageHandler = (callback: { (payload: { notification:
         return () => { }; // Return an empty unsubscribe function
     }
     return onMessage(messagingInstance, (payload) => { // Use the initialized instance
-        console.log('Foreground Message received: ', payload);
         callback(payload);
     });
 };

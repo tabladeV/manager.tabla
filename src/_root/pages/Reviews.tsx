@@ -11,7 +11,7 @@ import { type BaseKey, type BaseRecord, useList } from "@refinedev/core"
 import Pagination from "../../components/reservation/Pagination"
 import ExportModal from "../../components/common/ExportModal"
 import useExportConfig from "../../components/common/config/exportConfig"
-import axiosInstance from "../../providers/axiosInstance"
+import { httpClient } from "../../services/httpClient"
 import { saveAs } from "file-saver"
 import { useAsyncTaskManager } from "../../hooks/useAsyncTaskManager"
 
@@ -81,7 +81,7 @@ const Reviews = () => {
 
     try {
       setLoading(true)
-      const response = await axiosInstance.post('/api/v1/bo/reports/reviews/', requestBody, {
+      const response = await httpClient.post('/api/v1/bo/reports/reviews/', requestBody, {
         responseType: asyncGeneration ? 'json' : 'blob',
       })
 

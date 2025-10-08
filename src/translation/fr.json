@@ -504,7 +504,13 @@
   "restaurantSelection": {
     "title": "Choisir un Restaurant",
     "description": "Sélectionnez le restaurant que vous souhaitez gérer",
-    "changeUser": "Changer d'Utilisateur"
+    "changeUser": "Changer d'Utilisateur",
+    "logout": "Déconnexion",
+    "select": "Sélectionner",
+    "loading": "Chargement...",
+    "current": "Actuel",
+    "noRestaurants": "Aucun restaurant disponible",
+    "contactSupport": "Veuillez contacter le support si vous pensez qu'il s'agit d'une erreur"
   },
   "settingsPage": {
     "title": "Paramètres",

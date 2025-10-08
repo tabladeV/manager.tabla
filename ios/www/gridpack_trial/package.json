@@ -1,0 +1,16 @@
+{
+  "name": "dhx-gridpack-package",
+  "version": "8.4.6",
+  "description": "dhtmlxGridPack widget",
+  "homepage": "https://docs.dhtmlx.com/grid",
+  "private": true,
+  "bugs": {
+    "url": "https://forum.dhtmlx.com",
+    "email": "support@dhtmlx.com"
+  },
+  "main": "codebase/gridpack.js",
+  "types": "codebase/gridpack.d.ts",
+  "dependencies": {
+    "dhx-gridpack-package": "file:"
+  }
+}

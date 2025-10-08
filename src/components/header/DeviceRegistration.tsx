@@ -1,6 +1,6 @@
 // src/components/DeviceRegistration.jsx
 import React, { useState, useEffect } from 'react';
-import { requestNotificationPermissionAndToken } from '../../providers/firebase';
+import { NotificationService } from '../../services/notifications/NotificationService';
 
 
 const DeviceRegistration = () => {
@@ -8,9 +8,11 @@ const DeviceRegistration = () => {
     const [permissionStatus, setPermissionStatus] = useState('default');
 
     useEffect(() => {
-        if ('Notification' in window) setPermissionStatus(Notification.permission);
+        if (typeof window !== 'undefined' && 'Notification' in window) {
+            setPermissionStatus(Notification.permission);
+        }
         const interval = setInterval(() => {
-            if ('Notification' in window && Notification.permission !== permissionStatus) {
+            if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission !== permissionStatus) {
                 setPermissionStatus(Notification.permission);
             }
         }, 1000);
@@ -18,22 +20,39 @@ const DeviceRegistration = () => {
     }, [permissionStatus]);
 
     const handleRequestPermission = async () => {
-        const token = await requestNotificationPermissionAndToken();
-        if (token) {
-            setFcmToken(token);
-            if (process.env.NODE_ENV === 'development') {
-                alert('Device registration process initiated! Check console for FCM token and backend response. You may need to refresh the page for some permission changes to fully reflect.');
+        try {
+            const notificationService = NotificationService.getInstance();
+            
+            // Request permission first
+            const hasPermission = await notificationService.requestPermission();
+            
+            if (hasPermission) {
+                const token = await notificationService.getToken();
+                if (token) {
+                    setFcmToken(token);
+                    if (process.env.NODE_ENV === 'development') {
+                        alert('Device registration process initiated! Check console for FCM token and backend response. You may need to refresh the page for some permission changes to fully reflect.');
+                    } else {
+                        alert('Device registered for notifications.');
+                    }
+                } else {
+                    if (process.env.NODE_ENV === 'development') {
+                        alert('Failed to get FCM token. Check browser console, ensure notifications are not blocked for this site, and that your VAPID key is correct.');
+                    } else {
+                        alert('Could not register device for notifications. Please check your browser settings.');
+                    }
+                }
             } else {
-                alert('Device registered for notifications.');
+                alert('Permission denied for notifications.');
             }
-        } else {
-            if (process.env.NODE_ENV === 'development') {
-                alert('Failed to get FCM token. Check browser console, ensure notifications are not blocked for this site, and that your VAPID key is correct.');
-            } else {
-                alert('Could not register device for notifications. Please check your browser settings.');
+            
+            if (typeof window !== 'undefined' && 'Notification' in window) {
+                setPermissionStatus(Notification.permission);
             }
+        } catch (error) {
+            console.error('Error requesting notification permission:', error);
+            alert('An error occurred while requesting permission.');
         }
-        if ('Notification' in window) setPermissionStatus(Notification.permission);
     };
 
     return (

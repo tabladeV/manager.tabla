@@ -1,7 +1,7 @@
 import { Refine, Authenticated, CanAccess } from "@refinedev/core";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
-import dataProvider from "@refinedev/simple-rest";
+import createDataProvider from "./providers/dataProvider";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import routerBindings, {
   UnsavedChangesNotifier,
@@ -34,7 +34,6 @@ import WidgetPage from "./_plugin/pages/WidgetPage";
 import DesignPlacesIndex from "./_root/pages/DesignPlacesIndex";
 import ErrorPage from "./_root/pages/ErrorPage";
 
-import customAxiosInstance from "./providers/axiosInstance";
 import authProvider from "./providers/authProvider";
 import accessControlProvider from "./providers/accessControl";
 import { useEffect } from "react";
@@ -42,22 +41,28 @@ import { ToastContainer } from "react-toastify";
 import { getSubdomain } from "./utils/getSubdomain";
 import "react-toastify/dist/ReactToastify.css";
 import { notificationProvider } from "./providers/notificationProvider";
+import { StatusBar, Style } from "@capacitor/status-bar";
+import { Capacitor } from "@capacitor/core";
 import MessagesPage from "./_root/pages/MessagesPage";
 import RestaurantSelection from "./components/settings/RestaurantSelection";
 import BlankLayout from "./_root/BlankLayout";
 import FAQPage from "./_root/pages/FAQPage";
 import TermsAndConditions from "./_root/pages/TermsAndConditions";
 import CalendarGrid from "./_root/pages/CalendarGrid";
-import NotificationsProvider from "./providers/NotificationsProvider";
+//import NotificationsProvider from "./providers/NotificationsProvider";
 import SelectSettings from "./_root/pages/SelectSettings";
 import UnifiedSettings from "./components/settings/UnifiedSettings";
-import PaymentSuccessPage from "./_plugin/pages/PaymentSuccessPage";
-import PaymentFailurePage from "./_plugin/pages/PaymentFailurePage";
 const API_HOST = import.meta.env.VITE_API_URL || "https://api.dev.tabla.ma";
-function App() {
 
+function App() {
   useEffect(() => {
     document.title = "Tabla | Taste Morocco's best ";
+
+    // Initialize status bar for mobile apps
+    if (Capacitor.isNativePlatform()) {
+      StatusBar.setStyle({ style: Style.Default }).catch(console.error);
+      StatusBar.setOverlaysWebView({ overlay: false }).catch(console.error);
+    }
   }, []);
 
 
@@ -70,9 +75,7 @@ function App() {
     if (isLoggedIn && refreshToken && authProvider.refresh) {
       authProvider
         .refresh()
-        .then(() => {
-          console.log("Token refreshed on app load");
-        })
+        .then(() => {})
         .catch((error) => {
           console.error("Token refresh on app load failed", error);
         });
@@ -82,15 +85,16 @@ function App() {
 
 
   return (
-    <PowerProvider>
-      <DarkProvider>
-        <DateProvider>
-          <BrowserRouter>
-            <RefineKbarProvider>
-              <DevtoolsProvider>
-                <Refine
+    <ErrorBoundary>
+      <PowerProvider>
+        <DarkProvider>
+          <DateProvider>
+            <BrowserRouter>
+              <RefineKbarProvider>
+                  <DevtoolsProvider>
+                  <Refine
                   authProvider={authProvider}
-                  dataProvider={dataProvider(API_HOST, customAxiosInstance)}
+                  dataProvider={createDataProvider(API_HOST)}
                   routerProvider={routerBindings}
                   accessControlProvider={accessControlProvider}
                   notificationProvider={notificationProvider}
@@ -102,8 +106,43 @@ function App() {
                   }}
                 >
                   {isManager ? (
-                    <NotificationsProvider>
-                      <Routes>
+                  <NotificationsProviderV2>
+                    <Routes>
+                      <Route
+                        element={
+                          <div>
+                            <Outlet />
+                            <ToastContainer
+                              position="bottom-right"
+                              autoClose={2000}
+                              hideProgressBar={false}
+                              newestOnTop
+                              closeOnClick
+                              rtl={false}
+                              stacked
+                              pauseOnFocusLoss
+                              draggable
+                              pauseOnHover
+                              theme={localStorage.getItem('darkMode')==='true' ? "dark":"light"} // or "dark" based on your isDarkMode
+                            />
+                          </div>
+                        }
+                      >
+
+                        {/* Public Routes */}
+
+                        <Route element={<BlankLayout />}>
+                          <Route path="/select-restaurant" element={
+                            <Authenticated key="*" redirectOnFail="/sign-in">
+                              <RestaurantSelection />
+                            </Authenticated>
+                          } />
+                        </Route>
+                        <Route element={<AuthLayout />}>
+                          <Route path="/sign-in" element={<LogIn />} />
+                          <Route path="/sign-up" element={<LogIn />} />
+                        </Route>
+                        {/* Private Routes */}
                         <Route
                           element={
                             <div>
@@ -327,8 +366,10 @@ function App() {
                           </Route>
                           <Route path="*" element={<ErrorPage />} />
                         </Route>
-                      </Routes>
-                    </NotificationsProvider>
+                        <Route path="*" element={<ErrorPage />} />
+                      </Route>
+                    </Routes>
+                    </NotificationsProviderV2>
                   ) : (
                     <Routes>
                       <Route element={<Plugins />}>
@@ -358,6 +399,7 @@ function App() {
         </DateProvider>
       </DarkProvider>
     </PowerProvider>
+    </ErrorBoundary>
   );
 }
 

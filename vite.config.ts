@@ -3,10 +3,13 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import * as path from 'path';
 
-export default defineConfig({
-  plugins: [
-    react(),
-    VitePWA({
+export default defineConfig(({ mode }) => {
+  const isCapacitorBuild = process.env.CAPACITOR_BUILD === 'true';
+  
+  return {
+    plugins: [
+      react(),
+      !isCapacitorBuild && VitePWA({
       manifestFilename: 'manifest.json',   // ← this makes the generated file manifest.json
       devOptions: {
         enabled: true,
@@ -50,6 +53,6 @@ export default defineConfig({
         ]
       }
     })
-  ],
+    ].filter(Boolean),
+  };
 });
-
