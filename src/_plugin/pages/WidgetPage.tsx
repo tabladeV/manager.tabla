@@ -1,10 +1,10 @@
 "use client"
 import type React from "react"
 import { useCallback, useEffect, useState } from "react"
-import { Link, useLocation, useParams } from "react-router-dom"
+import { Link, Navigate, useLocation, useParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import Logo from "../../components/header/Logo"
-import { LoaderCircle, ScreenShareIcon, ChevronDown } from "lucide-react"
+import { LoaderCircle, ScreenShareIcon, ChevronDown, Facebook, Instagram, Twitter, Phone, Mail, MessageCircle, Info, BadgeInfo } from "lucide-react"
 import { SunIcon, MoonIcon, CheckIcon } from "../../components/icons"
 import { type BaseKey, type BaseRecord, useCreate, useList, useOne } from "@refinedev/core"
 import { format } from "date-fns"
@@ -81,7 +81,7 @@ const LanguageSelector = () => {
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
 
           {/* Dropdown */}
-          <div className="absolute right-0 bottom-full mt-2 bg-white dark:bg-darkthemeitems rounded-lg shadow-lg border border-[#dddddd] dark:border-[#444444] z-50 min-w-[160px]">
+          <div className="absolute right-0 top-full mt-2 bg-white dark:bg-darkthemeitems rounded-lg shadow-lg border border-[#dddddd] dark:border-[#444444] z-50 min-w-[160px]">
             {languages.map((language) => (
               <button
                 key={language.code}
@@ -107,6 +107,59 @@ const LanguageSelector = () => {
 const WidgetPage = () => {
   const { t } = useTranslation()
   const { pathname } = useLocation()
+
+  // Static payment enablement - will be replaced with API endpoint later
+  const PAYMENT_ENABLED = true
+  const FORM_DATA_KEY = 'tabla_widget_form_data'
+
+  // Payment initiation types
+  interface PaymentInitiationRequest {
+    reservation_id: number;
+    BROWSER_JAVA_ENABLED: string;
+    BROWSER_COLOR_DEPTH: number;
+    BROWSER_SCREEN_HEIGHT: number;
+    BROWSER_SCREEN_WIDTH: number;
+    USER_AGENT: string;
+    LANGUAGE: string;
+  }
+
+  interface PaymentInitiationResponse {
+    order_id: string;
+    provider: string;
+    amount: string;
+    currency: string;
+    status: string;
+    pay_url: string;
+    form_data: {
+      clientid: string;
+      storetype: string;
+      trantype: string;
+      amount: number;
+      currency: string;
+      oid: string;
+      okUrl: string;
+      failUrl: string;
+      lang: string;
+      email: string;
+      BillToName: string;
+      rnd: string;
+      hashAlgorithm: string;
+      encoding: string;
+      CallbackResponse: string;
+      CallbackURL: string;
+      AutoRedirect: string;
+      sessiontimeout: string;
+      hash: string;
+    };
+    redirect_method: string;
+
+  }
+
+  // Payment state
+  const [paymentData, setPaymentData] = useState<PaymentInitiationResponse | null>(null)
+  const [paymentError, setPaymentError] = useState<string | null>(null)
+  const [reservationId, setReservationId] = useState<number | null>(null)
+  const RESERVATION_DATA_KEY = 'tabla_widget_reservation_data'
 
   useEffect(() => {
     document.title = t("reservationWidget.page.title")
@@ -152,6 +205,7 @@ const WidgetPage = () => {
   }, [posts])
 
   const { mutate: createReservation } = useCreate()
+  const { mutate: createPaymentInitiation } = useCreate()
   const [widgetInfo, setWidgetInfo] = useState<BaseRecord>()
 
   interface Area {
@@ -232,6 +286,134 @@ const WidgetPage = () => {
     phone: "",
   })
 
+  const [serverError, setServerError] = useState<string>()
+  const [chosenTitle, setChosenTitle] = useState<"mr" | "mrs" | "ms">()
+  const [checkedConditions, setCheckedConditions] = useState<boolean>(false)
+  const [checkedDressCode, setCheckedDressCode] = useState<boolean>(false)
+
+  // Credit card form state
+  // const [cardInfo, setCardInfo] = useState({
+  //   cardNumber: "",
+  //   expiryDate: "",
+  //   cvv: "",
+  //   cardholderName: ""
+  // })
+
+  // const [cardErrors, setCardErrors] = useState({
+  //   cardNumber: "",
+  //   expiryDate: "",
+  //   cvv: "",
+  //   cardholderName: ""
+  // })
+
+  // Billing address form state
+  const [billingInfo, setBillingInfo] = useState({
+    firstName: "",
+    lastName: "",
+    address: "",
+    city: "", // Optional
+    zipCode: "", // Optional
+    country: ""
+  })
+
+  const [billingErrors, setBillingErrors] = useState({
+    firstName: "",
+    lastName: "",
+    address: "",
+    country: ""
+  })
+
+  // Browser/Device detection fields
+  const [browserInfo, setBrowserInfo] = useState({
+    userAgent: "",
+    screenHeight: 0,
+    screenWidth: 0,
+    colorDepth: 0
+  })
+
+  // Save form data to localStorage
+  const saveFormDataToCache = useCallback(() => {
+    const formData = {
+      data,
+      userInformation,
+      areaSelected,
+      chosenTitle,
+      checkedConditions,
+      checkedDressCode,
+      // cardInfo,
+      billingInfo,
+      browserInfo,
+      step,
+      timestamp: Date.now()
+    }
+    localStorage.setItem(FORM_DATA_KEY, JSON.stringify(formData))
+  }, [data, userInformation, areaSelected, chosenTitle, checkedConditions, checkedDressCode, /* cardInfo, */ billingInfo, browserInfo, step])
+
+  // Load form data from localStorage
+  const loadFormDataFromCache = useCallback(() => {
+    try {
+      const cachedData = localStorage.getItem(FORM_DATA_KEY)
+      if (cachedData) {
+        const parsedData = JSON.parse(cachedData)
+        // Check if data is not older than 24 hours
+        const isDataFresh = Date.now() - parsedData.timestamp < 24 * 60 * 60 * 1000
+        if (isDataFresh) {
+          setData(parsedData.data || { reserveDate: "", time: "", guests: 0 })
+          setUserInformation(parsedData.userInformation || {
+            firstname: "",
+            lastname: "",
+            email: "",
+            phone: "",
+            preferences: "",
+            allergies: "",
+            occasion: "",
+          })
+          setAreaSelected(parsedData.areaSelected)
+          setChosenTitle(parsedData.chosenTitle)
+          setCheckedConditions(parsedData.checkedConditions || false)
+          setCheckedDressCode(parsedData.checkedDressCode || false)
+          // setCardInfo(parsedData.cardInfo || {
+          //   cardNumber: "",
+          //   expiryDate: "",
+          //   cvv: "",
+          //   cardholderName: ""
+          // })
+          setBillingInfo(parsedData.billingInfo || {
+            firstName: "",
+            lastName: "",
+            address: "",
+            city: "",
+            zipCode: "",
+            country: ""
+          })
+          setBrowserInfo(parsedData.browserInfo || {
+            userAgent: "",
+            screenHeight: 0,
+            screenWidth: 0,
+            colorDepth: 0
+          })
+          if (parsedData.step && parsedData.step > 1) {
+            setStep(parsedData.step)
+          }
+        } else {
+          // Clear old data
+          localStorage.removeItem(FORM_DATA_KEY)
+        }
+      }
+    } catch (error) {
+      console.error('Error loading cached form data:', error)
+      localStorage.removeItem(FORM_DATA_KEY)
+    }
+  }, [])
+
+  // Clear form data from localStorage
+  const clearFormDataCache = useCallback(() => {
+    localStorage.removeItem(FORM_DATA_KEY)
+    localStorage.removeItem(RESERVATION_DATA_KEY)
+  }, [])
+
+
+
   const validateForm = (formData: any) => {
     const errors = {
       firstname: "",
@@ -283,7 +465,12 @@ const WidgetPage = () => {
     }
 
     if (validateForm(formData)) {
-      setStep(4)
+      // Go to payment step if enabled, otherwise go to confirmation
+      if (PAYMENT_ENABLED) {
+        setStep(3) // Payment step
+      } else {
+        setStep(4) // Confirmation step
+      }
     }
   }
 
@@ -304,8 +491,174 @@ const WidgetPage = () => {
     }
   }, [isWidgetActivated])
 
-  const [serverError, setServerError] = useState<string>()
-  const [chosenTitle, setChosenTitle] = useState<"mr" | "mrs" | "ms">()
+  // Load cached data on component mount
+  useEffect(() => {
+    loadFormDataFromCache()
+  }, [loadFormDataFromCache])
+
+  // Detect browser info on component mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setBrowserInfo({
+        userAgent: navigator.userAgent,
+        screenHeight: window.screen.height,
+        screenWidth: window.screen.width,
+        colorDepth: window.screen.colorDepth
+      })
+    }
+  }, [])
+
+  // Save form data whenever relevant state changes
+  useEffect(() => {
+    if (step > 1) {
+      saveFormDataToCache()
+    }
+  }, [data, userInformation, areaSelected, chosenTitle, checkedConditions, checkedDressCode, /* cardInfo, */ billingInfo, browserInfo, step, saveFormDataToCache])
+
+  // Credit card validation
+  // const validateCardInfo = () => {
+  //   const errors = {
+  //     cardNumber: "",
+  //     expiryDate: "",
+  //     cvv: "",
+  //     cardholderName: ""
+  //   }
+  //   let isValid = true
+
+  //   // Card number validation (basic length check)
+  //   if (!cardInfo.cardNumber.replace(/\s/g, '')) {
+  //     errors.cardNumber = t("reservationWidget.payment.cardNumberRequired")
+  //     isValid = false
+  //   } else if (cardInfo.cardNumber.replace(/\s/g, '').length < 16) {
+  //     errors.cardNumber = t("reservationWidget.payment.cardNumberInvalid")
+  //     isValid = false
+  //   }
+
+  //   // Expiry date validation
+  //   if (!cardInfo.expiryDate) {
+  //     errors.expiryDate = t("reservationWidget.payment.expiryRequired")
+  //     isValid = false
+  //   } else if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(cardInfo.expiryDate)) {
+  //     errors.expiryDate = t("reservationWidget.payment.expiryInvalid")
+  //     isValid = false
+  //   }
+
+  //   // CVV validation
+  //   if (!cardInfo.cvv) {
+  //     errors.cvv = t("reservationWidget.payment.cvvRequired")
+  //     isValid = false
+  //   } else if (!/^\d{3,4}$/.test(cardInfo.cvv)) {
+  //     errors.cvv = t("reservationWidget.payment.cvvInvalid")
+  //     isValid = false
+  //   }
+
+  //   // Cardholder name validation
+  //   if (!cardInfo.cardholderName.trim()) {
+  //     errors.cardholderName = t("reservationWidget.payment.cardholderRequired")
+  //     isValid = false
+  //   }
+
+  //   setCardErrors(errors)
+  //   return isValid
+  // }
+
+  // Billing address validation
+  const validateBillingInfo = () => {
+    const errors = {
+      firstName: "",
+      lastName: "",
+      address: "",
+      country: ""
+    }
+    let isValid = true
+
+    if (!billingInfo.firstName.trim()) {
+      errors.firstName = t("reservationWidget.payment.firstNameRequired")
+      isValid = false
+    }
+
+    if (!billingInfo.lastName.trim()) {
+      errors.lastName = t("reservationWidget.payment.lastNameRequired")
+      isValid = false
+    }
+
+    if (!billingInfo.address.trim()) {
+      errors.address = t("reservationWidget.payment.addressRequired")
+      isValid = false
+    }
+
+    if (!billingInfo.country.trim()) {
+      errors.country = t("reservationWidget.payment.countryRequired")
+      isValid = false
+    }
+
+    setBillingErrors(errors)
+    return isValid
+  }
+
+  // Helper function to check if payment is required
+  const isPaymentRequired = (guestCount: number) => {
+    if (!widgetInfo?.enable_paymant) return false
+    const minGuestsForPayment = widgetInfo?.min_number_of_guests_without_deposite || 1
+    return guestCount >= minGuestsForPayment
+  }
+
+  const [paymentURL, setPaymentURL] = useState<string | null>(null)
+
+  // Payment initiation function
+  const initiatePayment = (reservationId: number) => {
+    setPaymentError(null)
+    
+    const paymentRequest: PaymentInitiationRequest = {
+      reservation_id: reservationId,
+      BROWSER_JAVA_ENABLED: navigator.javaEnabled ? navigator.javaEnabled().toString() : "false",
+      BROWSER_COLOR_DEPTH: browserInfo.colorDepth,
+      BROWSER_SCREEN_HEIGHT: browserInfo.screenHeight,
+      BROWSER_SCREEN_WIDTH: browserInfo.screenWidth,
+      USER_AGENT: browserInfo.userAgent,
+      LANGUAGE: i18n.language
+    }
+
+    createPaymentInitiation(
+      {
+        resource: 'api/v1/bo/payments/initiate/',
+        values: paymentRequest
+      },
+      {
+        onSuccess: (response) => {
+          setPaymentData(response.data as PaymentInitiationResponse)
+          setIsLoading(false) // Stop loading, let user proceed to payment manually
+          console.log('Payment initiated successfully:', response.data)
+          setPaymentURL(response.data.pay_url || null)
+          // Don't redirect here, let the user click the payment button in step 4
+        },
+        onError: (error) => {
+          console.error('Payment initiation error:', error)
+          setIsLoading(false)
+          setPaymentError(error?.message || 'Payment initiation failed')
+        }
+      }
+    )
+  }
+
+
+
+  function submitFormPost(url: string | undefined, data: Record<string, string | number  > | undefined) {
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = url ?? "";
+      
+      for (const key in data) {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = String(data[key]);
+          form.appendChild(input);
+      }
+      
+      document.body.appendChild(form);
+      form.submit();
+  }
 
   const handleConfirmation = () => {
     setIsLoading(true)
@@ -334,14 +687,61 @@ const WidgetPage = () => {
           date: format(data.reserveDate, "yyyy-MM-dd"),
           time: data.time + ":00",
           number_of_guests: data.guests,
+          // Payment and billing information (if payment is enabled)
+          ...(PAYMENT_ENABLED && {
+            // payment_info: {
+            //   card_number: cardInfo.cardNumber.replace(/\s/g, ''), // Remove spaces
+            //   cardholder_name: cardInfo.cardholderName,
+            //   expiry_date: cardInfo.expiryDate,
+            //   cvv: cardInfo.cvv
+            // },
+            billing_address: {
+              first_name: billingInfo.firstName,
+              last_name: billingInfo.lastName,
+              address: billingInfo.address,
+              city: billingInfo.city,
+              zip_code: billingInfo.zipCode,
+              country: billingInfo.country
+            },
+            browser_info: {
+              user_agent: browserInfo.userAgent,
+              screen_height: browserInfo.screenHeight,
+              screen_width: browserInfo.screenWidth,
+              browser_color_depth: browserInfo.colorDepth
+            }
+          })
         },
       },
       {
-        onSuccess: () => {
-          setIsLoading(false)
-          setStep(5)
+        onSuccess: (responseData) => {
+          const createdReservation = responseData?.data
+          const reservationId = createdReservation?.reservation.id
+          
+          if (reservationId) {
+            const numericReservationId = Number(reservationId)
+            setReservationId(numericReservationId)
+            
+            // Check if payment is required based on conditions
+            const currentGuestCount = data.guests
+            const shouldRequirePayment = isPaymentRequired(currentGuestCount)
+            
+            if (shouldRequirePayment) {
+              // Payment is required, initiate payment and go to step 4
+              initiatePayment(numericReservationId)
+              setStep(4) // Move to payment step
+            } else {
+              // No payment required, go directly to success step
+              setIsLoading(false)
+              clearFormDataCache()
+              setStep(5)
+            }
+          } else {
+            setIsLoading(false)
+            clearFormDataCache()
+            setStep(5)
+          }
         },
-        onError: (error) => {
+        onError: () => {
           setIsLoading(false)
           setServerError(t("reservationWidget.errors.serverError"))
         },
@@ -363,8 +763,7 @@ const WidgetPage = () => {
     return truncatedText
   }
 
-  const [checkedConditions, setCheckedConditions] = useState<boolean>(false)
-  const [checkedDressCode, setCheckedDressCode] = useState<boolean>(false)
+
   const [showFullDescription, setShowFullDescription] = useState<boolean>(false)
   const [descriptionToggleDebounce, setDescriptionToggleDebounce] = useState<boolean>(false)
 
@@ -401,12 +800,38 @@ const WidgetPage = () => {
 
   const { preferredLanguage } = useDateContext()
 
+  const calculateTotalAmount = () => {
+    if (widgetInfo?.enable_paymant && widgetInfo?.deposite_amount_for_guest) {
+      return (Number(widgetInfo.deposite_amount_for_guest) * data.guests).toFixed(2) + " " + (widgetInfo?.currency || "MAD")
+    }
+    return "0.00"
+  }
+
 
   return (
     <div className={`overflow-y-auto min-h-screen max-h-screen bg-white dark:bg-bgdarktheme2 text-black dark:text-white ${preferredLanguage === "ar" ? "rtl" : ""}`}>
 
+      {/* Top Header with Language and Theme Controls */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-transparent">
+        <div className="w-full max-w-[800px] lg:max-w-[800px] md:max-w-[600px] mx-auto px-4">
+          <div className="flex items-center justify-between py-4">
+            <button
+              onClick={toggleDarkMode}
+              aria-label={t("reservationWidget.common.toggleDarkMode")}
+              className="p-2 rounded-lg hover:bg-white/10 dark:hover:bg-black/20 transition-colors"
+            >
+              <SunIcon size={20} className="dark:hidden text-white drop-shadow-lg" />
+              <MoonIcon size={20} className="hidden dark:block text-white drop-shadow-lg" />
+            </button>
+            <div className="flex items-center gap-4">
+              <LanguageSelector />
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Hero Section with Background Image and Logo */}
-      <div className="fixed w-full h-[80vh] min-h-[500px] overflow-hidden">
+      <div className="fixed w-full h-[80vh] min-h-[500px] overflow-hidden ">
         {/* Background Image */}
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat blur-[3px] scale-[1.1]"
@@ -433,11 +858,30 @@ const WidgetPage = () => {
       </div>
 
       {/* Main Content Container */}
-      <div className="relative pt-[350px]">
+      <div className="relative pt-[370px]">
         {/* White Card Container */}
         <div className="w-full max-w-[800px] lg:max-w-[800px] md:max-w-[600px] mx-auto px-0">
           <div className="bg-white dark:bg-darkthemeitems rounded-t-3xl shadow-2xl overflow-hidden">
 
+            {/* Check and showing a warning message */}
+            {isPaymentRequired(data.guests) && (
+              <div className="bg-softbluetheme mx-4 mt-4 rounded-xl flex justify-between  text-bluetheme p-2">
+                <div className="flex gap-2 justify-start items-center" role="alert">
+                  <BadgeInfo className="inline-block mx-2" />
+                  <div>
+                    <p className="font-bold">{t("reservationWidget.payment.paymentNoticeTitle","Prepayment is required ")}</p>
+                    <p className="text-sm">{t("reservationWidget.payment.paymentNoticeDescription", "The establishment offers a prepayment for this reservation.")}</p>
+                  </div>
+                  
+                </div>
+                <div className="" >
+                  <div className="flex-1 font-[900] p-2  rounded-lg flex items-center justify-center w-fit h-fit text-bluetheme">
+
+                    {calculateTotalAmount()}
+                  </div>
+                </div>
+              </div>
+            )}  
             {/* Reservation Form Section */}
             <div className="p-6">
               {step === 1 && (
@@ -497,6 +941,7 @@ const WidgetPage = () => {
                       <ScreenShareIcon size={18} />
                     </button>
                   )}
+                  
                 </>
               )}
 
@@ -748,99 +1193,291 @@ const WidgetPage = () => {
                 </div>
               )}
 
-              {/* Step 4 - Confirmation */}
-              {step === 4 && (
+              {/* Step 3 - confirmation */}
+              {step === 3 && (
                 <div>
-                  <h2 className="text-xl font-semibold mb-4">{t("reservationWidget.confirmation.title")}</h2>
+                  <h2 className="text-xl font-semibold mb-4">{t("reservationWidget.payment.reservationSummary")}</h2>
                   <div className="space-y-4 mb-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <h3 className="text-sm font-medium font-[600] dark:text-greentheme text-greentheme">
-                          {t("reservationWidget.confirmation.name")}
-                        </h3>
-                        <p className="text-base">
-                          {chosenTitle ? chosenTitle + ". " : ""}
-                          {userInformation.firstname} {userInformation.lastname}
-                        </p>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-medium font-[600] dark:text-greentheme text-greentheme">
-                          {t("reservationWidget.confirmation.email")}
-                        </h3>
-                        <p className="text-base">{userInformation.email}</p>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-medium font-[600] dark:text-greentheme text-greentheme">
-                          {t("reservationWidget.confirmation.phone")}
-                        </h3>
-                        <p className="text-base">{userInformation.phone}</p>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-medium font-[600] dark:text-greentheme text-greentheme">
-                          {t("reservationWidget.confirmation.dateTime")}
-                        </h3>
-                        <p className="text-base">
-                          {format(data.reserveDate, "MMMM d, yyyy")} {t("reservationWidget.confirmation.at")} {data.time}
-                        </p>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-medium font-[600] dark:text-greentheme text-greentheme">
-                          {t("reservationWidget.confirmation.guests")}
-                        </h3>
-                        <p className="text-base">
-                          {data.guests}{" "}
-                          {data.guests === 1
-                            ? t("reservationWidget.confirmation.person")
-                            : t("reservationWidget.confirmation.people")}
-                        </p>
-                      </div>
-                      {userInformation.occasion && (
-                        <div>
-                          <h3 className="text-sm font-medium font-[600] dark:text-greentheme text-greentheme">
-                            {t("reservationWidget.confirmation.occasion")}
-                          </h3>
-                          <p className="text-base">
-                            {
-                              occasions?.find((occasion: BaseRecord) => occasion.id === Number(userInformation.occasion))
-                                ?.name
-                            }
-                          </p>
+                    <div className="bg-[#f9f9f9] dark:bg-darkthemeitems rounded-lg p-4">
+                      {/* <h3 className="text-lg font-medium mb-4">{t("reservationWidget.payment.reservationSummary")}</h3> */}
+                      <div className="space-y-3">
+                        {/* Personal Information */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                          <div>
+                            <span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.confirmation.name")}: </span>
+                            <span className="font-medium">{chosenTitle ? chosenTitle + ". " : ""}{userInformation.firstname} {userInformation.lastname}</span>
+                          </div>
+                          <div>
+                            <span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.confirmation.email")}: </span>
+                            <span>{userInformation.email}</span>
+                          </div>
+                          <div>
+                            <span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.confirmation.phone")}: </span>
+                            <span>{userInformation.phone}</span>
+                          </div>
                         </div>
-                      )}
+                        
+                        {/* Reservation Details */}
+                        <div className="border-t border-[#dddddd] dark:border-[#444444] pt-3">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                            <div>
+                              <span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.confirmation.dateTime")}: </span>
+                              <span className="font-medium">{format(data.reserveDate, "MMMM d, yyyy")} {t("reservationWidget.confirmation.at")} {data.time}</span>
+                            </div>
+                            <div>
+                              <span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.confirmation.guests")}: </span>
+                              <span className="font-medium">{data.guests} {data.guests === 1 ? t("reservationWidget.confirmation.person") : t("reservationWidget.confirmation.people")}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Optional Information */}
+                        {(userInformation.occasion || areaSelected || userInformation.allergies || userInformation.preferences) && (
+                          <div className="border-t border-[#dddddd] dark:border-[#444444] pt-3">
+                            <div className="space-y-2 text-sm">
+                              {userInformation.occasion && userInformation.occasion !== "0" && (
+                                <div>
+                                  <span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.confirmation.occasion")}: </span>
+                                  <span>{occasions?.find((occasion: BaseRecord) => occasion.id === Number(userInformation.occasion))?.name}</span>
+                                </div>
+                              )}
+                              {areaSelected && (
+                                <div>
+                                  <span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.form.areas")}: </span>
+                                  <span>{areas.find((area: Area) => area.id === areaSelected)?.name}</span>
+                                </div>
+                              )}
+                              {userInformation.allergies && (
+                                <div>
+                                  <span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.confirmation.allergies")}: </span>
+                                  <span className="text-xs bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 px-2 py-1 rounded">{userInformation.allergies}</span>
+                                </div>
+                              )}
+                              {userInformation.preferences && (
+                                <div>
+                                  <span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.confirmation.preferences")}: </span>
+                                  <span className="text-xs bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 px-2 py-1 rounded">{userInformation.preferences}</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    {userInformation.allergies && (
-                      <div>
-                        <h3 className="text-sm font-medium font-[600] dark:text-greentheme text-greentheme">
-                          {t("reservationWidget.confirmation.allergies")}
-                        </h3>
-                        <p className="text-base">{userInformation.allergies}</p>
+                    
+                    
+                    
+                    {/* Credit Card Information Section - COMMENTED OUT */}
+                    {/* <div className="space-y-3">
+                      <h3 className="text-lg font-medium">{t("reservationWidget.payment.creditCardInfo")}</h3>
+                      <div className="space-y-4">
+                        <div>
+                          <label htmlFor="cardholderName" className="block text-sm font-medium text-[#555555] dark:text-[#cccccc] mb-1">
+                            {t("reservationWidget.payment.cardholderName")} *
+                          </label>
+                          <input
+                            id="cardholderName"
+                            type="text"
+                            placeholder={t("reservationWidget.payment.cardholderNamePlaceholder")}
+                            value={cardInfo.cardholderName}
+                            onChange={(e) => setCardInfo(prev => ({ ...prev, cardholderName: e.target.value }))}
+                            className={`w-full p-3 rounded-md border ${cardErrors.cardholderName ? "border-red-500" : "border-[#dddddd] dark:border-[#444444]"} bg-white dark:bg-darkthemeitems focus:outline-none focus:ring-2 focus:ring-[#88AB61]`}
+                          />
+                          {cardErrors.cardholderName && <p className="mt-1 text-sm text-red-500">{cardErrors.cardholderName}</p>}
+                        </div>
+                        
+                        <div>
+                          <label htmlFor="cardNumber" className="block text-sm font-medium text-[#555555] dark:text-[#cccccc] mb-1">
+                            {t("reservationWidget.payment.cardNumber")} *
+                          </label>
+                          <input
+                            id="cardNumber"
+                            type="text"
+                            placeholder="1234 5678 9012 3456"
+                            value={cardInfo.cardNumber}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/\D/g, '').replace(/(\d{4})(?=\d)/g, '$1 ').trim()
+                              if (value.replace(/\s/g, '').length <= 16) {
+                                setCardInfo(prev => ({ ...prev, cardNumber: value }))
+                              }
+                            }}
+                            className={`w-full p-3 rounded-md border ${cardErrors.cardNumber ? "border-red-500" : "border-[#dddddd] dark:border-[#444444]"} bg-white dark:bg-darkthemeitems focus:outline-none focus:ring-2 focus:ring-[#88AB61]`}
+                          />
+                          {cardErrors.cardNumber && <p className="mt-1 text-sm text-red-500">{cardErrors.cardNumber}</p>}
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label htmlFor="expiryDate" className="block text-sm font-medium text-[#555555] dark:text-[#cccccc] mb-1">
+                              {t("reservationWidget.payment.expiryDate")} *
+                            </label>
+                            <input
+                              id="expiryDate"
+                              type="text"
+                              placeholder="MM/YY"
+                              value={cardInfo.expiryDate}
+                              onChange={(e) => {
+                                let value = e.target.value.replace(/\D/g, '')
+                                if (value.length >= 2) {
+                                  value = value.substring(0, 2) + '/' + value.substring(2, 4)
+                                }
+                                if (value.length <= 5) {
+                                  setCardInfo(prev => ({ ...prev, expiryDate: value }))
+                                }
+                              }}
+                              className={`w-full p-3 rounded-md border ${cardErrors.expiryDate ? "border-red-500" : "border-[#dddddd] dark:border-[#444444]"} bg-white dark:bg-darkthemeitems focus:outline-none focus:ring-2 focus:ring-[#88AB61]`}
+                            />
+                            {cardErrors.expiryDate && <p className="mt-1 text-sm text-red-500">{cardErrors.expiryDate}</p>}
+                          </div>
+                          
+                          <div>
+                            <label htmlFor="cvv" className="block text-sm font-medium text-[#555555] dark:text-[#cccccc] mb-1">
+                              {t("reservationWidget.payment.cvv")} *
+                            </label>
+                            <input
+                              id="cvv"
+                              type="text"
+                              placeholder="123"
+                              value={cardInfo.cvv}
+                              onChange={(e) => {
+                                const value = e.target.value.replace(/\D/g, '')
+                                if (value.length <= 4) {
+                                  setCardInfo(prev => ({ ...prev, cvv: value }))
+                                }
+                              }}
+                              className={`w-full p-3 rounded-md border ${cardErrors.cvv ? "border-red-500" : "border-[#dddddd] dark:border-[#444444]"} bg-white dark:bg-darkthemeitems focus:outline-none focus:ring-2 focus:ring-[#88AB61]`}
+                            />
+                            {cardErrors.cvv && <p className="mt-1 text-sm text-red-500">{cardErrors.cvv}</p>}
+                          </div>
+                        </div>
+                        
+                        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                          <div className="flex items-start">
+                            <div className="flex-shrink-0">
+                              <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                            <div className="ml-3">
+                              <p className="text-sm text-blue-700 dark:text-blue-300">
+                                {t("reservationWidget.payment.securePayment")}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    )}
-                    {userInformation.preferences && (
-                      <div>
-                        <h3 className="text-sm font-[600] dark:text-greentheme text-greentheme">
-                          {t("reservationWidget.confirmation.preferences")}
-                        </h3>
-                        <p className="text-base">{userInformation.preferences}</p>
+                    </div> */}
+                    
+                    {/* Billing Address Section */}
+                    {/* <div className="space-y-3">
+                      <h3 className="text-lg font-medium">{t("reservationWidget.payment.billingAddress")}</h3>
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label htmlFor="billingFirstName" className="block text-sm font-medium text-[#555555] dark:text-[#cccccc] mb-1">
+                              {t("reservationWidget.payment.firstName")} *
+                            </label>
+                            <input
+                              id="billingFirstName"
+                              type="text"
+                              placeholder={t("reservationWidget.payment.firstNamePlaceholder")}
+                              value={billingInfo.firstName}
+                              onChange={(e) => setBillingInfo(prev => ({ ...prev, firstName: e.target.value }))}
+                              className={`w-full p-3 rounded-md border ${billingErrors.firstName ? "border-red-500" : "border-[#dddddd] dark:border-[#444444]"} bg-white dark:bg-darkthemeitems focus:outline-none focus:ring-2 focus:ring-[#88AB61]`}
+                            />
+                            {billingErrors.firstName && <p className="mt-1 text-sm text-red-500">{billingErrors.firstName}</p>}
+                          </div>
+                          
+                          <div>
+                            <label htmlFor="billingLastName" className="block text-sm font-medium text-[#555555] dark:text-[#cccccc] mb-1">
+                              {t("reservationWidget.payment.lastName")} *
+                            </label>
+                            <input
+                              id="billingLastName"
+                              type="text"
+                              placeholder={t("reservationWidget.payment.lastNamePlaceholder")}
+                              value={billingInfo.lastName}
+                              onChange={(e) => setBillingInfo(prev => ({ ...prev, lastName: e.target.value }))}
+                              className={`w-full p-3 rounded-md border ${billingErrors.lastName ? "border-red-500" : "border-[#dddddd] dark:border-[#444444]"} bg-white dark:bg-darkthemeitems focus:outline-none focus:ring-2 focus:ring-[#88AB61]`}
+                            />
+                            {billingErrors.lastName && <p className="mt-1 text-sm text-red-500">{billingErrors.lastName}</p>}
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <label htmlFor="billingAddress" className="block text-sm font-medium text-[#555555] dark:text-[#cccccc] mb-1">
+                            {t("reservationWidget.payment.address")} *
+                          </label>
+                          <input
+                            id="billingAddress"
+                            type="text"
+                            placeholder={t("reservationWidget.payment.addressPlaceholder")}
+                            value={billingInfo.address}
+                            onChange={(e) => setBillingInfo(prev => ({ ...prev, address: e.target.value }))}
+                            className={`w-full p-3 rounded-md border ${billingErrors.address ? "border-red-500" : "border-[#dddddd] dark:border-[#444444]"} bg-white dark:bg-darkthemeitems focus:outline-none focus:ring-2 focus:ring-[#88AB61]`}
+                          />
+                          {billingErrors.address && <p className="mt-1 text-sm text-red-500">{billingErrors.address}</p>}
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label htmlFor="billingCity" className="block text-sm font-medium text-[#555555] dark:text-[#cccccc] mb-1">
+                              {t("reservationWidget.payment.city")}
+                            </label>
+                            <input
+                              id="billingCity"
+                              type="text"
+                              placeholder={t("reservationWidget.payment.cityPlaceholder")}
+                              value={billingInfo.city}
+                              onChange={(e) => setBillingInfo(prev => ({ ...prev, city: e.target.value }))}
+                              className="w-full p-3 rounded-md border border-[#dddddd] dark:border-[#444444] bg-white dark:bg-darkthemeitems focus:outline-none focus:ring-2 focus:ring-[#88AB61]"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label htmlFor="billingZipCode" className="block text-sm font-medium text-[#555555] dark:text-[#cccccc] mb-1">
+                              {t("reservationWidget.payment.zipCode")}
+                            </label>
+                            <input
+                              id="billingZipCode"
+                              type="text"
+                              placeholder={t("reservationWidget.payment.zipCodePlaceholder")}
+                              value={billingInfo.zipCode}
+                              onChange={(e) => setBillingInfo(prev => ({ ...prev, zipCode: e.target.value }))}
+                              className="w-full p-3 rounded-md border border-[#dddddd] dark:border-[#444444] bg-white dark:bg-darkthemeitems focus:outline-none focus:ring-2 focus:ring-[#88AB61]"
+                            />
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <label htmlFor="billingCountry" className="block text-sm font-medium text-[#555555] dark:text-[#cccccc] mb-1">
+                            {t("reservationWidget.payment.country")} *
+                          </label>
+                          <input
+                            id="billingCountry"
+                            type="text"
+                            placeholder={t("reservationWidget.payment.countryPlaceholder")}
+                            value={billingInfo.country}
+                            onChange={(e) => setBillingInfo(prev => ({ ...prev, country: e.target.value }))}
+                            className={`w-full p-3 rounded-md border ${billingErrors.country ? "border-red-500" : "border-[#dddddd] dark:border-[#444444]"} bg-white dark:bg-darkthemeitems focus:outline-none focus:ring-2 focus:ring-[#88AB61]`}
+                          />
+                          {billingErrors.country && <p className="mt-1 text-sm text-red-500">{billingErrors.country}</p>}
+                        </div>
                       </div>
-                    )}
+                    </div> */}
                   </div>
-                  {serverError && (
-                    <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 p-3 rounded-md mb-4">
-                      {serverError}
-                    </div>
-                  )}
+                  
                   <div className="flex gap-4">
                     <button
                       onClick={() => setStep(2)}
                       className="flex-1 py-3 px-4 rounded-md font-medium border border-[#dddddd] dark:border-[#444444] hover:bg-[#f5f5f5] dark:hover:bg-bgdarktheme2 transition-colors"
                     >
-                      {t("reservationWidget.confirmation.editDetails")}
+                      {t("reservationWidget.common.back")}
                     </button>
                     <button
                       onClick={handleConfirmation}
                       disabled={isLoading}
-                      className="flex-1 py-3 px-4 rounded-md font-medium bg-[#88AB61] hover:bg-[#769c4f] text-white transition-colors flex justify-center items-center"
+                      className="flex-1 py-3 px-4 rounded-md font-medium bg-[#88AB61] hover:bg-[#769c4f] text-white transition-colors disabled:opacity-50 flex justify-center items-center"
                     >
                       {isLoading ? (
                         <>
@@ -848,8 +1485,93 @@ const WidgetPage = () => {
                           {t("reservationWidget.confirmation.processing")}
                         </>
                       ) : (
-                        t("reservationWidget.confirmation.confirm")
+                        t("reservationWidget.payment.proceedToConfirmation")
                       )}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 4 - Payment  */}
+              {step === 4 && (
+                <div>
+                  <h2 className="text-xl font-semibold mb-6 text-center">{t("reservationWidget.payment.title")}</h2>
+                  
+                  <div className="text-center mb-6">
+                    <div className="w-16 h-16 bg-[#f0f7e6] dark:bg-bgdarktheme2 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <CheckIcon size={32} />
+                    </div>
+                    <h3 className="text-lg font-medium mb-2 text-[#88AB61]">{t("reservationWidget.payment.reservationCreated")}</h3>
+                    <p className="text-sm text-[#555555] dark:text-[#cccccc] mb-4">
+                      {t("reservationWidget.payment.paymentRequired")}
+                    </p>
+                  </div>
+
+                  <div className="space-y-4 mb-6">
+                    {paymentData && (
+                      <div className="bg-[#f0f7e6] dark:bg-bgdarktheme2 rounded-lg p-4">
+                        <div className="bg-white dark:bg-darkthemeitems rounded-lg p-4 border border-[#dddddd] dark:border-[#444444]">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="font-medium">{t("reservationWidget.payment.amountToPay")}</span>
+                            <span className="font-bold text-[#88AB61] text-lg">
+                              {paymentData.amount || '50.00'} MAD
+                            </span>
+                          </div>
+                          {reservationId && (
+                            <div className="text-xs text-[#555555] dark:text-[#cccccc] mt-2">
+                              {t("reservationWidget.payment.reservationNumber")}: #{reservationId}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {!paymentData && isLoading && (
+                      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                        <div className="flex items-center justify-center">
+                          <LoaderCircle className="animate-spin mr-2" size={18} />
+                          <span className="text-sm">{t("reservationWidget.payment.preparingPayment")}</span>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {paymentError && (
+                      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 p-3 rounded-md">
+                        <p className="font-medium">{t("reservationWidget.payment.errorTitle")}:</p>
+                        <p className="text-sm mt-1">{paymentError}</p>
+                      </div>
+                    )}
+                    
+                    <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+                      <div className="flex items-start">
+                        <div className="flex-shrink-0">
+                          <Info className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+                        </div>
+                        <div className="ml-3">
+                          <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                            {t("reservationWidget.payment.paymentNotice")}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <button
+                      onClick={() => {
+                        // Cancel reservation and go to success page
+                        setStep(5)
+                      }}
+                      className="flex-1 py-3 px-4 rounded-md font-medium border border-[#dddddd] dark:border-[#444444] hover:bg-[#f5f5f5] dark:hover:bg-bgdarktheme2 transition-colors"
+                    >
+                      {t("reservationWidget.payment.cancelPayment")}
+                    </button>
+                    <button
+                      onClick={() => submitFormPost(paymentData?.pay_url, paymentData?.form_data)}
+                      disabled={isLoading}
+                      className="flex-1 py-3 px-4 rounded-md font-medium bg-[#88AB61] hover:bg-[#769c4f] text-white transition-colors flex justify-center items-center disabled:opacity-50"
+                    >
+                      {t("reservationWidget.payment.proceedToPayment")}
                     </button>
                   </div>
                 </div>
@@ -870,7 +1592,10 @@ const WidgetPage = () => {
                     {t("reservationWidget.success.message")}
                   </p>
                   <button
-                    onClick={() => window.location.reload()}
+                    onClick={() => {
+                      clearFormDataCache() // Clear cache when starting new reservation
+                      window.location.reload()
+                    }}
                     className="py-3 px-6 rounded-md font-medium bg-[#88AB61] hover:bg-[#769c4f] text-white transition-colors"
                   >
                     {t("reservationWidget.success.makeAnother")}
@@ -910,22 +1635,90 @@ const WidgetPage = () => {
               </div>
             )}
 
-            {/* Language and Theme Switch Section (Green section from image) */}
-            <div className="bg-[#88AB61]/10 dark:bg-[#88AB61]/20 px-6 py-4">
-              <div className="flex items-center justify-between">
-                <button
-                  onClick={toggleDarkMode}
-                  aria-label={t("reservationWidget.common.toggleDarkMode")}
-                  className="p-2 rounded-lg hover:bg-[#88AB61]/20 dark:hover:bg-[#88AB61]/30 transition-colors"
-                >
-                  <SunIcon size={20} className="dark:hidden text-[#88AB61]" />
-                  <MoonIcon size={20} className="hidden dark:block text-[#88AB61]" />
-                </button>
-                <div className="flex items-center gap-4">
-                  <LanguageSelector />
+            {/* Social Media & Contact Links */}
+            {step === 1 && (
+              <div className="px-6 pb-6">
+                <div className="border-t border-[#dddddd] dark:border-[#444444] pt-4">
+                  <h3 className="text-lg font-medium mb-4 text-center text-[#333333] dark:text-[#e1e1e1]">
+                    {t("reservationWidget.contact.followUs")}
+                  </h3>
+                  <div className="flex justify-center items-center gap-4 flex-wrap">
+                    {/* Phone */}
+                    <a 
+                      href="tel:+1234567890" 
+                      className="flex items-center gap-2 p-3 rounded-lg bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#88AB61]/10 dark:hover:bg-[#88AB61]/20 transition-colors group"
+                      aria-label="Call us"
+                    >
+                      <Phone size={20} className="text-[#88AB61] group-hover:text-[#769c4f] transition-colors" />
+                      <span className="text-sm font-medium text-[#555555] dark:text-[#cccccc] group-hover:text-[#88AB61] transition-colors">
+                        {t("reservationWidget.contact.phone")}
+                      </span>
+                    </a>
+
+                    {/* Email */}
+                    <a 
+                      href="mailto:contact@restaurant.com" 
+                      className="flex items-center gap-2 p-3 rounded-lg bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#88AB61]/10 dark:hover:bg-[#88AB61]/20 transition-colors group"
+                      aria-label="Email us"
+                    >
+                      <Mail size={20} className="text-[#88AB61] group-hover:text-[#769c4f] transition-colors" />
+                      <span className="text-sm font-medium text-[#555555] dark:text-[#cccccc] group-hover:text-[#88AB61] transition-colors">
+                        {t("reservationWidget.contact.email")}
+                      </span>
+                    </a>
+
+                    {/* WhatsApp */}
+                    <a 
+                      href="https://wa.me/1234567890" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 p-3 rounded-lg bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#25D366]/10 dark:hover:bg-[#25D366]/20 transition-colors group"
+                      aria-label="WhatsApp"
+                    >
+                      <MessageCircle size={20} className="text-[#25D366] group-hover:text-[#1DA851] transition-colors" />
+                      <span className="text-sm font-medium text-[#555555] dark:text-[#cccccc] group-hover:text-[#25D366] transition-colors">
+                        WhatsApp
+                      </span>
+                    </a>
+                  </div>
+                  
+                  <div className="flex justify-center items-center gap-3 mt-4">
+                    {/* Facebook */}
+                    <a 
+                      href="https://facebook.com/restaurant" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="p-3 rounded-full bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#1877F2]/10 dark:hover:bg-[#1877F2]/20 transition-colors group"
+                      aria-label="Facebook"
+                    >
+                      <Facebook size={20} className="text-[#1877F2] group-hover:text-[#166fe5] transition-colors" />
+                    </a>
+
+                    {/* Instagram */}
+                    <a 
+                      href="https://instagram.com/restaurant" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="p-3 rounded-full bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#E4405F]/10 dark:hover:bg-[#E4405F]/20 transition-colors group"
+                      aria-label="Instagram"
+                    >
+                      <Instagram size={20} className="text-[#E4405F] group-hover:text-[#d63384] transition-colors" />
+                    </a>
+
+                    {/* Twitter */}
+                    <a 
+                      href="https://twitter.com/restaurant" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="p-3 rounded-full bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#1DA1F2]/10 dark:hover:bg-[#1DA1F2]/20 transition-colors group"
+                      aria-label="Twitter"
+                    >
+                      <Twitter size={20} className="text-[#1DA1F2] group-hover:text-[#0d8bd9] transition-colors" />
+                    </a>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Footer */}
             <div className="bg-gray-100 dark:bg-[#88AB61]/20 px-6 py-4 text-center">
@@ -945,7 +1738,7 @@ const WidgetPage = () => {
               onClick={() => setShowProcess(false)}
               maxGuests={widgetInfo?.max_of_guests_par_reservation}
               resData={data}
-              getDateTime={(data: any) => setData(data)}
+              getDateTime={(data) => setData(data)}
             />
           </div>
         </div>

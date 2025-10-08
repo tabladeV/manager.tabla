@@ -188,7 +188,7 @@ export default function TermsAndConditions() {
             <div className="bg-whitetheme dark:bg-darkthemeitems rounded-xl shadow-sm p-6 my-8">
               
               <p className="text-blacktheme dark:text-textdarktheme leading-relaxed">
-                Scale valley sarl collecte vos données personnelles en vue de gestion des clients. Ce traitement a fait l’objet d’une déclaration / demande d’autorisation auprès de la CNDP sous le numéro <a className="text-greentheme hover:underline transition-all duration-200">---</a> Les données personnelles collectées peuvent être transmises à l’étranger conformément à la demande de transfert déposée auprès de la CNDP.
+                Les données à caractère personnel collectées peuvent être transférées à Scale Valley SARL et DigitalOcean LLC Etats-Unis à des fins Hébergement des données, ce transfert a fait l’objet d’une demande de transfert des données à l’étranger auprès de la CNDP sous le numéro <a className="text-greentheme hover:underline transition-all duration-200">---</a>
                 <br />
                 Vous pouvez vous adresser à <a href="mailto:contact@tabla.ma" className="text-greentheme hover:underline transition-all duration-200">contact@tabla.ma</a> pour exercer vos droits d’accès, de rectification et d’opposition conformément aux dispositions de la loi 09-08.
               </p>

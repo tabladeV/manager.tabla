@@ -615,9 +615,10 @@
       },
       "payment": {
         "title": "Pago",
-        "enableWhenGuestOver": "Habilitar cuando el huésped supere",
-        "disable": "Deshabilitar",
-        "enable": "Habilitar"
+        "enable": "Habilitar Pago",
+        "minGuestsForPayment": "Número mínimo de huéspedes para requerir pago",
+        "depositAmountPerGuest": "Cantidad de depósito por huésped",
+        "disabledNote": "El pago está actualmente deshabilitado - no se requerirá pago para las reservas"
       },
       "buttons": {
         "preview": "Vista Previa",
@@ -1360,7 +1361,17 @@
         "time": "Hora",
         "guests": "Invitados",
         "bookNow": "Reservar Ahora",
-        "previewMenu": "Ver nuestro menú"
+        "previewMenu": "Ver nuestro menú",
+        "name": "Nombre Completo",
+        "email": "Dirección de Correo",
+        "phone": "Número de Teléfono",
+        "restaurant": "Nombre del Restaurante",
+        "status": "Estado",
+        "source": "Fuente de Reserva",
+        "allergies": "Alergias",
+        "preferences": "Preferencias Especiales",
+        "occasion": "Ocasión",
+        "commenter": "Comentarios"
       },
       "form": {
         "yourInformation": "Su Información",
@@ -1396,6 +1407,56 @@
         "emailInvalid": "El correo electrónico es inválido",
         "phoneRequired": "El número de teléfono es requerido"
       },
+      "payment": {
+        "title": "Pago Requerido",
+        "reservationSummary": "Resumen de la Reserva",
+        "paymentRequired": "Pago Requerido",
+        "paymentDescription": "Se requiere un pago para asegurar su reserva. Por favor ingrese la información de su tarjeta de crédito a continuación.",
+        "reservationFee": "Tarifa de Reserva",
+        "feeDescription": "Esta tarifa será deducida de su factura final.",
+        "creditCardInfo": "Información de Tarjeta de Crédito",
+        "cardholderName": "Nombre del Titular",
+        "cardholderNamePlaceholder": "Ingrese el nombre como aparece en la tarjeta",
+        "cardNumber": "Número de Tarjeta",
+        "expiryDate": "Fecha de Vencimiento",
+        "cvv": "CVV",
+        "securePayment": "Su información de pago es segura y encriptada.",
+        "proceedToConfirmation": "Proceder a la Confirmación",
+        "cardNumberRequired": "El número de tarjeta es requerido",
+        "cardNumberInvalid": "Por favor ingrese un número de tarjeta válido",
+        "expiryRequired": "La fecha de vencimiento es requerida",
+        "expiryInvalid": "Por favor ingrese una fecha de vencimiento válida (MM/AA)",
+        "cvvRequired": "El CVV es requerido",
+        "cvvInvalid": "Por favor ingrese un CVV válido",
+        "cardholderRequired": "El nombre del titular es requerido",
+        "billingAddress": "Dirección de Facturación",
+        "firstName": "Nombre",
+        "firstNamePlaceholder": "Ingrese su nombre",
+        "firstNameRequired": "El nombre es requerido",
+        "lastName": "Apellido",
+        "lastNamePlaceholder": "Ingrese su apellido",
+        "lastNameRequired": "El apellido es requerido",
+        "address": "Dirección",
+        "addressPlaceholder": "Ingrese su dirección",
+        "addressRequired": "La dirección es requerida",
+        "city": "Ciudad",
+        "cityPlaceholder": "Ingrese su ciudad",
+        "zipCode": "Código Postal",
+        "zipCodePlaceholder": "Ingrese su código postal",
+        "country": "País",
+        "countryPlaceholder": "Ingrese su país",
+        "countryRequired": "El país es requerido",
+        "billingInfoRequired": "Por favor complete la información de dirección de facturación",
+        "errorTitle": "Error de Pago",
+        "errorMessage": "Su reserva fue creada pero el pago no pudo ser procesado. Por favor contacte al restaurante.",
+        "reservationCreated": "¡Reserva Creada Exitosamente!",
+        "amountToPay": "Cantidad a Pagar",
+        "reservationNumber": "Número de Reservación",
+        "preparingPayment": "Preparando pago...",
+        "paymentNotice": "Su reserva ha sido creada. No puede modificar los detalles después de este paso. Por favor proceda a completar el pago.",
+        "cancelPayment": "Omitir Pago",
+        "proceedToPayment": "Proceder al Pago"
+      },
       "confirmation": {
         "title": "Confirme Su Información",
         "name": "Nombre",
@@ -1428,6 +1489,11 @@
       },
       "footer": {
         "copyright": "© {{year}} Tabla. Todos los derechos reservados."
+      },
+      "contact": {
+        "followUs": "Contacto y Síguenos",
+        "phone": "Llamar",
+        "email": "Email"
       }
     },
   "modifyReservation": {
@@ -1575,5 +1641,9 @@
             "saturday": "Sábado"
         }
     }
-}
+},
+  "common": {
+    "active":"Activo",
+    "inactive":"Inactivo"
+  }
 }

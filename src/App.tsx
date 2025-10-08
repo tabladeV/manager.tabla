@@ -51,6 +51,8 @@ import CalendarGrid from "./_root/pages/CalendarGrid";
 import NotificationsProvider from "./providers/NotificationsProvider";
 import SelectSettings from "./_root/pages/SelectSettings";
 import UnifiedSettings from "./components/settings/UnifiedSettings";
+import PaymentSuccessPage from "./_plugin/pages/PaymentSuccessPage";
+import PaymentFailurePage from "./_plugin/pages/PaymentFailurePage";
 const API_HOST = import.meta.env.VITE_API_URL || "https://api.dev.tabla.ma";
 function App() {
 
@@ -330,6 +332,8 @@ function App() {
                   ) : (
                     <Routes>
                       <Route element={<Plugins />}>
+                        <Route path="/payment/success" element={<PaymentSuccessPage />} />
+                        <Route path="/payment/failure" element={<PaymentFailurePage />} />
                         <Route path="/make/reservation" element={<WidgetPage />} />
                         <Route path="/make/review/:token" element={<ReviewPage />} />
                         <Route path="/make/modification/:token" element={<ModifyPage />} />
