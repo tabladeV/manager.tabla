@@ -629,9 +629,10 @@
             },
             "payment": {
                 "title": "الدفع",
-                "enableWhenGuestOver": "تفعيل عندما يتجاوز الضيف",
-                "disable": "تعطيل",
-                "enable": "تفعيل"
+                "enable": "تفعيل الدفع",
+                "minGuestsForPayment": "الحد الأدنى لعدد الضيوف لطلب الدفع",
+                "depositAmountPerGuest": "مبلغ العربون لكل ضيف",
+                "disabledNote": "الدفع غير مفعل حالياً - لن يُطلب أي دفع للحجوزات"
             },
             "buttons": {
                 "preview": "معاينة",
@@ -1374,7 +1375,17 @@
       "time": "الوقت",
       "guests": "الضيوف",
       "bookNow": "احجز الآن",
-      "previewMenu": "معاينة قائمتنا"
+      "previewMenu": "معاينة قائمتنا",
+      "name": "الاسم الكامل",
+      "email": "عنوان البريد الإلكتروني",
+      "phone": "رقم الهاتف",
+      "restaurant": "اسم المطعم",
+      "status": "الحالة",
+      "source": "مصدر الحجز",
+      "allergies": "الحساسيات",
+      "preferences": "التفضيلات الخاصة",
+      "occasion": "المناسبة",
+      "commenter": "التعليقات"
     },
     "form": {
       "yourInformation": "معلوماتك",
@@ -1408,7 +1419,67 @@
       "lastNameRequired": "اسم العائلة مطلوب",
       "emailRequired": "البريد الإلكتروني مطلوب",
       "emailInvalid": "البريد الإلكتروني غير صحيح",
-      "phoneRequired": "رقم الهاتف مطلوب"
+      "phoneRequired": "رقم الهاتف مطلوب",
+      "firstNameTooShort": "يجب أن يحتوي الاسم الأول على حرفين على الأقل",
+      "firstNameTooLong": "يجب أن يكون الاسم الأول أقل من 50 حرف",
+      "firstNameInvalid": "يمكن أن يحتوي الاسم الأول على أحرف ومسافات وشرطات وفواصل عليا فقط",
+      "lastNameTooShort": "يجب أن يحتوي اسم العائلة على حرفين على الأقل",
+      "lastNameTooLong": "يجب أن يكون اسم العائلة أقل من 50 حرف",
+      "lastNameInvalid": "يمكن أن يحتوي اسم العائلة على أحرف ومسافات وشرطات وفواصل عليا فقط",
+      "emailTooLong": "يجب أن يكون البريد الإلكتروني أقل من 100 حرف",
+      "phoneInvalid": "يمكن أن يحتوي رقم الهاتف على أرقام ومسافات و + و - و ( و ) فقط ويجب أن يحتوي على 8 أرقام على الأقل",
+      "nameHint": "الأحرف والمسافات والشرطات والفواصل العليا فقط مسموحة (2-50 حرف)",
+      "phoneHint": "التنسيق: +212 6XX XX XX XX (8 أرقام كحد أدنى)"
+    },
+    "payment": {
+      "title": "الدفع مطلوب",
+      "reservationSummary": "ملخص الحجز",
+      "paymentRequired": "الدفع مطلوب",
+      "paymentDescription": "يتطلب دفع لتأمين حجزك. يرجى إدخال معلومات بطاقتك الائتمانية أدناه.",
+      "reservationFee": "رسوم الحجز",
+      "feeDescription": "سيتم خصم هذه الرسوم من فاتورتك النهائية.",
+      "creditCardInfo": "معلومات بطاقة الائتمان",
+      "cardholderName": "اسم حامل البطاقة",
+      "cardholderNamePlaceholder": "أدخل الاسم كما يظهر على البطاقة",
+      "cardNumber": "رقم البطاقة",
+      "expiryDate": "تاريخ الانتهاء",
+      "cvv": "رمز الأمان",
+      "securePayment": "معلومات الدفع الخاصة بك آمنة ومشفرة.",
+      "proceedToConfirmation": "المتابعة إلى التأكيد",
+      "cardNumberRequired": "رقم البطاقة مطلوب",
+      "cardNumberInvalid": "يرجى إدخال رقم بطاقة صحيح",
+      "expiryRequired": "تاريخ الانتهاء مطلوب",
+      "expiryInvalid": "يرجى إدخال تاريخ انتهاء صحيح (شش/سس)",
+      "cvvRequired": "رمز الأمان مطلوب",
+      "cvvInvalid": "يرجى إدخال رمز أمان صحيح",
+      "cardholderRequired": "اسم حامل البطاقة مطلوب",
+      "billingAddress": "عنوان الفوترة",
+      "firstName": "الاسم الأول",
+      "firstNamePlaceholder": "أدخل اسمك الأول",
+      "firstNameRequired": "الاسم الأول مطلوب",
+      "lastName": "اسم العائلة",
+      "lastNamePlaceholder": "أدخل اسم العائلة",
+      "lastNameRequired": "اسم العائلة مطلوب",
+      "address": "العنوان",
+      "addressPlaceholder": "أدخل عنوانك",
+      "addressRequired": "العنوان مطلوب",
+      "city": "المدينة",
+      "cityPlaceholder": "أدخل مدينتك",
+      "zipCode": "الرمز البريدي",
+      "zipCodePlaceholder": "أدخل الرمز البريدي",
+      "country": "البلد",
+      "countryPlaceholder": "أدخل بلدك",
+      "countryRequired": "البلد مطلوب",
+      "billingInfoRequired": "يرجى إكمال معلومات عنوان الفوترة",
+      "errorTitle": "خطأ في الدفع",
+      "errorMessage": "تم إنشاء حجزك ولكن لم يتم معالجة الدفع. يرجى الاتصال بالمطعم.",
+      "reservationCreated": "تم إنشاء الحجز بنجاح!",
+      "amountToPay": "المبلغ المستحق الدفع",
+      "reservationNumber": "رقم الحجز",
+      "preparingPayment": "جارٍ تحضير الدفع...",
+      "paymentNotice": "تم إنشاء حجزك. لا يمكنك تعديل التفاصيل بعد هذه الخطوة. يرجى المتابعة لإكمال الدفع.",
+      "cancelPayment": "تخطي الدفع",
+      "proceedToPayment": "المتابعة إلى الدفع"
     },
     "confirmation": {
       "title": "تأكيد معلوماتك",
@@ -1441,7 +1512,13 @@
       "serverError": "حدث خطأ ما. يرجى المحاولة مرة أخرى أو الاتصال بالمطعم مباشرة."
     },
     "footer": {
-      "copyright": "© {{year}} طابلا. جميع الحقوق محفوظة."
+      "copyright": "© {{year}} طابلا. جميع الحقوق محفوظة.",
+      "poweredBy": "مدعوم من"
+    },
+    "contact": {
+      "followUs": "تواصل واتبعنا",
+      "phone": "اتصل",
+      "email": "بريد إلكتروني"
     }
   },
   "modifyReservation": {

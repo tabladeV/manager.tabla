@@ -17,7 +17,9 @@ import {
   Trash,
   Trash2,
   Tags,
-  LayoutPanelLeft
+  LayoutPanelLeft,
+  CreditCard,
+  DollarSign
 } from 'lucide-react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import SearchBar from "../../components/header/SearchBar";
@@ -739,6 +741,8 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
               }
             </div>
 
+            
+
             {/* Comment if available */}
             {reservation.commenter && (
               <div className="flex items-start gap-1 mt-1 text-sm text-gray-500">
@@ -752,9 +756,19 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
                 <span>{reservation.area.name}</span>
               </div>
             }
+            
+            {!reservation.payment_method && (
+              <div className="flex gap-1 my-1 text-sm bg-softyellowtheme items-center text-yellowtheme w-fit px-2 py-1 rounded">
+                <DollarSign size={14} className={` ${isDarkMode ? 'text-yellowtheme' : 'text-yellowtheme'}`} />
+                <span>{reservation.payment_method}</span>
+                <span>Payed</span>
+              </div>
+            )}
+
             <div className="text-sm text-gray-500">
               {` # ${reservation.seq_id}`}
             </div>
+
           </div>
         );
 

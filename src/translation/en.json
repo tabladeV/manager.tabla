@@ -641,9 +641,10 @@
             },
             "payment": {
                 "title": "Payment",
-                "enableWhenGuestOver": "Enable when guest over",
-                "disable": "Disable",
-                "enable": "Enable"
+                "enable": "Enable Payment",
+                "minGuestsForPayment": "Minimum number of guests to require payment",
+                "depositAmountPerGuest": "Deposit amount per guest",
+                "disabledNote": "Payment is currently disabled - no payment will be required for reservations"
             },
             "buttons": {
                 "preview": "Preview",
@@ -1393,7 +1394,17 @@
             "time": "Time",
             "guests": "Guests",
             "bookNow": "Book Now",
-            "previewMenu": "Preview our menu"
+            "previewMenu": "Preview our menu",
+            "name": "Full Name",
+            "email": "Email Address",
+            "phone": "Phone Number",
+            "restaurant": "Restaurant Name",
+            "status": "Status",
+            "source": "Reservation Source",
+            "allergies": "Allergies",
+            "preferences": "Special Preferences",
+            "occasion": "Occasion",
+            "commenter": "Comments"
         },
         "form": {
             "yourInformation": "Your Information",
@@ -1427,7 +1438,67 @@
             "lastNameRequired": "Last name is required",
             "emailRequired": "Email is required",
             "emailInvalid": "Email is invalid",
-            "phoneRequired": "Phone number is required"
+            "phoneRequired": "Phone number is required",
+            "firstNameTooShort": "First name must be at least 2 characters",
+            "firstNameTooLong": "First name must be less than 50 characters",
+            "firstNameInvalid": "First name can only contain letters, spaces, hyphens and apostrophes",
+            "lastNameTooShort": "Last name must be at least 2 characters",
+            "lastNameTooLong": "Last name must be less than 50 characters",
+            "lastNameInvalid": "Last name can only contain letters, spaces, hyphens and apostrophes",
+            "emailTooLong": "Email must be less than 100 characters",
+            "phoneInvalid": "Phone number can only contain numbers, spaces, +, -, (, ) and must be at least 8 digits",
+            "nameHint": "Only letters, spaces, hyphens and apostrophes allowed (2-50 characters)",
+            "phoneHint": "Format: +212 6XX XX XX XX (minimum 8 digits)"
+        },
+        "payment": {
+            "title": "Payment ",
+            "reservationSummary": "Reservation Summary",
+            "paymentRequired": "Payment Required",
+            "paymentDescription": "A payment is required to secure your reservation. Please enter your credit card information below.",
+            "reservationFee": "Reservation Fee",
+            "feeDescription": "This fee will be deducted from your final bill.",
+            "creditCardInfo": "Credit Card Information",
+            "cardholderName": "Cardholder Name",
+            "cardholderNamePlaceholder": "Enter name as it appears on card",
+            "cardNumber": "Card Number",
+            "expiryDate": "Expiry Date",
+            "cvv": "CVV",
+            "securePayment": "Your payment information is secure and encrypted.",
+            "proceedToConfirmation": "Confirm and Proceed",
+            "cardNumberRequired": "Card number is required",
+            "cardNumberInvalid": "Please enter a valid card number",
+            "expiryRequired": "Expiry date is required",
+            "expiryInvalid": "Please enter a valid expiry date (MM/YY)",
+            "cvvRequired": "CVV is required",
+            "cvvInvalid": "Please enter a valid CVV",
+            "cardholderRequired": "Cardholder name is required",
+            "billingAddress": "Billing Address",
+            "firstName": "First Name",
+            "firstNamePlaceholder": "Enter your first name",
+            "firstNameRequired": "First name is required",
+            "lastName": "Last Name", 
+            "lastNamePlaceholder": "Enter your last name",
+            "lastNameRequired": "Last name is required",
+            "address": "Address",
+            "addressPlaceholder": "Enter your street address",
+            "addressRequired": "Address is required",
+            "city": "City",
+            "cityPlaceholder": "Enter your city",
+            "zipCode": "ZIP Code",
+            "zipCodePlaceholder": "Enter your ZIP code",
+            "country": "Country",
+            "countryPlaceholder": "Enter your country",
+            "countryRequired": "Country is required",
+            "billingInfoRequired": "Please complete the billing address information",
+            "errorTitle": "Payment Error",
+            "errorMessage": "Your reservation was created but payment could not be processed. Please contact the restaurant.",
+            "reservationCreated": "Reservation Created Successfully!",
+            "amountToPay": "Amount to Pay",
+            "reservationNumber": "Reservation Number",
+            "preparingPayment": "Preparing payment...",
+            "paymentNotice": "Your reservation has been created. You cannot modify the details after this step. Please proceed to complete the payment.",
+            "cancelPayment": "Skip Payment",
+            "proceedToPayment": "Proceed to Payment"
         },
         "confirmation": {
             "title": "Confirm Your Information",
@@ -1460,7 +1531,13 @@
             "serverError": "Something went wrong. Please try again or contact the restaurant directly."
         },
         "footer": {
-            "copyright": "© {{year}} Tabla. All rights reserved."
+            "copyright": "© {{year}} Tabla. All rights reserved.",
+            "poweredBy": "Powered by"
+        },
+        "contact": {
+            "followUs": "Contact & Follow Us",
+            "phone": "Call",
+            "email": "Email"
         }
     },
   "modifyReservation": {

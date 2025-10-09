@@ -629,9 +629,10 @@
       },
       "payment": {
         "title": "Paiement",
-        "enableWhenGuestOver": "Activer quand l'invité dépasse",
-        "disable": "Désactiver",
-        "enable": "Activer"
+        "enable": "Activer le Paiement",
+        "minGuestsForPayment": "Nombre minimum d'invités pour exiger un paiement",
+        "depositAmountPerGuest": "Montant de l'acompte par invité",
+        "disabledNote": "Le paiement est actuellement désactivé - aucun paiement ne sera requis pour les réservations"
       },
       "buttons": {
         "preview": "Aperçu",
@@ -1374,7 +1375,17 @@
       "time": "Heure",
       "guests": "Invités",
       "bookNow": "Réserver Maintenant",
-      "previewMenu": "Aperçu de notre menu"
+      "previewMenu": "Aperçu de notre menu",
+      "name": "Nom Complet",
+      "email": "Adresse Email",
+      "phone": "Numéro de Téléphone",
+      "restaurant": "Nom du Restaurant",
+      "status": "Statut",
+      "source": "Source de Réservation",
+      "allergies": "Allergies",
+      "preferences": "Préférences Spéciales",
+      "occasion": "Occasion",
+      "commenter": "Commentaires"
     },
     "form": {
       "yourInformation": "Vos Informations",
@@ -1408,7 +1419,67 @@
       "lastNameRequired": "Le nom de famille est requis",
       "emailRequired": "L'email est requis",
       "emailInvalid": "L'email est invalide",
-      "phoneRequired": "Le numéro de téléphone est requis"
+      "phoneRequired": "Le numéro de téléphone est requis",
+      "firstNameTooShort": "Le prénom doit contenir au moins 2 caractères",
+      "firstNameTooLong": "Le prénom doit contenir moins de 50 caractères",
+      "firstNameInvalid": "Le prénom ne peut contenir que des lettres, espaces, tirets et apostrophes",
+      "lastNameTooShort": "Le nom de famille doit contenir au moins 2 caractères",
+      "lastNameTooLong": "Le nom de famille doit contenir moins de 50 caractères",
+      "lastNameInvalid": "Le nom de famille ne peut contenir que des lettres, espaces, tirets et apostrophes",
+      "emailTooLong": "L'email doit contenir moins de 100 caractères",
+      "phoneInvalid": "Le numéro de téléphone ne peut contenir que des chiffres, espaces, +, -, (, ) et doit contenir au moins 8 chiffres",
+      "nameHint": "Seules les lettres, espaces, tirets et apostrophes sont autorisés (2-50 caractères)",
+      "phoneHint": "Format: +212 6XX XX XX XX (minimum 8 chiffres)"
+    },
+    "payment": {
+      "title": "Paiement Requis",
+      "reservationSummary": "Résumé de la Réservation",
+      "paymentRequired": "Paiement Requis",
+      "paymentDescription": "Un paiement est requis pour sécuriser votre réservation. Veuillez entrer vos informations de carte de crédit ci-dessous.",
+      "reservationFee": "Frais de Réservation",
+      "feeDescription": "Ces frais seront déduits de votre facture finale.",
+      "creditCardInfo": "Informations de Carte de Crédit",
+      "cardholderName": "Nom du Porteur",
+      "cardholderNamePlaceholder": "Entrez le nom tel qu'il apparaît sur la carte",
+      "cardNumber": "Numéro de Carte",
+      "expiryDate": "Date d'Expiration",
+      "cvv": "CVV",
+      "securePayment": "Vos informations de paiement sont sécurisées et cryptées.",
+      "proceedToConfirmation": "Procéder à la Confirmation",
+      "cardNumberRequired": "Le numéro de carte est requis",
+      "cardNumberInvalid": "Veuillez entrer un numéro de carte valide",
+      "expiryRequired": "La date d'expiration est requise",
+      "expiryInvalid": "Veuillez entrer une date d'expiration valide (MM/AA)",
+      "cvvRequired": "Le CVV est requis",
+      "cvvInvalid": "Veuillez entrer un CVV valide",
+      "cardholderRequired": "Le nom du porteur est requis",
+      "billingAddress": "Adresse de Facturation",
+      "firstName": "Prénom",
+      "firstNamePlaceholder": "Entrez votre prénom",
+      "firstNameRequired": "Le prénom est requis",
+      "lastName": "Nom de Famille",
+      "lastNamePlaceholder": "Entrez votre nom de famille",
+      "lastNameRequired": "Le nom de famille est requis",
+      "address": "Adresse",
+      "addressPlaceholder": "Entrez votre adresse",
+      "addressRequired": "L'adresse est requise",
+      "city": "Ville",
+      "cityPlaceholder": "Entrez votre ville",
+      "zipCode": "Code Postal",
+      "zipCodePlaceholder": "Entrez votre code postal",
+      "country": "Pays",
+      "countryPlaceholder": "Entrez votre pays",
+      "countryRequired": "Le pays est requis",
+      "billingInfoRequired": "Veuillez compléter les informations d'adresse de facturation",
+      "errorTitle": "Erreur de Paiement",
+      "errorMessage": "Votre réservation a été créée mais le paiement n'a pas pu être traité. Veuillez contacter le restaurant.",
+      "reservationCreated": "Réservation Créée avec Succès !",
+      "amountToPay": "Montant à Payer",
+      "reservationNumber": "Numéro de Réservation",
+      "preparingPayment": "Préparation du paiement...",
+      "paymentNotice": "Votre réservation a été créée. Vous ne pouvez pas modifier les détails après cette étape. Veuillez procéder au paiement.",
+      "cancelPayment": "Ignorer le Paiement",
+      "proceedToPayment": "Procéder au Paiement"
     },
     "confirmation": {
       "title": "Confirmez Vos Informations",
@@ -1441,7 +1512,13 @@
       "serverError": "Quelque chose s'est mal passé. Veuillez réessayer ou contacter le restaurant directement."
     },
     "footer": {
-      "copyright": "© {{year}} Tabla. Tous droits réservés."
+      "copyright": "© {{year}} Tabla. Tous droits réservés.",
+      "poweredBy": "Propulsé par"
+    },
+    "contact": {
+      "followUs": "Contact & Suivez-nous",
+      "phone": "Appeler",
+      "email": "Email"
     }
   },
   "modifyReservation": {

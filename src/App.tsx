@@ -57,6 +57,8 @@ import NotificationsProviderV2 from "./providers/NotificationsProviderV2";
 import Areas from "./components/settings/Areas";
 import ErrorBoundary from "./components/ErrorBoundary";
 
+import PaymentSuccessPage from "./_plugin/pages/PaymentSuccessPage";
+import PaymentFailurePage from "./_plugin/pages/PaymentFailurePage";
 const API_HOST = import.meta.env.VITE_API_URL || "https://api.dev.tabla.ma";
 
 function App() {
@@ -80,7 +82,6 @@ function App() {
     if (isLoggedIn && refreshToken && authProvider.refresh) {
       authProvider
         .refresh()
-        .then(() => {})
         .catch((error) => {
           console.error("Token refresh on app load failed", error);
         });
@@ -378,6 +379,8 @@ function App() {
                   ) : (
                     <Routes>
                       <Route element={<Plugins />}>
+                        <Route path="/payment/success" element={<PaymentSuccessPage />} />
+                        <Route path="/payment/failure" element={<PaymentFailurePage />} />
                         <Route path="/make/reservation" element={<WidgetPage />} />
                         <Route path="/make/review/:token" element={<ReviewPage />} />
                         <Route path="/make/modification/:token" element={<ModifyPage />} />
