@@ -13,6 +13,9 @@ import spanish from "../../assets/spanish.png"
 import arabic from "../../assets/arabic.jpg"
 import english from "../../assets/english.png"
 import french from "../../assets/french.png"
+import visaLogo from "../../assets/VISA.jpg"
+import masterCardLogo from "../../assets/MasterCard.jpg"
+import cmiLogo from "../../assets/CMI.jpg"
 
 import WidgetReservationProcess from "../../components/reservation/WidgetReservationProcess"
 import { useDateContext } from "../../context/DateContext"
@@ -279,6 +282,47 @@ const WidgetPage = () => {
     occasion: "",
   })
 
+  // Input handlers with real-time validation and sanitization
+  const handleNameInput = (value: string, field: 'firstname' | 'lastname') => {
+    // Remove special characters except letters, spaces, hyphens, and apostrophes
+    const sanitized = value.replace(/[^a-zA-ZÀ-ÿ\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF\u0600-\u06FF\u0750-\u077F\s'-]/g, '')
+    // Remove multiple spaces and limit consecutive spaces to one
+    const spacesCleaned = sanitized.replace(/\s+/g, ' ')
+    // Remove leading/trailing spaces and limit length to 50 characters
+    const limited = spacesCleaned.trim().slice(0, 50)
+    // Capitalize first letter of each word (proper case)
+    const formatted = limited.replace(/\b\w/g, l => l.toUpperCase())
+    
+    setUserInformation(prev => ({ ...prev, [field]: formatted }))
+  }
+
+  const handleEmailInput = (value: string) => {
+    // Remove special characters except valid email characters
+    const sanitized = value.replace(/[^a-zA-Z0-9._%+-@]/g, '').toLowerCase()
+    // Limit length to 100 characters
+    const limited = sanitized.slice(0, 100)
+    
+    setUserInformation(prev => ({ ...prev, email: limited }))
+  }
+
+  const handlePhoneInput = (value: string) => {
+    // Remove all characters except numbers, spaces, +, -, (, )
+    const sanitized = value.replace(/[^+\-\s()\d]/g, '')
+    // Limit length to 20 characters
+    const limited = sanitized.slice(0, 20)
+    
+    setUserInformation(prev => ({ ...prev, phone: limited }))
+  }
+
+  const handleTextAreaInput = (value: string, field: 'preferences' | 'allergies') => {
+    // Remove potentially harmful characters but keep most text
+    const sanitized = value.replace(/[<>"/\\&]/g, '')
+    // Limit length to 500 characters
+    const limited = sanitized.slice(0, 500)
+    
+    setUserInformation(prev => ({ ...prev, [field]: limited }))
+  }
+
   const [formErrors, setFormErrors] = useState({
     firstname: "",
     lastname: "",
@@ -414,7 +458,36 @@ const WidgetPage = () => {
 
 
 
-  const validateForm = (formData: any) => {
+  // Helper function to validate name fields (no special characters, only letters and spaces)
+  const validateName = (name: string) => {
+    const nameRegex = /^[a-zA-ZÀ-ÿ\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF\u0600-\u06FF\u0750-\u077F\s'-]+$/
+    return nameRegex.test(name.trim())
+  }
+
+  // Helper function to validate phone (only numbers, spaces, +, -, (, ))
+  const validatePhone = (phone: string) => {
+    const phoneRegex = /^[+\-\s()\d]+$/
+    return phoneRegex.test(phone.trim()) && phone.replace(/[^\d]/g, '').length >= 8
+  }
+
+  // Helper function to validate email
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    return emailRegex.test(email.trim())
+  }
+
+
+
+  const validateForm = (formData: {
+    firstname: string;
+    lastname: string;
+    email: string;
+    phone: string;
+    preferences: string;
+    area: BaseKey | undefined;
+    allergies: string;
+    occasion: string | null;
+  }) => {
     const errors = {
       firstname: "",
       lastname: "",
@@ -423,26 +496,54 @@ const WidgetPage = () => {
     }
     let isValid = true
 
+    // First Name validation
     if (!formData.firstname.trim()) {
       errors.firstname = t("reservationWidget.validation.firstNameRequired")
       isValid = false
+    } else if (formData.firstname.trim().length < 2) {
+      errors.firstname = t("reservationWidget.validation.firstNameTooShort", "First name must be at least 2 characters")
+      isValid = false
+    } else if (formData.firstname.trim().length > 50) {
+      errors.firstname = t("reservationWidget.validation.firstNameTooLong", "First name must be less than 50 characters")
+      isValid = false
+    } else if (!validateName(formData.firstname)) {
+      errors.firstname = t("reservationWidget.validation.firstNameInvalid", "First name can only contain letters, spaces, hyphens and apostrophes")
+      isValid = false
     }
 
+    // Last Name validation
     if (!formData.lastname.trim()) {
       errors.lastname = t("reservationWidget.validation.lastNameRequired")
       isValid = false
+    } else if (formData.lastname.trim().length < 2) {
+      errors.lastname = t("reservationWidget.validation.lastNameTooShort", "Last name must be at least 2 characters")
+      isValid = false
+    } else if (formData.lastname.trim().length > 50) {
+      errors.lastname = t("reservationWidget.validation.lastNameTooLong", "Last name must be less than 50 characters")
+      isValid = false
+    } else if (!validateName(formData.lastname)) {
+      errors.lastname = t("reservationWidget.validation.lastNameInvalid", "Last name can only contain letters, spaces, hyphens and apostrophes")
+      isValid = false
     }
 
+    // Email validation
     if (!formData.email.trim()) {
       errors.email = t("reservationWidget.validation.emailRequired")
       isValid = false
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    } else if (formData.email.trim().length > 100) {
+      errors.email = t("reservationWidget.validation.emailTooLong", "Email must be less than 100 characters")
+      isValid = false
+    } else if (!validateEmail(formData.email)) {
       errors.email = t("reservationWidget.validation.emailInvalid")
       isValid = false
     }
 
+    // Phone validation
     if (!formData.phone.trim()) {
       errors.phone = t("reservationWidget.validation.phoneRequired")
+      isValid = false
+    } else if (!validatePhone(formData.phone)) {
+      errors.phone = t("reservationWidget.validation.phoneInvalid", "Phone number can only contain numbers, spaces, +, -, (, ) and must be at least 8 digits")
       isValid = false
     }
 
@@ -658,6 +759,7 @@ const WidgetPage = () => {
       
       document.body.appendChild(form);
       form.submit();
+      setStep(5)
   }
 
   const handleConfirmation = () => {
@@ -998,10 +1100,16 @@ const WidgetPage = () => {
                         type="text"
                         placeholder={t("reservationWidget.form.firstNamePlaceholder")}
                         value={userInformation.firstname}
-                        onChange={(e) => setUserInformation(prev => ({ ...prev, firstname: e.target.value }))}
+                        onChange={(e) => handleNameInput(e.target.value, 'firstname')}
+                        maxLength={50}
                         className={`w-full p-3 rounded-md border ${formErrors.firstname ? "border-red-500" : "border-[#dddddd] dark:border-[#444444]"} bg-white dark:bg-darkthemeitems focus:outline-none focus:ring-2 focus:ring-[#88AB61]`}
                       />
                       {formErrors.firstname && <p className="mt-1 text-sm text-red-500">{formErrors.firstname}</p>}
+                      {!formErrors.firstname && userInformation.firstname.length === 0 && (
+                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                          {t("reservationWidget.validation.nameHint", "Only letters, spaces, hyphens and apostrophes allowed (2-50 characters)")}
+                        </p>
+                      )}
                     </div>
                     <div>
                       <label
@@ -1015,10 +1123,16 @@ const WidgetPage = () => {
                         type="text"
                         placeholder={t("reservationWidget.form.lastNamePlaceholder")}
                         value={userInformation.lastname}
-                        onChange={(e) => setUserInformation(prev => ({ ...prev, lastname: e.target.value }))}
+                        onChange={(e) => handleNameInput(e.target.value, 'lastname')}
+                        maxLength={50}
                         className={`w-full p-3 rounded-md border ${formErrors.lastname ? "border-red-500" : "border-[#dddddd] dark:border-[#444444]"} bg-white dark:bg-darkthemeitems focus:outline-none focus:ring-2 focus:ring-[#88AB61]`}
                       />
                       {formErrors.lastname && <p className="mt-1 text-sm text-red-500">{formErrors.lastname}</p>}
+                      {!formErrors.lastname && userInformation.lastname.length === 0 && (
+                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                          {t("reservationWidget.validation.nameHint", "Only letters, spaces, hyphens and apostrophes allowed (2-50 characters)")}
+                        </p>
+                      )}
                     </div>
                     <div>
                       <label htmlFor="email" className="block text-sm font-medium text-[#555555] dark:text-[#cccccc] mb-1">
@@ -1029,7 +1143,8 @@ const WidgetPage = () => {
                         type="email"
                         placeholder={t("reservationWidget.form.emailPlaceholder")}
                         value={userInformation.email}
-                        onChange={(e) => setUserInformation(prev => ({ ...prev, email: e.target.value }))}
+                        onChange={(e) => handleEmailInput(e.target.value)}
+                        maxLength={100}
                         className={`w-full p-3 rounded-md border ${formErrors.email ? "border-red-500" : "border-[#dddddd] dark:border-[#444444]"} bg-white dark:bg-darkthemeitems focus:outline-none focus:ring-2 focus:ring-[#88AB61]`}
                       />
                       {formErrors.email && <p className="mt-1 text-sm text-red-500">{formErrors.email}</p>}
@@ -1043,10 +1158,16 @@ const WidgetPage = () => {
                         type="tel"
                         placeholder={t("reservationWidget.form.phonePlaceholder")}
                         value={userInformation.phone}
-                        onChange={(e) => setUserInformation(prev => ({ ...prev, phone: e.target.value }))}
+                        onChange={(e) => handlePhoneInput(e.target.value)}
+                        maxLength={20}
                         className={`w-full p-3 rounded-md border ${formErrors.phone ? "border-red-500" : "border-[#dddddd] dark:border-[#444444]"} bg-white dark:bg-darkthemeitems focus:outline-none focus:ring-2 focus:ring-[#88AB61]`}
                       />
                       {formErrors.phone && <p className="mt-1 text-sm text-red-500">{formErrors.phone}</p>}
+                      {!formErrors.phone && userInformation.phone.length === 0 && (
+                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                          {t("reservationWidget.validation.phoneHint", "Format: +212 6XX XX XX XX (minimum 8 digits)")}
+                        </p>
+                      )}
                     </div>
                     <div>
                       <label
@@ -1059,10 +1180,16 @@ const WidgetPage = () => {
                         id="allergies"
                         placeholder={t("reservationWidget.form.allergiesPlaceholder")}
                         value={userInformation.allergies}
-                        onChange={(e) => setUserInformation(prev => ({ ...prev, allergies: e.target.value }))}
+                        onChange={(e) => handleTextAreaInput(e.target.value, 'allergies')}
+                        maxLength={500}
                         className="w-full p-3 rounded-md border border-[#dddddd] dark:border-[#444444] bg-white dark:bg-darkthemeitems focus:outline-none focus:ring-2 focus:ring-[#88AB61]"
                         rows={2}
                       />
+                      <div className="flex justify-end mt-1">
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {userInformation.allergies.length}/500
+                        </span>
+                      </div>
                     </div>
                     <div>
                       <label
@@ -1075,10 +1202,16 @@ const WidgetPage = () => {
                         id="preferences"
                         placeholder={t("reservationWidget.form.preferencesPlaceholder")}
                         value={userInformation.preferences}
-                        onChange={(e) => setUserInformation(prev => ({ ...prev, preferences: e.target.value }))}
+                        onChange={(e) => handleTextAreaInput(e.target.value, 'preferences')}
+                        maxLength={500}
                         className="w-full p-3 rounded-md border border-[#dddddd] dark:border-[#444444] bg-white dark:bg-darkthemeitems focus:outline-none focus:ring-2 focus:ring-[#88AB61]"
                         rows={2}
                       />
+                      <div className="flex justify-end mt-1">
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {userInformation.preferences.length}/500
+                        </span>
+                      </div>
                     </div>
                     <div>
                       <label
@@ -1721,8 +1854,33 @@ const WidgetPage = () => {
             )}
 
             {/* Footer */}
-            <div className="bg-gray-100 dark:bg-[#88AB61]/20 px-6 py-4 text-center">
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+            <div className="bg-gray-100 dark:bg-[#88AB61]/20 px-6 py-4 text-center space-y-3">
+              {/* Payment Methods Section */}
+              <div className="flex flex-col items-center space-y-2">
+                <p className="text-xs text-gray-600 dark:text-gray-300 font-medium">
+                  {t("reservationWidget.footer.poweredBy", "Powered by")}
+                </p>
+                <div className="flex items-center justify-center space-x-4">
+                  <img 
+                    src={visaLogo} 
+                    alt="Visa" 
+                    className="h-6 w-auto object-contain rounded border border-gray-300 dark:border-gray-600 bg-white shadow-sm"
+                  />
+                  <img 
+                    src={masterCardLogo} 
+                    alt="MasterCard" 
+                    className="h-6 w-auto object-contain rounded border border-gray-300 dark:border-gray-600 bg-white shadow-sm"
+                  />
+                  <img 
+                    src={cmiLogo} 
+                    alt="CMI" 
+                    className="h-6 w-auto object-contain rounded border border-gray-300 dark:border-gray-600 bg-white shadow-sm"
+                  />
+                </div>
+              </div>
+              
+              {/* Copyright Section */}
+              <p className="text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-600 pt-2">
                 {t("reservationWidget.footer.copyright", { year: new Date().getFullYear() })}
               </p>
             </div>

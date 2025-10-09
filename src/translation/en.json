@@ -1428,7 +1428,17 @@
             "lastNameRequired": "Last name is required",
             "emailRequired": "Email is required",
             "emailInvalid": "Email is invalid",
-            "phoneRequired": "Phone number is required"
+            "phoneRequired": "Phone number is required",
+            "firstNameTooShort": "First name must be at least 2 characters",
+            "firstNameTooLong": "First name must be less than 50 characters",
+            "firstNameInvalid": "First name can only contain letters, spaces, hyphens and apostrophes",
+            "lastNameTooShort": "Last name must be at least 2 characters",
+            "lastNameTooLong": "Last name must be less than 50 characters",
+            "lastNameInvalid": "Last name can only contain letters, spaces, hyphens and apostrophes",
+            "emailTooLong": "Email must be less than 100 characters",
+            "phoneInvalid": "Phone number can only contain numbers, spaces, +, -, (, ) and must be at least 8 digits",
+            "nameHint": "Only letters, spaces, hyphens and apostrophes allowed (2-50 characters)",
+            "phoneHint": "Format: +212 6XX XX XX XX (minimum 8 digits)"
         },
         "payment": {
             "title": "Payment ",
@@ -1511,7 +1521,8 @@
             "serverError": "Something went wrong. Please try again or contact the restaurant directly."
         },
         "footer": {
-            "copyright": "© {{year}} Tabla. All rights reserved."
+            "copyright": "© {{year}} Tabla. All rights reserved.",
+            "poweredBy": "Powered by"
         },
         "contact": {
             "followUs": "Contact & Follow Us",

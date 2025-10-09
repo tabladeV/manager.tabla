@@ -112,6 +112,8 @@ const PaymentSuccessPage = () => {
   // Extract oid from query parameters
   const queryParams = new URLSearchParams(search)
   const oid = queryParams.get('oid')
+  const lang = queryParams.get('lang') || 'en'
+
 
   interface ReservationData {
   reservation: {
@@ -170,8 +172,11 @@ const PaymentSuccessPage = () => {
 
   const { i18n } = useTranslation()
 
+
+
   // Detect browser language and set as default
   useEffect(() => {
+    
     const storedLang = localStorage.getItem("preferredLanguage");
     if (!storedLang) {
       // Get browser language
@@ -185,6 +190,12 @@ const PaymentSuccessPage = () => {
       i18n.changeLanguage(storedLang);
     }
   }, [i18n]);
+
+  useEffect(() => {
+    if(lang){
+      i18n.changeLanguage(lang)
+    }
+  }, [lang]);
 
   const [widgetInfo] = useState<BaseRecord>()
 

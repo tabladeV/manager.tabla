@@ -1411,7 +1411,17 @@
         "lastNameRequired": "El apellido es requerido",
         "emailRequired": "El correo electrónico es requerido",
         "emailInvalid": "El correo electrónico es inválido",
-        "phoneRequired": "El número de teléfono es requerido"
+        "phoneRequired": "El número de teléfono es requerido",
+        "firstNameTooShort": "El nombre debe tener al menos 2 caracteres",
+        "firstNameTooLong": "El nombre debe tener menos de 50 caracteres",
+        "firstNameInvalid": "El nombre solo puede contener letras, espacios, guiones y apostrofes",
+        "lastNameTooShort": "El apellido debe tener al menos 2 caracteres",
+        "lastNameTooLong": "El apellido debe tener menos de 50 caracteres",
+        "lastNameInvalid": "El apellido solo puede contener letras, espacios, guiones y apostrofes",
+        "emailTooLong": "El correo electrónico debe tener menos de 100 caracteres",
+        "phoneInvalid": "El número de teléfono solo puede contener números, espacios, +, -, (, ) y debe tener al menos 8 dígitos",
+        "nameHint": "Solo se permiten letras, espacios, guiones y apostrofes (2-50 caracteres)",
+        "phoneHint": "Formato: +212 6XX XX XX XX (mínimo 8 dígitos)"
       },
       "payment": {
         "title": "Pago Requerido",
@@ -1494,7 +1504,8 @@
         "serverError": "Algo salió mal. Por favor intente de nuevo o contacte al restaurante directamente."
       },
       "footer": {
-        "copyright": "© {{year}} Tabla. Todos los derechos reservados."
+        "copyright": "© {{year}} Tabla. Todos los derechos reservados.",
+        "poweredBy": "Desarrollado por"
       },
       "contact": {
         "followUs": "Contacto y Síguenos",

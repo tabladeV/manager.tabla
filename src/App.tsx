@@ -82,7 +82,6 @@ function App() {
     if (isLoggedIn && refreshToken && authProvider.refresh) {
       authProvider
         .refresh()
-        .then(() => {})
         .catch((error) => {
           console.error("Token refresh on app load failed", error);
         });

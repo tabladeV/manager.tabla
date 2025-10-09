@@ -1409,7 +1409,17 @@
       "lastNameRequired": "Le nom de famille est requis",
       "emailRequired": "L'email est requis",
       "emailInvalid": "L'email est invalide",
-      "phoneRequired": "Le numéro de téléphone est requis"
+      "phoneRequired": "Le numéro de téléphone est requis",
+      "firstNameTooShort": "Le prénom doit contenir au moins 2 caractères",
+      "firstNameTooLong": "Le prénom doit contenir moins de 50 caractères",
+      "firstNameInvalid": "Le prénom ne peut contenir que des lettres, espaces, tirets et apostrophes",
+      "lastNameTooShort": "Le nom de famille doit contenir au moins 2 caractères",
+      "lastNameTooLong": "Le nom de famille doit contenir moins de 50 caractères",
+      "lastNameInvalid": "Le nom de famille ne peut contenir que des lettres, espaces, tirets et apostrophes",
+      "emailTooLong": "L'email doit contenir moins de 100 caractères",
+      "phoneInvalid": "Le numéro de téléphone ne peut contenir que des chiffres, espaces, +, -, (, ) et doit contenir au moins 8 chiffres",
+      "nameHint": "Seules les lettres, espaces, tirets et apostrophes sont autorisés (2-50 caractères)",
+      "phoneHint": "Format: +212 6XX XX XX XX (minimum 8 chiffres)"
     },
     "payment": {
       "title": "Paiement Requis",
@@ -1492,7 +1502,8 @@
       "serverError": "Quelque chose s'est mal passé. Veuillez réessayer ou contacter le restaurant directement."
     },
     "footer": {
-      "copyright": "© {{year}} Tabla. Tous droits réservés."
+      "copyright": "© {{year}} Tabla. Tous droits réservés.",
+      "poweredBy": "Propulsé par"
     },
     "contact": {
       "followUs": "Contact & Suivez-nous",
