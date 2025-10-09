@@ -532,7 +532,17 @@
       "widget": "Widget de Réservation",
       "roles": "Rôles",
       "permissions": "Permissions",
-      "services": "Services"
+      "services": "Services",
+      "messagingTemplates": "Modèles de Messagerie"
+    },
+    "messagingTemplates": {
+      "description": "Gérez vos modèles de messagerie pour les notifications par email et SMS envoyées aux clients.",
+      "newTemplate": "Nouveau Modèle",
+      "editTemplate": "Modifier le Modèle",
+      "templateName": "Nom du Modèle",
+      "actions": "Actions",
+      "content": "Contenu",
+      "dynamicVariables": "Variables Dynamiques"
     },
     "general": {
       "basicInformationForm": {
@@ -1579,6 +1589,18 @@
             "saturday": "Samedi"
         }
     }
+},
+"common": {
+    "cancel": "Annuler",
+    "add": "Ajouter",
+    "update": "Mettre à jour",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "Enable": "Activer",
+    "disable": "Désactiver",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "optional": "Facultatif"
 }
 
 }

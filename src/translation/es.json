@@ -534,7 +534,17 @@
       "widget": "Widget de Reserva",
       "roles": "Roles",
       "permissions": "Permisos",
-      "services": "Servicios"
+      "services": "Servicios",
+      "messagingTemplates": "Plantillas de Mensajería"
+    },
+    "messagingTemplates": {
+        "description": "Crear y gestionar plantillas para mensajes automatizados.",
+        "newTemplate": "Nueva Plantilla",
+        "editTemplate": "Editar Plantilla",
+        "templateName": "Nombre de la Plantilla",
+        "actions": "Acciones",
+        "content": "Contenido",
+        "dynamicVariables": "Variables Dinámicas"
     },
     "general": {
       "basicInformationForm": {
@@ -1581,5 +1591,17 @@
             "saturday": "Sábado"
         }
     }
+},
+"common": {
+    "cancel": "Cancelar",
+    "add": "Añadir",
+    "update": "Actualizar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "Enable": "Activar",
+    "disable": "Desactivar",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "optional": "Opcional"
 }
 }

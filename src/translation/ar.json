@@ -532,8 +532,18 @@
             "widget": "أداة الحجز",
             "roles": "الأدوار",
             "permissions": "الصلاحيات",
-            "services": "الخدمات"
-        },
+            "services": "الخدمات",
+            "messagingTemplates": "قوالب المراسلة"
+    },
+    "messagingTemplates": {
+        "description": "إنشاء وإدارة قوالب للرسائل التلقائية.",
+        "newTemplate": "قالب جديد",
+        "editTemplate": "تعديل القالب",
+        "templateName": "اسم القالب",
+        "actions": "الإجراءات",
+        "content": "المحتوى",
+        "dynamicVariables": "المتغيرات الديناميكية"
+    },
         "general": {
             "basicInformationForm": {
                 "title": "المعلومات الأساسية",
@@ -1610,6 +1620,18 @@
             "saturday": "السبت"
         }
     }
+},
+"common": {
+    "cancel": "إلغاء",
+    "add": "إضافة",
+    "update": "تحديث",
+    "save": "حفظ",
+    "delete": "حذف",
+    "Enable": "تفعيل",
+    "disable": "تعطيل",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "optional": "اختياري"
 }
 
 }

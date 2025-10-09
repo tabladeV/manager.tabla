@@ -163,6 +163,17 @@ const SettingsPage = () => {
             </Link>
           </CanAccess>
 
+          <CanAccess
+            // resource="messagingtemplate"
+            resource="reviewwidget"
+            action="view"
+          >
+            <Link to='/settings/messaging-templates' className={`hover:underline flex items-center gap-3 ${pathname.startsWith('/settings/messaging-templates') ? navigatedMenuClass : normalMenuClass}`}>
+              <Mail size={22}/>
+              {expanded && t('settingsPage.menuItems.messagingTemplates')}
+            </Link>
+          </CanAccess>
+
           {/* <DevOnly> */}
             <CanAccess
               resource="billing"

@@ -1,4 +1,5 @@
 import React, { useState, ChangeEvent, FocusEvent } from 'react';
+import { useDarkContext } from "../../context/DarkContext";
 
 type ValidationRule = (value: string) => string | null;
 
@@ -33,6 +34,7 @@ const BaseInput: React.FC<BaseInputProps> = ({
 }) => {
   const [touched, setTouched] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
+  const { darkMode } = useDarkContext();
 
   const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
     setTouched(true);

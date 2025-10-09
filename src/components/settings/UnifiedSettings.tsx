@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useLocation } from 'react-router-dom'
 import { CanAccess } from '@refinedev/core'
 import { DevOnly } from '../DevOnly'
 import { 
@@ -21,6 +22,7 @@ import {
   Ban,
   ChevronLeft,
   ChevronRight,
+  Mail,
   type LucideIcon
 } from 'lucide-react'
 
@@ -36,6 +38,8 @@ import ReviewWidget from '../settings/ReviewWidget'
 import Billing from '../settings/Billing'
 import Roles from '../settings/Roles'
 import UsersSettings from '../settings/Users'
+import MessagingTemplates from "./MessagingTemplates";
+import MessagingTemplatesForm from './MessagingTemplatesForm';
 
 // Import marketplace components
 import Gallery from '../marketplace/Gallery'
@@ -50,6 +54,7 @@ interface MenuItem {
   title: string
   icon: LucideIcon
   component: React.ComponentType
+  hideInMenu?: boolean
   permission?: {
     resource: string
     action: string
@@ -66,7 +71,9 @@ interface MenuCategory {
 const UnifiedSettings = () => {
   const { t } = useTranslation()
   const [activeSection, setActiveSection] = useState('general')
-  const [expanded, setExpanded] = useState(false)
+  const [expanded, setExpanded] = useState(false);
+  const [editingTemplateId, setEditingTemplateId] = useState<number | null>(null); // State for the template ID
+
 
   useEffect(() => {
     document.title = 'Settings | Tabla'
@@ -76,6 +83,22 @@ const UnifiedSettings = () => {
       setExpanded(false)
     }
   }, [])
+
+    // --- Navigation Handlers ---
+  const handleNewTemplate = () => {
+    setEditingTemplateId(null);
+    setActiveSection('messagingTemplateForm');
+  };
+
+  const handleEditTemplate = (id: number) => {
+    setEditingTemplateId(id);
+    setActiveSection('messagingTemplateForm');
+  };
+
+  const handleFinishEditing = () => {
+    setEditingTemplateId(null);
+    setActiveSection('messagingTemplates');
+  };
 
   const categories: MenuCategory[] = [
     {
@@ -174,6 +197,21 @@ const UnifiedSettings = () => {
           permission: { resource: 'reviewwidget', action: 'view' }
         },
         {
+          id: 'messagingTemplates',
+          title: t('settingsPage.menuItems.messagingTemplates'),
+          icon: Mail,
+          component: MessagingTemplates,
+          // permission: { resource: 'messagingtemplate', action: 'view' }
+          permission: { resource: 'reviewwidget', action: 'view' }
+        },
+        {
+          id: 'messagingTemplateForm', // ID for the form view
+          title: 'Template Form', // Title won't be shown
+          icon: Mail, // Icon won't be shown
+          component: MessagingTemplatesForm,
+          hideInMenu: true, // Hide this from the sidebar
+        },
+        {
           id: 'billing',
           title: t('settingsPage.menuItems.billing'),
           icon: DollarSign,
@@ -265,6 +303,11 @@ const UnifiedSettings = () => {
   const Component = getCurrentComponent()
 
   const renderMenuItem = (item: MenuItem) => {
+
+    if (item.hideInMenu) {
+      return null;
+    }
+
     const menuItem = (
       <div
         key={item.id}
@@ -362,7 +405,14 @@ const UnifiedSettings = () => {
             
             
             {/* Component Content */}
-              <Component />
+              <Component 
+                // Pass handlers to the relevant components
+                onNew={handleNewTemplate}
+                onEdit={handleEditTemplate}
+                onCancel={handleFinishEditing}
+                onSave={handleFinishEditing}
+                templateId={editingTemplateId}
+              />
           </div>
         </div>
       </div>

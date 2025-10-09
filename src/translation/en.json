@@ -543,8 +543,18 @@
             "widget": "Reservation Widget",
             "roles": "Roles",
             "permissions": "Permissions",
-            "services": "Services"
+            "services": "Services",
+            "messagingTemplates": "Messaging Templates"
         },
+        "messagingTemplates": {
+      "description": "Create and manage templates for automated messages.",
+      "newTemplate": "New Template",
+      "editTemplate": "Edit Template",
+      "templateName": "Template Name",
+      "actions": "Actions",
+      "content": "Content",
+      "dynamicVariables": "Dynamic Variables"
+    },
         "general": {
             "basicInformationForm": {
                 "title": "Basic Information",
@@ -1598,8 +1608,18 @@
             "saturday": "Saturday"
         }
     }
-  }
-
-
+  },
+  "common": {
+        "cancel": "Cancel",
+        "add": "Add",
+        "update": "Update",
+        "save": "Save",
+        "delete": "Delete",
+        "Enable": "Enable",
+        "disable": "Disable",
+        "active": "Active",
+        "inactive": "Inactive",
+        "optional": "Optional"
+    }
   }
   
