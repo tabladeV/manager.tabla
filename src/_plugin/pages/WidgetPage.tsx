@@ -596,6 +596,7 @@ const WidgetPage = () => {
   useEffect(() => {
     loadFormDataFromCache()
   }, [loadFormDataFromCache])
+  // Load user information from cache
 
   // Detect browser info on component mount
   useEffect(() => {
