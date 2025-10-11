@@ -294,7 +294,7 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
   return (
     <>
       <div className={`overlay z-[300] glassmorphism transition-opacity duration-300 ${isExiting ? 'opacity-0' : 'opacity-100'}`} onClick={handleClose}></div>
-      <div className={`popup z-[360] lt-sm:h-[70vh] sm:w-[30em] lt-sm:bottom-0 lt-sm:w-full rounded-[10px] transition-all duration-300 ease-out ${isExiting ? 'opacity-0 translate-y-full' : 'opacity-100 translate-y-[-50%] translate-x-[-50%]'} ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}>
+      <div className={`popup z-[360] sm:w-[30em] lt-sm:bottom-0 lt-sm:w-full rounded-[10px] transition-all duration-300 ease-out ${isExiting ? 'opacity-0 translate-y-full' : 'opacity-100 lg:translate-y-[-50%] xl:translate-y-[-50%] md:translate-y-[-50%] translate-x-[-50%]'} ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}>
         <TabNavigation activeTab={activeTab} onTabClick={changeTab} />
         <div className={`transition-opacity duration-150 ${isContentVisible ? 'opacity-100' : 'opacity-0'}`}>
           {renderContent()}
