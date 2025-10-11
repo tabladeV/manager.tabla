@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { eachDayOfInterval, endOfMonth, format, getDay, isEqual, isSameMonth, isToday, parse, startOfToday, add, isSameDay } from 'date-fns';
 import { useTranslation } from 'react-i18next';
+import { useDebouncedCallback } from '../../hooks/useDebouncedCallback';
 
 const colStartClasses = [
   '', 'col-start-2', 'col-start-3', 'col-start-4', 'col-start-5', 'col-start-6', 'col-start-7'
@@ -38,19 +39,19 @@ const OurCalendar = (props) => {
     end: endOfMonth(firstDayCurrentMonth),
   });
 
-  function previousMonth() {
+  const previousMonth = useDebouncedCallback(()=> {
     // if (loading) return;
     let firstDayNextMonth = add(firstDayCurrentMonth, { months: -1 });
     setCurrentMonth(format(firstDayNextMonth, 'MMM-yyyy'));
     props.onMonthChange?.(format(firstDayNextMonth, 'yyyy-MM'));
-  }
+  }, 300);
 
-  function nextMonth() {
+  const nextMonth = useDebouncedCallback(()=> {
     // if (loading) return;
     let firstDayNextMonth = add(firstDayCurrentMonth, { months: 1 });
     setCurrentMonth(format(firstDayNextMonth, 'MMM-yyyy'));
     props.onMonthChange?.(format(firstDayNextMonth, 'yyyy-MM'));
-  }
+  }, 300);
 
   function selectingDate(day) {
     if (loading) return;

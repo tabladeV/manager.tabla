@@ -16,16 +16,12 @@ const DYNAMIC_VARS = [
 ];
 
 
-interface MessagingTemplatesFormProps {
-  templateId?: number | null;
-  onCancel?: () => void;
-  onSave?: () => void;
-}
-
-const MessagingTemplatesForm = ({ templateId, onCancel, onSave }: MessagingTemplatesFormProps) => {
+const MessagingTemplatesForm = () => {
   const { t } = useTranslation();
   const { darkMode } = useDarkContext();
-  const isEditMode = templateId != null;
+  const navigate = useNavigate();
+  const { action, id: templateId } = useParams<{ action: string, id: string }>();
+  const isEditMode = action === 'edit' && templateId != null;
 
   // In a real app, you would fetch the template data if in edit mode
   const [name, setName] = useState('');
@@ -55,11 +51,15 @@ const MessagingTemplatesForm = ({ templateId, onCancel, onSave }: MessagingTempl
     }
   };
 
+  const handleCancel = () => {
+    navigate('/settings/messaging-templates');
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Logic to save the template (API call)
     console.log({ id: templateId, name, content });
-    if (onSave) onSave(); 
+    navigate('/settings/messaging-templates');
   };
 
   return (
@@ -71,7 +71,7 @@ const MessagingTemplatesForm = ({ templateId, onCancel, onSave }: MessagingTempl
       </h2>
       </div>
       <button
-          onClick={onCancel}
+          onClick={handleCancel}
           className="btn-primary flex items-center gap-2 px-4 py-2"
         >
           <ArrowLeft size={20} />
@@ -122,7 +122,7 @@ const MessagingTemplatesForm = ({ templateId, onCancel, onSave }: MessagingTempl
         </div>
 
         <div className="flex justify-end gap-4 mt-4">
-          <button type="button" onClick={onCancel} className="px-4 py-2 rounded-lg bg-gray-200 dark:bg-darkthemeitems hover:bg-gray-300 dark:hover:bg-gray-600">
+          <button type="button" onClick={handleCancel} className="px-4 py-2 rounded-lg bg-gray-200 dark:bg-darkthemeitems hover:bg-gray-300 dark:hover:bg-gray-600">
             {t('common.cancel')}
           </button>
           <button type="submit" className="px-4 py-2 rounded-lg bg-greentheme text-white hover:bg-green-700">

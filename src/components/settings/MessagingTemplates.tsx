@@ -2,20 +2,18 @@ import { useTranslation } from "react-i18next";
 import { Plus, Trash } from "lucide-react";
 import { useState } from "react";
 import { useDarkContext } from "../../context/DarkContext";
+import { useNavigate } from "react-router-dom";
 
 interface Template {
   id: number;
   name: string;
   content: string;
 }
-interface MessagingTemplatesProps {
-  onNew?: () => void;
-  onEdit?: (id: number) => void;
-}
 
-const MessagingTemplates = ({ onNew, onEdit }: MessagingTemplatesProps) => {
+const MessagingTemplates = () => {
   const { t } = useTranslation();
   const { darkMode } = useDarkContext();
+  const navigate = useNavigate();
 
   // Dummy data
   const [templates, setTemplates] = useState<Template[]>([
@@ -48,7 +46,7 @@ const MessagingTemplates = ({ onNew, onEdit }: MessagingTemplatesProps) => {
         </div>
         {/* Assuming 'btn-primary' is a global style for consistency */}
         <button
-          onClick={onNew}
+          onClick={() => navigate('/settings/messaging-templates/new')}
           className="btn-primary flex items-center gap-2 px-4 py-2"
         >
           <Plus size={20} />
@@ -78,7 +76,7 @@ const MessagingTemplates = ({ onNew, onEdit }: MessagingTemplatesProps) => {
                 {/* Clickable cell for editing */}
                 <td
                   className="px-6 py-4 cursor-pointer"
-                  onClick={() => onEdit && onEdit(template.id)}
+                  onClick={() => navigate(`/settings/messaging-templates/edit/${template.id}`)}
                 >
                   {template.name}
                 </td>

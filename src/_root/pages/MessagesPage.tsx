@@ -224,6 +224,7 @@ const MessagesPage = () => {
           setPage={(newPage) => {
             setPage(newPage);
           }}
+          page={page}
           size={size}
           count={messagesAPIInfo?.count || 0}
         />

@@ -33,7 +33,7 @@
                 "confirmed": "Confirmed",
                 "canceled": "Canceled"
             },
-            "months":{
+            "months": {
                 "january": "January",
                 "february": "February",
                 "march": "March",
@@ -63,7 +63,6 @@
         "reviews": {
             "title": "Reviews",
             "noReviews": "No reviews yet",
-            
             "noReviewsDesc": "You can ask your clients to leave a review after their reservation",
             "status": {
                 "confirmed": "Confirmed",
@@ -87,14 +86,14 @@
         },
         "charts": {
             "reservationsChart": {
-            "title": "Reservations",
-            "legend": {
-                "cancelled": "Cancelled",
-                "confirmed": "Confirmed"
-            }
+                "title": "Reservations",
+                "legend": {
+                    "cancelled": "Cancelled",
+                    "confirmed": "Confirmed"
+                }
             },
             "topUsers": {
-            "title": "Top Countries"
+                "title": "Top Countries"
             },
             "topUserActions": {
                 "title": "Top User Actions",
@@ -123,93 +122,92 @@
                     "WalkIn": "Walk In",
                     "Widget": "Widget"
                 }
-
             }
         }
     },
     "reservations": {
-      "title": "Reservations",
-      "searchPlaceholder": "Search...",
-      "occasion": "Occasion",
-      "deleteConfirm": {
-        "message": "Are you sure you want to delete this reservation?"
-      },
-      "statusChange":{
-        "confirmMessage": "Are you sure you to change the status of this reservation?",
-        "from": "From",
-        "to": "To"
-      },
-      "filters": {
-        "fulfilled": "Fulfilled",
-        "seated": "Seated",
-        "confirmed": "Confirmed",
-        "cancelled": "Cancelled",
-        "noShow": "No show",
-        "rescheduled": "Rescheduled",
-        "pending": "Pending",
-        "all": "All",
-        "date": "Date"
-      },
-      "buttons": {
-        "addReservation": "Add Reservation",
-        "export": "Export"
-      },
-      "tableHeaders": {
-        "id": "ID",
-        "name": "Full Name",
-        "email": "Email",
-        "phone": "Phone",
-        "date": "Date",
-        "comment": "Comment",
-        "time": "Time",
-        "guests": "Guests",
-        "madeBy": "Table",
-        "tables": "Tables",
-        "status": "Status",
-        "review": "reviews",
-        "sendReview": "Send Review",
-        "reviewed": "Review sent",
-        "details": "Reservation Details",
-        "detailsShort": "Date/Time/Guests"
-      },
-      "statusLabels": {
-        "pending": "Pending",
-        "noShow": "No show",
-        "rescheduled": "Rescheduled",
-        "confirmed": "Confirmed",
-        "cancelled": "Cancelled",
-        "seated": "Seated",
-        "fulfilled": "Fulfilled"
-      },
-      "edit": {
-        "title": "Edit Reservation",
-        "headline": "Edit Reservation",
-        "subtitle": "Edit your reservation",
-        "confirmationMessage": "Are you sure you want to edit this reservation?",
-        "informations": {
-          "title": "Informations",
-          "name": "Full Name",
-          "internalNote": "Internal Note",
-          "email": "Email",
-          "phone": "Phone",
-          "cancellationNote": "Cancellation Note",
-          "floor": "Floor",
-          "table":"Table",
-          "date": "Date",
-          "addCustomer": "Add customer",
-          "comment": "Comment",
-          "tableName": "Table Name",
-          "time": "Time",
-          "guests": "Guests",
-          "madeBy": "Made From/By",
-          "status": "Status"
+        "title": "Reservations",
+        "searchPlaceholder": "Search...",
+        "occasion": "Occasion",
+        "deleteConfirm": {
+            "message": "Are you sure you want to delete this reservation?"
+        },
+        "statusChange": {
+            "confirmMessage": "Are you sure you to change the status of this reservation?",
+            "from": "From",
+            "to": "To"
+        },
+        "filters": {
+            "fulfilled": "Fulfilled",
+            "seated": "Seated",
+            "confirmed": "Confirmed",
+            "cancelled": "Cancelled",
+            "noShow": "No show",
+            "rescheduled": "Rescheduled",
+            "pending": "Pending",
+            "all": "All",
+            "date": "Date"
         },
         "buttons": {
-          "save": "Save",
-          "cancel": "Cancel",
-          "close": "Close"
+            "addReservation": "Add Reservation",
+            "export": "Export"
+        },
+        "tableHeaders": {
+            "id": "ID",
+            "name": "Full Name",
+            "email": "Email",
+            "phone": "Phone",
+            "date": "Date",
+            "comment": "Comment",
+            "time": "Time",
+            "guests": "Guests",
+            "madeBy": "Table",
+            "tables": "Tables",
+            "status": "Status",
+            "review": "reviews",
+            "sendReview": "Send Review",
+            "reviewed": "Review sent",
+            "details": "Reservation Details",
+            "detailsShort": "Date/Time/Guests"
+        },
+        "statusLabels": {
+            "pending": "Pending",
+            "noShow": "No show",
+            "rescheduled": "Rescheduled",
+            "confirmed": "Confirmed",
+            "cancelled": "Cancelled",
+            "seated": "Seated",
+            "fulfilled": "Fulfilled"
+        },
+        "edit": {
+            "title": "Edit Reservation",
+            "headline": "Edit Reservation",
+            "subtitle": "Edit your reservation",
+            "confirmationMessage": "Are you sure you want to edit this reservation?",
+            "informations": {
+                "title": "Informations",
+                "name": "Full Name",
+                "internalNote": "Internal Note",
+                "email": "Email",
+                "phone": "Phone",
+                "cancellationNote": "Cancellation Note",
+                "floor": "Floor",
+                "table": "Table",
+                "date": "Date",
+                "addCustomer": "Add customer",
+                "comment": "Comment",
+                "tableName": "Table Name",
+                "time": "Time",
+                "guests": "Guests",
+                "madeBy": "Made From/By",
+                "status": "Status"
+            },
+            "buttons": {
+                "save": "Save",
+                "cancel": "Cancel",
+                "close": "Close"
+            }
         }
-      }
     },
     "placeManagement": {
         "title": "Table Management",
@@ -217,7 +215,7 @@
         "filters": {
             "confirmed": "Confirmed",
             "canceled": "Canceled",
-            "seated": "Seated",                
+            "seated": "Seated",
             "rescheduled": "Rescheduled",
             "noShow": "No show",
             "pending": "Pending"
@@ -228,8 +226,8 @@
             "terrace": "Terrace"
         },
         "warning": {
-            "1":"You can only overview the floors.",
-            "2":"To edit the tables try using a larger device!"
+            "1": "You can only overview the floors.",
+            "2": "To edit the tables try using a larger device!"
         },
         "reservations": {
             "time": "Time",
@@ -245,7 +243,7 @@
         }
     },
     "editPlace": {
-        "title1":"Select a floor to modify",
+        "title1": "Select a floor to modify",
         "title": "Edit On Your Roofs",
         "placeholders": {
             "placeAlias": "Place Name"
@@ -261,12 +259,11 @@
             "reset": "Reset"
         }
     },
-    "agenda":{
+    "agenda": {
         "title": "Agenda",
         "and": "and"
-        
     },
-    "grid":{
+    "grid": {
         "title": "Grid",
         "buttons": {
             "addReservation": "Add Reservation",
@@ -280,16 +277,16 @@
             "breakfast": "Breakfast",
             "lunch": "Lunch",
             "dinner": "Dinner",
-            "available" : "Available",
-            "unavailable" : "Unavailable"
+            "available": "Available",
+            "unavailable": "Unavailable"
         },
         "people": "People",
-        "placeHolders":{
+        "placeHolders": {
             "name": "Name",
             "search": "Search for a client",
-            "intern":"Internal Comment",
-            "extern":"External Comment",
-            "searchClient"  : "Search Client",
+            "intern": "Internal Comment",
+            "extern": "External Comment",
+            "searchClient": "Search Client",
             "email": "Email",
             "guests": "number of guests",
             "firstname": "First Name",
@@ -298,44 +295,41 @@
             "phone": "Phone Number"
         }
     },
-    
-  "calendar": {
-    "pageTitle": "Calendar Grid - Tabla | Taste Morocco's Best",
-    "title": "Calendar Grid",
-    "viewAgenda": "View Grid",
-    "navigation": {
-      "previousMonth": "Previous month",
-      "nextMonth": "Next month"
+    "calendar": {
+        "pageTitle": "Calendar - Tabla | Taste Morocco's Best",
+        "title": "Calendar",
+        "viewAgenda": "View Calendar",
+        "navigation": {
+            "previousMonth": "Previous month",
+            "nextMonth": "Next month"
+        },
+        "weekDays": {
+            "sun": "Sun",
+            "mon": "Mon",
+            "tue": "Tue",
+            "wed": "Wed",
+            "thu": "Thu",
+            "fri": "Fri",
+            "sat": "Sat"
+        },
+        "status": {
+            "open": "Open",
+            "closed": "Closed"
+        },
+        "reservations": {
+            "count": "{{count}} Reservation",
+            "count_plural": "{{count}} Reservations"
+        },
+        "guests": {
+            "count": "{{count}} Person",
+            "count_plural": "{{count}} People"
+        }
     },
-    "weekDays": {
-      "sun": "Sun",
-      "mon": "Mon",
-      "tue": "Tue",
-      "wed": "Wed",
-      "thu": "Thu",
-      "fri": "Fri",
-      "sat": "Sat"
-    },
-    "status": {
-      "open": "Open",
-      "closed": "Closed"
-    },
-    "reservations": {
-      "count": "{{count}} Reservation",
-      "count_plural": "{{count}} Reservations"
-    },
-    "guests": {
-      "count": "{{count}} Person",
-      "count_plural": "{{count}} People"
-    }
-  },
-
-
     "clients": {
         "title": "Clients",
         "searchPlaceholder": "Search...",
         "selectClient": "Select a client",
-        "buttons":{
+        "buttons": {
             "deselectAll": "Deselect All",
             "selectAll": "Select All Visible Clients",
             "deleteClient": "Delete Client",
@@ -343,7 +337,7 @@
             "exportSelected": "Export Selected",
             "sendToAll": "Send to All"
         },
-        "linkers":{
+        "linkers": {
             "and": "and",
             "or": "or",
             "more": "more"
@@ -394,8 +388,8 @@
                 "spend": "Spend",
                 "made": "Made From/By",
                 "roof": "Roof",
-                "guests":"Number of guests",
-                "comment":"Comment",
+                "guests": "Number of guests",
+                "comment": "Comment",
                 "table": "Table",
                 "status": "Status"
             },
@@ -414,7 +408,7 @@
             }
         }
     },
-    "reviews":{
+    "reviews": {
         "title": "Reviews",
         "tableHeaders": {
             "id": "ID",
@@ -423,35 +417,35 @@
             "email": "Email",
             "total": "Total",
             "comment": "Comment",
-            "food":"Food",
-            "valueForMoney":"Value For Money",
-            "service":"Service",
-            "environment":"Environment"
+            "food": "Food",
+            "valueForMoney": "Value For Money",
+            "service": "Service",
+            "environment": "Environment"
         },
         "buttons": {
             "export": "Export"
         },
-        "filters":{
+        "filters": {
             "all": "All",
             "date": "Date"
         },
-        "view":{
-            "valueForMoney":"Value For Money",
+        "view": {
+            "valueForMoney": "Value For Money",
             "title": "View Review",
-            "name"  : "Name",
-            "email" : "Email",
-            "date"  : "Date",
+            "name": "Name",
+            "email": "Email",
+            "date": "Date",
             "comment": "Comment",
-            "food":"Food Rating",
-            "service":"Service Rating",
-            "total":"Total Rating",
-            "environment":"Environment Rating"
-
+            "food": "Food Rating",
+            "service": "Service Rating",
+            "total": "Total Rating",
+            "environment": "Environment Rating",
+            "noComment": "No comment provided"
         }
     },
     "messages": {
         "title": "Messages",
-        "respond":{
+        "respond": {
             "title": "Respond to",
             "originalMessage": "Original message",
             "placeholder": "Type your response here...",
@@ -471,20 +465,20 @@
             "received": "Received"
         },
         "noMessages": "No messages found",
-        "filters":{
+        "filters": {
             "all": "All",
             "date": "Date"
         },
-        "view":{
+        "view": {
             "title": "View Message",
-            "name"  : "Name",
-            "email" : "Email",
-            "date"  : "Date",
+            "name": "Name",
+            "email": "Email",
+            "date": "Date",
             "subject": "Subject",
             "message": "Message"
         }
     },
-    "supportPage":{
+    "supportPage": {
         "title": "Support Center",
         "description": "How can we help you today?",
         "faq": "Frequently Asked Questions",
@@ -494,11 +488,11 @@
         "contactUsDescription": "If you have any questions or need assistance, feel free to reach out to us.",
         "contactUsButton": "Contact Support",
         "emailUs": "Email Us",
-        "copy":"Click to copy email address",
+        "copy": "Click to copy email address",
         "emailCopied": "Email copied!",
         "copied": "Email address copied to clipboard"
     },
-    "profile":{
+    "profile": {
         "title": "Profile",
         "editProfile": "Edit Profile",
         "changePassword": "Change Password",
@@ -512,7 +506,7 @@
         "saveChanges": "Save Changes",
         "cancel": "Cancel"
     },
-    "restaurantSelection":{
+    "restaurantSelection": {
         "title": "Choose a Restaurant",
         "description": "Select the restaurant you want to manage",
         "changeUser": "Change User",
@@ -523,7 +517,7 @@
         "noRestaurants": "No restaurants available",
         "contactSupport": "Please contact support if you believe this is an error"
     },
-     "settingsPage": {
+    "settingsPage": {
         "title": "Settings",
         "chooseSettingPrompt": "Choose a setting to modify",
         "menuItems": {
@@ -547,14 +541,14 @@
             "messagingTemplates": "Messaging Templates"
         },
         "messagingTemplates": {
-      "description": "Create and manage templates for automated messages.",
-      "newTemplate": "New Template",
-      "editTemplate": "Edit Template",
-      "templateName": "Template Name",
-      "actions": "Actions",
-      "content": "Content",
-      "dynamicVariables": "Dynamic Variables"
-    },
+            "description": "Create and manage templates for automated messages.",
+            "newTemplate": "New Template",
+            "editTemplate": "Edit Template",
+            "templateName": "Template Name",
+            "actions": "Actions",
+            "content": "Content",
+            "dynamicVariables": "Dynamic Variables"
+        },
         "general": {
             "basicInformationForm": {
                 "title": "Basic Information",
@@ -573,7 +567,6 @@
                     "location": "Location",
                     "avgPrice": "Average Price",
                     "currency": "DH"
-
                 },
                 "buttons": {
                     "cancel": "Cancel",
@@ -581,13 +574,13 @@
                     "saveSubdomain": "Save Subdomain",
                     "addcategory": "Add Category"
                 },
-                "notifications":{
+                "notifications": {
                     "subdomainUpdated": "Subdomain updated successfully",
                     "subdomainUpdateFailed": "Subdomain update failed"
                 }
             }
         },
-        "reviewWidget":{
+        "reviewWidget": {
             "title": "Review Widget",
             "labels": {
                 "title": "Title",
@@ -671,7 +664,7 @@
             },
             "form": {
                 "placeholders": {
-                "areaName": "Area Name"
+                    "areaName": "Area Name"
                 }
             },
             "confirmations": {
@@ -698,7 +691,7 @@
             "placeHolders": {
                 "name": "Occasion Name",
                 "description": "Occasion Description",
-                "color": "Occasion Color"   
+                "color": "Occasion Color"
             },
             "labels": {
                 "noOccasions": "No occasions available",
@@ -732,18 +725,18 @@
             "billingHistory": {
                 "title": "Billing History",
                 "table": {
-                "invoice": "Invoice",
-                "date": "Date",
-                "billingPeriod": "Billing Period",
-                "amount": "Amount",
-                "status": "Status",
-                "actions": "Actions"
+                    "invoice": "Invoice",
+                    "date": "Date",
+                    "billingPeriod": "Billing Period",
+                    "amount": "Amount",
+                    "status": "Status",
+                    "actions": "Actions"
                 },
                 "downloadPDF": "PDF",
                 "noBillingHistory": "No billing history available."
             }
         },
-        "permissions":{
+        "permissions": {
             "title": "Permissions",
             "tableHeaders": {
                 "id": "ID",
@@ -755,8 +748,8 @@
                 "noAssignedRoles": "No assigned roles",
                 "assignedRoles": "Assigned Roles",
                 "selectRole": "Select a role",
-                "role":"Role",
-                "user":"User"
+                "role": "Role",
+                "user": "User"
             },
             "buttons": {
                 "addPermission": "Add Permission",
@@ -788,19 +781,19 @@
             },
             "form": {
                 "placeholders": {
-                "firstName": "First Name",
-                "lastName": "Last Name",
-                "email": "Email",
-                "password": "Password"
+                    "firstName": "First Name",
+                    "lastName": "Last Name",
+                    "email": "Email",
+                    "password": "Password"
                 }
             },
             "confirmations": {
                 "deleteUser": "Are you sure you want to delete this user?"
             }
         },
-        "roles":{
+        "roles": {
             "title": "Roles",
-            "labels":{
+            "labels": {
                 "roleName": "Role Name",
                 "savedRoles": "Saved Roles",
                 "noRolesSaved": "No roles saved",
@@ -824,7 +817,6 @@
                 "update": "Update Role",
                 "deleteRole": "Delete Role",
                 "affectARole": "Affect a role"
-
             }
         },
         "availability": {
@@ -840,11 +832,11 @@
                 "sunday": "SUN"
             },
             "unavailable": "Unavailable",
-            "type":"Type",
+            "type": "Type",
             "from": "From",
             "addSlot": "Add Slot",
-            "cancel":"Cancel",
-            "save":"Save",
+            "cancel": "Cancel",
+            "save": "Save",
             "puffer": "Reservation Duration",
             "addAnotherSlot": "Add another slot",
             "to": "To",
@@ -866,16 +858,16 @@
             "manageWeek": "Manage the whole week",
             "applyToWeek": "Apply to weekly",
             "unavailable": "Unavailable",
-            "type":"Type",
+            "type": "Type",
             "from": "From",
             "addSlot": "Add Slot",
-            "cancel":"Cancel",
-            "save":"Save",
+            "cancel": "Cancel",
+            "save": "Save",
             "puffer": "Reservation Duration",
             "addAnotherSlot": "Add another slot",
             "to": "To"
         },
-        "tags":{
+        "tags": {
             "title": "Tags",
             "showTip": "Show Tip",
             "hideTip": "Hide Tip",
@@ -884,22 +876,22 @@
             "editingTag": "Editing Tag",
             "tip": "Tags are used to categorize your clients, they will be displayed in the clients Pages.",
             "deleteTag": "Are you sure you want to delete this tag?",
-            "placeHolder":"Ex : Vegetarian, Vegan, Gluten Free",
-            "label":"Add a tag",
+            "placeHolder": "Ex : Vegetarian, Vegan, Gluten Free",
+            "label": "Add a tag",
             "buttons": {
                 "save": "Save",
                 "cancelEditing": "Cancel Editing"
             }
         },
-        "features":{
+        "features": {
             "title": "Features",
-            "placeHolder":"Ex : Wifi, Parking, Terrace",
-            "label":"Add a feature",
+            "placeHolder": "Ex : Wifi, Parking, Terrace",
+            "label": "Add a feature",
             "buttons": {
                 "save": "Save"
             }
         },
-        "menu":{
+        "menu": {
             "title": "Menu",
             "buttons": {
                 "addMenu": "Add Category",
@@ -907,14 +899,14 @@
                 "save": "Save",
                 "cancel": "Cancel"
             },
-            "placeHolders":{ 
+            "placeHolders": {
                 "category": "Category",
                 "food": "Food Name",
                 "price": "Price",
                 "dh": "DH"
             }
         },
-        "photos":{
+        "photos": {
             "title": "Photos",
             "buttons": {
                 "uploadPhoto": "Upload Photo",
@@ -932,17 +924,11 @@
                     "description": "Configure restaurant information, occasions, working hours, roles, and other general settings."
                 },
                 "marketplaceSettings": {
-                    "title": "Marketplace Settings", 
+                    "title": "Marketplace Settings",
                     "description": "Manage marketplace configurations, and set up your restaurant's presence on the marketplace."
                 }
             }
         }
-        
-        
-        
-        
-        
-              
     },
     "marketplaceSettings": {
         "title": "Marketplace Settings",
@@ -970,7 +956,7 @@
             "description": "Create and manage special offers, discounts, and promotional campaigns for marketplace customers."
         },
         "reviews": {
-            "title": "Reviews Management", 
+            "title": "Reviews Management",
             "description": "Monitor and respond to customer reviews from the marketplace. Manage your online reputation and customer feedback."
         },
         "extraServices": {
@@ -990,7 +976,7 @@
                 "description": "Basic information, availability, and working hours"
             },
             "customer": {
-                "title": "Customer", 
+                "title": "Customer",
                 "description": "Tags, areas, and customer management"
             },
             "team": {
@@ -1096,286 +1082,286 @@
         }
     },
     "export": {
-    "dateRange": "Date Range",
-    "all": "All Time",
-    "custom": "Custom Range",
-    "startDate": "Start Date",
-    "endDate": "End Date",
-    "filterByRating": "Filter by Rating",
-    "includeRatingStats": "Include Rating Statistics",
-    "asyncGeneration": "Notify me when the export is ready",
-    "notificationEmail": "Notification Email",
-    "title": "Export Data",
-    "isActive": "Active Status",
-    "active": "Active",
-    "inactive": "Inactive",
-    "includeTitleStats": "Include Title Statistics",
-    "statusFilter": "Reservation Status",
-    "reservationSource": "Reservation Source",
-    "includeTableUsageStats": "Include Table Usage Stats",
-    "includeReservationStatusStats": "Include Reservation Status Stats",
-    "includeReservationSourceStats": "Include Reservation Source Stats",
-    "includeAnalytics": "Include Analytics",
-    "analyticsType": "Analytics Type",
-    "summary": "Summary Only",
-    "detailed": "Detailed Analysis",
-    "both": "Both",
-    "includeCharts": "Include Charts",
-    "chartTypes": "Chart Types",
-    "bar": "Bar Charts",
-    "line": "Line Charts",
-    "pie": "Pie Charts",
-    "includeTrends": "Include Trends",
-    "groupBy": "Group Data By",
-    "none": "No Grouping",
-    "day": "Day",
-    "week": "Week",
-    "month": "Month",
-    "ratingFilter": "Filter by Rating",
-    "positive": "Positive (≥ 3.5)",
-    "neutral": "Neutral (2.5-3.4)",
-    "negative": "Negative (< 2.5)",
-    "minRating": "Minimum Rating",
-    "maxRating": "Maximum Rating",
-    "formatOptions": "Format Options",
-    "includeHeaders": "Include Column Headers",
-    "includeStatisticalSummary": "Include Statistical Summary",
-    "includeSentimentAnalysis": "Include Sentiment Analysis",
-    "formatRatings": "Format Ratings As",
-    "decimal": "Decimal (e.g., 4.5)",
-    "stars": "Stars (e.g., ★★★★½)",
-    "percentage": "Percentage (e.g., 90%)",
-    "pdfOptions": "PDF Options",
-    "paperSize": "Paper Size",
-    "orientation": "Orientation",
-    "portrait": "Portrait",
-    "landscape": "Landscape",
-    "includeTableOfContents": "Include Table of Contents",
-    "includeCoverPage": "Include Cover Page",
-    "includeReservations": "Include Reservation History",
-    "reservationDateRange": "Reservation Date Range",
-    "last30": "Last 30 Days",
-    "last90": "Last 90 Days",
-    "reservationStatus": "Reservation Status",
-    "pending": "Pending",
-    "confirmed": "Confirmed",
-    "completed": "Completed",
-    "cancelled": "Cancelled",
-    "includeReservationDetails": "Include Detailed Reservation Info",
-    "reservationFields": "Reservation Fields to Include",
-    "basic": "Basic (Date, Time, Guests)",
-    "customerFilters": "Customer Filters",
-    "visitFrequency": "Visit Frequency",
-    "regular": "Regular (3+ visits)",
-    "occasional": "1-2 visits",
-    "new": "New customers",
-    "lastVisitFilter": "Last Visit",
-    "last365": "Last Year",
-    "before365": "More than a Year Ago",
-    "groupByOption": "Group Customers By",
-    "lastVisit": "Last Visit Period",
-    "includeVisitFrequencyReport": "Include Visit Frequency Report",
-    "includeCustomerRetentionMetrics": "Include Retention Metrics",
-    "contactInfoOptions": "Contact Information Options",
-    "includeEmail": "Include Email Addresses",
-    "includePhone": "Include Phone Numbers",
-    "formatPhoneNumbers": "Format Phone Numbers",
-    "asStored": "As Stored in System",
-    "international": "International Format (+XX)",
-    "local": "Local Format",
-    "markdownNotes": "Format Notes as Markdown",
-    "customerDetailsLayout": "Customer Details Layout",
-    "table": "Table View",
-    "cards": "Card View",
-    "privacyOptions": "Data Privacy Options",
-    "anonymizeData": "Anonymize Personal Data",
-    "includePrivacyStatement": "Include Privacy Statement",
-    "website": "Website Booking",
-    "phone": "Phone Call",
-    "walkIn": "Walk-In",
-    "thirdParty": "Third-Party Platforms",
-    "specificSources": "Select Sources",
-    "opentable": "OpenTable",
-    "resy": "Resy",
-    "yelp": "Yelp",
-    "googleReservations": "Google Reservations",
-    "enhancedStatusFilter": "Reservation Status (Multiple)",
-    "includeConfirmed": "Confirmed",
-    "includePending": "Pending",
-    "includeSeated": "Seated",
-    "includeFulfilled": "Fulfilled",
-    "includeCancelled": "Cancelled",
-    "includeNoShow": "No Show",
-    "enhancedDateFilter": "Advanced Date Filter",
-    "predefined": "Predefined Periods",
-    "relative": "Relative Time Period",
-    "predefinedPeriod": "Select Period",
-    "today": "Today",
-    "yesterday": "Yesterday",
-    "thisWeek": "This Week",
-    "lastWeek": "Last Week",
-    "thisMonth": "This Month",
-    "lastMonth": "Last Month",
-    "thisQuarter": "This Quarter",
-    "lastQuarter": "Last Quarter",
-    "thisYear": "This Year",
-    "lastYear": "Last Year",
-    "customStartDate": "Start Date",
-    "customEndDate": "End Date",
-    "relativePeriod": "Relative Period",
-    "last7days": "Last 7 Days",
-    "last14days": "Last 14 Days",
-    "last30days": "Last 30 Days",
-    "last90days": "Last 90 Days",
-    "last180days": "Last 180 Days",
-    "last365days": "Last 365 Days",
-    "includeVisualizations": "Include Visualizations",
-    "auto": "Automatic (Best Fit)",
-    "heatmap": "Time Heatmap",
-    "multiple": "Multiple Chart Types",
-    "visualizationMetrics": "Visualization Metrics",
-    "reservationCount": "Reservation Count",
-    "guestCount": "Guest Count",
-    "tableUtilization": "Table Utilization",
-    "statusDistribution": "Status Distribution",
-    "sourceDistribution": "Source Distribution",
-    "timeDistribution": "Time Distribution",
-    "includeDataTable": "Include Data Table with Charts",
-    "chartColorScheme": "Chart Color Scheme",
-    "default": "Default Theme",
-    "monochrome": "Monochrome",
-    "colorful": "Colorful",
-    "pastel": "Pastel",
-    "tomorrow": "Tomorrow",
-    "nextWeek": "Next Week",
-    "timeFilter": "Time Filter",
-    "lunch": "Lunch (11:00-15:00)",
-    "dinner": "Dinner (17:00-23:00)",
-    "startTime": "Start Time",
-    "endTime": "End Time",
-    "seated": "Seated",
-    "fulfilled": "Fulfilled",
-    "noShow": "No Show",
-    "includeTableUtilization": "Include Table Utilization",
-    "tableUtilizationFormat": "Table Utilization Format",
-    "hourly": "Hourly Breakdown",
-    "includeTableTurnover": "Include Table Turnover Metrics",
-    "tableFilter": "Filter by Tables",
-    "specificTables": "Select Tables",
-    "guestCountFilter": "Guest Count Filter",
-    "small": "Small (1-2 guests)",
-    "medium": "Medium (3-6 guests)",
-    "large": "Large (7+ guests)",
-    "minGuests": "Minimum Guests",
-    "maxGuests": "Maximum Guests",
-    "date": "Date",
-    "status": "Status",
-    "timeSlot": "Time Slot",
-    "customer": "Customer",
-    "includeCustomerDetails": "Include Customer Details",
-    "customerDetailsLevel": "Customer Details Level",
-    "full": "Full Profile",
-    "includeVisitHistory": "Include Visit History",
-    "includePeakTimeAnalysis": "Include Peak Time Analysis",
-    "includeNoShowAnalysis": "Include No-Show Analysis",
-    "includeCancellationAnalysis": "Include Cancellation Analysis",
-    "includeTableLayout": "Include Table Layout Diagram",
-    "includeDailySchedule": "Include Daily Schedule View",
-    "timeFormat": "Time Format",
-    "24hour": "24-hour (e.g., 14:30)",
-    "12hour": "12-hour (e.g., 2:30 PM)",
-    "dateFormat": "Date Format",
-    "iso": "ISO (YYYY-MM-DD)",
-    "us": "US (MM/DD/YYYY)",
-    "eu": "EU (DD/MM/YYYY)",
-    "highlightDoubleBookings": "Highlight Double Bookings",
-    "includeStaffAssignment": "Include Staff Assignment",
-    "staffAssignmentDetail": "Staff Assignment Detail",
-    "servers": "Servers Only",
-    "fields": {
-      "textPlaceholder": "Enter text...",
-      "numberPlaceholder": "Enter number...",
-      "selectPlaceholder": "Select an option..."
+        "dateRange": "Date Range",
+        "all": "All Time",
+        "custom": "Custom Range",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "filterByRating": "Filter by Rating",
+        "includeRatingStats": "Include Rating Statistics",
+        "asyncGeneration": "Notify me when the export is ready",
+        "notificationEmail": "Notification Email",
+        "title": "Export Data",
+        "isActive": "Active Status",
+        "active": "Active",
+        "inactive": "Inactive",
+        "includeTitleStats": "Include Title Statistics",
+        "statusFilter": "Reservation Status",
+        "reservationSource": "Reservation Source",
+        "includeTableUsageStats": "Include Table Usage Stats",
+        "includeReservationStatusStats": "Include Reservation Status Stats",
+        "includeReservationSourceStats": "Include Reservation Source Stats",
+        "includeAnalytics": "Include Analytics",
+        "analyticsType": "Analytics Type",
+        "summary": "Summary Only",
+        "detailed": "Detailed Analysis",
+        "both": "Both",
+        "includeCharts": "Include Charts",
+        "chartTypes": "Chart Types",
+        "bar": "Bar Charts",
+        "line": "Line Charts",
+        "pie": "Pie Charts",
+        "includeTrends": "Include Trends",
+        "groupBy": "Group Data By",
+        "none": "No Grouping",
+        "day": "Day",
+        "week": "Week",
+        "month": "Month",
+        "ratingFilter": "Filter by Rating",
+        "positive": "Positive (≥ 3.5)",
+        "neutral": "Neutral (2.5-3.4)",
+        "negative": "Negative (< 2.5)",
+        "minRating": "Minimum Rating",
+        "maxRating": "Maximum Rating",
+        "formatOptions": "Format Options",
+        "includeHeaders": "Include Column Headers",
+        "includeStatisticalSummary": "Include Statistical Summary",
+        "includeSentimentAnalysis": "Include Sentiment Analysis",
+        "formatRatings": "Format Ratings As",
+        "decimal": "Decimal (e.g., 4.5)",
+        "stars": "Stars (e.g., ★★★★½)",
+        "percentage": "Percentage (e.g., 90%)",
+        "pdfOptions": "PDF Options",
+        "paperSize": "Paper Size",
+        "orientation": "Orientation",
+        "portrait": "Portrait",
+        "landscape": "Landscape",
+        "includeTableOfContents": "Include Table of Contents",
+        "includeCoverPage": "Include Cover Page",
+        "includeReservations": "Include Reservation History",
+        "reservationDateRange": "Reservation Date Range",
+        "last30": "Last 30 Days",
+        "last90": "Last 90 Days",
+        "reservationStatus": "Reservation Status",
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "includeReservationDetails": "Include Detailed Reservation Info",
+        "reservationFields": "Reservation Fields to Include",
+        "basic": "Basic (Date, Time, Guests)",
+        "customerFilters": "Customer Filters",
+        "visitFrequency": "Visit Frequency",
+        "regular": "Regular (3+ visits)",
+        "occasional": "1-2 visits",
+        "new": "New customers",
+        "lastVisitFilter": "Last Visit",
+        "last365": "Last Year",
+        "before365": "More than a Year Ago",
+        "groupByOption": "Group Customers By",
+        "lastVisit": "Last Visit Period",
+        "includeVisitFrequencyReport": "Include Visit Frequency Report",
+        "includeCustomerRetentionMetrics": "Include Retention Metrics",
+        "contactInfoOptions": "Contact Information Options",
+        "includeEmail": "Include Email Addresses",
+        "includePhone": "Include Phone Numbers",
+        "formatPhoneNumbers": "Format Phone Numbers",
+        "asStored": "As Stored in System",
+        "international": "International Format (+XX)",
+        "local": "Local Format",
+        "markdownNotes": "Format Notes as Markdown",
+        "customerDetailsLayout": "Customer Details Layout",
+        "table": "Table View",
+        "cards": "Card View",
+        "privacyOptions": "Data Privacy Options",
+        "anonymizeData": "Anonymize Personal Data",
+        "includePrivacyStatement": "Include Privacy Statement",
+        "website": "Website Booking",
+        "phone": "Phone Call",
+        "walkIn": "Walk-In",
+        "thirdParty": "Third-Party Platforms",
+        "specificSources": "Select Sources",
+        "opentable": "OpenTable",
+        "resy": "Resy",
+        "yelp": "Yelp",
+        "googleReservations": "Google Reservations",
+        "enhancedStatusFilter": "Reservation Status (Multiple)",
+        "includeConfirmed": "Confirmed",
+        "includePending": "Pending",
+        "includeSeated": "Seated",
+        "includeFulfilled": "Fulfilled",
+        "includeCancelled": "Cancelled",
+        "includeNoShow": "No Show",
+        "enhancedDateFilter": "Advanced Date Filter",
+        "predefined": "Predefined Periods",
+        "relative": "Relative Time Period",
+        "predefinedPeriod": "Select Period",
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "thisWeek": "This Week",
+        "lastWeek": "Last Week",
+        "thisMonth": "This Month",
+        "lastMonth": "Last Month",
+        "thisQuarter": "This Quarter",
+        "lastQuarter": "Last Quarter",
+        "thisYear": "This Year",
+        "lastYear": "Last Year",
+        "customStartDate": "Start Date",
+        "customEndDate": "End Date",
+        "relativePeriod": "Relative Period",
+        "last7days": "Last 7 Days",
+        "last14days": "Last 14 Days",
+        "last30days": "Last 30 Days",
+        "last90days": "Last 90 Days",
+        "last180days": "Last 180 Days",
+        "last365days": "Last 365 Days",
+        "includeVisualizations": "Include Visualizations",
+        "auto": "Automatic (Best Fit)",
+        "heatmap": "Time Heatmap",
+        "multiple": "Multiple Chart Types",
+        "visualizationMetrics": "Visualization Metrics",
+        "reservationCount": "Reservation Count",
+        "guestCount": "Guest Count",
+        "tableUtilization": "Table Utilization",
+        "statusDistribution": "Status Distribution",
+        "sourceDistribution": "Source Distribution",
+        "timeDistribution": "Time Distribution",
+        "includeDataTable": "Include Data Table with Charts",
+        "chartColorScheme": "Chart Color Scheme",
+        "default": "Default Theme",
+        "monochrome": "Monochrome",
+        "colorful": "Colorful",
+        "pastel": "Pastel",
+        "tomorrow": "Tomorrow",
+        "nextWeek": "Next Week",
+        "timeFilter": "Time Filter",
+        "lunch": "Lunch (11:00-15:00)",
+        "dinner": "Dinner (17:00-23:00)",
+        "startTime": "Start Time",
+        "endTime": "End Time",
+        "seated": "Seated",
+        "fulfilled": "Fulfilled",
+        "noShow": "No Show",
+        "includeTableUtilization": "Include Table Utilization",
+        "tableUtilizationFormat": "Table Utilization Format",
+        "hourly": "Hourly Breakdown",
+        "includeTableTurnover": "Include Table Turnover Metrics",
+        "tableFilter": "Filter by Tables",
+        "specificTables": "Select Tables",
+        "guestCountFilter": "Guest Count Filter",
+        "small": "Small (1-2 guests)",
+        "medium": "Medium (3-6 guests)",
+        "large": "Large (7+ guests)",
+        "minGuests": "Minimum Guests",
+        "maxGuests": "Maximum Guests",
+        "date": "Date",
+        "status": "Status",
+        "timeSlot": "Time Slot",
+        "customer": "Customer",
+        "includeCustomerDetails": "Include Customer Details",
+        "customerDetailsLevel": "Customer Details Level",
+        "full": "Full Profile",
+        "includeVisitHistory": "Include Visit History",
+        "includePeakTimeAnalysis": "Include Peak Time Analysis",
+        "includeNoShowAnalysis": "Include No-Show Analysis",
+        "includeCancellationAnalysis": "Include Cancellation Analysis",
+        "includeTableLayout": "Include Table Layout Diagram",
+        "includeDailySchedule": "Include Daily Schedule View",
+        "timeFormat": "Time Format",
+        "24hour": "24-hour (e.g., 14:30)",
+        "12hour": "12-hour (e.g., 2:30 PM)",
+        "dateFormat": "Date Format",
+        "iso": "ISO (YYYY-MM-DD)",
+        "us": "US (MM/DD/YYYY)",
+        "eu": "EU (DD/MM/YYYY)",
+        "highlightDoubleBookings": "Highlight Double Bookings",
+        "includeStaffAssignment": "Include Staff Assignment",
+        "staffAssignmentDetail": "Staff Assignment Detail",
+        "servers": "Servers Only",
+        "fields": {
+            "textPlaceholder": "Enter text...",
+            "numberPlaceholder": "Enter number...",
+            "selectPlaceholder": "Select an option..."
+        },
+        "closeOverlay": "Click to close export modal",
+        "selectFormat": "Select Format",
+        "formatSheet": "Sheet (CSV)",
+        "formatPDF": "PDF",
+        "pdfEngineTitle": "PDF Engine",
+        "pdfEngineStandard": "Standard (Web View)",
+        "pdfEngineAdvanced": "Advanced (Complex Tables)",
+        "pdfEngineStandardDesc": "Best for simple layouts and faster generation",
+        "pdfEngineAdvancedDesc": "Better for complex tables and advanced formatting",
+        "selectColumns": "Select Columns",
+        "selectAll": "Select All",
+        "columnsSelected": "{{count}} column selected",
+        "columnsSelected_plural": "{{count}} columns selected",
+        "customOptions": "Custom Options",
+        "closeButton": "Close",
+        "closeButtonAria": "Close export modal",
+        "exportButton": "Export",
+        "exportingButton": "Exporting...",
+        "exportButtonAria": "Export selected data"
     },
-    "closeOverlay": "Click to close export modal",
-    "selectFormat": "Select Format",
-    "formatSheet": "Sheet (CSV)",
-    "formatPDF": "PDF",
-    "pdfEngineTitle": "PDF Engine",
-    "pdfEngineStandard": "Standard (Web View)",
-    "pdfEngineAdvanced": "Advanced (Complex Tables)",
-    "pdfEngineStandardDesc": "Best for simple layouts and faster generation",
-    "pdfEngineAdvancedDesc": "Better for complex tables and advanced formatting",
-    "selectColumns": "Select Columns",
-    "selectAll": "Select All",
-    "columnsSelected": "{{count}} column selected",
-    "columnsSelected_plural": "{{count}} columns selected",
-    "customOptions": "Custom Options",
-    "closeButton": "Close",
-    "closeButtonAria": "Close export modal",
-    "exportButton": "Export",
-    "exportingButton": "Exporting...",
-    "exportButtonAria": "Export selected data"
-  },
-"blockReservation": {
-    "title": "Block reservations",
-    "loading": "Loading...",
-    "actions": {
-      "close": "Close",
-      "cancel": "Cancel",
-      "changeDate": "Change date",
-      "blockSelectedHours": "BLOCK SELECTED HOURS",
-      "deleteBlock": "Delete block"
+    "blockReservation": {
+        "title": "Block reservations",
+        "loading": "Loading...",
+        "actions": {
+            "close": "Close",
+            "cancel": "Cancel",
+            "changeDate": "Change date",
+            "blockSelectedHours": "BLOCK SELECTED HOURS",
+            "deleteBlock": "Delete block"
+        },
+        "dateRange": {
+            "from": "From",
+            "to": "To"
+        },
+        "form": {
+            "title": "BLOCK NEW RESERVATIONS",
+            "startBlockTime": "START BLOCK TIME",
+            "endBlockTime": "END BLOCK TIME",
+            "requiredField": "This field is required",
+            "selectFloor": "SELECT FLOOR",
+            "selectTable": "SELECT TABLE"
+        },
+        "periodTypes": {
+            "time": "Time",
+            "dateRange": "Date / Date Range"
+        },
+        "blockTypes": {
+            "all": "All",
+            "floor": "Floor",
+            "floors": "Floors",
+            "table": "Table",
+            "tables": "Tables",
+            "allTables": "All tables"
+        },
+        "channels": {
+            "online": "Online",
+            "backOffice": "Back office",
+            "onlineOnly": "Online only",
+            "backOfficeOnly": "Back-Office only",
+            "onlineAndBackOffice": "Online & Back-Office"
+        },
+        "currentlyBlocked": {
+            "title": "CURRENTLY BLOCKED RESERVATIONS",
+            "noBlocked": "No blocked reservations for this date"
+        },
+        "details": {
+            "floors": "Floors",
+            "tables": "Tables"
+        },
+        "confirmDelete": {
+            "title": "Are you sure you want to Delete this blocking rule?"
+        }
     },
-    "dateRange": {
-      "from": "From",
-      "to": "To"
-    },
-    "form": {
-      "title": "BLOCK NEW RESERVATIONS",
-      "startBlockTime": "START BLOCK TIME",
-      "endBlockTime": "END BLOCK TIME",
-      "requiredField": "This field is required",
-      "selectFloor": "SELECT FLOOR",
-      "selectTable": "SELECT TABLE"
-    },
-    "periodTypes": {
-      "time": "Time",
-      "dateRange": "Date / Date Range"
-    },
-    "blockTypes": {
-      "all": "All",
-      "floor": "Floor",
-      "floors": "Floors",
-      "table": "Table",
-      "tables": "Tables",
-      "allTables": "All tables"
-    },
-    "channels": {
-      "online": "Online",
-      "backOffice": "Back office",
-      "onlineOnly": "Online only",
-      "backOfficeOnly": "Back-Office only",
-      "onlineAndBackOffice": "Online & Back-Office"
-    },
-    "currentlyBlocked": {
-      "title": "CURRENTLY BLOCKED RESERVATIONS",
-      "noBlocked": "No blocked reservations for this date"
-    },
-    "details": {
-      "floors": "Floors",
-      "tables": "Tables"
-    },
-    "confirmDelete": {
-      "title": "Are you sure you want to Delete this blocking rule?"
-    }
-  },
-    "extra":{
+    "extra": {
         "title": "Widget",
         "activated": "Activated",
         "disactivated": "Disactivated"
     },
-    "reservationWidget":{
+    "reservationWidget": {
         "page": {
             "title": "Tabla | Taste Morocco's best"
         },
@@ -1476,7 +1462,7 @@
             "firstName": "First Name",
             "firstNamePlaceholder": "Enter your first name",
             "firstNameRequired": "First name is required",
-            "lastName": "Last Name", 
+            "lastName": "Last Name",
             "lastNamePlaceholder": "Enter your last name",
             "lastNameRequired": "Last name is required",
             "address": "Address",
@@ -1496,9 +1482,10 @@
             "amountToPay": "Amount to Pay",
             "reservationNumber": "Reservation Number",
             "preparingPayment": "Preparing payment...",
-            "paymentNotice": "Your reservation has been created. You cannot modify the details after this step. Please proceed to complete the payment.",
             "cancelPayment": "Skip Payment",
-            "proceedToPayment": "Proceed to Payment"
+            "proceedToPayment": "Proceed to Payment",
+            "paymentNoticeTitle": "Prepayment is required",
+            "paymentNoticeDescription": "A prepayment is required for this reservation."
         },
         "confirmation": {
             "title": "Confirm Your Information",
@@ -1528,165 +1515,186 @@
             "description": "Online reservations are currently unavailable. Please contact the restaurant directly."
         },
         "errors": {
-            "serverError": "Something went wrong. Please try again or contact the restaurant directly."
+            "serverError": "Something went wrong. Please try again or contact the restaurant directly.",
+            "paymentInitiationFailed": "Payment initiation failed",
+            "paymentDetailsError": "Could not process payment details. Please try again."
         },
         "footer": {
-            "copyright": "© {{year}} Tabla. All rights reserved.",
             "poweredBy": "Powered by"
         },
         "contact": {
-            "followUs": "Contact & Follow Us",
-            "phone": "Call",
-            "email": "Email"
+            "whatsapp": "WhatsApp"
         }
     },
-  "modifyReservation": {
-    "page": {
-      "titlePreview": "Tabla | Taste Morocco's best",
-      "titleModify": "Modify Your Reservation | Tabla",
-      "titleContact": "Contact Us | Tabla",
-      "titleError": "Error | Tabla"
+    "modifyReservation": {
+        "page": {
+            "titlePreview": "Tabla | Taste Morocco's best",
+            "titleModify": "Modify Your Reservation | Tabla",
+            "titleContact": "Contact Us | Tabla",
+            "titleError": "Error | Tabla"
+        },
+        "common": {
+            "restaurant": "Restaurant",
+            "restaurantImage": "Restaurant image",
+            "toggleDarkMode": "Toggle dark mode",
+            "back": "Back"
+        },
+        "error": {
+            "title": "You can't modify your reservation",
+            "description": "Something went wrong, you might have already fulfilled a modification or canceled your reservation"
+        },
+        "preview": {
+            "title": "Your reservation details",
+            "specialRequest": "Special Request",
+            "allergies": "Allergies",
+            "occasion": "Occasion",
+            "areas": "Areas",
+            "date": "Date",
+            "time": "Time",
+            "guests": "Guests",
+            "modifyButton": "Modify",
+            "cancelButton": "Cancel",
+            "sendMessage": "Send a message",
+            "messageSent": "you already sent a message"
+        },
+        "modify": {
+            "title": "Modify your reservation",
+            "specialRequestPlaceholder": "Special request",
+            "allergiesPlaceholder": "Allergies",
+            "areas": "Areas",
+            "selectOccasion": "Select an occasion",
+            "date": "Date",
+            "time": "Time",
+            "guests": "Guests",
+            "confirmButton": "Confirm"
+        },
+        "contact": {
+            "title": "Send a message",
+            "messagePlaceholder": "Type your message here...",
+            "sendButton": "Send",
+            "successTitle": "Message Sent Successfully",
+            "successMessage": "We've received your message and will get back to you shortly.",
+            "backToReservation": "Back to Reservation"
+        },
+        "cancel": {
+            "keepReservation": "No, keep reservation",
+            "confirmMessage": "Are you sure you want to cancel this reservation? This action cannot be undone."
+        }
     },
-    "common": {
-      "restaurant": "Restaurant",
-      "restaurantImage": "Restaurant image",
-      "toggleDarkMode": "Toggle dark mode",
-      "back": "Back"
+    "reviewPage": {
+        "page": {
+            "title": "Leave a Review | Tabla"
+        },
+        "common": {
+            "toggleDarkMode": "Toggle dark mode",
+            "restaurantAlt": "Restaurant"
+        },
+        "error": {
+            "title": "Error!"
+        },
+        "ratings": {
+            "service": "Service",
+            "ambiance": "Ambiance",
+            "food": "Food",
+            "valueForMoney": "Value for money"
+        },
+        "form": {
+            "reviewPlaceholder": "Write your review here",
+            "submitButton": "Send Review"
+        },
+        "success": {
+            "title": "Thank you for your review!",
+            "message": "Your review has been submitted successfully. We appreciate your feedback and will use it to improve our service."
+        }
     },
-    "error": {
-      "title": "You can't modify your reservation",
-      "description": "Something went wrong, you might have already fulfilled a modification or canceled your reservation"
-    },
-    "preview": {
-      "title": "Your reservation details",
-      "specialRequest": "Special Request",
-      "allergies": "Allergies",
-      "occasion": "Occasion",
-      "areas": "Areas",
-      "date": "Date",
-      "time": "Time",
-      "guests": "Guests",
-      "modifyButton": "Modify",
-      "cancelButton": "Cancel",
-      "sendMessage": "Send a message",
-      "messageSent": "you already sent a message"
-    },
-    "modify": {
-      "title": "Modify your reservation",
-      "specialRequestPlaceholder": "Special request",
-      "allergiesPlaceholder": "Allergies",
-      "areas": "Areas",
-      "selectOccasion": "Select an occasion",
-      "date": "Date",
-      "time": "Time",
-      "guests": "Guests",
-      "confirmButton": "Confirm"
-    },
-    "contact": {
-      "title": "Send a message",
-      "messagePlaceholder": "Type your message here...",
-      "sendButton": "Send",
-      "successTitle": "Message Sent Successfully",
-      "successMessage": "We've received your message and will get back to you shortly.",
-      "backToReservation": "Back to Reservation"
-    },
-    "cancel": {
-      "keepReservation": "No, keep reservation",
-      "confirmMessage": "Are you sure you want to cancel this reservation? This action cannot be undone."
-    }
-  },
-  "reviewPage": {
-    "page": {
-      "title": "Leave a Review | Tabla"
-    },
-    "common": {
-      "toggleDarkMode": "Toggle dark mode",
-      "restaurantAlt": "Restaurant"
-    },
-    "error": {
-      "title": "Error!"
-    },
-    "ratings": {
-      "service": "Service",
-      "ambiance": "Ambiance",
-      "food": "Food",
-      "valueForMoney": "Value for money"
-    },
-    "form": {
-      "reviewPlaceholder": "Write your review here",
-      "submitButton": "Send Review"
-    },
-    "success": {
-      "title": "Thank you for your review!",
-      "message": "Your review has been submitted successfully. We appreciate your feedback and will use it to improve our service."
-    }
-  },
-  "calendarPopup":{
-    "months":{
-        "january": "January",
-        "february": "February",
-        "march": "March",
-        "april": "April",
-        "may": "May",
-        "june": "June",
-        "july": "July",
-        "august": "August",
-        "september": "September",
-        "october": "October",
-        "november": "November",
-        "december": "December"
-    },
-    "days":{
-        "sunday": "Sun",
-        "monday": "Mon",
-        "tuesday": "Tue",
-        "wednesday": "Wed",
-        "thursday": "Thu",
-        "friday": "Fri",
-        "saturday": "Sat"
-    },
-    "labels":{
-        "selectedRange": "Selected Range"
-    },
-    "buttons":{
-        "confirm": "Confirm",
-        "cancel": "Cancel"
-    }
-  },
-  "reservationProcess":{
-    "date": "Date",
-    "time": "Time",
-    "guests": "Guests",
-    "selectDate": "Select a Date",
-    "hasBeenSelected": "has been selected",
-    "haveBeenSelected": "have been selected",
-    "chooseNumberOfGuests": "Choose number of guests",
-    "orEnterNumberOfGuests": "or enter number of guests",
-    "confirm": "Confirm",
-    "availableTimes": "Available Times",
-    "at": "at",
-    "for": "for",
-    "yourReservationIsSetFor": "Your reservation is set for",
-    "common": {
-        "cancel": "Cancel",
-        "add": "Add",
-        "update": "Update",
-        "delete": "Delete",
-        "active": "Active",
-        "inactive": "Inactive",
-        "optional": "Optional",
+    "calendarPopup": {
+        "months": {
+            "january": "January",
+            "february": "February",
+            "march": "March",
+            "april": "April",
+            "may": "May",
+            "june": "June",
+            "july": "July",
+            "august": "August",
+            "september": "September",
+            "october": "October",
+            "november": "November",
+            "december": "December"
+        },
         "days": {
-            "sunday": "Sunday",
-            "monday": "Monday",
-            "tuesday": "Tuesday",
-            "wednesday": "Wednesday",
-            "thursday": "Thursday",
-            "friday": "Friday",
-            "saturday": "Saturday"
+            "sunday": "Sun",
+            "monday": "Mon",
+            "tuesday": "Tue",
+            "wednesday": "Wed",
+            "thursday": "Thu",
+            "friday": "Fri",
+            "saturday": "Sat"
+        },
+        "labels": {
+            "selectedRange": "Selected Range"
+        },
+        "buttons": {
+            "confirm": "Confirm",
+            "cancel": "Cancel"
         }
-    }
-  },
-  "common": {
+    },
+    "paymentSuccess": {
+        "title": "Payment Successful!",
+        "description": "Your payment has been processed successfully and your reservation has been confirmed.",
+        "reservationDetails": "Reservation Details",
+        "paidAmount": "Paid Amount:",
+        "newReservation": "Make another reservation",
+        "loading": "Loading reservation details...",
+        "error": "Unable to load reservation details. Please check the URL or contact support."
+    },
+    "paymentFailure": {
+        "title": "Payment Failed!",
+        "description": "We're sorry, but your payment could not be processed. Please try again or start a new reservation.",
+        "failedAmount": "Failed Amount:",
+        "tryAgain": "Try Again",
+        "newReservation": "Make a New Reservation",
+        "error": {
+            "parsingData": "Error parsing cached data:",
+            "paymentDetails": "Could not process payment details. Please try again.",
+            "initiationFailed": "Payment initiation failed. Please try again.",
+            "detailsNotFound": "Reservation details not found. Please start a new reservation."
+        }
+    },
+    "reservationProcess": {
+        "date": "Date",
+        "time": "Time",
+        "guests": "Guests",
+        "selectDate": "Select a Date",
+        "hasBeenSelected": "has been selected",
+        "haveBeenSelected": "have been selected",
+        "chooseNumberOfGuests": "Choose number of guests",
+        "orEnterNumberOfGuests": "or enter number of guests",
+        "confirm": "Confirm",
+        "availableTimes": "Available Times",
+        "at": "at",
+        "for": "for",
+        "yourReservationIsSetFor": "Your reservation is set for",
+        "common": {
+            "cancel": "Cancel",
+            "add": "Add",
+            "update": "Update",
+            "delete": "Delete",
+            "active": "Active",
+            "inactive": "Inactive",
+            "optional": "Optional",
+            "days": {
+                "sunday": "Sunday",
+                "monday": "Monday",
+                "tuesday": "Tuesday",
+                "wednesday": "Wednesday",
+                "thursday": "Thursday",
+                "friday": "Friday",
+                "saturday": "Saturday"
+            }
+        }
+    },
+    "common": {
         "cancel": "Cancel",
         "add": "Add",
         "update": "Update",
@@ -1698,5 +1706,4 @@
         "inactive": "Inactive",
         "optional": "Optional"
     }
-  }
-  
+}

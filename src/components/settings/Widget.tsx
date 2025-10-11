@@ -6,6 +6,7 @@ import 'draft-js/dist/Draft.css';
 import { BaseKey, useList, useUpdate } from '@refinedev/core';
 import TitledQuillEditor from './widgetComp/TitledQuillEditor';
 import BaseBtn from '../common/BaseBtn';
+import InlineQuillEditor from '../common/InlineQuillEditor';
 
 
 
@@ -247,7 +248,7 @@ export default function WidgetConfig() {
     }else{
       formData.append('has_menu', 'false');
     }
-    formData.append('content', JSON.stringify(description));
+    formData.append('content', description);
     formData.append('disabled_title', disabledTitle);
     formData.append('disabled_description', disabledDescription);
     formData.append('max_of_guests_par_reservation', maxGuestsPerReservation?.toString() || '0');
@@ -432,9 +433,11 @@ export default function WidgetConfig() {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
-        <TitledQuillEditor
+        <h2 className="text-lg font-semibold mt-2">{t('settingsPage.widget.description')}</h2>
+        <InlineQuillEditor
           value={description}
           onChange={setDescription}
+          placeholder={t('settingsPage.widget.addDescriptionPlaceholder')}
         />
       </div>}
 

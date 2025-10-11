@@ -2,6 +2,7 @@ import React, { forwardRef, useImperativeHandle, useRef } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useDarkContext } from '../../context/DarkContext';
+// @ts-ignore
 import ImageResize from 'quill-image-resize';
 
 // Allow inline styles for alignment, size, and font
@@ -19,7 +20,7 @@ interface QuillEditorProps {
   placeholder?: string;
 }
 
-const QuillEditor = forwardRef(({ value, onChange, placeholder }: QuillEditorProps, ref) => {
+const InlineQuillEditor = forwardRef(({ value, onChange, placeholder }: QuillEditorProps, ref) => {
   const { darkMode } = useDarkContext();
   const quillInstanceRef = useRef<ReactQuill>(null);
 
@@ -75,4 +76,4 @@ const modules = {
   );
 });
 
-export default QuillEditor;
+export default InlineQuillEditor;

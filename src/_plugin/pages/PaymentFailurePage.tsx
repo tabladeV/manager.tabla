@@ -1,28 +1,45 @@
 "use client"
 import type React from "react"
-import { useCallback, useEffect, useState } from "react"
-import { Link, useLocation } from "react-router-dom"
+import { useCallback, useEffect, useState, memo } from "react"
+import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import Logo from "../../components/header/Logo"
-import { ChevronDown, Facebook, Instagram, Twitter, Phone, Mail, MessageCircle } from "lucide-react"
-import { SunIcon, MoonIcon, CheckIcon } from "../../components/icons"
-import { type BaseRecord } from "@refinedev/core"
-import { format } from "date-fns"
+import { ChevronDown, Facebook, Instagram, Twitter, Phone, Mail, MessageCircle, XCircle, LoaderCircle } from "lucide-react"
+import { SunIcon, MoonIcon } from "../../components/icons"
+import { type BaseRecord, useOne, useCreate } from "@refinedev/core"
 import spanish from "../../assets/spanish.png"
 import arabic from "../../assets/arabic.jpg"
 import english from "../../assets/english.png"
 import french from "../../assets/french.png"
-
-import WidgetReservationProcess from "../../components/reservation/WidgetReservationProcess"
 import { useDateContext } from "../../context/DateContext"
+
+// #region Types
+interface WidgetInfo {
+  image: string;
+  image_2: string;
+  content: string;
+  max_of_guests_par_reservation?: number;
+  dress_code?: string;
+  deposite_amount_for_guest?: number;
+  enable_paymant?: boolean;
+  currency?: string;
+  [key: string]: any;
+}
+
+interface ReservationData {
+  reservationId: number | null;
+  timestamp: number;
+}
 
 interface QuillPreviewProps {
   content: string
   className?: string
 }
+// #endregion
 
-export function QuillPreview({ content, className = "" }: QuillPreviewProps) {
-  // Import Quill styles on the client side for proper rendering
+// #region Child Components
+
+const QuillPreview = memo(({ content, className = "" }: QuillPreviewProps) => {
   useEffect(() => {
     if (typeof window !== "undefined") {
       import("quill/dist/quill.core.css")
@@ -34,10 +51,9 @@ export function QuillPreview({ content, className = "" }: QuillPreviewProps) {
       <div className="prose max-w-none overflow-auto" dangerouslySetInnerHTML={{ __html: content }} />
     </div>
   )
-}
+})
 
-// Language Selector Component
-const LanguageSelector = () => {
+const LanguageSelector = memo(() => {
   const { i18n } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
 
@@ -56,13 +72,11 @@ const LanguageSelector = () => {
     setIsOpen(false)
   }
 
-
-
   return (
-    <div className={`relative `}>
+    <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 p-2 rounded-sm hover:bg-[#f5f5f5] dark:hover:bg-[#333333] transition-colors"
+        className="flex items-center gap-2 p-2 rounded-lg bg-[#f5f5f5] dark:bg-[#333333] bg-opacity-80 hover:bg-[#f5f5f5] dark:hover:bg-[#444444] transition-colors"
         aria-label="Select language"
       >
         <img
@@ -76,10 +90,7 @@ const LanguageSelector = () => {
 
       {isOpen && (
         <>
-          {/* Backdrop */}
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-
-          {/* Dropdown */}
           <div className="absolute right-0 top-full mt-2 bg-white dark:bg-darkthemeitems rounded-lg shadow-lg border border-[#dddddd] dark:border-[#444444] z-50 min-w-[160px]">
             {languages.map((language) => (
               <button
@@ -101,506 +112,363 @@ const LanguageSelector = () => {
       )}
     </div>
   )
-}
+})
+
+const FailureHeader = memo(({ onThemeToggle }: { onThemeToggle: () => void }) => {
+  const { t } = useTranslation()
+  return (
+    <div className="fixed top-0 left-0 right-0 z-50 bg-transparent">
+      <div className="w-full max-w-[800px] lg:max-w-[800px] md:max-w-[600px] mx-auto px-4">
+        <div className="flex items-center justify-between py-4">
+          <button
+            onClick={onThemeToggle}
+            aria-label={t("reservationWidget.common.toggleDarkMode")}
+            className="p-2 rounded-lg bg-[#f5f5f5] dark:bg-[#333333] bg-opacity-80 hover:bg-[#f5f5f5] dark:hover:bg-[#444444]"
+          >
+            <SunIcon size={20} className="dark:hidden text-white drop-shadow-lg" />
+            <MoonIcon size={20} className="hidden dark:block text-white drop-shadow-lg" />
+          </button>
+          <div className="flex items-center gap-4">
+            <LanguageSelector />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+})
+
+const FailureHero = memo(({ widgetInfo }: { widgetInfo: WidgetInfo | undefined }) => {
+  const { t } = useTranslation()
+  return (
+    <div className="fixed w-full h-[80vh] min-h-[500px] overflow-hidden ">
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat blur-[3px] scale-[1.1]"
+        style={{
+          backgroundImage: `url(${widgetInfo?.image_2 || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'})`,
+        }}
+      />
+      <div className="absolute inset-0 bg-black bg-opacity-40" />
+      <div className="absolute inset-0 flex items-center justify-center z-10">
+        {widgetInfo?.image ? (
+          <img
+            src={widgetInfo.image}
+            alt={t("reservationWidget.common.restaurant")}
+            className="h-20 w-auto object-contain mt-[-150px]"
+          />
+        ) : (
+          <Logo className="h-16 mt-[-150px]" nolink={true} />
+        )}
+      </div>
+    </div>
+  )
+})
+
+const FailureContent = memo(({ calculateTotalAmount, onRetry, onNewReservation, isLoading }: { calculateTotalAmount: () => string, onRetry: () => void, onNewReservation: () => void, isLoading: boolean }) => {
+  const { t } = useTranslation()
+  return (
+    <>
+      <div className="flex justify-center mb-6">
+        <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+          <XCircle size={32} className="text-red-600 dark:text-red-400" />
+        </div>
+      </div>
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold text-blacktheme dark:text-textdarktheme mb-2">
+          {t("paymentFailure.title")}
+        </h2>
+        <p className="text-subblack dark:text-textdarktheme/70">
+          {t("paymentFailure.description")}
+        </p>
+      </div>
+      <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+        <div className="flex justify-between items-center">
+          <span className="text-sm font-medium text-red-800 dark:text-red-300">
+            {t("paymentFailure.failedAmount")}
+          </span>
+          <span className="text-sm font-bold text-red-800 dark:text-red-300">
+            {calculateTotalAmount()}
+          </span>
+        </div>
+      </div>
+      <div className="space-y-3">
+        <button
+          onClick={onRetry}
+          disabled={isLoading}
+          className="w-full py-3 px-4 rounded-md font-medium bg-[#88AB61] hover:bg-[#769c4f] text-white transition-colors flex items-center justify-center disabled:opacity-50"
+        >
+          {isLoading ? <LoaderCircle className="animate-spin mr-2" size={18} /> : t("paymentFailure.tryAgain")}
+        </button>
+        <button
+          onClick={onNewReservation}
+          className="w-full py-3 px-4 rounded-md font-medium border border-[#dddddd] dark:border-[#444444] hover:bg-[#f5f5f5] dark:hover:bg-bgdarktheme2 transition-colors"
+        >
+          {t("paymentFailure.newReservation")}
+        </button>
+      </div>
+    </>
+  )
+})
+
+const FailureFooter = memo(() => {
+  const { t } = useTranslation()
+
+  return (
+    <>
+      <div className="px-6 pb-6">
+        <div className="border-t border-[#dddddd] dark:border-[#444444] pt-4">
+          <h3 className="text-lg font-medium mb-4 text-center text-[#333333] dark:text-[#e1e1e1]">
+            {t("reservationWidget.contact.followUs")}
+          </h3>
+          <div className="flex justify-center items-center gap-4 flex-wrap">
+            <a
+              href="tel:+1234567890"
+              className="flex items-center gap-2 p-3 rounded-lg bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#88AB61]/10 dark:hover:bg-[#88AB61]/20 transition-colors group"
+              aria-label="Call us"
+            >
+              <Phone size={20} className="text-[#88AB61] group-hover:text-[#769c4f] transition-colors" />
+              <span className="text-sm font-medium text-[#555555] dark:text-[#cccccc] group-hover:text-[#88AB61] transition-colors">
+                {t("reservationWidget.contact.phone")}
+              </span>
+            </a>
+            <a
+              href="mailto:contact@restaurant.com"
+              className="flex items-center gap-2 p-3 rounded-lg bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#88AB61]/10 dark:hover:bg-[#88AB61]/20 transition-colors group"
+              aria-label="Email us"
+            >
+              <Mail size={20} className="text-[#88AB61] group-hover:text-[#769c4f] transition-colors" />
+              <span className="text-sm font-medium text-[#555555] dark:text-[#cccccc] group-hover:text-[#88AB61] transition-colors">
+                {t("reservationWidget.contact.email")}
+              </span>
+            </a>
+            <a
+              href="https://wa.me/1234567890"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 p-3 rounded-lg bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#25D366]/10 dark:hover:bg-[#25D366]/20 transition-colors group"
+              aria-label="WhatsApp"
+            >
+              <MessageCircle size={20} className="text-[#25D366] group-hover:text-[#1DA851] transition-colors" />
+              <span className="text-sm font-medium text-[#555555] dark:text-[#cccccc] group-hover:text-[#25D366] transition-colors">
+                {t("reservationWidget.contact.whatsapp")}
+              </span>
+            </a>
+          </div>
+          <div className="flex justify-center items-center gap-3 mt-4">
+            <a
+              href="https://facebook.com/restaurant"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-3 rounded-full bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#1877F2]/10 dark:hover:bg-[#1877F2]/20 transition-colors group"
+              aria-label="Facebook"
+            >
+              <Facebook size={20} className="text-[#1877F2] group-hover:text-[#166fe5] transition-colors" />
+            </a>
+            <a
+              href="https://instagram.com/restaurant"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-3 rounded-full bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#E4405F]/10 dark:hover:bg-[#E4405F]/20 transition-colors group"
+              aria-label="Instagram"
+            >
+              <Instagram size={20} className="text-[#E4405F] group-hover:text-[#d63384] transition-colors" />
+            </a>
+            <a
+              href="https://twitter.com/restaurant"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-3 rounded-full bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#1DA1F2]/10 dark:hover:bg-[#1DA1F2]/20 transition-colors group"
+              aria-label="Twitter"
+            >
+              <Twitter size={20} className="text-[#1DA1F2] group-hover:text-[#0d8bd9] transition-colors" />
+            </a>
+          </div>
+        </div>
+      </div>
+      <div className="bg-gray-100 dark:bg-[#88AB61]/20 px-6 py-4 text-center">
+        <p className="text-xs text-gray-500 dark:text-gray-400">
+          {t("reservationWidget.footer.copyright", { year: new Date().getFullYear() })}
+        </p>
+      </div>
+    </>
+  )
+})
+
+// #endregion
 
 const PaymentFailurePage = () => {
-  const { t } = useTranslation()
-  const { pathname } = useLocation()
-
+  const { t, i18n } = useTranslation()
+  const { preferredLanguage } = useDateContext()
+  const navigate = useNavigate();
   const FORM_DATA_KEY = 'tabla_widget_form_data'
+  const RESERVATION_DATA_KEY = 'tabla_widget_reservation_data'
 
+  const [widgetInfo, setWidgetInfo] = useState<WidgetInfo>()
+  const [data, setData] = useState({ reserveDate: "", time: "", guests: 0 })
+  const [reservationData, setReservationData] = useState<ReservationData | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [browserInfo, setBrowserInfo] = useState({ userAgent: "", screenHeight: 0, screenWidth: 0, colorDepth: 0 });
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
+
+  const { mutate: createPaymentInitiation } = useCreate();
+
+  // Fetch general widget data
+  useOne({
+    resource: `api/v1/bo/subdomains/public/cutomer/reservations`,
+    id: "",
+    queryOptions: {
+      enabled: true,
+      onSuccess: (data) => {
+        if (data?.data) {
+          setWidgetInfo(data.data as WidgetInfo);
+        }
+      }
+    }
+  });
+
+  // Load form data from localStorage
   useEffect(() => {
-    document.title = t("reservationWidget.page.title")
-  }, [pathname, t])
+    const cachedFormData = localStorage.getItem(FORM_DATA_KEY);
+    const cachedReservationData = localStorage.getItem(RESERVATION_DATA_KEY);
 
-  const { i18n } = useTranslation()
+    if (cachedFormData && cachedReservationData) {
+      try {
+        const parsedFormData = JSON.parse(cachedFormData);
+        const parsedReservationData = JSON.parse(cachedReservationData);
+        setData(parsedFormData.data || { reserveDate: "", time: "", guests: 0 });
+        setReservationData(parsedReservationData || null);
+      } catch (error) {
+        console.error(t("paymentFailure.error.parsingData"), error);
+        localStorage.removeItem(FORM_DATA_KEY);
+        localStorage.removeItem(RESERVATION_DATA_KEY);
+        navigate('/make/reservation');
+      }
+    } else {
+      // If essential data is missing, redirect to the main reservation page
+      navigate('/make/reservation');
+    }
+    setIsDataLoaded(true);
+  }, [FORM_DATA_KEY, RESERVATION_DATA_KEY, navigate]);
 
-  // Detect browser language and set as default
+
+
+  // Set language from local storage or browser settings
   useEffect(() => {
     const storedLang = localStorage.getItem("preferredLanguage");
-    if (!storedLang) {
-      // Get browser language
-      const browserLang = navigator.language.split('-')[0]; // Get language code only (e.g., 'en' from 'en-US')
+    if (storedLang) {
+      i18n.changeLanguage(storedLang);
+    } else {
+      const browserLang = navigator.language.split('-')[0];
       const supportedLanguages = ['en', 'es', 'fr', 'ar'];
       const defaultLang = supportedLanguages.includes(browserLang) ? browserLang : 'en';
-
       localStorage.setItem("preferredLanguage", defaultLang);
       i18n.changeLanguage(defaultLang);
-    } else {
-      i18n.changeLanguage(storedLang);
     }
   }, [i18n]);
 
-  const [widgetInfo] = useState<BaseRecord>()
-
-  const [step, setStep] = useState(1)
-  const [showProcess, setShowProcess] = useState(false)
-  const [data, setData] = useState({ reserveDate: "", time: "", guests: 0 })
-  const [userInformation, setUserInformation] = useState({
-    firstname: "",
-    lastname: "",
-    email: "",
-    phone: "",
-    preferences: "",
-    allergies: "",
-    occasion: "",
-  })
-
-
-  const [chosenTitle, setChosenTitle] = useState<"mr" | "mrs" | "ms">()
-  const [checkedConditions, setCheckedConditions] = useState<boolean>(false)
-  const [checkedDressCode, setCheckedDressCode] = useState<boolean>(false)
-
-  // Credit card form state
-  // const [cardInfo, setCardInfo] = useState({
-  //   cardNumber: "",
-  //   expiryDate: "",
-  //   cvv: "",
-  //   cardholderName: ""
-  // })
-
-  // const [cardErrors, setCardErrors] = useState({
-  //   cardNumber: "",
-  //   expiryDate: "",
-  //   cvv: "",
-  //   cardholderName: ""
-  // })
-
-  // Billing address form state
-  const [billingInfo, setBillingInfo] = useState({
-    firstName: "",
-    lastName: "",
-    address: "",
-    city: "", // Optional
-    zipCode: "", // Optional
-    country: ""
-  })
-
-
-
-  // Browser/Device detection fields
-  const [browserInfo, setBrowserInfo] = useState({
-    userAgent: "",
-    screenHeight: 0,
-    screenWidth: 0,
-    colorDepth: 0
-  })
-
-  // Save form data to localStorage
-  const saveFormDataToCache = useCallback(() => {
-    const formData = {
-      data,
-      userInformation,
-      chosenTitle,
-      checkedConditions,
-      checkedDressCode,
-      billingInfo,
-      browserInfo,
-      step,
-      timestamp: Date.now()
-    }
-    localStorage.setItem(FORM_DATA_KEY, JSON.stringify(formData))
-  }, [data, userInformation, chosenTitle, checkedConditions, checkedDressCode, billingInfo, browserInfo, step])
-
-  // Load form data from localStorage
-  const loadFormDataFromCache = useCallback(() => {
-    try {
-      const cachedData = localStorage.getItem(FORM_DATA_KEY)
-      if (cachedData) {
-        const parsedData = JSON.parse(cachedData)
-        // Check if data is not older than 24 hours
-        const isDataFresh = Date.now() - parsedData.timestamp < 24 * 60 * 60 * 1000
-        if (isDataFresh) {
-          setData(parsedData.data || { reserveDate: "", time: "", guests: 0 })
-          setUserInformation(parsedData.userInformation || {
-            firstname: "",
-            lastname: "",
-            email: "",
-            phone: "",
-            preferences: "",
-            allergies: "",
-            occasion: "",
-          })
-          setChosenTitle(parsedData.chosenTitle)
-          setCheckedConditions(parsedData.checkedConditions || false)
-          setCheckedDressCode(parsedData.checkedDressCode || false)
-          setBillingInfo(parsedData.billingInfo || {
-            firstName: "",
-            lastName: "",
-            address: "",
-            city: "",
-            zipCode: "",
-            country: ""
-          })
-          setBrowserInfo(parsedData.browserInfo || {
-            userAgent: "",
-            screenHeight: 0,
-            screenWidth: 0,
-            colorDepth: 0
-          })
-          if (parsedData.step && parsedData.step > 1) {
-            setStep(parsedData.step)
-          }
-        } else {
-          // Clear old data
-          localStorage.removeItem(FORM_DATA_KEY)
-        }
-      }
-    } catch (error) {
-      console.error('Error loading cached form data:', error)
-      localStorage.removeItem(FORM_DATA_KEY)
-    }
-  }, [])
-
-  const [dressCodePopupOpen, setDressCodePopupOpen] = useState(false)
-
-  // Load cached data on component mount
+  // Set page title
   useEffect(() => {
-    loadFormDataFromCache()
-  }, [loadFormDataFromCache])
+    document.title = t("reservationWidget.page.title")
+  }, [t])
 
-  // Detect browser info on component mount
+  // Get browser info and initialize dark mode
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setBrowserInfo({
-        userAgent: navigator.userAgent,
-        screenHeight: window.screen.height,
-        screenWidth: window.screen.width,
-        colorDepth: window.screen.colorDepth
-      })
+      setBrowserInfo({ userAgent: navigator.userAgent, screenHeight: window.screen.height, screenWidth: window.screen.width, colorDepth: window.screen.colorDepth });
+      const isDarkMode = localStorage.getItem("darkMode") === "true"
+      if (isDarkMode) {
+        document.documentElement.classList.add("dark")
+      }
     }
   }, [])
-
-  // Save form data whenever relevant state changes
-  useEffect(() => {
-    if (step > 1) {
-      saveFormDataToCache()
-    }
-  }, [data, userInformation, chosenTitle, checkedConditions, checkedDressCode, billingInfo, browserInfo, step, saveFormDataToCache])
-
-
-
-
-
-
-
-
-
-  // Helper function to truncate HTML content
-  const truncateHtmlContent = (htmlContent: string, maxLength = 150) => {
-    // Strip HTML tags and get plain text
-    const plainText = htmlContent.replace(/<[^>]*>/g, '').trim()
-
-    if (plainText.length <= maxLength) {
-      return htmlContent
-    }
-
-    // Truncate plain text and add ellipsis
-    const truncatedText = plainText.substring(0, maxLength).trim() + '...'
-    return truncatedText
-  }
-
-
-  const [showFullDescription, setShowFullDescription] = useState<boolean>(false)
-  const [descriptionToggleDebounce, setDescriptionToggleDebounce] = useState<boolean>(false)
-
-  const handleDescriptionToggle = () => {
-    if (descriptionToggleDebounce) return
-
-    setDescriptionToggleDebounce(true)
-    setShowFullDescription(!showFullDescription)
-
-    setTimeout(() => {
-      setDescriptionToggleDebounce(false)
-    }, 300)
-  }
 
   const toggleDarkMode = () => {
-    document.documentElement.classList.toggle("dark")
-    localStorage.setItem("darkMode", document.documentElement.classList.contains("dark") ? "true" : "false")
+    const isDark = document.documentElement.classList.toggle("dark")
+    localStorage.setItem("darkMode", isDark ? "true" : "false")
   }
 
-  // Initialize dark mode from localStorage
-  useEffect(() => {
-    const isDarkMode = localStorage.getItem("darkMode") === "true"
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark")
-    }
-  }, [])
-
-  const formatedDate = useCallback(() => {
-    if (data.reserveDate) {
-      return format(new Date(data.reserveDate), "MMM-dd")
-    }
-    return ""
-  }, [data.reserveDate])
-
-  const { preferredLanguage } = useDateContext()
-
-  const calculateTotalAmount = () => {
-    if (widgetInfo?.enable_paymant && widgetInfo?.deposite_amount_for_guest) {
+  const calculateTotalAmount = useCallback(() => {
+    if (widgetInfo?.enable_paymant && widgetInfo?.deposite_amount_for_guest && data.guests > 0) {
       return (Number(widgetInfo.deposite_amount_for_guest) * data.guests).toFixed(2) + " " + (widgetInfo?.currency || "MAD")
     }
-    return "0.00"
-  }
+    return "0.00 " + (widgetInfo?.currency || "MAD")
+  }, [widgetInfo, data.guests])
 
+  const submitPaymentForm = (paymentPayload: any) => {
+    if (!paymentPayload?.pay_url || !paymentPayload?.form_data) {
+      setIsLoading(false);
+      setPaymentError(t("paymentFailure.error.paymentDetails"));
+      return;
+    }
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = paymentPayload.pay_url;
+    for (const key in paymentPayload.form_data) {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = key;
+      input.value = String(paymentPayload.form_data[key]);
+      form.appendChild(input);
+    }
+    document.body.appendChild(form);
+    form.submit();
+  };
+
+  const handleRetryPayment = () => {
+    if (!reservationData?.reservationId) {
+      setPaymentError(t("paymentFailure.error.detailsNotFound"));
+      return;
+    }
+    setIsLoading(true);
+    setPaymentError(null);
+    createPaymentInitiation({
+      resource: 'api/v1/bo/payments/initiate/',
+      values: { reservation_id: reservationData.reservationId, BROWSER_JAVA_ENABLED: navigator.javaEnabled?.() ? "true" : "false", BROWSER_COLOR_DEPTH: browserInfo.colorDepth, BROWSER_SCREEN_HEIGHT: browserInfo.screenHeight, BROWSER_SCREEN_WIDTH: browserInfo.screenWidth, USER_AGENT: browserInfo.userAgent, LANGUAGE: i18n.language }
+    }, {
+      onSuccess: (response) => {
+        submitPaymentForm(response.data);
+      },
+      onError: (error: any) => {
+        setIsLoading(false);
+        setPaymentError(error?.message || t("paymentFailure.error.initiationFailed"));
+      }
+    });
+  };
+
+  const handleNewReservation = () => {
+    localStorage.removeItem(FORM_DATA_KEY);
+    localStorage.removeItem(RESERVATION_DATA_KEY);
+    navigate('/make/reservation');
+  };
+
+  if (!isDataLoaded) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-white dark:bg-bgdarktheme2">
+        <LoaderCircle className="animate-spin text-[#88AB61]" size={48} />
+      </div>
+    );
+  }
 
   return (
     <div className={`overflow-y-auto min-h-screen max-h-screen bg-white dark:bg-bgdarktheme2 text-black dark:text-white ${preferredLanguage === "ar" ? "rtl" : ""}`}>
+      <FailureHeader onThemeToggle={toggleDarkMode} />
+      <FailureHero widgetInfo={widgetInfo} />
 
-      {/* Top Header with Language and Theme Controls */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-transparent">
-        <div className="w-full max-w-[800px] lg:max-w-[800px] md:max-w-[600px] mx-auto px-4">
-          <div className="flex items-center justify-between py-4">
-            <button
-              onClick={toggleDarkMode}
-              aria-label={t("reservationWidget.common.toggleDarkMode")}
-              className="p-2 rounded-lg hover:bg-white/10 dark:hover:bg-black/20 transition-colors"
-            >
-              <SunIcon size={20} className="dark:hidden text-white drop-shadow-lg" />
-              <MoonIcon size={20} className="hidden dark:block text-white drop-shadow-lg" />
-            </button>
-            <div className="flex items-center gap-4">
-              <LanguageSelector />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Hero Section with Background Image and Logo */}
-      <div className="fixed w-full h-[80vh] min-h-[500px] overflow-hidden ">
-        {/* Background Image */}
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat blur-[3px] scale-[1.1]"
-          style={{
-            backgroundImage: `url(${widgetInfo?.image_2 || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'})`,
-          }}
-        />
-
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-black bg-opacity-40" />
-
-        {/* Logo positioned and vertically centered */}
-        <div className="absolute inset-0 flex items-center justify-center z-10">
-          {widgetInfo?.image ? (
-            <img
-              src={widgetInfo.image}
-              alt={t("reservationWidget.common.restaurant")}
-              className="h-20 w-auto object-contain mt-[-150px]"
-            />
-          ) : (
-            <Logo className="h-16 mt-[-150px]" nolink={true} />
-          )}
-        </div>
-      </div>
-
-      {/* Main Content Container */}
       <div className="relative pt-[370px]">
-        {/* White Card Container */}
         <div className="w-full max-w-[800px] lg:max-w-[800px] md:max-w-[600px] mx-auto px-0">
           <div className="bg-white dark:bg-darkthemeitems rounded-t-3xl shadow-2xl overflow-hidden">
-
-           
-            {/* Reservation Form Section */}
             <div className="p-6">
-              {(
-                <>
-                  {/* Failure Icon */}
-                  <div className="flex justify-center mb-6">
-                    <div className="w-16 h-16 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center">
-                      <svg className="w-8 h-8 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </div>
-                  </div>
-
-                  {/* Failure Message */}
-                  <div className="text-center mb-6">
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                      Payment Failed!
-                    </h2>
-                    <p className="text-gray-600 dark:text-gray-400">
-                      We're sorry, but your payment could not be processed. Please try again or contact support.
-                    </p>
-                  </div>
-
-                  
-                  {/* Payment Information */}
-                  <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-red-800 dark:text-red-300">
-                        Failed Amount:
-                      </span>
-                      <span className="text-sm font-bold text-red-800 dark:text-red-300">
-                        {calculateTotalAmount()}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="space-y-3">
-                    <Link
-                      to="/make/reservation"
-                      className="w-full py-3 px-4 rounded-md font-medium bg-[#88AB61] hover:bg-[#769c4f] text-white transition-colors flex items-center justify-center"
-                    >
-                      Try Again
-                    </Link>
-                  </div>
-                  
-                </>
+              <FailureContent calculateTotalAmount={calculateTotalAmount} onRetry={handleRetryPayment} onNewReservation={handleNewReservation} isLoading={isLoading} />
+              {paymentError && (
+                <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800 text-center text-sm text-red-700 dark:text-red-300">
+                  {paymentError}
+                </div>
               )}
-
-              
             </div>
-
-            {/* Description Section */}
-            { widgetInfo?.content && (
-              <div className="px-6 pb-6">
-                <div className="text-[#333333] dark:text-[#e1e1e1]">
-                  {showFullDescription ? (
-                    <QuillPreview content={widgetInfo.content} />
-                  ) : (
-                    <p className="text-sm">{truncateHtmlContent(widgetInfo.content, 100)}</p>
-                  )}
-                </div>
-                <button
-                  onClick={handleDescriptionToggle}
-                  className="mt-2 text-[#88AB61] text-sm font-medium hover:underline"
-                >
-                  {showFullDescription ? t("reservationWidget.common.showLess") : t("reservationWidget.common.readMore")}
-                </button>
-              </div>
-            )}
-
-            {/* Social Media & Contact Links */}
-            { (
-              <div className="px-6 pb-6">
-                <div className="border-t border-[#dddddd] dark:border-[#444444] pt-4">
-                  <h3 className="text-lg font-medium mb-4 text-center text-[#333333] dark:text-[#e1e1e1]">
-                    {t("reservationWidget.contact.followUs")}
-                  </h3>
-                  <div className="flex justify-center items-center gap-4 flex-wrap">
-                    {/* Phone */}
-                    <a 
-                      href="tel:+1234567890" 
-                      className="flex items-center gap-2 p-3 rounded-lg bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#88AB61]/10 dark:hover:bg-[#88AB61]/20 transition-colors group"
-                      aria-label="Call us"
-                    >
-                      <Phone size={20} className="text-[#88AB61] group-hover:text-[#769c4f] transition-colors" />
-                      <span className="text-sm font-medium text-[#555555] dark:text-[#cccccc] group-hover:text-[#88AB61] transition-colors">
-                        {t("reservationWidget.contact.phone")}
-                      </span>
-                    </a>
-
-                    {/* Email */}
-                    <a 
-                      href="mailto:contact@restaurant.com" 
-                      className="flex items-center gap-2 p-3 rounded-lg bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#88AB61]/10 dark:hover:bg-[#88AB61]/20 transition-colors group"
-                      aria-label="Email us"
-                    >
-                      <Mail size={20} className="text-[#88AB61] group-hover:text-[#769c4f] transition-colors" />
-                      <span className="text-sm font-medium text-[#555555] dark:text-[#cccccc] group-hover:text-[#88AB61] transition-colors">
-                        {t("reservationWidget.contact.email")}
-                      </span>
-                    </a>
-
-                    {/* WhatsApp */}
-                    <a 
-                      href="https://wa.me/1234567890" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 p-3 rounded-lg bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#25D366]/10 dark:hover:bg-[#25D366]/20 transition-colors group"
-                      aria-label="WhatsApp"
-                    >
-                      <MessageCircle size={20} className="text-[#25D366] group-hover:text-[#1DA851] transition-colors" />
-                      <span className="text-sm font-medium text-[#555555] dark:text-[#cccccc] group-hover:text-[#25D366] transition-colors">
-                        WhatsApp
-                      </span>
-                    </a>
-                  </div>
-                  
-                  <div className="flex justify-center items-center gap-3 mt-4">
-                    {/* Facebook */}
-                    <a 
-                      href="https://facebook.com/restaurant" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="p-3 rounded-full bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#1877F2]/10 dark:hover:bg-[#1877F2]/20 transition-colors group"
-                      aria-label="Facebook"
-                    >
-                      <Facebook size={20} className="text-[#1877F2] group-hover:text-[#166fe5] transition-colors" />
-                    </a>
-
-                    {/* Instagram */}
-                    <a 
-                      href="https://instagram.com/restaurant" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="p-3 rounded-full bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#E4405F]/10 dark:hover:bg-[#E4405F]/20 transition-colors group"
-                      aria-label="Instagram"
-                    >
-                      <Instagram size={20} className="text-[#E4405F] group-hover:text-[#d63384] transition-colors" />
-                    </a>
-
-                    {/* Twitter */}
-                    <a 
-                      href="https://twitter.com/restaurant" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="p-3 rounded-full bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#1DA1F2]/10 dark:hover:bg-[#1DA1F2]/20 transition-colors group"
-                      aria-label="Twitter"
-                    >
-                      <Twitter size={20} className="text-[#1DA1F2] group-hover:text-[#0d8bd9] transition-colors" />
-                    </a>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Footer */}
-            <div className="bg-gray-100 dark:bg-[#88AB61]/20 px-6 py-4 text-center">
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                {t("reservationWidget.footer.copyright", { year: new Date().getFullYear() })}
-              </p>
-            </div>
+            <FailureFooter />
           </div>
         </div>
       </div>
-
-      {/* Modals and Popups */}
-      {showProcess && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-darkthemeitems rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-auto">
-            <WidgetReservationProcess
-              onClick={() => setShowProcess(false)}
-              maxGuests={widgetInfo?.max_of_guests_par_reservation}
-              resData={data}
-              getDateTime={(data) => setData(data)}
-            />
-          </div>
-        </div>
-      )}
-
-      {dressCodePopupOpen && (
-        <div
-          onClick={() => setDressCodePopupOpen(false)}
-          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-        >
-          <div className="bg-white dark:bg-darkthemeitems rounded-2xl p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold mb-2">{t("reservationWidget.form.dressCode")}</h3>
-            <p className="mb-4">{widgetInfo?.dress_code}</p>
-            <div className="flex justify-end">
-              <button
-                type="button"
-                onClick={() => setDressCodePopupOpen(false)}
-                className="py-2 px-4 bg-[#88AB61] text-white rounded-lg hover:bg-[#769c4f]"
-              >
-                {t("reservationWidget.common.close")}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

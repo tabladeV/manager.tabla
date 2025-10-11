@@ -292,9 +292,9 @@
     }
   },
   "calendar": {
-    "pageTitle": "Grille de Calendrier - Tabla | Goûtez le Meilleur du Maroc",
-    "title": "Grille de Calendrier",
-    "viewAgenda": "Voir la Grille",
+    "pageTitle": "Calendrier - Tabla | Goûtez le Meilleur du Maroc",
+    "title": "Calendrier",
+    "viewAgenda": "Voir le Calendrier",
     "navigation": {
       "previousMonth": "Mois précédent",
       "nextMonth": "Mois suivant"
@@ -435,7 +435,8 @@
       "food": "Note Nourriture",
       "service": "Note Service",
       "total": "Note Totale",
-      "environment": "Note Environnement"
+      "environment": "Note Environnement",
+      "noComment": "Aucun commentaire fourni"
     }
   },
   "messages": {
@@ -1479,7 +1480,9 @@
       "preparingPayment": "Préparation du paiement...",
       "paymentNotice": "Votre réservation a été créée. Vous ne pouvez pas modifier les détails après cette étape. Veuillez procéder au paiement.",
       "cancelPayment": "Ignorer le Paiement",
-      "proceedToPayment": "Procéder au Paiement"
+      "proceedToPayment": "Procéder au Paiement",
+      "paymentNoticeTitle": "Un paiement anticipé est requis",
+      "paymentNoticeDescription": "Un paiement anticipé est requis pour cette réservation."
     },
     "confirmation": {
       "title": "Confirmez Vos Informations",
@@ -1509,7 +1512,9 @@
       "description": "Les réservations en ligne sont actuellement indisponibles. Veuillez contacter le restaurant directement."
     },
     "errors": {
-      "serverError": "Quelque chose s'est mal passé. Veuillez réessayer ou contacter le restaurant directement."
+      "serverError": "Quelque chose s'est mal passé. Veuillez réessayer ou contacter le restaurant directement.",
+      "paymentInitiationFailed": "L'initiation du paiement a échoué",
+      "paymentDetailsError": "Impossible de traiter les détails du paiement. Veuillez réessayer."
     },
     "footer": {
       "copyright": "© {{year}} Tabla. Tous droits réservés.",
@@ -1518,7 +1523,8 @@
     "contact": {
       "followUs": "Contact & Suivez-nous",
       "phone": "Appeler",
-      "email": "Email"
+      "email": "Email",
+      "whatsapp": "WhatsApp"
     }
   },
   "modifyReservation": {
@@ -1600,6 +1606,28 @@
     "success": {
       "title": "Merci pour votre avis!",
       "message": "Votre avis a été soumis avec succès. Nous apprécions vos commentaires et les utiliserons pour améliorer notre service."
+    }
+  },
+  "paymentSuccess": {
+    "title": "Paiement Réussi !",
+    "description": "Votre paiement a été traité avec succès et votre réservation a été confirmée.",
+    "reservationDetails": "Détails de la réservation",
+    "paidAmount": "Montant payé :",
+    "newReservation": "Faire une autre réservation",
+    "loading": "Chargement des détails de la réservation...",
+    "error": "Impossible de charger les détails de la réservation. Veuillez vérifier l'URL ou contacter le support."
+  },
+  "paymentFailure": {
+    "title": "Échec du Paiement !",
+    "description": "Nous sommes désolés, mais votre paiement n'a pas pu être traité. Veuillez réessayer ou commencer une nouvelle réservation.",
+    "failedAmount": "Montant échoué :",
+    "tryAgain": "Réessayer",
+    "newReservation": "Faire une Nouvelle Réservation",
+    "error": {
+      "parsingData": "Erreur lors de l'analyse des données en cache :",
+      "paymentDetails": "Impossible de traiter les détails du paiement. Veuillez réessayer.",
+      "initiationFailed": "L'initiation du paiement a échoué. Veuillez réessayer.",
+      "detailsNotFound": "Détails de la réservation non trouvés. Veuillez commencer une nouvelle réservation."
     }
   },
   "calendarPopup":{

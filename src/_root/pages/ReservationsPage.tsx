@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
@@ -1173,6 +1173,8 @@ const ReservationsPage: React.FC = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const [reservationToDelete, setReservationToDelete] = useState<BaseKey>('');
 
+  
+  
   // Reservation progress data
   const [reservationProgressData, setReservationProgressData] = useState<DataTypes>({
     reserveDate: selectedClient?.date || '',
@@ -1188,7 +1190,10 @@ const ReservationsPage: React.FC = () => {
   const { chosenDay } = useDateContext();
 
   const [filterDate, setFilterDate] = useState<boolean>(true);
-
+  
+  const dateGte = useMemo(()=>selectedDateRange.start ? format(selectedDateRange.start, 'yyyy-MM-dd') : (filterDate ? format(chosenDay, 'yyyy-MM-dd') : 'hey'), [selectedDateRange.start, filterDate, chosenDay]);
+  const dateLte = useMemo(()=>selectedDateRange.end ? format(selectedDateRange.end, 'yyyy-MM-dd') : (filterDate ? format(chosenDay, 'yyyy-MM-dd') : 'hey'), [selectedDateRange.end, filterDate, chosenDay]);
+  
   // Data fetching
   const { data, isRefetching: isLoading, isLoading: isFirstLoad, error, refetch: refetchReservations } = useList({
     resource: "api/v1/bo/reservations/",
@@ -1196,13 +1201,26 @@ const ReservationsPage: React.FC = () => {
       { field: "page", operator: "eq", value: page },
       { field: "page_size", operator: "eq", value: 20 },
       { field: "status", operator: "eq", value: focusedFilter },
-      { field: "date_", operator: "gte", value: selectedDateRange.start ? format(selectedDateRange.start, 'yyyy-MM-dd') : filterDate ? format(chosenDay, 'yyyy-MM-dd') : '' },
-      { field: "date_", operator: "lte", value: selectedDateRange.end ? format(selectedDateRange.end, 'yyyy-MM-dd') : filterDate ? format(chosenDay, 'yyyy-MM-dd') : '' },
       { field: "search", operator: "eq", value: searchKeyWord },
-      { field: "ordering", operator: "eq", value: "-id" }
+      { field: "ordering", operator: "eq", value: "-id" },
+      {
+        field: "date",
+        operator: "gte",
+        value: selectedDateRange.start
+          ? format(selectedDateRange.start, 'yyyy-MM-dd')
+          : (filterDate ? format(chosenDay, 'yyyy-MM-dd') : undefined)
+      },
+      {
+        field: "date",
+        operator: "lte",
+        value: selectedDateRange.end
+          ? format(selectedDateRange.end, 'yyyy-MM-dd')
+          : (filterDate ? format(chosenDay, 'yyyy-MM-dd') : undefined)
+      },
     ],
     queryOptions: {
       onSuccess: (data) => {
+        console.log(dateGte, dateLte, page);
         setReservationAPIInfo(data.data as unknown as ReservationType);
       },
       onError: (error) => {
@@ -1782,7 +1800,7 @@ const ReservationsPage: React.FC = () => {
           )))}
         {((reservationAPIInfo?.count || 0) > 1 && filteredReservations?.length > 10) && (<>
           <div className='bottom mx-auto w-full'>
-            <Pagination setPage={(p: number) => setPage(p)} size={20} count={reservationAPIInfo?.count || 0} />
+            <Pagination setPage={(p: number) => setPage(p)} size={20} count={reservationAPIInfo?.count || 0} page={page} />
           </div>
         </>)}
       </div>
@@ -1804,7 +1822,7 @@ const ReservationsPage: React.FC = () => {
           setShowColumnCustomization={setShowColumnCustomization}
           highlightOccasions={highlightOccasions}
         />
-        <Pagination setPage={(page) => { setPage(page) }} size={20} count={count} />
+        <Pagination setPage={(page) => { setPage(page) }} size={20} count={count} page={page} />
       </div>
 
       {/* Date Selection Modal */}

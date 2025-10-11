@@ -49,7 +49,6 @@ interface dataTypes {
   guests: number;
 }
 
-
 const ReservationModal = (props: ReservationModalProps) => {
   const darkMode = localStorage.getItem('darkMode') === 'true';
   const restaurantId = localStorage.getItem('restaurant_id');
@@ -177,6 +176,16 @@ const ReservationModal = (props: ReservationModalProps) => {
 
   const { t } = useTranslation();
 
+
+const sources = [
+                  { value: 'MARKETPLACE', label: t('overview.charts.reservationsSource.legend.MarketPlace') },
+                { value: 'WIDGET', label: t('overview.charts.reservationsSource.legend.Widget') },
+                { value: 'WEBSITE', label: t('overview.charts.reservationsSource.legend.ThirdParty') },
+                { value: 'WALK_IN', label: t('overview.charts.reservationsSource.legend.WalkIn') },
+                { value: 'BACK_OFFICE', label: t('overview.charts.reservationsSource.legend.BackOffice') },
+]
+
+  
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
@@ -534,9 +543,11 @@ const ReservationModal = (props: ReservationModalProps) => {
                     searchable={true}
                     loading={loadingOccasions}
                   />
+                  <label htmlFor='source'>{t('reservations.source')}</label>
                   <select name='source' className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' onChange={(e) => setNewCustomerData({ ...newCustomerData, source: e.target.value })} required>
-                    <option value='BACK_OFFICE'>Back Office</option>
-                    <option value='WALK_IN'>Walk In</option>
+                    {[sources[3], sources[4]].map((source) => (
+                      <option key={source.value} value={source.value}>{source.label}</option>
+                    ))}
                   </select>
                   <div
                     onClick={() => setShowProcess(true)}
@@ -650,10 +661,8 @@ const ReservationModal = (props: ReservationModalProps) => {
 
             />
             <BaseSelect
-              options={[
-                { label: 'Back Office', value: 'BACK_OFFICE' },
-                { label: 'Walk In', value: 'WALK_IN' },
-              ]}
+              placeholder={t('export.reservationSource')}
+              options={[sources[3], sources[4]]}
               value={formData.source}
               onChange={(value) => setFormData((prev) => ({ ...prev, source: value as string }))}
               variant={darkMode ? "filled" : "outlined"}
