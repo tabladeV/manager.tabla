@@ -56,6 +56,16 @@ const EditReservationModal = ({
   const [occasions, setOccasions] = useState<Occasion[]>([])
   const [occasionsAPIInfo, setOccasionsAPIInfo] = useState<OccasionsType>()
 
+  const sources = [
+                  { value: 'MARKETPLACE', label: t('overview.charts.reservationsSource.legend.MarketPlace') },
+                { value: 'WIDGET', label: t('overview.charts.reservationsSource.legend.Widget') },
+                { value: 'WEBSITE', label: t('overview.charts.reservationsSource.legend.ThirdParty') },
+                { value: 'WALK_IN', label: t('overview.charts.reservationsSource.legend.WalkIn') },
+                { value: 'BACK_OFFICE', label: t('overview.charts.reservationsSource.legend.BackOffice') },
+]
+
+
+
   const { isLoading: loadingOccasions, error: occasionsError } = useList({
     resource: 'api/v1/bo/occasions/', // Placeholder API endpoint
     queryOptions: {
@@ -331,13 +341,7 @@ const EditReservationModal = ({
             <div>
               <BaseSelect
                 label={t('reservations.edit.informations.madeBy')}
-                options={[
-                  { label: 'Market Place', value: 'MARKETPLACE' },
-                  { label: 'Widget', value: 'WIDGET' },
-                  { label: 'Website', value: 'WEBSITE' },
-                  { label: 'Back Office', value: 'BACK_OFFICE' },
-                  { label: 'Walk In', value: 'WALK_IN' }
-                ]}
+                options={sources}
                 value={selectedClient.source}
                 onChange={(value) => setSelectedClient({ ...selectedClient, source: value as ReservationSource })}
                 variant={isDarkMode ? "filled" : "outlined"}

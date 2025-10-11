@@ -750,7 +750,7 @@ const ClientInterface = () => {
                         </tbody>
                       </table>
                     </div>
-                    <Pagination count={count} setPage={(page) => setPage(page)} size={pageSize} />
+                    <Pagination count={count} page={page} setPage={(page) => setPage(page)} size={pageSize} />
                   </div>
                 )}
               </div>

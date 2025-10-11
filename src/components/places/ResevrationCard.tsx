@@ -175,8 +175,9 @@ const ResevrationCard = (props: ReservationCardProps) => {
                                         </div>}
                                     </div>}
                                     {itemData.occasion &&
-                                        <div className={`flex gap-1 items-center py-1 px-2 rounded-xl ${itemData?.occasion?.color ? 'text-[' + getTextColor(itemData?.occasion?.color || '#e5e7eb') + ']' : ''} ${itemData.occasion?.color ? '' : ''}`} style={{
+                                        <div className={`flex gap-1 items-center py-1 px-2 rounded-xl ${itemData.occasion?.color ? '' : ''}`} style={{
                                             backgroundColor: itemData.occasion?.color || 'transparent',
+                                            color: itemData?.occasion?.color ? getTextColor(itemData?.occasion?.color || '#0f0f0f') : ''
                                         }}>
                                             <CalendarCheck size={16} />
                                             <p className='font-[600] text-[13px]'>

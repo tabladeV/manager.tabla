@@ -800,7 +800,7 @@ const PlacePage: React.FC = () => {
             </div>
             {((reservationAPIInfo?.count || 0) > 1 && filteredReservations?.length > 100) && (<>
               <div className='bottom mx-auto'>
-                <Pagination setPage={(p: number) => setPage(p)} size={20} count={reservationAPIInfo?.count || 0} />
+                <Pagination page={page} setPage={(p: number) => setPage(p)} size={20} count={reservationAPIInfo?.count || 0} />
               </div>
             </>)}
           </div>

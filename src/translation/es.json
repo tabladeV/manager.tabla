@@ -292,9 +292,9 @@
     }
   },
   "calendar": {
-      "pageTitle": "Cuadrícula de Calendario - Tabla | Prueba lo Mejor de Marruecos",
-      "title": "Cuadrícula de Calendario",
-      "viewAgenda": "Ver Cuadrícula",
+      "pageTitle": "Calendario - Tabla | Prueba lo Mejor de Marruecos",
+      "title": "Calendario",
+      "viewAgenda": "Ver Calendario",
       "navigation": {
         "previousMonth": "Mes anterior",
         "nextMonth": "Mes siguiente"
@@ -321,8 +321,6 @@
         "count_plural": "{{count}} Personas"
       }
     },
-
-
   "clients": {
     "title": "Clientes",
     "searchPlaceholder": "Buscar...",
@@ -437,7 +435,8 @@
       "food": "Calificación de Comida",
       "service": "Calificación de Servicio",
       "total": "Calificación Total",
-      "environment": "Calificación de Ambiente"
+      "environment": "Calificación de Ambiente",
+      "noComment": "No se proporcionó ningún comentario"
     }
   },
   "messages": {
@@ -534,7 +533,17 @@
       "widget": "Widget de Reserva",
       "roles": "Roles",
       "permissions": "Permisos",
-      "services": "Servicios"
+      "services": "Servicios",
+      "messagingTemplates": "Plantillas de Mensajería"
+    },
+    "messagingTemplates": {
+        "description": "Crear y gestionar plantillas para mensajes automatizados.",
+        "newTemplate": "Nueva Plantilla",
+        "editTemplate": "Editar Plantilla",
+        "templateName": "Nombre de la Plantilla",
+        "actions": "Acciones",
+        "content": "Contenido",
+        "dynamicVariables": "Variables Dinámicas"
     },
     "general": {
       "basicInformationForm": {
@@ -1471,7 +1480,9 @@
         "preparingPayment": "Preparando pago...",
         "paymentNotice": "Su reserva ha sido creada. No puede modificar los detalles después de este paso. Por favor proceda a completar el pago.",
         "cancelPayment": "Omitir Pago",
-        "proceedToPayment": "Proceder al Pago"
+        "proceedToPayment": "Proceder al Pago",
+        "paymentNoticeTitle": "Se requiere un pago por adelantado",
+        "paymentNoticeDescription": "Se requiere un pago por adelantado para esta reserva."
       },
       "confirmation": {
         "title": "Confirme Su Información",
@@ -1501,7 +1512,9 @@
         "description": "Las reservas en línea no están disponibles actualmente. Por favor contacte al restaurante directamente."
       },
       "errors": {
-        "serverError": "Algo salió mal. Por favor intente de nuevo o contacte al restaurante directamente."
+        "serverError": "Algo salió mal. Por favor intente de nuevo o contacte al restaurante directamente.",
+        "paymentInitiationFailed": "Falló la iniciación del pago",
+        "paymentDetailsError": "No se pudieron procesar los detalles del pago. Por favor, inténtelo de nuevo."
       },
       "footer": {
         "copyright": "© {{year}} Tabla. Todos los derechos reservados.",
@@ -1510,7 +1523,8 @@
       "contact": {
         "followUs": "Contacto y Síguenos",
         "phone": "Llamar",
-        "email": "Email"
+        "email": "Email",
+        "whatsapp": "WhatsApp"
       }
     },
   "modifyReservation": {
@@ -1594,6 +1608,28 @@
       "message": "Tu reseña ha sido enviada exitosamente. Apreciamos tus comentarios y los usaremos para mejorar nuestro servicio."
     }
   },
+  "paymentSuccess": {
+    "title": "¡Pago Exitoso!",
+    "description": "Su pago ha sido procesado exitosamente y su reserva ha sido confirmada.",
+    "reservationDetails": "Detalles de la Reserva",
+    "paidAmount": "Monto Pagado:",
+    "newReservation": "Hacer otra reserva",
+    "loading": "Cargando detalles de la reserva...",
+    "error": "No se pueden cargar los detalles de la reserva. Por favor, verifique la URL o contacte al soporte."
+  },
+  "paymentFailure": {
+    "title": "¡Pago Fallido!",
+    "description": "Lo sentimos, pero su pago no pudo ser procesado. Por favor, inténtelo de nuevo o inicie una nueva reserva.",
+    "failedAmount": "Monto Fallido:",
+    "tryAgain": "Intentar de Nuevo",
+    "newReservation": "Hacer una Nueva Reserva",
+    "error": {
+      "parsingData": "Error al analizar los datos en caché:",
+      "paymentDetails": "No se pudieron procesar los detalles del pago. Por favor, inténtelo de nuevo.",
+      "initiationFailed": "Falló la iniciación del pago. Por favor, inténtelo de nuevo.",
+      "detailsNotFound": "No se encontraron los detalles de la reserva. Por favor, inicie una nueva reserva."
+    }
+  },
   "calendarPopup":{
     "months": {
       "january": "Enero",
@@ -1659,8 +1695,16 @@
         }
     }
 },
-  "common": {
-    "active":"Activo",
-    "inactive":"Inactivo"
-  }
+"common": {
+    "cancel": "Cancelar",
+    "add": "Añadir",
+    "update": "Actualizar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "Enable": "Activar",
+    "disable": "Desactivar",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "optional": "Opcional"
+}
 }

@@ -15,6 +15,7 @@ import useExportConfig from "../../components/common/config/exportConfig"
 import { httpClient } from "../../services/httpClient"
 import { saveAs } from "file-saver"
 import { useAsyncTaskManager } from "../../hooks/useAsyncTaskManager"
+import { DevOnly } from "../../components/DevOnly"
 
 interface LoadingRowProps {
   isDarkMode: boolean
@@ -502,10 +503,12 @@ const ClientsPage = () => {
       )}
       <div className="flex justify-between items-center">
         <h1>{t("clients.title")}</h1>
-        <button onClick={() => setShowExportModal(true)} className={`dark:text-whitetheme btn-primary`}>
+        <DevOnly>
+          <button onClick={() => setShowExportModal(true)} className={`dark:text-whitetheme btn-primary`}>
           {/* {t('reviews.filters.all')} */}
           {selectedClient?.length ? t('clients.buttons.exportSelected') : t('clients.buttons.exportAll')}
         </button>
+        </DevOnly>
       </div>
       <div className="flex gap-2">
         <div
