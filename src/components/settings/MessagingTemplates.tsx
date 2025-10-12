@@ -22,7 +22,7 @@ const MessagingTemplates = () => {
   const navigate = useNavigate();
   const [templates, setTemplates] = useState<Template[]>([]);
 
-  const { data, isLoading, isError } = useList<TemplatesApiResponse>({
+  const { data, isLoading, isError } = useList({
     resource: "api/v1/bo/templates/",
     pagination: {
         pageSize: 100,
@@ -30,8 +30,8 @@ const MessagingTemplates = () => {
   });
 
   useEffect(() => {
-    if (data?.data?.results) {
-      setTemplates(data.data.results);
+    if ((data?.data as any as TemplatesApiResponse)?.results ) {
+      setTemplates((data?.data as any as TemplatesApiResponse).results);
     }
   }, [data]);
 
