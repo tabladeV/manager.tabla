@@ -547,7 +547,10 @@
             "templateName": "Template Name",
             "actions": "Actions",
             "content": "Content",
-            "dynamicVariables": "Dynamic Variables"
+            "dynamicVariables": "Dynamic Variables",
+            "assetManager": "Asset Manager",
+            "loadingAssets": "Loading assets...",
+            "errorFetchingAssets": "Error fetching assets."
         },
         "general": {
             "basicInformationForm": {
@@ -1520,10 +1523,14 @@
             "paymentDetailsError": "Could not process payment details. Please try again."
         },
         "footer": {
-            "poweredBy": "Powered by"
+            "poweredBy": "Powered by",
+            "copyright": "© {{year}} Table. All rights reserved."
         },
         "contact": {
-            "whatsapp": "WhatsApp"
+            "whatsapp": "WhatsApp",
+            "followUs": "Contact & Follow-us",
+            "phone": "Call",
+            "email": "E-mail"
         }
     },
     "modifyReservation": {
@@ -1704,6 +1711,8 @@
         "disable": "Disable",
         "active": "Active",
         "inactive": "Inactive",
-        "optional": "Optional"
+        "optional": "Optional",
+        "upload": "Upload",
+        "uploading": "Uploading..."
     }
 }

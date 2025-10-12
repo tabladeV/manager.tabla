@@ -543,7 +543,10 @@
             "templateName": "اسم القالب",
             "actions": "الإجراءات",
             "content": "المحتوى",
-            "dynamicVariables": "المتغيرات الديناميكية"
+            "dynamicVariables": "المتغيرات الديناميكية",
+            "assetManager": "مدير الأصول",
+"loadingAssets": "جاري تحميل الأصول...",
+"errorFetchingAssets": "خطأ في جلب الأصول."
         },
         "general": {
             "basicInformationForm": {
@@ -1736,6 +1739,8 @@
         "disable": "تعطيل",
         "active": "نشط",
         "inactive": "غير نشط",
-        "optional": "اختياري"
+        "optional": "اختياري",
+        "upload": "رفع",
+"uploading": "جاري الرفع..."
     }
 }

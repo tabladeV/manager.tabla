@@ -1191,9 +1191,6 @@ const ReservationsPage: React.FC = () => {
 
   const [filterDate, setFilterDate] = useState<boolean>(true);
   
-  const dateGte = useMemo(()=>selectedDateRange.start ? format(selectedDateRange.start, 'yyyy-MM-dd') : (filterDate ? format(chosenDay, 'yyyy-MM-dd') : 'hey'), [selectedDateRange.start, filterDate, chosenDay]);
-  const dateLte = useMemo(()=>selectedDateRange.end ? format(selectedDateRange.end, 'yyyy-MM-dd') : (filterDate ? format(chosenDay, 'yyyy-MM-dd') : 'hey'), [selectedDateRange.end, filterDate, chosenDay]);
-  
   // Data fetching
   const { data, isRefetching: isLoading, isLoading: isFirstLoad, error, refetch: refetchReservations } = useList({
     resource: "api/v1/bo/reservations/",
@@ -1204,23 +1201,22 @@ const ReservationsPage: React.FC = () => {
       { field: "search", operator: "eq", value: searchKeyWord },
       { field: "ordering", operator: "eq", value: "-id" },
       {
-        field: "date",
-        operator: "gte",
+        field: "date__gte",
+        operator: "eq",
         value: selectedDateRange.start
           ? format(selectedDateRange.start, 'yyyy-MM-dd')
-          : (filterDate ? format(chosenDay, 'yyyy-MM-dd') : undefined)
+          : (filterDate ? format(chosenDay, 'yyyy-MM-dd') : '')
       },
       {
-        field: "date",
-        operator: "lte",
+        field: "date__lte",
+        operator: "eq",
         value: selectedDateRange.end
           ? format(selectedDateRange.end, 'yyyy-MM-dd')
-          : (filterDate ? format(chosenDay, 'yyyy-MM-dd') : undefined)
+          : (filterDate ? format(chosenDay, 'yyyy-MM-dd') : '')
       },
     ],
     queryOptions: {
       onSuccess: (data) => {
-        console.log(dateGte, dateLte, page);
         setReservationAPIInfo(data.data as unknown as ReservationType);
       },
       onError: (error) => {
@@ -1479,10 +1475,16 @@ const ReservationsPage: React.FC = () => {
       r.id === idStatusModification ? { ...r, loading: true } : r
     ));
 
+    const targetReservation = reservations.find(r => r.id === idStatusModification);
+    const date = targetReservation ? targetReservation.date : '';
+    const time = targetReservation ? targetReservation.time : '';
+
     upDateReservation({
       id: `${idStatusModification}/`,
       values: {
-        status: pendingStatus
+        status: pendingStatus,
+        date,
+        time
       }
     }, {
       onSuccess() {

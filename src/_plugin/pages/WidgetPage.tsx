@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState, memo } from "react"
 import { Link, useLocation, useParams, useSearchParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import Logo from "../../components/header/Logo"
-import { LoaderCircle, ScreenShareIcon, ChevronDown, Facebook, Instagram, Twitter, Phone, Mail, MessageCircle, BadgeInfo } from "lucide-react"
+import { LoaderCircle, ScreenShareIcon, ChevronDown, Facebook, Instagram, Twitter, Phone, Mail, MessageCircle, BadgeInfo, Globe } from "lucide-react"
 import { SunIcon, MoonIcon, CheckIcon } from "../../components/icons"
 import { type BaseKey, type BaseRecord, useCreate, useList, useOne } from "@refinedev/core"
 import { format } from "date-fns"
@@ -22,6 +22,7 @@ import { useDateContext } from "../../context/DateContext"
 import 'react-international-phone/style.css'
 import { useDebouncedCallback } from "../../hooks/useDebouncedCallback"
 import { useNavigate } from "react-router-dom";
+import { SharedWidgetFooter } from "../../components/reservation/SharedWidgetFooter"
 // #region Child Components
 
 interface QuillPreviewProps {
@@ -404,59 +405,6 @@ const UnavailableStep = memo(({ widgetInfo }: { widgetInfo: any }) => {
     </div>
   )
 })
-
-const WidgetFooter = memo(({ widgetInfo, onDescriptionToggle, showFullDescription, isPaymentRequired, showDescription=false }: any) => {
-  const { t } = useTranslation()
-  const truncateHtmlContent = (htmlContent: string, maxLength = 100) => {
-    const plainText = htmlContent.replace(/<[^>]*>/g, '').trim()
-    return plainText.length <= maxLength ? htmlContent : plainText.substring(0, maxLength).trim() + '...'
-  }
-
-  return (
-    <>
-      {widgetInfo?.content && showDescription && (
-        <div className="px-6 pb-6">
-          <div className="text-[#333333] dark:text-[#e1e1e1]">
-            <QuillPreview content={widgetInfo.content} />
-            {/* {showFullDescription ? <QuillPreview content={widgetInfo.content} /> : <p className="text-sm">{truncateHtmlContent(widgetInfo.content)}</p>} */}
-          </div>
-          {/* <button onClick={onDescriptionToggle} className="mt-2 text-[#88AB61] text-sm font-medium hover:underline">
-            {showFullDescription ? t("reservationWidget.common.showLess") : t("reservationWidget.common.readMore")}
-          </button> */}
-        </div>
-      )}
-      <div className="px-6 pb-6">
-        <div className="border-t border-[#dddddd] dark:border-[#444444] pt-4">
-          <h3 className="text-lg font-medium mb-4 text-center text-[#333333] dark:text-[#e1e1e1]">{t("reservationWidget.contact.followUs")}</h3>
-          <div className="flex justify-center items-center gap-4 flex-wrap">
-            <a href="tel:+1234567890" className="flex items-center gap-2 p-3 rounded-lg bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#88AB61]/10 dark:hover:bg-[#88AB61]/20 transition-colors group" aria-label="Call us"><Phone size={20} className="text-[#88AB61] group-hover:text-[#769c4f]" /><span className="text-sm font-medium text-[#555555] dark:text-[#cccccc] group-hover:text-[#88AB61]">{t("reservationWidget.contact.phone")}</span></a>
-            <a href="mailto:contact@restaurant.com" className="flex items-center gap-2 p-3 rounded-lg bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#88AB61]/10 dark:hover:bg-[#88AB61]/20 transition-colors group" aria-label="Email us"><Mail size={20} className="text-[#88AB61] group-hover:text-[#769c4f]" /><span className="text-sm font-medium text-[#555555] dark:text-[#cccccc] group-hover:text-[#88AB61]">{t("reservationWidget.contact.email")}</span></a>
-            <a href="https://wa.me/1234567890" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-3 rounded-lg bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#25D366]/10 dark:hover:bg-[#25D366]/20 transition-colors group" aria-label="WhatsApp"><MessageCircle size={20} className="text-[#25D366] group-hover:text-[#1DA851]" /><span className="text-sm font-medium text-[#555555] dark:text-[#cccccc] group-hover:text-[#25D366]">{t("reservationWidget.contact.whatsapp")}</span></a>
-          </div>
-          <div className="flex justify-center items-center gap-3 mt-4">
-            <a href="https://facebook.com/restaurant" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#1877F2]/10 dark:hover:bg-[#1877F2]/20 transition-colors group" aria-label="Facebook"><Facebook size={20} className="text-[#1877F2]" /></a>
-            <a href="https://instagram.com/restaurant" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#E4405F]/10 dark:hover:bg-[#E4405F]/20 transition-colors group" aria-label="Instagram"><Instagram size={20} className="text-[#E4405F]" /></a>
-            <a href="https://twitter.com/restaurant" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#1DA1F2]/10 dark:hover:bg-[#1DA1F2]/20 transition-colors group" aria-label="Twitter"><Twitter size={20} className="text-[#1DA1F2]" /></a>
-          </div>
-        </div>
-      </div>
-      <div className="bg-gray-100 dark:bg-[#88AB61]/20 px-6 py-4 text-center space-y-3">
-        <div className="flex flex-col items-center space-y-2">
-        {isPaymentRequired && (<>
-          <p className="text-xs text-gray-600 dark:text-gray-300 font-medium">{t("reservationWidget.footer.poweredBy")}</p>
-          <div className="flex items-center justify-center space-x-4">
-            <img src={visaLogo} alt="Visa" className="h-6 w-auto object-contain rounded border border-gray-300 dark:border-gray-600 bg-white shadow-sm" />
-            <img src={masterCardLogo} alt="MasterCard" className="h-6 w-auto object-contain rounded border border-gray-300 dark:border-gray-600 bg-white shadow-sm" />
-            <img src={cmiLogo} alt="CMI" className="h-6 w-auto object-contain rounded border border-gray-300 dark:border-gray-600 bg-white shadow-sm" />
-          </div>
-          </>)}
-        </div>
-        <p className="text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-600 pt-2">{t("reservationWidget.footer.copyright", { year: new Date().getFullYear() })}</p>
-      </div>
-    </>
-  )
-})
-
 // #endregion
 
 // #region Main Component
@@ -796,7 +744,7 @@ const WidgetPage = () => {
             <div className={`p-6 transition-all duration-300 ease-in-out ${isAnimating ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
               {renderStep()}
             </div>
-            <WidgetFooter widgetInfo={widgetInfo} onDescriptionToggle={handleDescriptionToggle} showFullDescription={showFullDescription} isPaymentRequired={isPaymentRequired(data.guests)} showDescription={step === 1} />
+            <SharedWidgetFooter widgetInfo={widgetInfo} isPaymentRequired={isPaymentRequired(data.guests)} showDescription={step === 1} />
           </div>
         </div>
       </div>
