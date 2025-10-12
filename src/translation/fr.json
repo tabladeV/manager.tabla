@@ -543,7 +543,10 @@
       "templateName": "Nom du Modèle",
       "actions": "Actions",
       "content": "Contenu",
-      "dynamicVariables": "Variables Dynamiques"
+      "dynamicVariables": "Variables Dynamiques",
+      "assetManager": "Gestionnaire de ressources",
+      "loadingAssets": "Chargement des ressources...",
+      "errorFetchingAssets": "Erreur lors de la récupération des ressources."
     },
     "general": {
       "basicInformationForm": {
@@ -1705,7 +1708,9 @@
     "disable": "Désactiver",
     "active": "Actif",
     "inactive": "Inactif",
-    "optional": "Facultatif"
+    "optional": "Facultatif",
+    "upload": "Téléverser",
+    "uploading": "Téléversement en cours..."
 }
 
 }

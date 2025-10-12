@@ -1,50 +1,68 @@
 import { useTranslation } from "react-i18next";
 import { Plus, Trash } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDarkContext } from "../../context/DarkContext";
 import { useNavigate } from "react-router-dom";
+import { useList, useDelete, BaseKey } from "@refinedev/core";
 
 interface Template {
-  id: number;
+  id: BaseKey;
   name: string;
-  content: string;
+  html_content: string;
+}
+
+interface TemplatesApiResponse {
+  results: Template[];
+  count: number;
 }
 
 const MessagingTemplates = () => {
   const { t } = useTranslation();
   const { darkMode } = useDarkContext();
   const navigate = useNavigate();
+  const [templates, setTemplates] = useState<Template[]>([]);
 
-  // Dummy data
-  const [templates, setTemplates] = useState<Template[]>([
-    {
-      id: 1,
-      name: 'Reservation Confirmation',
-      content: 'Hello $$CUSTOMERNAME$$, your reservation for $$RESERVATIONDATE$$ at $$RESERVATIONTIME$$ is confirmed.',
-    },
-    {
-      id: 2,
-      name: 'Reservation Reminder',
-      content: 'Reminder: You have a reservation at $$RESTAURANTNAME$$ tomorrow.',
-    },
-  ]);
+  const { data, isLoading, isError } = useList({
+    resource: "api/v1/bo/templates/",
+    pagination: {
+        pageSize: 100,
+    }
+  });
 
-  const deleteTemplate = (id: number) => {
-    // In a real app, a confirmation dialog should be used here.
-    setTemplates(templates.filter((template) => template.id !== id));
+  useEffect(() => {
+    if ((data?.data as any as TemplatesApiResponse)?.results ) {
+      setTemplates((data?.data as any as TemplatesApiResponse).results);
+    }
+  }, [data]);
+
+  const { mutate: deleteTemplate } = useDelete();
+
+  const handleDelete = (id: BaseKey) => {
+    deleteTemplate({
+      resource: "api/v1/bo/templates/",
+      id,
+    }, {
+      onSuccess: () => {
+        setTemplates((prevTemplates) => prevTemplates.filter((template) => template.id !== id));
+      }
+    });
   };
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error fetching templates.</div>;
+  }
+
   return (
-    // Main container styled like the Users component
     <div className={`w-full rounded-[10px] p-4 ${darkMode ? 'bg-bgdarktheme' : 'bg-white'}`}>
-      
-      {/* Header Section */}
       <div className="flex justify-between items-start mb-6">
         <div>
           <h1 className="text-2xl font-bold">{t('settingsPage.menuItems.messagingTemplates')}</h1>
           <p className="text-sm text-subblack dark:text-softwhitetheme">{t('settingsPage.messagingTemplates.description')}</p>
         </div>
-        {/* Assuming 'btn-primary' is a global style for consistency */}
         <button
           onClick={() => navigate('/settings/messaging-templates/new')}
           className="btn-primary flex items-center gap-2 px-4 py-2"
@@ -54,7 +72,6 @@ const MessagingTemplates = () => {
         </button>
       </div>
 
-      {/* Table Section */}
       <div className="overflow-x-auto w-full">
         <table className="w-full border-collapse text-left text-sm text-gray-500">
           <thead className={`text-gray-900 dark:text-gray-100 ${darkMode ? 'bg-bgdarktheme' : 'bg-white'}`}>
@@ -73,7 +90,6 @@ const MessagingTemplates = () => {
                 key={template.id}
                 className="dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-bgdarktheme2"
               >
-                {/* Clickable cell for editing */}
                 <td
                   className="px-6 py-4 cursor-pointer"
                   onClick={() => navigate(`/settings/messaging-templates/edit/${template.id}`)}
@@ -82,10 +98,9 @@ const MessagingTemplates = () => {
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex justify-end">
-                    {/* Styled delete button */}
                     <button
                       className="btn-secondary bg-softredtheme text-redtheme hover:bg-redtheme hover:text-white p-2 rounded-md"
-                      onClick={() => deleteTemplate(template.id)}
+                      onClick={() => handleDelete(template.id)}
                     >
                       <Trash size={15} />
                     </button>

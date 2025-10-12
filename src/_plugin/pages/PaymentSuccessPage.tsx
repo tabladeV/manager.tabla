@@ -13,6 +13,7 @@ import arabic from "../../assets/arabic.jpg"
 import english from "../../assets/english.png"
 import french from "../../assets/french.png"
 import { useDateContext } from "../../context/DateContext"
+import { SharedWidgetFooter } from "../../components/reservation/SharedWidgetFooter"
 
 // #region Types
 interface ReservationData {
@@ -267,89 +268,6 @@ const PaymentDetails = memo(({ payment }: { payment: ReservationData['payment'] 
   )
 })
 
-const RestaurantInfoFooter = memo(() => {
-  const { t } = useTranslation()
-
-  return (
-    <>
-      <div className="px-6 pb-6">
-        <div className="border-t border-[#dddddd] dark:border-[#444444] pt-4">
-          <h3 className="text-lg font-medium mb-4 text-center text-[#333333] dark:text-[#e1e1e1]">
-            {t("reservationWidget.contact.followUs")}
-          </h3>
-          <div className="flex justify-center items-center gap-4 flex-wrap">
-            <a
-              href="tel:+1234567890"
-              className="flex items-center gap-2 p-3 rounded-lg bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#88AB61]/10 dark:hover:bg-[#88AB61]/20 transition-colors group"
-              aria-label="Call us"
-            >
-              <Phone size={20} className="text-[#88AB61] group-hover:text-[#769c4f] transition-colors" />
-              <span className="text-sm font-medium text-[#555555] dark:text-[#cccccc] group-hover:text-[#88AB61] transition-colors">
-                {t("reservationWidget.contact.phone")}
-              </span>
-            </a>
-            <a
-              href="mailto:contact@restaurant.com"
-              className="flex items-center gap-2 p-3 rounded-lg bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#88AB61]/10 dark:hover:bg-[#88AB61]/20 transition-colors group"
-              aria-label="Email us"
-            >
-              <Mail size={20} className="text-[#88AB61] group-hover:text-[#769c4f] transition-colors" />
-              <span className="text-sm font-medium text-[#555555] dark:text-[#cccccc] group-hover:text-[#88AB61] transition-colors">
-                {t("reservationWidget.contact.email")}
-              </span>
-            </a>
-            <a
-              href="https://wa.me/1234567890"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 p-3 rounded-lg bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#25D366]/10 dark:hover:bg-[#25D366]/20 transition-colors group"
-              aria-label="WhatsApp"
-            >
-              <MessageCircle size={20} className="text-[#25D366] group-hover:text-[#1DA851] transition-colors" />
-              <span className="text-sm font-medium text-[#555555] dark:text-[#cccccc] group-hover:text-[#25D366] transition-colors">
-                {t("reservationWidget.contact.whatsapp")}
-              </span>
-            </a>
-          </div>
-          <div className="flex justify-center items-center gap-3 mt-4">
-            <a
-              href="https://facebook.com/restaurant"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-3 rounded-full bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#1877F2]/10 dark:hover:bg-[#1877F2]/20 transition-colors group"
-              aria-label="Facebook"
-            >
-              <Facebook size={20} className="text-[#1877F2] group-hover:text-[#166fe5] transition-colors" />
-            </a>
-            <a
-              href="https://instagram.com/restaurant"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-3 rounded-full bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#E4405F]/10 dark:hover:bg-[#E4405F]/20 transition-colors group"
-              aria-label="Instagram"
-            >
-              <Instagram size={20} className="text-[#E4405F] group-hover:text-[#d63384] transition-colors" />
-            </a>
-            <a
-              href="https://twitter.com/restaurant"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-3 rounded-full bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#1DA1F2]/10 dark:hover:bg-[#1DA1F2]/20 transition-colors group"
-              aria-label="Twitter"
-            >
-              <Twitter size={20} className="text-[#1DA1F2] group-hover:text-[#0d8bd9] transition-colors" />
-            </a>
-          </div>
-        </div>
-      </div>
-      <div className="bg-gray-100 dark:bg-[#88AB61]/20 px-6 py-4 text-center">
-        <p className="text-xs text-gray-500 dark:text-gray-400">
-          {t("reservationWidget.footer.copyright", { year: new Date().getFullYear() })}
-        </p>
-      </div>
-    </>
-  )
-})
 
 // #endregion
 
@@ -480,7 +398,7 @@ const PaymentSuccessPage = () => {
             <div className="p-6">
               {renderContent()}
             </div>
-            <RestaurantInfoFooter />
+            <SharedWidgetFooter widgetInfo={widgetInfo} isPaymentRequired={true} />
           </div>
         </div>
       </div>

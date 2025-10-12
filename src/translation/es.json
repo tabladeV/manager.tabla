@@ -543,7 +543,10 @@
         "templateName": "Nombre de la Plantilla",
         "actions": "Acciones",
         "content": "Contenido",
-        "dynamicVariables": "Variables Dinámicas"
+        "dynamicVariables": "Variables Dinámicas",
+        "assetManager": "Gestor de Recursos",
+"loadingAssets": "Cargando recursos...",
+"errorFetchingAssets": "Error al cargar los recursos."
     },
     "general": {
       "basicInformationForm": {
@@ -1705,6 +1708,8 @@
     "disable": "Desactivar",
     "active": "Activo",
     "inactive": "Inactivo",
-    "optional": "Opcional"
+    "optional": "Opcional",
+    "upload": "Subir",
+"uploading": "Subiendo..."
 }
 }

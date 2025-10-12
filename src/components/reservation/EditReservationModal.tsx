@@ -388,9 +388,11 @@ const EditReservationModal = ({
                 }))}
                 value={selectedOccasion}
                 onChange={(value) => {
+                  console.log('change occais', value);
                   setSelectedOccasion(value as number);
-                  const selectedOccasionObj = occasions.find(occasion => occasion.id === value) || undefined;
+                  const selectedOccasionObj = occasions.find(occasion => occasion.id === value) || null;
                   setSelectedClient({ ...selectedClient, occasion: selectedOccasionObj })
+                  console.log('selectedOccasionObj', selectedOccasionObj)
                 }}
                 variant="filled"
                 clearable={true}
