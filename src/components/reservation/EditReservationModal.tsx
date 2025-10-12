@@ -391,7 +391,7 @@ const EditReservationModal = ({
                   console.log('change occais', value);
                   setSelectedOccasion(value as number);
                   const selectedOccasionObj = occasions.find(occasion => occasion.id === value) || null;
-                  setSelectedClient({ ...selectedClient, occasion: selectedOccasionObj })
+                  setSelectedClient({ ...selectedClient, occasion: (selectedOccasionObj as any) })
                   console.log('selectedOccasionObj', selectedOccasionObj)
                 }}
                 variant="filled"
