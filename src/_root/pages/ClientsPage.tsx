@@ -290,11 +290,11 @@ const ClientsPage = () => {
     resource: "api/v1/bo/notifications/send_all/",
     mutationOptions: {
       onSuccess: (data) => {
-        openNotification({ type: 'success', message: 'Notification sent to all clients successfully!' });
+        openNotification?.({ type: 'success', message: 'Notification sent to all clients successfully!' });
         setShowNotificationModal(false);
       },
       onError: (error) => {
-        openNotification({ type: 'error', message: `Failed to send notification: ${error.message}` });
+        openNotification?.({ type: 'error', message: `Failed to send notification: ${error.message}` });
       },
     },
   })
@@ -303,11 +303,11 @@ const ClientsPage = () => {
     resource: "api/v1/bo/notifications/",
     mutationOptions: {
       onSuccess: (data) => {
-        openNotification({ type: 'success', message: 'Notification sent successfully!' });
+        openNotification?.({ type: 'success', message: 'Notification sent successfully!' });
         setShowNotificationModal(false);
       },
       onError: (error) => {
-        openNotification({ type: 'error', message: `Failed to send notification: ${error.message}` });
+        openNotification?.({ type: 'error', message: `Failed to send notification: ${error.message}` });
       },
     },
   })
