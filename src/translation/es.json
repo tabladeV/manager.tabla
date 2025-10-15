@@ -164,7 +164,8 @@
       "sendReview": "Enviar Reseña",
       "reviewed": "Reseña enviada",
       "details": "Detalles de la Reserva",
-      "detailsShort": "Fecha/Hora/Huéspedes"
+      "detailsShort": "Fecha/Hora/Huéspedes",
+      "paid": "Pagado"
     },
     "statusLabels": {
       "pending": "Pendiente",

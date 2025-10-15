@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { BaseKey, CanAccess, useCreate, useUpdate } from '@refinedev/core';
-import { CalendarCheck, EllipsisVertical, Mail, Phone, SquarePen, Users } from 'lucide-react';
+import { CalendarCheck, DollarSign, EllipsisVertical, Mail, Phone, SquarePen, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import DraggableItemSkeleton from './DraggableItemSkeleton';
 import { ReservationStatus } from '../common/types/Reservation';
@@ -32,12 +32,13 @@ interface ReservationCardProps {
         onEdit: (id: BaseKey) => void;
         onUpdate: () => void;
         loading: boolean;
+        is_payed?: boolean;
     };
     handleStatus: (status: string) => void;
     showStatusModification: (id: BaseKey) => void;
 }
 
-const ResevrationCard = (props: ReservationCardProps) => {
+const ReservationCard = (props: ReservationCardProps) => {
     const { t } = useTranslation();
     const { darkMode } = useDarkContext();
 
@@ -185,6 +186,12 @@ const ResevrationCard = (props: ReservationCardProps) => {
                                             </p>
                                         </div>
                                     }
+                                    {!itemData.is_payed && (
+                                        <div className="flex gap-1 my-1 text-sm bg-softyellowtheme items-center text-yellowtheme w-fit px-2 py-1 rounded">
+                                            <DollarSign size={14} className={`dark:text-yellowtheme text-yellowtheme`} />
+                                            <span>{t('reservations.tableHeaders.paid')}</span>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className='flex flex-wrap mt-1'>
                                     <CanAccess resource='reservation' action='change' fallback={
@@ -253,4 +260,4 @@ const ResevrationCard = (props: ReservationCardProps) => {
     );
 };
 
-export default ResevrationCard;
+export default ReservationCard;
