@@ -39,7 +39,7 @@ import ActionPopup from "../../components/popup/ActionPopup";
 import { useDateContext } from '../../context/DateContext';
 import DraggableItemSkeleton from '../../components/places/DraggableItemSkeleton';
 import DraggableItem from '../../components/places/DraggableItem';
-import ResevrationCard from '../../components/places/ResevrationCard';
+import ReservationCard from '../../components/places/ReservationCard';
 import { Tag } from 'react-konva';
 import { getTextColor } from '../../utils/helpers';
 import { useAsyncTaskManager } from '../../hooks/useAsyncTaskManager';
@@ -757,11 +757,10 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
               </div>
             }
             
-            {!reservation.payment_method && (
+            {!reservation.is_payed && (
               <div className="flex gap-1 my-1 text-sm bg-softyellowtheme items-center text-yellowtheme w-fit px-2 py-1 rounded">
                 <DollarSign size={14} className={` ${isDarkMode ? 'text-yellowtheme' : 'text-yellowtheme'}`} />
-                <span>{reservation.payment_method}</span>
-                <span>Payed</span>
+                <span>{t('reservations.tableHeaders.paid')}</span>
               </div>
             )}
 
@@ -1783,7 +1782,7 @@ const ReservationsPage: React.FC = () => {
         {(isLoading || isFirstLoad) ?
           <DraggableItemSkeleton count={3} isDarkMode={darkMode} />
           : (filteredReservations.map(item => (
-            <ResevrationCard
+            <ReservationCard
               itemData={{
                 ...item,
                 number_of_guests: parseInt(item.number_of_guests, 10),

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { BaseKey, CanAccess, useCreate, useUpdate } from '@refinedev/core';
-import { CalendarCheck, EllipsisVertical, Mail, Phone, Settings2, SquarePen, Users, X } from 'lucide-react';
+import { CalendarCheck, DollarSign, EllipsisVertical, Mail, Phone, Settings2, SquarePen, Users, X } from 'lucide-react';
 import { useDrag } from 'react-dnd';
 import { useTranslation } from 'react-i18next';
 import DraggableItemSkeleton from './DraggableItemSkeleton';
@@ -32,6 +32,7 @@ interface DraggableItemProps {
     onEdit: (id: BaseKey) => void;
     onUpdate: () => void;
     loading: boolean;
+    is_payed?: boolean;
   };
   canChangeRes: boolean;
 }
@@ -225,6 +226,12 @@ const DraggableItem = (props: DraggableItemProps) => {
                     </div>}
                   </div>}
                 </div>
+                  {!itemData.is_payed && (
+                    <div className="flex gap-1 my-1 text-sm bg-softyellowtheme items-center text-yellowtheme w-fit px-2 py-1 rounded">
+                      <DollarSign size={14} className={`dark:text-yellowtheme text-yellowtheme`} />
+                      <span>{t('reservations.tableHeaders.paid')}</span>
+                    </div>
+                  )}
               </div>
             </div>
             <div className="flex flex-wrap gap-1 w-full mt-1">

@@ -164,7 +164,8 @@
       "sendReview": "Envoyer un Avis",
       "reviewed": "Avis envoyé",
       "details": "Détails de la Réservation",
-      "detailsShort": "Date/Heure/Invités"
+      "detailsShort": "Date/Heure/Invités",
+      "paid": "Payé"
     },
     "statusLabels": {
       "pending": "En attente",

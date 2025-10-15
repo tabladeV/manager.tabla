@@ -164,7 +164,8 @@
             "sendReview": "إرسال مراجعة",
             "reviewed": "تم إرسال المراجعة",
             "details": "تفاصيل الحجز",
-            "detailsShort": "التاريخ/الوقت/الضيوف"
+            "detailsShort": "التاريخ/الوقت/الضيوف",
+            "paid": "مدفوع"
         },
         "statusLabels": {
             "pending": "في الانتظار",
