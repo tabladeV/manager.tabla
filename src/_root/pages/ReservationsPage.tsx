@@ -760,7 +760,7 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
             {!reservation.is_payed && (
               <div className="flex gap-1 my-1 text-sm bg-softyellowtheme items-center text-yellowtheme w-fit px-2 py-1 rounded">
                 <DollarSign size={14} className={` ${isDarkMode ? 'text-yellowtheme' : 'text-yellowtheme'}`} />
-                <span>{t('reservations.tableHeaders.paid')}</span>
+                <span>{t('reservations.tableHeaders.paid')}{reservation.amount && `: ${reservation.amount} DH`} </span>
               </div>
             )}
 
