@@ -33,6 +33,7 @@ interface DraggableItemProps {
     onUpdate: () => void;
     loading: boolean;
     is_payed?: boolean;
+    amount?: string;
   };
   canChangeRes: boolean;
 }
@@ -229,7 +230,7 @@ const DraggableItem = (props: DraggableItemProps) => {
                   {!itemData.is_payed && (
                     <div className="flex gap-1 my-1 text-sm bg-softyellowtheme items-center text-yellowtheme w-fit px-2 py-1 rounded">
                       <DollarSign size={14} className={`dark:text-yellowtheme text-yellowtheme`} />
-                      <span>{t('reservations.tableHeaders.paid')}</span>
+                      <span>{t('reservations.tableHeaders.paid')}{itemData.amount && `: ${itemData.amount} DH`</span>
                     </div>
                   )}
               </div>
