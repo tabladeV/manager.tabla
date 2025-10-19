@@ -373,12 +373,12 @@ const DesignPlaces: React.FC = () => {
               handleAddFloor();
             }}
           >
-            <h1 className="text-3xl font-[700]">Add Place</h1>
+            <h1 className="text-3xl font-[700]">{t("editPlace.buttons.addPlace")}</h1>
             <input
               ref={inputPlaceRef}
               autoFocus={true}
               type="text"
-              placeholder="Place Alias"
+              placeholder={t('editPlace.placeholders.placeAlias')}
               className={`bg-white text-black inputs-unique dark:bg-darkthemeitems dark:text-textdarktheme`}
             />
             <button
@@ -389,7 +389,7 @@ const DesignPlaces: React.FC = () => {
               }}
               className="btn-primary w-full"
             >
-              Add Place
+              {t('editPlace.buttons.save')}
             </button>
           </form>
         </div>

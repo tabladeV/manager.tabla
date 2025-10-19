@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
@@ -6,10 +6,10 @@ import { useDrag, useDrop } from 'react-dnd';
 import { usePreview } from 'react-dnd-preview';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { 
-  Send, User, Mail, Phone, MessageSquare, 
-  Calendar, Clock, Users, LayoutGrid, 
-  ChevronDown, ChevronUp, Info, Edit, 
+import {
+  Send, User, Mail, Phone, MessageSquare,
+  Calendar, Clock, Users, LayoutGrid,
+  ChevronDown, ChevronUp, Info, Edit,
   GripVertical, EyeOff, Eye,
   Pencil,
   CalendarCheck,
@@ -17,7 +17,9 @@ import {
   Trash,
   Trash2,
   Tags,
-  LayoutPanelLeft
+  LayoutPanelLeft,
+  CreditCard,
+  DollarSign
 } from 'lucide-react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import SearchBar from "../../components/header/SearchBar";
@@ -37,8 +39,12 @@ import ActionPopup from "../../components/popup/ActionPopup";
 import { useDateContext } from '../../context/DateContext';
 import DraggableItemSkeleton from '../../components/places/DraggableItemSkeleton';
 import DraggableItem from '../../components/places/DraggableItem';
-import ResevrationCard from '../../components/places/ResevrationCard';
+import ReservationCard from '../../components/places/ReservationCard';
 import { Tag } from 'react-konva';
+import { getTextColor } from '../../utils/helpers';
+import { useAsyncTaskManager } from '../../hooks/useAsyncTaskManager';
+import { httpClient } from '../../services/httpClient';
+import { saveAs } from 'file-saver';
 
 // Types and Interfaces
 export interface ReceivedTables {
@@ -57,7 +63,7 @@ export interface Reservation extends BaseRecord {
   source: ReservationSource;
   number_of_guests: string;
   cancellation_note?: string;
-  cancellation_reason?: {id:number, name:string};
+  cancellation_reason?: { id: number, name: string };
   tableSet?: number;
   area: {
     name: string;
@@ -106,10 +112,10 @@ const DndColumnPreview = () => {
   if (!preview?.display || preview?.itemType !== 'column') {
     return null;
   }
-  
+
   // Create a simplified preview of the column being dragged
   return (
-    <div 
+    <div
       className={`flex items-center justify-between py-3 px-1 border-b  dark:border-gray-700 border-gray-200 opacity-50`}
     >
       <div className="flex items-center">
@@ -178,16 +184,16 @@ interface DraggableColumnItemProps {
   isDarkMode: boolean;
 }
 
-const DraggableColumnItem: React.FC<DraggableColumnItemProps> = ({ 
-  column, 
-  index, 
-  moveColumn, 
-  toggleVisibility, 
-  isDarkMode 
+const DraggableColumnItem: React.FC<DraggableColumnItemProps> = ({
+  column,
+  index,
+  moveColumn,
+  toggleVisibility,
+  isDarkMode
 }) => {
   const { t } = useTranslation();
   const ref = React.useRef<HTMLDivElement>(null);
-  
+
   const [{ isDragging }, drag] = useDrag({
     type: ItemTypes.COLUMN,
     item: { index, type: 'column', ...column },
@@ -198,7 +204,7 @@ const DraggableColumnItem: React.FC<DraggableColumnItemProps> = ({
       dropEffect: 'move'
     }
   });
-  
+
   const [, drop] = useDrop({
     accept: ItemTypes.COLUMN,
     hover: (item: { index: number, type: string }, monitor) => {
@@ -210,13 +216,13 @@ const DraggableColumnItem: React.FC<DraggableColumnItemProps> = ({
       if (dragIndex === hoverIndex) {
         return;
       }
-      
+
       // Calculate position
       const hoverBoundingRect = ref.current.getBoundingClientRect();
       const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
       const clientOffset = monitor.getClientOffset();
       const hoverClientY = clientOffset!.y - hoverBoundingRect.top;
-      
+
       // Only perform the move when the mouse has crossed half of the item's height
       if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
         return;
@@ -224,17 +230,17 @@ const DraggableColumnItem: React.FC<DraggableColumnItemProps> = ({
       if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
         return;
       }
-      
+
       moveColumn(dragIndex, hoverIndex);
       item.index = hoverIndex;
     },
   });
-  
+
   drag(drop(ref));
-  
+
   return (
-    <div 
-      ref={ref} 
+    <div
+      ref={ref}
       className={`flex items-center justify-between py-3 px-1 border-b border-gray-200 dark:border-gray-700 ${isDragging ? 'opacity-50' : 'opacity-100'}`}
     >
       <div className="flex items-center">
@@ -270,8 +276,9 @@ interface ColumnCustomizationModalProps {
   isOpen: boolean;
   onClose: () => void;
   columns: ColumnConfig[];
-  onSave: (columns: ColumnConfig[]) => void;
+  onSave: (config: { columns: ColumnConfig[], highlightOccasions: boolean }) => void;
   isDarkMode: boolean;
+  highlightOccasions: boolean;
 }
 
 const ColumnCustomizationModal: React.FC<ColumnCustomizationModalProps> = ({
@@ -279,17 +286,20 @@ const ColumnCustomizationModal: React.FC<ColumnCustomizationModalProps> = ({
   onClose,
   columns,
   onSave,
-  isDarkMode
+  isDarkMode,
+  highlightOccasions
 }) => {
   const { t } = useTranslation();
   const [localColumns, setLocalColumns] = useState<ColumnConfig[]>([...columns]);
+  const [localHighlightOccasions, setLocalHighlightOccasions] = useState(highlightOccasions);
 
   useEffect(() => {
     setLocalColumns([...columns]);
-  }, [columns]);
+    setLocalHighlightOccasions(highlightOccasions);
+  }, [columns, highlightOccasions]);
 
   const toggleVisibility = useCallback((id: string) => {
-    setLocalColumns(prev => 
+    setLocalColumns(prev =>
       prev.map(col => col.id === id ? { ...col, visible: !col.visible } : col)
     );
   }, []);
@@ -300,7 +310,7 @@ const ColumnCustomizationModal: React.FC<ColumnCustomizationModalProps> = ({
       const newColumns = [...prevColumns];
       newColumns.splice(dragIndex, 1);
       newColumns.splice(hoverIndex, 0, draggedColumn);
-      
+
       // Update order property
       return newColumns.map((col, index) => ({
         ...col,
@@ -310,7 +320,7 @@ const ColumnCustomizationModal: React.FC<ColumnCustomizationModalProps> = ({
   }, []);
 
   const handleSave = () => {
-    onSave(localColumns);
+    onSave({ columns: localColumns, highlightOccasions: localHighlightOccasions });
     onClose();
   };
 
@@ -321,7 +331,21 @@ const ColumnCustomizationModal: React.FC<ColumnCustomizationModalProps> = ({
       <div className="overlay fixed inset-0 bg-black opacity-50" onClick={onClose}></div>
       <div className={`relative w-full max-w-md p-6 rounded-lg shadow-lg ${isDarkMode ? 'bg-bgdarktheme text-white' : 'bg-white text-gray-800'}`}>
         <h3 className="text-xl font-semibold mb-4">{'Customize columns'}</h3>
-        
+        <div className="mb-4 border-b border-gray-200 dark:border-gray-700 pb-4">
+          <h4 className="font-semibold mb-2 text-lg">More Options</h4>
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="highlight-occasions"
+              checked={localHighlightOccasions}
+              onChange={(e) => setLocalHighlightOccasions(e.target.checked)}
+              className="checkbox mr-2"
+            />
+            <label htmlFor="highlight-occasions" className="cursor-pointer">
+              Highlight occasions
+            </label>
+          </div>
+        </div>
         <div className="max-h-96 overflow-y-auto">
           <DndProviderWithColumnPreview>
             {localColumns
@@ -338,16 +362,16 @@ const ColumnCustomizationModal: React.FC<ColumnCustomizationModalProps> = ({
               ))}
           </DndProviderWithColumnPreview>
         </div>
-        
+
         <div className="flex justify-end gap-2 mt-4">
-          <button 
-            onClick={onClose} 
+          <button
+            onClick={onClose}
             className={`btn-secondary`}
           >
             {t('reservations.edit.buttons.cancel')}
           </button>
-          <button 
-            onClick={handleSave} 
+          <button
+            onClick={handleSave}
             className="btn-primary"
           >
             {t('reservations.edit.buttons.save')}
@@ -362,7 +386,7 @@ const ColumnCustomizationModal: React.FC<ColumnCustomizationModalProps> = ({
 const useColumnConfiguration = () => {
   const { t } = useTranslation();
   const STORAGE_KEY = 'tabla_reservation_columns';
-  
+
   // Default column configuration
   const defaultColumns: ColumnConfig[] = [
     { id: 'client', labelKey: 'clients.title', visible: true, order: 0 },
@@ -376,16 +400,16 @@ const useColumnConfiguration = () => {
     { id: 'details', labelKey: 'reservations.tableHeaders.detailsShort', visible: false, order: 8 },
     { id: 'review', labelKey: 'reservations.tableHeaders.review', visible: false, order: 9 }
   ];
-  
+
   const loadColumnsFromStorage = (): ColumnConfig[] => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsedColumns = JSON.parse(stored) as ColumnConfig[];
-        
+
         // Ensure all default columns exist (in case new ones were added)
         const mergedColumns = [...defaultColumns];
-        
+
         // Update existing columns from storage
         parsedColumns.forEach(storedCol => {
           const index = mergedColumns.findIndex(col => col.id === storedCol.id);
@@ -393,16 +417,16 @@ const useColumnConfiguration = () => {
             mergedColumns[index] = storedCol;
           }
         });
-        
+
         return mergedColumns;
       }
     } catch (error) {
       console.error('Error loading column configuration from storage:', error);
     }
-    
+
     return defaultColumns;
   };
-  
+
   const saveColumnsToStorage = (columns: ColumnConfig[]) => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(columns));
@@ -410,7 +434,7 @@ const useColumnConfiguration = () => {
       console.error('Error saving column configuration to storage:', error);
     }
   };
-  
+
   return {
     defaultColumns,
     loadColumnsFromStorage,
@@ -430,13 +454,13 @@ interface ReservationFiltersProps {
   filterDate: boolean;
 }
 
-const ReservationFilters: React.FC<ReservationFiltersProps> = ({ 
-  focusedFilter, 
-  setFocusedFilter, 
-  selectingDay, 
-  setFocusedDate, 
+const ReservationFilters: React.FC<ReservationFiltersProps> = ({
+  focusedFilter,
+  setFocusedFilter,
+  selectingDay,
+  setFocusedDate,
   setDefaultFilter,
-  isDarkMode ,
+  isDarkMode,
   filterDate
 }) => {
   const { t } = useTranslation();
@@ -460,8 +484,8 @@ const ReservationFilters: React.FC<ReservationFiltersProps> = ({
       <button onClick={() => setFocusedFilter('NO_SHOW')} className={`${isDarkMode ? 'text-white' : ''} ${focusedFilter === 'NO_SHOW' ? 'btn-primary' : 'btn'}`}>
         {t('reservations.filters.noShow')}
       </button>
-      <button 
-        className={`gap-2 flex items-center ${isDarkMode ? 'text-whitetheme' : ''} ${selectingDay === '' ? 'btn' : 'btn-primary'}`} 
+      <button
+        className={`gap-2 flex items-center ${isDarkMode ? 'text-whitetheme' : ''} ${selectingDay === '' ? 'btn' : 'btn-primary'}`}
         onClick={() => setFocusedDate(true)}
       >
         {t('reservations.filters.date')}
@@ -501,13 +525,13 @@ interface StatusModifierProps {
   isDarkMode: boolean;
 }
 
-const StatusModifier: React.FC<StatusModifierProps> = ({ 
-  showStatus, 
-  reservation, 
-  idStatusModification, 
-  statusHandler, 
+const StatusModifier: React.FC<StatusModifierProps> = ({
+  showStatus,
+  reservation,
+  idStatusModification,
+  statusHandler,
   setShowStatus,
-  isDarkMode 
+  isDarkMode
 }) => {
   const { t } = useTranslation();
   if (!showStatus || reservation.id !== idStatusModification || reservation.status === 'FULFILLED') {
@@ -515,29 +539,29 @@ const StatusModifier: React.FC<StatusModifierProps> = ({
   }
 
   return (
-    <div className="relative">
+    <div className="absolute">
       <div className="overlay left-0 top-0 w-full h-full opacity-0" onClick={() => setShowStatus(false)}></div>
       <ul className={`absolute z-[400] p-2 rounded-md shadow-md ${isDarkMode ? 'text-white bg-darkthemeitems' : 'bg-white text-subblack'}`}>
-        {reservation.status!=='PENDING' && 
-        <li className={`py-1 px-2 text-bluetheme cursor-pointer`} onClick={() => statusHandler('PENDING')}>
-          {t('reservations.statusLabels.pending')}
-        </li>}
-        {reservation.status!=='APPROVED' && 
-        <li className="py-1 px-2 text-greentheme cursor-pointer" onClick={() => statusHandler('APPROVED')}>
-          {t('reservations.statusLabels.confirmed')}
-        </li>}
-        {reservation.status!=='CANCELED' && 
-        <li className="py-1 px-2 text-redtheme cursor-pointer" onClick={() => statusHandler('CANCELED')}>
-          {t('reservations.statusLabels.cancelled')}
-        </li>}
-        {reservation.status!=='NO_SHOW' && 
-        <li className="py-1 px-2 text-blushtheme cursor-pointer" onClick={() => statusHandler('NO_SHOW')}>
-          {t('reservations.statusLabels.noShow')}
-        </li>}
-        {reservation.status!=='SEATED' && 
-        <li className="py-1 px-2 text-orangetheme cursor-pointer" onClick={() => statusHandler('SEATED')}>
-          {t('reservations.statusLabels.seated')}
-        </li>}
+        {reservation.status !== 'PENDING' &&
+          <li className={`py-1 px-2 text-bluetheme cursor-pointer`} onClick={() => statusHandler('PENDING')}>
+            {t('reservations.statusLabels.pending')}
+          </li>}
+        {reservation.status !== 'APPROVED' &&
+          <li className="py-1 px-2 text-greentheme cursor-pointer" onClick={() => statusHandler('APPROVED')}>
+            {t('reservations.statusLabels.confirmed')}
+          </li>}
+        {reservation.status !== 'CANCELED' &&
+          <li className="py-1 px-2 text-redtheme cursor-pointer" onClick={() => statusHandler('CANCELED')}>
+            {t('reservations.statusLabels.cancelled')}
+          </li>}
+        {reservation.status !== 'NO_SHOW' &&
+          <li className="py-1 px-2 text-blushtheme cursor-pointer" onClick={() => statusHandler('NO_SHOW')}>
+            {t('reservations.statusLabels.noShow')}
+          </li>}
+        {reservation.status !== 'SEATED' &&
+          <li className="py-1 px-2 text-orangetheme cursor-pointer" onClick={() => statusHandler('SEATED')}>
+            {t('reservations.statusLabels.seated')}
+          </li>}
       </ul>
     </div>
   )
@@ -576,10 +600,10 @@ export const ReservationStatusLabel: React.FC<ReservationStatusLabelProps> = ({ 
 
   return (
     <>
-    {loading ? <div className={`h-4 w-[100px] rounded-full dark:bg-darkthemeitems bg-gray-300`}></div> 
-    : <span className={`${statusStyles} cursor-pointer text-center py-[.1em] px-3 rounded-[10px]`}>
-        {statusText}
-      </span>}
+      {loading ? <div className={`h-4 w-[100px] rounded-full dark:bg-darkthemeitems bg-gray-300`}></div>
+        : <span className={`${statusStyles} cursor-pointer text-center py-[.1em] px-3 rounded-[10px]`}>
+          {statusText}
+        </span>}
     </>
   )
 };
@@ -594,7 +618,7 @@ interface DetailItemProps {
 
 const DetailItem: React.FC<DetailItemProps> = ({ icon, label, value, isDarkMode }) => {
   if (!value) return null;
-  
+
   return (
     <div className={`flex items-center gap-2 text-sm py-1.5 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
       {icon && <div className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
@@ -615,18 +639,18 @@ interface ReservationTableHeaderProps {
 
 const ReservationTableHeader: React.FC<ReservationTableHeaderProps> = ({ isDarkMode, columns, children }) => {
   const { t } = useTranslation();
-  
+
   // Sort columns by order
   const sortedColumns = [...columns]
     .filter(col => col.visible)
     .sort((a, b) => a.order - b.order);
-  
+
   return (
     <thead className={isDarkMode ? 'bg-bgdarktheme2 text-white' : 'bg-gray-50 text-gray-500'}>
       <tr>
         {sortedColumns.map(column => (
-          <th 
-            key={column.id} 
+          <th
+            key={column.id}
             className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider"
           >
             {t(column.labelKey)}
@@ -636,7 +660,7 @@ const ReservationTableHeader: React.FC<ReservationTableHeaderProps> = ({ isDarkM
           {children}
         </th>
       </tr>
-      
+
     </thead>
   );
 };
@@ -654,11 +678,12 @@ interface ReservationRowProps {
   initiateDelete: (id: BaseKey) => void;
   isDarkMode: boolean;
   columns: ColumnConfig[];
+  highlightOccasions?: boolean;
 }
 
-const ReservationRow: React.FC<ReservationRowProps> = ({ 
-  reservation, 
-  EditClient, 
+const ReservationRow: React.FC<ReservationRowProps> = ({
+  reservation,
+  EditClient,
   showStatusModification,
   showStatus,
   idStatusModification,
@@ -667,15 +692,16 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
   sendReview,
   initiateDelete,
   isDarkMode,
-  columns
+  columns,
+  highlightOccasions
 }) => {
   const { t } = useTranslation();
-  
+
   // Sort columns by order
   const sortedColumns = [...columns]
     .filter(col => col.visible)
     .sort((a, b) => a.order - b.order);
-  
+
   const renderCellContent = (columnId: string) => {
     switch (columnId) {
       case 'client':
@@ -686,7 +712,7 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
               <User size={16} className={isDarkMode ? 'text-gray-400' : 'text-gray-600'} />
               {reservation.full_name}
             </div>
-            
+
             {/* Contact info */}
             <div className="flex flex-col mt-1 gap-x-4 gap-y-1 text-sm lt-md:flex-col">
               {reservation.email &&
@@ -700,7 +726,7 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
                   <Phone size={14} className='dark:text-gray-400text-gray-500' />
                   <span>{reservation.phone || 'N/A'}</span>
                 </div>
-              }   
+              }
               {reservation.tags?.length > 0 &&
                 <div className="flex gap-1 items-center text-gray-500">
                   <Tags size={14} className='dark:text-gray-400text-gray-500' />
@@ -714,7 +740,9 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
                 </div>
               }
             </div>
+
             
+
             {/* Comment if available */}
             {reservation.commenter && (
               <div className="flex items-start gap-1 mt-1 text-sm text-gray-500">
@@ -727,13 +755,22 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
                 <LayoutPanelLeft size={14} className='dark:text-gray-400text-gray-500' />
                 <span>{reservation.area.name}</span>
               </div>
-            } 
+            }
+            
+            {!reservation.is_payed && (
+              <div className="flex gap-1 my-1 text-sm bg-softyellowtheme items-center text-yellowtheme w-fit px-2 py-1 rounded">
+                <DollarSign size={14} className={` ${isDarkMode ? 'text-yellowtheme' : 'text-yellowtheme'}`} />
+                <span>{t('reservations.tableHeaders.paid')}{reservation.amount && `: ${reservation.amount} DH`} </span>
+              </div>
+            )}
+
             <div className="text-sm text-gray-500">
               {` # ${reservation.seq_id}`}
             </div>
+
           </div>
         );
-      
+
       case 'details':
         return (
           <div className="flex flex-wrap mt-1 gap-x-4 gap-y-1 text-sm lt-md:flex-col">
@@ -755,7 +792,7 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
             </div>
           </div>
         );
-      
+
       case 'tables':
         return (
           (reservation.tables && reservation.tables.length > 0) && (
@@ -764,7 +801,7 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
             </div>
           )
         );
-      
+
       case 'internalNote':
         return (
           reservation.internal_note && (
@@ -775,12 +812,12 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
             />
           )
         );
-      
+
       case 'status':
         return (
           <>
             <ReservationStatusLabel status={reservation.status} loading={reservation.loading as boolean} />
-            
+
             <StatusModifier
               showStatus={showStatus}
               reservation={reservation}
@@ -791,19 +828,19 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
             />
           </>
         );
-      
+
       case 'review':
         return (
           <div className="flex items-center">
-            {reservation.status !== 'SEATED' ? '' : 
-              <span onClick={() => {sendReview(reservation.id)}} 
-                    className="cursor-pointer text-greentheme items-center flex justify-center w-7 h-7 rounded-md p-1 hover:bg-softgreentheme">
+            {reservation.status !== 'SEATED' ? '' :
+              <span onClick={() => { sendReview(reservation.id) }}
+                className="cursor-pointer text-greentheme items-center flex justify-center w-7 h-7 rounded-md p-1 hover:bg-softgreentheme">
                 <Send size={20} />
               </span>
             }
           </div>
         );
-        
+
       case 'date':
         return (
           <div className="flex items-center gap-1 font-medium">
@@ -811,7 +848,7 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
             {reservation.date}
           </div>
         );
-        
+
       case 'time':
         return (
           <div className="flex items-center gap-1 font-medium">
@@ -819,7 +856,7 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
             {reservation.time.slice(0, 5)}
           </div>
         );
-        
+
       case 'guests':
         return (
           <div className="flex items-center gap-1 font-medium">
@@ -827,40 +864,45 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
             {reservation.number_of_guests}
           </div>
         );
-      
+
       case 'occasion':
         return (
           <div className="flex justify-start items-center gap-1">
             {reservation?.occasion &&
               <>
-              {reservation.occasion?.name}
+                {reservation.occasion?.name}
               </>
             }
           </div>
         );
-        
+
       default:
         return null;
     }
   };
 
-  
-  
-  
+
+
+
   return (
     <tr key={reservation.id} className="opacity-80 hover:opacity-100">
       {sortedColumns.map((column, index) => {
-        const cellClickHandler = column.id === 'status' 
+        const cellClickHandler = column.id === 'status'
           ? () => showStatusModification(reservation.id)
-          : column.id === 'review' 
+          : column.id === 'review'
             // eslint-disable-next-line @typescript-eslint/no-empty-function
-            ? () => {} // No click handler for review column
+            ? () => { } // No click handler for review column
             : () => { if (reservation.id) EditClient(reservation.id); };
-            
+
+        const occasionHighlightStyle = highlightOccasions && column.id === 'occasion' && reservation.occasion
+          ? { backgroundColor: reservation.occasion.color || '#f0f0f0', color: getTextColor(reservation.occasion.color || '#f0f0f0'), fontWeight: 'bold' }
+          : {};
+
         return (
-          <td 
-            key={column.id} 
-            className={`px-3 py-2 ${column.id === 'client'?'max-w-[180px]':''} ${['date', 'time', 'guests'].includes(column.id)?'whitespace-nowrap':''} ${column.id === 'review' ? 'whitespace-nowrap flex justify-center items-center h-full' : column.id === 'status' ? 'whitespace-nowrap' : 'max-w-100'}`}
+          <td
+            key={column.id}
+            style={occasionHighlightStyle}
+            className={`px-3 py-2 ${column.id === 'client' ? 'max-w-[180px]' : ''} ${['date', 'time', 'guests'].includes(column.id) ? 'whitespace-nowrap' : ''} ${column.id === 'review' ? 'whitespace-nowrap flex justify-center items-center h-full' : column.id === 'status' ? 'whitespace-nowrap' : 'max-w-100'}`}
             onClick={cellClickHandler}
           >
             {renderCellContent(column.id)}
@@ -875,7 +917,7 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
           >
             <Trash2 size={16} className='stroke-red-600' />
           </button>
-        </CanAccess>        
+        </CanAccess>
       </td>
     </tr>
   );
@@ -892,7 +934,7 @@ const LoadingRow: React.FC<LoadingRowProps> = ({ isDarkMode, columns }) => {
   const sortedColumns = [...columns]
     .filter(col => col.visible)
     .sort((a, b) => a.order - b.order);
-    
+
   const renderLoadingCell = (columnId: string) => {
     switch (columnId) {
       case 'client':
@@ -913,7 +955,7 @@ const LoadingRow: React.FC<LoadingRowProps> = ({ isDarkMode, columns }) => {
         );
     }
   };
-  
+
   return (
     <tr>
       {sortedColumns.map(column => (
@@ -941,12 +983,13 @@ interface ReservationTableProps {
   initiateDelete: (id: BaseKey) => void;
   isDarkMode: boolean;
   columns: ColumnConfig[];
+  highlightOccasions?: boolean;
 }
 
-const ReservationTable: React.FC<ReservationTableProps> = ({ 
-  isLoading, 
-  filteredReservations, 
-  EditClient, 
+const ReservationTable: React.FC<ReservationTableProps> = ({
+  isLoading,
+  filteredReservations,
+  EditClient,
   showStatusModification,
   showStatus,
   idStatusModification,
@@ -956,7 +999,8 @@ const ReservationTable: React.FC<ReservationTableProps> = ({
   isDarkMode,
   initiateDelete,
   columns,
-  setShowColumnCustomization
+  setShowColumnCustomization,
+  highlightOccasions
 }) => {
   return (
     <table className={`max-w-full overflow-scroll divide-y ${isDarkMode ? 'divide-gray-800' : 'divide-gray-200'}`}>
@@ -987,6 +1031,7 @@ const ReservationTable: React.FC<ReservationTableProps> = ({
             .sort((a, b) => (a.id < b.id ? 1 : -1))
             .map((reservation) => (
               <ReservationRow
+                highlightOccasions={highlightOccasions}
                 key={reservation.id}
                 reservation={reservation}
                 EditClient={EditClient}
@@ -1015,19 +1060,19 @@ interface DateSelectionModalProps {
   isDarkMode: boolean;
 }
 
-const DateSelectionModal: React.FC<DateSelectionModalProps> = ({ 
-  focusedDate, 
-  setFocusedDate, 
-  handleDateClick, 
-  isDarkMode 
+const DateSelectionModal: React.FC<DateSelectionModalProps> = ({
+  focusedDate,
+  setFocusedDate,
+  handleDateClick,
+  isDarkMode
 }) => {
   if (!focusedDate) return null;
-  
+
   return (
     <div>
       <div className="overlay" onClick={() => setFocusedDate(false)}></div>
       <div className={`popup sm:w-[50%] lg:w-[30%] xl:[25%] lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 ${isDarkMode ? 'bg-bgdarktheme' : 'bg-white'}`}>
-        <IntervalCalendar onRangeSelect={handleDateClick} onClose={()=>setFocusedDate(false)} />
+        <IntervalCalendar onRangeSelect={handleDateClick} onClose={() => setFocusedDate(false)} />
       </div>
     </div>
   );
@@ -1047,21 +1092,22 @@ const ReservationsPage: React.FC = () => {
   const { data: specificReservation, isLoading: isSpecificReservationLoading } = useList({
     resource: `api/v1/bo/reservations/${reservationIdParam}/`,
     queryOptions: {
-      enabled: !!reservationIdParam,      onSuccess: (data) => {
+      enabled: !!reservationIdParam, onSuccess: (data) => {
         // When the specific reservation is fetched, open the edit modal
         if (data?.data) {
           // The response structure might be different when fetching a single item
-          const reservation = Array.isArray(data.data) 
-            ? data.data[0] as unknown as Reservation 
+          const reservation = Array.isArray(data.data)
+            ? data.data[0] as unknown as Reservation
             : data.data as unknown as Reservation;
-          
+
           if (reservation) {
             setSelectedClient(reservation);
             setEditingClient(reservation.id);
             setShowModal(true);
           }
         }
-      }    }
+      }
+    }
   });
 
   // Effect to listen for URL parameter changes
@@ -1078,17 +1124,20 @@ const ReservationsPage: React.FC = () => {
   // Dark mode context
   const { darkMode } = useDarkContext();
   const isDarkMode = darkMode;
-  
+
   const { t } = useTranslation();
-  
+
   // Permission check
   const { data: changeRes } = useCan({ resource: 'reservation', action: 'change' });
-  
+
   // Column configuration
   const { loadColumnsFromStorage, saveColumnsToStorage } = useColumnConfiguration();
   const [columns, setColumns] = useState<ColumnConfig[]>(loadColumnsFromStorage());
   const [showColumnCustomization, setShowColumnCustomization] = useState<boolean>(false);
-  
+  const [highlightOccasions, setHighlightOccasions] = useState<boolean>(() => {
+    const stored = localStorage.getItem('tabla_reservation_highlight_occasions');
+    return stored ? JSON.parse(stored) : false;
+  });
   // States
   const [showProcess, setShowProcess] = useState<boolean>(false);
   const [selectedDateRange, setSelectedDateRange] = useState<{ start: Date | null, end: Date | null }>({ start: null, end: null });
@@ -1103,6 +1152,8 @@ const ReservationsPage: React.FC = () => {
   const [selectedClient, setSelectedClient] = useState<Reservation | null>(null);
   const [hasTable, setHasTable] = useState<boolean>(false);
   const [showExportModal, setShowExportModal] = useState<boolean>(false);
+  const [showExportLoading, setShowExportLoading] = useState(false);
+  const { startTask, AsyncTaskManager } = useAsyncTaskManager();
   const [selectingDay, setSelectingDay] = useState<string>("");
   const [focusedDate, setFocusedDate] = useState<boolean>(false);
   const [searchResults, setSearchResults] = useState<Reservation[]>(reservations);
@@ -1120,6 +1171,8 @@ const ReservationsPage: React.FC = () => {
   // Add state for delete confirmation
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const [reservationToDelete, setReservationToDelete] = useState<BaseKey>('');
+
+  
   
   // Reservation progress data
   const [reservationProgressData, setReservationProgressData] = useState<DataTypes>({
@@ -1127,27 +1180,39 @@ const ReservationsPage: React.FC = () => {
     time: selectedClient?.time || '',
     guests: selectedClient?.guests || 0
   });
-  
+
   // Save column preferences to localStorage when they change
   useEffect(() => {
     saveColumnsToStorage(columns);
   }, [columns]);
-  
+
   const { chosenDay } = useDateContext();
 
   const [filterDate, setFilterDate] = useState<boolean>(true);
-
+  
   // Data fetching
-  const { data, isRefetching:isLoading, isLoading: isFirstLoad, error, refetch: refetchReservations } = useList({
+  const { data, isRefetching: isLoading, isLoading: isFirstLoad, error, refetch: refetchReservations } = useList({
     resource: "api/v1/bo/reservations/",
     filters: [
       { field: "page", operator: "eq", value: page },
       { field: "page_size", operator: "eq", value: 20 },
       { field: "status", operator: "eq", value: focusedFilter },
-      { field: "date_", operator: "gte", value: selectedDateRange.start ? format(selectedDateRange.start, 'yyyy-MM-dd') : filterDate? format(chosenDay,'yyyy-MM-dd') : '' },
-      { field: "date_", operator: "lte", value: selectedDateRange.end ? format(selectedDateRange.end, 'yyyy-MM-dd') : filterDate? format(chosenDay,'yyyy-MM-dd') : '' },
       { field: "search", operator: "eq", value: searchKeyWord },
-      { field: "ordering", operator: "eq", value: "-id" }
+      { field: "ordering", operator: "eq", value: "-id" },
+      {
+        field: "date__gte",
+        operator: "eq",
+        value: selectedDateRange.start
+          ? format(selectedDateRange.start, 'yyyy-MM-dd')
+          : (filterDate ? format(chosenDay, 'yyyy-MM-dd') : '')
+      },
+      {
+        field: "date__lte",
+        operator: "eq",
+        value: selectedDateRange.end
+          ? format(selectedDateRange.end, 'yyyy-MM-dd')
+          : (filterDate ? format(chosenDay, 'yyyy-MM-dd') : '')
+      },
     ],
     queryOptions: {
       onSuccess: (data) => {
@@ -1159,7 +1224,7 @@ const ReservationsPage: React.FC = () => {
     }
   });
 
-  const {mutate: deleteReservation, isLoading: loadingDelete} = useDelete();
+  const { mutate: deleteReservation, isLoading: loadingDelete } = useDelete();
 
   // Fetch floors and tables
   const { data: floorsData } = useList({
@@ -1269,8 +1334,70 @@ const ReservationsPage: React.FC = () => {
   }, [selectedClient]);
 
   // Handle column preferences update
-  const handleSaveColumns = (updatedColumns: ColumnConfig[]) => {
-    setColumns(updatedColumns);
+  const handleSaveColumns = (config: { columns: ColumnConfig[], highlightOccasions: boolean }) => {
+    setColumns(config.columns);
+    setHighlightOccasions(config.highlightOccasions);
+    localStorage.setItem('tabla_reservation_highlight_occasions', JSON.stringify(config.highlightOccasions));
+  };
+
+  const handleExport = async (format: 'sheet' | 'pdf', selectedColumns: string[], customValues: Record<string, any>, pdfEngine?: 'xhtml2pdf' | 'reportlab') => {
+    const {
+      date__gte,
+      date__lte,
+      status,
+      filterBySource,
+      includeTableUsageStats,
+      includeReservationStatusStats,
+      includeReservationSourceStats,
+      async: asyncGeneration,
+      email
+    } = customValues;
+
+    const requestBody: any = {
+      format,
+      selected_columns: selectedColumns,
+      async_generation: asyncGeneration,
+      async: asyncGeneration,
+      pdfEngine: pdfEngine,
+      customOptions: {
+        includeTableUsageStats: !!includeTableUsageStats,
+        includeReservationStatusStats: !!includeReservationStatusStats,
+        includeReservationSourceStats: !!includeReservationSourceStats,
+        filterBySource: filterBySource || undefined
+      }
+    };
+
+    if (date__gte) requestBody.date__gte = date__gte;
+    if (date__lte) requestBody.date__lte = date__lte;
+    if (status) requestBody.status = status;
+    if (searchKeyWord) requestBody.search = searchKeyWord;
+    if (asyncGeneration && email) requestBody.email = email;
+
+    try {
+      setShowExportLoading(true);
+      const response = await httpClient.post('/api/v1/bo/reports/reservations/', requestBody, {
+        responseType: asyncGeneration ? 'json' : 'blob',
+      });
+
+      if (asyncGeneration) {
+        const { task_id } = response.data;
+        if (email) {
+          alert(`Report generation started. You will be notified by email at ${email}. Task ID: ${task_id}`);
+        } else {
+          startTask(task_id);
+        }
+      } else {
+        const blob = new Blob([response.data], { type: response.headers['content-type'] });
+        const filename = `reservations_export.${format === 'sheet' ? 'xlsx' : 'pdf'}`;
+        saveAs(blob, filename);
+      }
+      setShowExportModal(false);
+    } catch (error) {
+      console.error("Export failed:", error);
+      alert("Failed to export data. Please check the console for details.");
+    } finally {
+      setShowExportLoading(false);
+    }
   };
 
   // Handler functions
@@ -1319,18 +1446,18 @@ const ReservationsPage: React.FC = () => {
         number_of_guests: reservationProgressData.guests,
         commenter: updatedReservation.commenter,
       },
-    },{
-      onSuccess(){
+    }, {
+      onSuccess() {
         refetchReservations();
       }
     });
-    
+
     setShowModal(false);
   };
 
   const showStatusModification = (id: BaseKey): void => {
     if (!changeRes?.can) return;
-    
+
     if (!id) return;
     setIdStatusModification(id);
     setShowStatus(!showStatus);
@@ -1343,32 +1470,38 @@ const ReservationsPage: React.FC = () => {
   };
 
   const confirmStatusUpdate = async (): Promise<void> => {
-    setReservations(reservations.map(r => 
-      r.id === idStatusModification ? {...r, loading: true} : r
+    setReservations(reservations.map(r =>
+      r.id === idStatusModification ? { ...r, loading: true } : r
     ));
+
+    const targetReservation = reservations.find(r => r.id === idStatusModification);
+    const date = targetReservation ? targetReservation.date : '';
+    const time = targetReservation ? targetReservation.time : '';
 
     upDateReservation({
       id: `${idStatusModification}/`,
       values: {
-        status: pendingStatus
+        status: pendingStatus,
+        date,
+        time
       }
-    },{
-      onSuccess(){
-        setReservations(reservations.map(r => 
-          r.id === idStatusModification ? {...r, status: pendingStatus as ReservationStatus, loading: false} : r
+    }, {
+      onSuccess() {
+        setReservations(reservations.map(r =>
+          r.id === idStatusModification ? { ...r, status: pendingStatus as ReservationStatus, loading: false } : r
         ));
       },
-      onError(){
-        setReservations(reservations.map(r => 
-          r.id === idStatusModification ? {...r, loading: false} : r
+      onError() {
+        setReservations(reservations.map(r =>
+          r.id === idStatusModification ? { ...r, loading: false } : r
         ));
       }
     });
   };
 
   const statusHandlerFulfilled = (id: BaseKey): void => {
-    setReservations(reservations.map(r => 
-      r.id === id ? {...r, status: 'FULFILLED'} : r
+    setReservations(reservations.map(r =>
+      r.id === id ? { ...r, status: 'FULFILLED' } : r
     ));
 
     upDateReservation({
@@ -1381,7 +1514,7 @@ const ReservationsPage: React.FC = () => {
 
   const sendReview = (id: BaseKey): void => {
     setReservations(reservations.filter(r => r.id !== id));
-    
+
     createReview({
       values: {
         reservations
@@ -1393,7 +1526,7 @@ const ReservationsPage: React.FC = () => {
   const handleDeleteReservation = (id: string) => {
     deleteReservation({
       resource: `api/v1/bo/reservations`,
-      id: id+'/',
+      id: id + '/',
     }, {
       onSuccess: () => {
         refetchReservations();
@@ -1433,7 +1566,7 @@ const ReservationsPage: React.FC = () => {
         message={
           <>
             <h6 className="mb-3">{t('reservations.statusChange.confirmMessage')}</h6>
-            
+
             {/* Reservation Details Card - Inspired by DraggableReservationItem */}
             {(() => {
               const currentReservation = reservations.find(r => r.id === idStatusModification);
@@ -1441,29 +1574,29 @@ const ReservationsPage: React.FC = () => {
                 <div className="p-2 mb-4 flex flex-col items-start rounded-[5px] dark:bg-bgdarktheme bg-softgreytheme w-full">
                   <div className="flex items-center mb-2 w-full justify-between">
                     <div className="flex items-center">
-                      <User2 size={16} className="mr-1" /> 
+                      <User2 size={16} className="mr-1" />
                       <span className="font-semibold">{currentReservation.full_name}</span>
                     </div>
                     <div className="text-xs dark:bg-darkthemeitems bg-white py-1 px-2 rounded-md">
                       #{currentReservation.seq_id}
                     </div>
                   </div>
-                  
+
                   <div className="flex justify-between w-full">
                     <div className="flex items-center">
-                      <Clock size={16} className="mr-1" /> 
+                      <Clock size={16} className="mr-1" />
                       <span>{currentReservation.time?.replace(':00', '')}</span>
                     </div>
                     <div className="flex items-center">
-                      <Users size={16} className="mr-1" /> 
+                      <Users size={16} className="mr-1" />
                       <span>{currentReservation.number_of_guests}</span>
                     </div>
                     <div className="flex items-center">
-                      <Calendar size={16} className="mr-1" /> 
+                      <Calendar size={16} className="mr-1" />
                       <span>{currentReservation.date}</span>
                     </div>
                   </div>
-                  
+
                   {currentReservation.tables && currentReservation.tables.length > 0 && (
                     <div className="mt-2 text-sm">
                       <span className="opacity-75">Tables:</span> {currentReservation.tables.map(t => t.name).join(', ')}
@@ -1472,7 +1605,7 @@ const ReservationsPage: React.FC = () => {
                 </div>
               ) : null;
             })()}
-            
+
             <div className={`w-full p-3 rounded-md text-sm ${isDarkMode ? 'bg-darkthemeitems' : 'bg-gray-50'} mb-2`}>
               <div className="flex justify-between items-center mb-2">
                 <span className="text-gray-500">{t('reservations.statusChange.from')}:</span>
@@ -1502,7 +1635,7 @@ const ReservationsPage: React.FC = () => {
         message={
           <>
             <h6 className="mb-3">{t('reservations.deleteConfirm.message')}</h6>
-            
+
             {/* Reservation Details Card */}
             {(() => {
               const currentReservation = reservations.find(r => r.id === reservationToDelete);
@@ -1510,35 +1643,35 @@ const ReservationsPage: React.FC = () => {
                 <div className="p-2 mb-4 flex flex-col items-start rounded-[5px] dark:bg-bgdarktheme bg-softgreytheme w-full">
                   <div className="flex items-center mb-2 w-full justify-between">
                     <div className="flex items-center">
-                      <User2 size={16} className="mr-1" /> 
+                      <User2 size={16} className="mr-1" />
                       <span className="font-semibold">{currentReservation.full_name}</span>
                     </div>
                     <div className="text-xs dark:bg-darkthemeitems bg-white py-1 px-2 rounded-md">
                       #{currentReservation.seq_id}
                     </div>
                   </div>
-                  
+
                   <div className="flex justify-between w-full">
                     <div className="flex items-center">
-                      <Clock size={16} className="mr-1" /> 
+                      <Clock size={16} className="mr-1" />
                       <span>{currentReservation.time?.replace(':00', '')}</span>
                     </div>
                     <div className="flex items-center">
-                      <Users size={16} className="mr-1" /> 
+                      <Users size={16} className="mr-1" />
                       <span>{currentReservation.number_of_guests}</span>
                     </div>
                     <div className="flex items-center">
-                      <Calendar size={16} className="mr-1" /> 
+                      <Calendar size={16} className="mr-1" />
                       <span>{currentReservation.date}</span>
                     </div>
                   </div>
-                  
+
                   {currentReservation.tables && currentReservation.tables.length > 0 && (
                     <div className="mt-2 text-sm">
                       <span className="opacity-75">Tables:</span> {currentReservation.tables.map(t => t.name).join(', ')}
                     </div>
                   )}
-                  
+
                   <div className={`mt-2 px-2 py-1 rounded ${statusStyle(currentReservation.status)}`}>
                     {getStatusLabel(currentReservation.status)}
                   </div>
@@ -1551,16 +1684,16 @@ const ReservationsPage: React.FC = () => {
         showPopup={showDeleteConfirm}
         setShowPopup={setShowDeleteConfirm}
       />
-
+      <AsyncTaskManager />
       {/* Export Modal */}
       {showExportModal && (
         <ExportModal
+          title={t('export.exportReservations', 'Export Reservations')}
           columns={reservationsExportConfig.columns}
           customFields={reservationsExportConfig.customFields}
-          onExport={(format, selectedColumns, customFields) => {
-            setShowExportModal(false);
-          }}
+          onExport={handleExport}
           onClose={() => setShowExportModal(false)}
+          loading={showExportLoading}
         />
       )}
 
@@ -1571,6 +1704,7 @@ const ReservationsPage: React.FC = () => {
         columns={columns}
         onSave={handleSaveColumns}
         isDarkMode={isDarkMode}
+        highlightOccasions={highlightOccasions}
       />
 
       {/* Reservation Process Modal */}
@@ -1588,11 +1722,11 @@ const ReservationsPage: React.FC = () => {
 
       {/* Add Reservation Modal */}
       {showAddReservation && (
-        <ReservationModal 
-          onClick={() => {setShowAddReservation(false)}} 
-          onSubmit={(data) => {refetchReservations()}} 
+        <ReservationModal
+          onClick={() => { setShowAddReservation(false) }}
+          onSubmit={(data) => { refetchReservations() }}
         />
-      )} 
+      )}
 
       {/* Edit Reservation Modal using the standalone component */}
       {showModal && (
@@ -1617,12 +1751,12 @@ const ReservationsPage: React.FC = () => {
         </h1>
         <div className="flex gap-4 justify-end">
           <CanAccess action="add" resource="reservation">
-            <button className='btn-primary' onClick={() => {setShowAddReservation(true)}}>
+            <button className='btn-primary' onClick={() => { setShowAddReservation(true) }}>
               {t('reservations.buttons.addReservation')}
             </button>
           </CanAccess>
           <button onClick={() => setShowExportModal(true)} className={`${isDarkMode ? 'text-whitetheme' : ''} btn-primary`}>
-            export
+            {t('reservations.buttons.export')}
           </button>
         </div>
       </div>
@@ -1648,7 +1782,7 @@ const ReservationsPage: React.FC = () => {
         {(isLoading || isFirstLoad) ?
           <DraggableItemSkeleton count={3} isDarkMode={darkMode} />
           : (filteredReservations.map(item => (
-            <ResevrationCard
+            <ReservationCard
               itemData={{
                 ...item,
                 number_of_guests: parseInt(item.number_of_guests, 10),
@@ -1667,7 +1801,7 @@ const ReservationsPage: React.FC = () => {
           )))}
         {((reservationAPIInfo?.count || 0) > 1 && filteredReservations?.length > 10) && (<>
           <div className='bottom mx-auto w-full'>
-            <Pagination setPage={(p: number) => setPage(p)} size={20} count={reservationAPIInfo?.count || 0} />
+            <Pagination setPage={(p: number) => setPage(p)} size={20} count={reservationAPIInfo?.count || 0} page={page} />
           </div>
         </>)}
       </div>
@@ -1687,8 +1821,9 @@ const ReservationsPage: React.FC = () => {
           isDarkMode={isDarkMode}
           columns={columns}
           setShowColumnCustomization={setShowColumnCustomization}
+          highlightOccasions={highlightOccasions}
         />
-        <Pagination setPage={(page) => {setPage(page)}} size={20} count={count} />
+        <Pagination setPage={(page) => { setPage(page) }} size={20} count={count} page={page} />
       </div>
 
       {/* Date Selection Modal */}

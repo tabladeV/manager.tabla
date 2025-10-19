@@ -1,13 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Upload, Check, X, Download, Navigation, ScreenShareIcon, Copy } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { Upload, Check, X, ScreenShareIcon, Copy } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import 'draft-js/dist/Draft.css';
-import { Editor, EditorState, convertToRaw, convertFromRaw } from 'draft-js';
 import { BaseKey, useList, useUpdate } from '@refinedev/core';
-import QuillEditor from './widgetComp/QuillEditor';
+import TitledQuillEditor from './widgetComp/TitledQuillEditor';
 import BaseBtn from '../common/BaseBtn';
-import { set } from 'date-fns';
+import InlineQuillEditor from '../common/InlineQuillEditor';
 
 
 
@@ -29,29 +28,33 @@ interface Widget {
   dress_code: string;
   has_menu: boolean;
   auto_confirmation: boolean;
+  enable_paymant: boolean;
+  min_number_of_guests_required_deposite?: number;
+  deposite_amount_for_guest?: number;
 }
 
 
 
 
 
-const base64ToBlob = (base64: string, mimeType: string) => {
-  const byteCharacters = atob(base64.split(',')[1]);
-  const byteNumbers = new Array(byteCharacters.length);
-  for (let i = 0; i < byteCharacters.length; i++) {
-    byteNumbers[i] = byteCharacters.charCodeAt(i);
-  }
-  const byteArray = new Uint8Array(byteNumbers);
-  return new Blob([byteArray], { type: mimeType });
-};
-
 export default function WidgetConfig() {
-  // const [restaurantId, setRestaurantId] = useState(1);
-
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Memoize searchParams to prevent unnecessary re-renders
+  const searchParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
+  
   const restaurantId = localStorage.getItem('restaurant_id');
   const { t } = useTranslation();
 
-  const {data : subdomainData, isLoading: isLoadingSubdomain, error: errorSubdomain} = useList({
+  // Update URL when component state changes
+  const updateURL = useCallback((section: string) => {
+    const newSearchParams = new URLSearchParams(location.search);
+    newSearchParams.set('section', section);
+    navigate(`${location.pathname}?${newSearchParams.toString()}`, { replace: true });
+  }, [location.pathname, location.search, navigate]);
+
+  const {data : subdomainData} = useList({
     resource: 'api/v1/bo/restaurants/subdomain',
   })
   const [subdomain, setSubdomain] = useState<string>('')
@@ -62,14 +65,18 @@ export default function WidgetConfig() {
     }
   }, [subdomainData])
 
-  const { data: widgetData, isLoading, error } = useList({
+  const { data: widgetData, isLoading } = useList({
     resource: `api/v1/bo/restaurants/${restaurantId}/widget/`,
   });
 
   
   useEffect(() => {
-    document.title = 'Booking Widget Settigns | Tabla'
-  }, [])
+    document.title = 'Booking Widget Settings | Tabla'
+    // Update URL to reflect current component if no section is specified
+    if (!searchParams.get('section')) {
+      updateURL('widget');
+    }
+  }, [searchParams, updateURL])
 
 
   const [widgetInfo, setWidgetInfo] = useState<Widget>();
@@ -80,6 +87,31 @@ export default function WidgetConfig() {
   const [autoConfirmation, setAutoConfirmation] = useState<boolean>(false);
   const [enableDressCode, setEnableDressCode] = useState<boolean>(false);
   const [enableAreaSelection, setEnableAreaSelection] = useState<boolean>(false);
+  const [enablePayment, setEnablePayment] = useState<boolean>(false);
+  const [minGuestsForPayment, setMinGuestsForPayment] = useState<number>(1);
+  const [depositAmountPerGuest, setDepositAmountPerGuest] = useState<number>(0);
+  
+
+  // Optimized checkbox handlers with useCallback
+  const handlePaymentToggle = useCallback(() => {
+    setEnablePayment(prev => !prev);
+  }, []);
+
+  const handleMenuToggle = useCallback(() => {
+    setHasMenu(prev => !prev);
+  }, []);
+
+  const handleAutoConfirmationToggle = useCallback(() => {
+    setAutoConfirmation(prev => !prev);
+  }, []);
+
+  const handleDressCodeToggle = useCallback(() => {
+    setEnableDressCode(prev => !prev);
+  }, []);
+
+  const handleAreaSelectionToggle = useCallback(() => {
+    setEnableAreaSelection(prev => !prev);
+  }, []);
   const [description, setDescription] = useState('');
   const [disabledTitle, setDisabledTitle] = useState('');
   const [disabledDescription, setDisabledDescription] = useState('');
@@ -115,6 +147,9 @@ export default function WidgetConfig() {
       setEnableDressCode(data.enable_dress_code);
       setEnableAreaSelection(data.enbale_area_selection);
       setDressCode(data.dress_code || '');
+      setEnablePayment(data.enable_paymant);
+      setMinGuestsForPayment(data.min_number_of_guests_required_deposite || 1);
+      setDepositAmountPerGuest(data.deposite_amount_for_guest || 0);
       // if(logo === null){
       //   setNewLogo(true);
       // }
@@ -124,11 +159,8 @@ export default function WidgetConfig() {
   
 
   const [file, setFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [filePDF, setFilePDF] = useState<File | null>(null);
-  const [previewUrlPDF, setPreviewUrlPDF] = useState<string | null>(null);
 
-  const [previewImage, setPreviewImage] = useState<string |null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -138,10 +170,10 @@ export default function WidgetConfig() {
 
       // Generate a temporary preview URL
       const objectUrl = URL.createObjectURL(selectedFile);
-      setPreviewImage(objectUrl);
       setImage(objectUrl);
     }
   };
+  
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const selectedFile = event.target.files[0];
@@ -149,12 +181,9 @@ export default function WidgetConfig() {
 
       // Generate a temporary preview URL
       const objectUrl = URL.createObjectURL(selectedFile);
-      setPreviewUrl(objectUrl);
       setLogo(objectUrl);
     }
   };
-
-  const [uploadedPdf, setUploadedPdf] = useState<boolean>(false);
 
   const handleMenuUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -163,14 +192,9 @@ export default function WidgetConfig() {
 
       // Generate a temporary preview URL
       const objectUrl = URL.createObjectURL(selectedFile);
-      setPreviewUrlPDF(objectUrl);
       setMenuPdf(objectUrl);
-      setUploadedPdf(true);
-      console.log('uploadedPdf', uploadedPdf);
     }
   };
-
-  const API_HOST = import.meta.env.VITE_API_URL || "https://api.dev.tabla.ma";
 
   const openPdfInNewTab = () => {
     if (!menuPdf) {
@@ -202,12 +226,8 @@ export default function WidgetConfig() {
 
   
 
-  const handleSearchTabChange = (tab: keyof typeof searchTabs) => {
-    setSearchTabs((prev) => ({ ...prev, [tab]: !prev[tab] }));
-  };
-
   const { mutate: updateWidget, isLoading: isLoadingUpdate } = useUpdate({
-    errorNotification(error, values, resource) {
+    errorNotification(error) {
       return {
         type: 'error',
         message: error?.formattedMessage,
@@ -228,7 +248,7 @@ export default function WidgetConfig() {
     }else{
       formData.append('has_menu', 'false');
     }
-    formData.append('content', JSON.stringify(description));
+    formData.append('content', description);
     formData.append('disabled_title', disabledTitle);
     formData.append('disabled_description', disabledDescription);
     formData.append('max_of_guests_par_reservation', maxGuestsPerReservation?.toString() || '0');
@@ -256,6 +276,9 @@ export default function WidgetConfig() {
     formData.append('enable_dress_code', enableDressCode?.toString() || '0');
     formData.append('enbale_area_selection', enableAreaSelection?.toString() || '0');
     formData.append('dress_code', dressCode || '');
+    formData.append('enable_paymant', enablePayment?.toString() || '0');
+    formData.append('min_number_of_guests_required_deposite', minGuestsForPayment?.toString() || '1');
+    formData.append('deposite_amount_for_guest', depositAmountPerGuest?.toString() || '0');
     
     try {
       await updateWidget({
@@ -277,8 +300,6 @@ export default function WidgetConfig() {
 
   const [deleteLogo, setDeleteLogo] = useState<boolean>(false);
   const [deleteImage, setDeleteImage] = useState<boolean>(false);
-
-  const [newLogo, setNewLogo] = useState<boolean>(false);
 
   const darkModeClass = 'dark:bg-bgdarktheme dark:text-white bg-white text-black';
 
@@ -323,7 +344,7 @@ export default function WidgetConfig() {
     <div className={`w-full min-h-[100vh] mx-auto p-6 rounded-[10px] ${darkModeClass}`}>
       <div className="flex lt-sm:flex-col items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-center mb-6">
-          {t('settingsPage.widget.title')} for <span className='italic font-[600]'>{widgetInfo?.restaurant}</span>
+          {t('settingsPage.widget.title')} <span className='italic font-[600]'>{widgetInfo?.restaurant}</span>
         </h1>
         <div className="relative group h-[50px] flex items-center justify-center">
           <button
@@ -331,12 +352,12 @@ export default function WidgetConfig() {
             onClick={handleCopy}
           >
             <span className="">
-              Copy Reservation Widget URL
+              {t('settingsPage.widget.copyLink')}
             </span>
             <Copy size={18} className="opacity-70" />
           </button>
           <div className="absolute -bottom-10  transform -translate-x-1/2 bg-blacktheme dark:bg-darkthemeitems text-whitetheme px-3 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none w-max max-w-[200px] text-center">
-            Click to copy url address for reservation widget
+            {t('settingsPage.widget.clickToCopy', 'Click to copy the link to your clipboard')}
           </div>
         </div>
       </div>
@@ -348,7 +369,7 @@ export default function WidgetConfig() {
             <div className="relative  w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden">
               <img src={ logo} alt="Logo" className="w-full h-full object-contain" />
               <button
-                onClick={() => {setLogo(null);setNewLogo(true);setDeleteLogo(true)}}
+                onClick={() => {setLogo(null);setDeleteLogo(true)}}
                 className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
               >
                 <X size={16} />
@@ -370,7 +391,7 @@ export default function WidgetConfig() {
             <div className="relative w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden">
               <img src={image} alt="Image" className="w-full h-full object-contain" />
               <button
-                onClick={() => {setImage(null);setNewLogo(true);setDeleteImage(true)}}
+                onClick={() => {setImage(null);setDeleteImage(true)}}
                 className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
               >
                 <X size={16} />
@@ -401,6 +422,26 @@ export default function WidgetConfig() {
           className="hidden"
         />
       </div>
+
+      {isWidgetActivated && <div className="space-y-2 mb-6">
+        <h2 className="text-lg font-semibold mt-2">{t('settingsPage.widget.name')}</h2>
+
+        <input
+          type="text"
+          placeholder={t('settingsPage.widget.addTitlePlaceholder')}
+          className="inputs p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        <h2 className="text-lg font-semibold mt-2">{t('settingsPage.widget.description')}</h2>
+        <InlineQuillEditor
+          value={description}
+          onChange={setDescription}
+          placeholder={t('settingsPage.widget.addDescriptionPlaceholder')}
+        />
+      </div>}
+
+      
       
       {isWidgetActivated ? (
           <>
@@ -408,7 +449,7 @@ export default function WidgetConfig() {
               <h2 className="text-lg font-semibold mb-2">{t('settingsPage.widget.searchTabs.title')}</h2>
               <div className="flex flex-wrap gap-4">
               <label className="flex items-center w-full">
-              <span className='mr-2'>max guests per reservation</span>
+              <span className='mr-2'>{t('settingsPage.widget.searchTabs.maxGuests')}</span>
               <input
                 type="number"
                 value={maxGuestsPerReservation}
@@ -416,55 +457,82 @@ export default function WidgetConfig() {
                 className="inputs max-w-[300px] p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white"
               />
               </label>
-                {Object.entries(searchTabs).map(([key, value]) => (
+                {Object.entries(searchTabs).map(([key]) => (
                   <React.Fragment key={key}>
-                  {key === 'menu' && <label className="flex items-center">
+                  {key === 'menu' && <label className="flex items-center cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={(hasMenu ? value : key === 'menu' && value) as boolean}
-                      onChange={() => setHasMenu((prev) => !prev)}
+                      checked={hasMenu || false}
+                      onChange={(e) => {
+                        e.preventDefault();
+                        handleMenuToggle();
+                      }}
                       className="sr-only"
                     />
                     <span
-                      className={`flex items-center justify-center w-6 h-6 border rounded-md mr-2 ${
+                      className={`flex items-center justify-center w-6 h-6 border rounded-md mr-2 transition-all duration-200 ${
                         hasMenu ? 'bg-greentheme border-greentheme' : 'border-gray-300 dark:border-darkthemeitems'
                       }`}
                     >
                       {hasMenu && <Check size={16} className="text-white" />}
                     </span>
-                    <span className="capitalize">{key}</span>
+                    <span className="capitalize select-none">{t('settingsPage.widget.searchTabs.menu')}</span>
                   </label>}
                   </React.Fragment>
                 ))}
-              <label className="flex items-center">
+              <label className="flex items-center cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={(autoConfirmation) as boolean}
-                  onChange={() => setAutoConfirmation((prev) => !prev)}
+                  checked={autoConfirmation || false}
+                  onChange={(e) => {
+                    e.preventDefault();
+                    handleAutoConfirmationToggle();
+                  }}
                   className="sr-only"
                 />
                 <span
-                  className={`flex items-center justify-center w-6 h-6 border rounded-md mr-2 ${autoConfirmation ? 'bg-greentheme border-greentheme' : 'border-gray-300 dark:border-darkthemeitems'
+                  className={`flex items-center justify-center w-6 h-6 border rounded-md mr-2 transition-all duration-200 ${autoConfirmation ? 'bg-greentheme border-greentheme' : 'border-gray-300 dark:border-darkthemeitems'
                     }`}
                 >
                   {autoConfirmation && <Check size={16} className="text-white" />}
                 </span>
-                <span className="capitalize">Auto-confirm online reservations</span>
+                <span className="capitalize select-none">{t('settingsPage.widget.searchTabs.autoConfirmation')}</span>
               </label>
-              <label className="flex items-center">
+              <label className="flex items-center cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={(enableDressCode) as boolean}
-                  onChange={() => setEnableDressCode((prev) => !prev)}
+                  checked={enableDressCode || false}
+                  onChange={(e) => {
+                    e.preventDefault();
+                    handleDressCodeToggle();
+                  }}
                   className="sr-only"
                 />
                 <span
-                  className={`flex items-center justify-center w-6 h-6 border rounded-md mr-2 ${enableDressCode ? 'bg-greentheme border-greentheme' : 'border-gray-300 dark:border-darkthemeitems'
+                  className={`flex items-center justify-center w-6 h-6 border rounded-md mr-2 transition-all duration-200 ${enableDressCode ? 'bg-greentheme border-greentheme' : 'border-gray-300 dark:border-darkthemeitems'
                     }`}
                 >
                   {enableDressCode && <Check size={16} className="text-white" />}
                 </span>
-                <span className="capitalize">Enable dress code</span>
+                <span className="capitalize select-none">{t('settingsPage.widget.searchTabs.enableDressCode')}</span>
+              </label>
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={enableAreaSelection || false}
+                  onChange={(e) => {
+                    e.preventDefault();
+                    handleAreaSelectionToggle();
+                  }}
+                  className="sr-only"
+                />
+                <span
+                  className={`flex items-center justify-center w-6 h-6 border rounded-md mr-2 transition-all duration-200 ${enableAreaSelection ? 'bg-greentheme border-greentheme' : 'border-gray-300 dark:border-darkthemeitems'
+                    }`}
+                >
+                  {enableAreaSelection && <Check size={16} className="text-white" />}
+                </span>
+                <span className="capitalize select-none">{t('settingsPage.widget.searchTabs.enableAreaSelection')}</span>
               </label>
 
               <label className="flex items-center">
@@ -487,7 +555,7 @@ export default function WidgetConfig() {
               <div className="space-y-4 my-6">
                 <div className="relative">
                   <textarea
-                    placeholder={'Dress code'}
+                    placeholder={t('settingsPage.widget.dressCodePlaceholder')}
                     className={`w-full inputs p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white lt-sm:w-full h-24 resize-none`}
                     value={dressCode}
                     onChange={(e) => {
@@ -495,7 +563,77 @@ export default function WidgetConfig() {
                     }}
                   />
                 </div>
+                <div className="flex flex-col items-start gap-3 mb-6">
+                  <h2 className="text-lg font-semibold mb-2">{t('settingsPage.widget.payment.title')}</h2>
+                  <div className="px-2 flex flex-col gap-4 py-1">
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={enablePayment}
+                        onChange={(e) => {
+                          e.preventDefault();
+                          handlePaymentToggle();
+                        }}
+                        className="sr-only"
+                      />
+                      <span
+                        className={`flex items-center justify-center w-6 h-6 border rounded-md mr-2 transition-all duration-200 ${
+                          enablePayment ? 'bg-greentheme border-greentheme' : 'border-gray-300 dark:border-darkthemeitems'
+                        }`}
+                      >
+                        {enablePayment && <Check size={16} className="text-white" />}
+                      </span>
+                      <span className="capitalize select-none">{t('settingsPage.widget.payment.enable')}</span>
+                    </label>
+                    
+                    {enablePayment && (
+                      <div className="ml-8 flex flex-col gap-4">
+                        <label className="flex items-center gap-2">
+                          <span className="text-sm text-gray-600 dark:text-gray-400">
+                            {t('settingsPage.widget.payment.minGuestsForPayment')}:
+                          </span>
+                          <input
+                            type="number"
+                            min={1}
+                            value={minGuestsForPayment}
+                            onChange={(e) => {
+                              const val = Number(e.target.value);
+                              setMinGuestsForPayment(val > 0 ? val : 1);
+                            }}
+                            className="inputs w-20 p-2 border border-gray-300 dark:border-darkthemeitems rounded-md bg-white dark:bg-darkthemeitems text-black dark:text-white"
+                          />
+                        </label>
+                        <label className="flex items-center gap-2">
+                          <span className="text-sm text-gray-600 dark:text-gray-400">
+                            {t('settingsPage.widget.payment.depositAmountPerGuest')}:
+                          </span>
+                          <input
+                            type="number"
+                            min={0}
+                            step="0.01"
+                            value={depositAmountPerGuest}
+                            onChange={(e) => {
+                              const val = Number(e.target.value);
+                              setDepositAmountPerGuest(val >= 0 ? val : 0);
+                            }}
+                            className="inputs w-24 p-2 border border-gray-300 dark:border-darkthemeitems rounded-md bg-white dark:bg-darkthemeitems text-black dark:text-white"
+                            placeholder="0.00"
+                          />
+                        </label>
+                      </div>
+                    )}
+                    
+                    {!enablePayment && (
+                      <div className="ml-8 mt-2">
+                        <p className="text-sm text-orange-600 dark:text-orange-400 italic">
+                          {t('settingsPage.widget.payment.disabledNote')}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
+              
               )}
               {(hasMenu) && (
                 <div className="flex justify-around gap-2 items-center">
@@ -519,11 +657,11 @@ export default function WidgetConfig() {
                       className="btn-secondary flex gap-4 items-center mt-3 justify-center cursor-pointer"
                       onClick={openPdfInNewTab}
                     >
-                      <p>Preview your menu</p>
+                      {t('settingsPage.widget.openMenu')}
                       <ScreenShareIcon size={20} />
                     </div>
                   ) : (
-                    'No menu uploaded'
+                    <span>{t('settingsPage.widget.noMenu')}</span>
                   )}
                 </div>
               )}
@@ -548,24 +686,6 @@ export default function WidgetConfig() {
           )
       }
 
-      {isWidgetActivated && <div className="space-y-2 mb-6">
-        <h2 className="text-lg font-semibold mt-2">{t('settingsPage.widget.name')}</h2>
-
-        <input
-          type="text"
-          placeholder={t('settingsPage.widget.addTitlePlaceholder')}
-          className="inputs p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <h2 className="text-lg font-semibold mt-2">{t('settingsPage.widget.description')}</h2>
-        <QuillEditor
-          value={description}
-          onChange={setDescription}
-          placeholder={t('settingsPage.widget.addDescriptionPlaceholder')}
-        />
-      </div>}
-
       <div className="flex lt-md:grid gap-3 lt-md:grid-cols-2">
         <BaseBtn
           onClick={handleSave}
@@ -576,10 +696,10 @@ export default function WidgetConfig() {
           {t('settingsPage.widget.buttons.save')}
         </BaseBtn>
         <Link to={currentUrl.includes('dev')?`https://${subdomain}.dev.tabla.ma/make/reservation`: currentUrl.includes('localhost') ? `http://italiana.localhost:5173/make/reservation`: `https://${subdomain}.tabla.ma/make/reservation`} target="_blank" className="btn-secondary w-1/4 text-center lt-md:w-full">
-          {t('settingsPage.widget.buttons.preview')} Reservation
+          {t('settingsPage.widget.buttons.preview')} {t('settingsPage.widget.reservation')}
         </Link>
         <Link to={currentUrl.includes('dev')?`https://${subdomain}.dev.tabla.ma/make/modification/preview`: currentUrl.includes('localhost') ? `http://${subdomain}.localhost:5173/make/modification/preview`:`https://${subdomain}.tabla.ma/make/modification/preview`} target="_blank" className="btn-secondary w-1/4 text-center lt-md:w-full">
-          {t('settingsPage.widget.buttons.preview')} Modification
+          {t('settingsPage.widget.buttons.preview')} {t('settingsPage.widget.modification')}
         </Link>
       </div>
       {/* Custom Toast Notification */}
@@ -589,9 +709,9 @@ export default function WidgetConfig() {
             <Check className="h-4 w-4 text-greentheme dark:text-greentheme" />
           </div>
           <div>
-            <h3 className="font-medium text-blacktheme dark:text-textdarktheme">Link copied!</h3>
+            <h3 className="font-medium text-blacktheme dark:text-textdarktheme">{t('settingsPage.widget.linkCopied')}</h3>
             <p className="text-subblack dark:text-textdarktheme/80 text-sm">
-             {currentUrl.includes('dev')?`https://${subdomain}.dev.tabla.ma/make/reservation`: currentUrl.includes('localhost') ? `http://italiana.localhost:5173/make/reservation`: `https://${subdomain}.tabla.ma/make/reservation`} copied to clipboard
+             {currentUrl.includes('dev')?`https://${subdomain}.dev.tabla.ma/make/reservation`: currentUrl.includes('localhost') ? `http://italiana.localhost:5173/make/reservation`: `https://${subdomain}.tabla.ma/make/reservation`} {t('settingsPage.widget.copied')}
             </p>
           </div>
         </div>

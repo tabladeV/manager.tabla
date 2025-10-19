@@ -14,7 +14,7 @@ import { BaseKey, BaseRecord, useNotification } from '@refinedev/core'; // Remov
 import { generateRandomNumber } from '../../../utils/helpers';
 import Konva from 'konva';
 import ZoomControls from '../ZoomControls';
-import axiosInstance from '../../../providers/axiosInstance';
+import { httpClient } from '../../../services/httpClient';
 import { useDarkContext } from '../../../context/DarkContext';
 import ActionPopup from '../../popup/ActionPopup';
 import { Table } from '../../../_root/pages/DesignPlaces'; // Keep Table type if used elsewhere
@@ -124,7 +124,7 @@ const DesignCanvas = (props: CanvasTypes) => {
   const checkTableExists = useCallback(async (tableName: string) => {
     try {
       // Removed setLoading as it's not used elsewhere in this function's scope
-      const { data } = await axiosInstance.get('api/v1/bo/tables/', {
+      const { data } = await httpClient.get('api/v1/bo/tables/', {
         params: {
           search: tableName
         }
@@ -134,7 +134,7 @@ const DesignCanvas = (props: CanvasTypes) => {
       console.error(error);
       return true; // Assume exists on error to prevent duplicate names
     }
-  }, [axiosInstance]);
+  }, []);
 
   // Transition the stage view to center a specific shape (table or prop)
   const transitionToShape = useCallback((shape: DesignElement) => {
@@ -840,8 +840,8 @@ const DesignCanvas = (props: CanvasTypes) => {
         />
         {/* Save and Reset buttons */}
         <div className="absolute bottom-2 right-2 flex gap-2 z-[2]">
-          <button className="btn-primary" onClick={saveLayout}>Save</button>
-          <button className="btn-secondary" onClick={resetLayout}>Reset</button>
+          <button className="btn-primary" onClick={saveLayout}>{t('editPlace.buttons.save')}</button>
+          <button className="btn-secondary" onClick={resetLayout}>{t('editPlace.buttons.reset')}</button>
         </div>
         {/* Design Toolbar */}
         <DesignToolbar

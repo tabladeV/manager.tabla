@@ -9,8 +9,8 @@ const SERVICE_WORKER_SCOPE = '/';
  * Ensures the service worker is registered with the correct scope.
  */
 export async function registerPwaServiceWorker(): Promise<ServiceWorkerRegistration | undefined> {
-  if (!('serviceWorker' in navigator)) {
-    console.warn('[SW Manager] Service Worker not supported in this browser.');
+  if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) {
+    console.warn('[SW Manager] Service Worker not supported in this environment.');
     return undefined;
   }
 
@@ -18,8 +18,7 @@ export async function registerPwaServiceWorker(): Promise<ServiceWorkerRegistrat
     // Check existing registrations to see if our specific SW is already there and active
     const existingRegistrations = await navigator.serviceWorker.getRegistrations();
     for (const reg of existingRegistrations) {
-      if (reg.active && reg.active.scriptURL.endsWith(PWA_SERVICE_WORKER_NAME) && reg.scope === (self.location.origin + SERVICE_WORKER_SCOPE)) {
-        console.log(`[SW Manager] Service worker ${PWA_SERVICE_WORKER_NAME} already registered, active, and correctly scoped:`, reg);
+      if (reg.active && reg.active.scriptURL.endsWith(PWA_SERVICE_WORKER_NAME) && reg.scope === (window.location.origin + SERVICE_WORKER_SCOPE)) {
         // Optionally trigger an update check on the existing active worker
         // reg.update(); 
         return reg;
@@ -27,12 +26,10 @@ export async function registerPwaServiceWorker(): Promise<ServiceWorkerRegistrat
     }
 
     // If not found or not active with correct scope, attempt to register.
-    console.log(`[SW Manager] Attempting to register service worker: ${PWA_SERVICE_WORKER_NAME} with scope ${SERVICE_WORKER_SCOPE}`);
     const registration = await navigator.serviceWorker.register(PWA_SERVICE_WORKER_NAME, {
       scope: SERVICE_WORKER_SCOPE,
       // type: 'module', // VitePWA should handle if the SW output is a module
     });
-    console.log(`[SW Manager] Service worker ${PWA_SERVICE_WORKER_NAME} registration attempt successful:`, registration);
     
     // Wait for the new service worker to become active
     // This is important before calling getToken with this registration
@@ -41,7 +38,6 @@ export async function registerPwaServiceWorker(): Promise<ServiceWorkerRegistrat
         if (registration.installing) {
           registration.installing.addEventListener('statechange', () => {
             if (registration.active) {
-              console.log('[SW Manager] Newly registered service worker is now active.');
               resolve();
             }
           });
@@ -54,7 +50,6 @@ export async function registerPwaServiceWorker(): Promise<ServiceWorkerRegistrat
         // If there's no installing worker, but it's not active yet,
         // it might be waiting. navigator.serviceWorker.ready can help.
         await navigator.serviceWorker.ready;
-        console.log('[SW Manager] Service worker became ready (active).');
     }
     return registration;
 
@@ -69,7 +64,7 @@ export async function registerPwaServiceWorker(): Promise<ServiceWorkerRegistrat
  * It prioritizes an active service worker matching the name and scope.
  */
 export async function getSWRegistration(): Promise<ServiceWorkerRegistration | undefined> {
-  if (!('serviceWorker' in navigator)) {
+  if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) {
     console.warn('[SW Manager] Service Worker not supported for getSWRegistration.');
     return undefined;
   }
@@ -78,8 +73,7 @@ export async function getSWRegistration(): Promise<ServiceWorkerRegistration | u
     for (const registration of registrations) {
       if (registration.active && 
           registration.active.scriptURL.endsWith(PWA_SERVICE_WORKER_NAME) &&
-          registration.scope === (self.location.origin + SERVICE_WORKER_SCOPE)) {
-        console.log(`[SW Manager] Found ACTIVE PWA service worker registration:`, registration);
+          registration.scope === (window.location.origin + SERVICE_WORKER_SCOPE)) {
         return registration;
       }
     }
@@ -88,13 +82,10 @@ export async function getSWRegistration(): Promise<ServiceWorkerRegistration | u
     // This might be less ideal for getToken which prefers an active worker.
     for (const registration of registrations) {
         const swScriptUrl = registration.installing?.scriptURL || registration.waiting?.scriptURL;
-        if (swScriptUrl && swScriptUrl.endsWith(PWA_SERVICE_WORKER_NAME) && registration.scope === (self.location.origin + SERVICE_WORKER_SCOPE)) {
-            console.log(`[SW Manager] Found PWA service worker registration (not yet active):`, registration);
+        if (swScriptUrl && swScriptUrl.endsWith(PWA_SERVICE_WORKER_NAME) && registration.scope === (window.location.origin + SERVICE_WORKER_SCOPE)) {
             return registration; // Firebase getToken might handle waiting for activation
         }
     }
-
-    console.log(`[SW Manager] No suitable registration found for ${PWA_SERVICE_WORKER_NAME} with scope ${SERVICE_WORKER_SCOPE}.`);
     return undefined;
   } catch (err) {
     console.error('[SW Manager] Error in getSWRegistration:', err);
@@ -106,16 +97,17 @@ export async function getSWRegistration(): Promise<ServiceWorkerRegistration | u
  * Manages the service worker lifecycle: registers on login/permission, unregisters on logout/denial.
  */
 export async function updateServiceWorker() {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+  if (typeof navigator === 'undefined' || 
+      typeof window === 'undefined' || 
+      !('serviceWorker' in navigator) || 
+      !('PushManager' in window)) {
     console.warn('[SW Manager] Push notifications or Service Worker not supported.');
     return;
   }
 
   const isLoggedIn = localStorage.getItem('isLogedIn') === 'true';
-  const permission = Notification.permission;
+  const permission = typeof Notification !== 'undefined' ? Notification.permission : 'default';
   let registration = await getSWRegistration(); // Check if our SW is already registered
-
-  console.log('[SW Manager] updateServiceWorker initial state:', { isLoggedIn, permission, hasReg: !!registration, swName: PWA_SERVICE_WORKER_NAME });
 
   if (!isLoggedIn || permission === 'denied') {
     if (registration) {
@@ -124,9 +116,6 @@ export async function updateServiceWorker() {
           registration.installing?.scriptURL.endsWith(PWA_SERVICE_WORKER_NAME) ||
           registration.waiting?.scriptURL.endsWith(PWA_SERVICE_WORKER_NAME)) {
         await registration.unregister();
-        console.log(`[SW Manager] Unregistered service worker ${PWA_SERVICE_WORKER_NAME} due to logout or permission denial.`);
-      } else {
-        console.log(`[SW Manager] Found a registration, but it's not ${PWA_SERVICE_WORKER_NAME}. Not unregistering.`, registration);
       }
     }
     return;
@@ -135,14 +124,9 @@ export async function updateServiceWorker() {
   // If logged in and permission is not denied, ensure our SW is registered.
   // At this point, permission is either 'granted' or 'default'
   if (!registration || !(registration.active?.scriptURL.endsWith(PWA_SERVICE_WORKER_NAME))) {
-    console.log(`[SW Manager] No existing valid registration for ${PWA_SERVICE_WORKER_NAME} or not active. Attempting to register/activate.`);
     registration = await registerPwaServiceWorker(); // This function now also waits for activation
-    if (registration) {
-      console.log(`[SW Manager] ${PWA_SERVICE_WORKER_NAME} registered/activated by updateServiceWorker.`);
-    } else {
+    if (!registration) {
       console.error(`[SW Manager] Failed to register/activate ${PWA_SERVICE_WORKER_NAME} via updateServiceWorker.`);
     }
-  } else {
-    console.log(`[SW Manager] Service worker ${PWA_SERVICE_WORKER_NAME} already registered and active.`, registration);
   }
 }

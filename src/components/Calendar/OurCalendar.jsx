@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { eachDayOfInterval, endOfMonth, format, getDay, isEqual, isSameMonth, isToday, parse, startOfToday, add, isSameDay } from 'date-fns';
+import { useTranslation } from 'react-i18next';
+import { useDebouncedCallback } from '../../hooks/useDebouncedCallback';
 
 const colStartClasses = [
   '', 'col-start-2', 'col-start-3', 'col-start-4', 'col-start-5', 'col-start-6', 'col-start-7'
@@ -37,19 +39,19 @@ const OurCalendar = (props) => {
     end: endOfMonth(firstDayCurrentMonth),
   });
 
-  function previousMonth() {
+  const previousMonth = useDebouncedCallback(()=> {
     // if (loading) return;
     let firstDayNextMonth = add(firstDayCurrentMonth, { months: -1 });
     setCurrentMonth(format(firstDayNextMonth, 'MMM-yyyy'));
     props.onMonthChange?.(format(firstDayNextMonth, 'yyyy-MM'));
-  }
+  }, 300);
 
-  function nextMonth() {
+  const nextMonth = useDebouncedCallback(()=> {
     // if (loading) return;
     let firstDayNextMonth = add(firstDayCurrentMonth, { months: 1 });
     setCurrentMonth(format(firstDayNextMonth, 'MMM-yyyy'));
     props.onMonthChange?.(format(firstDayNextMonth, 'yyyy-MM'));
-  }
+  }, 300);
 
   function selectingDate(day) {
     if (loading) return;
@@ -111,6 +113,11 @@ const OurCalendar = (props) => {
 
   // Use either external selectedDate or internal selectedDay
   const actualSelectedDay = value || selectedDay;
+
+  const {t}= useTranslation();
+  // Get localized month name from i18n
+  const localizedMonth = t(`calendarPopup.months.${format(firstDayCurrentMonth, 'MMMM').toLowerCase()}`) || format(firstDayCurrentMonth, 'MMMM');
+
   return (
     <div className='p-[1em] w-full h-full mx-auto'>
       {loading ? (
@@ -118,7 +125,9 @@ const OurCalendar = (props) => {
       ) : (
         <>
           <div className='text-[20px] items-center mb-2 flex justify-between'>
-            <div className='font-bold'>{format(firstDayCurrentMonth, 'MMMM yyyy')}</div>
+            <div className='font-bold'>
+              {localizedMonth} {format(firstDayCurrentMonth, 'yyyy')}
+            </div>
             <div className='flex'>
               <button 
                 onClick={previousMonth} 
@@ -138,7 +147,7 @@ const OurCalendar = (props) => {
           </div>
           <div className='mx-auto'>
             <div className='grid mx-auto grid-cols-7'>
-              {[ 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => (
+              {[ t('calendarPopup.days.sunday'), t('calendarPopup.days.monday'), t('calendarPopup.days.tuesday'), t('calendarPopup.days.wednesday'), t('calendarPopup.days.thursday'), t('calendarPopup.days.friday'), t('calendarPopup.days.saturday')].map((day, index) => (
                 <button key={index} className='font-bold ml-3 w-[30px] cursor-default rounded-[6px] h-[30px]'>{day}</button>
               ))}
             </div>

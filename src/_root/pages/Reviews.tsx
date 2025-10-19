@@ -11,23 +11,27 @@ import { type BaseKey, type BaseRecord, useList } from "@refinedev/core"
 import Pagination from "../../components/reservation/Pagination"
 import ExportModal from "../../components/common/ExportModal"
 import useExportConfig from "../../components/common/config/exportConfig"
+import { httpClient } from "../../services/httpClient"
+import { saveAs } from "file-saver"
+import { useAsyncTaskManager } from "../../hooks/useAsyncTaskManager"
+import { DevOnly } from "../../components/DevOnly"
 
 interface Review {
   id: BaseKey
-  food_rating: string
-  value_for_money: string
-  service_rating: string
-  ambience_rating: string
+  food_rating?: string | null
+  value_for_money?: string | null
+  service_rating?: string | null
+  ambience_rating?: string | null
   created_at: string
-  description: string
-  customer: {
-    id: number
-    first_name: string
-    last_name: string
-    email: string
-    phone: string
-  }
-  source: string
+  description?: string | null
+  customer?: {
+    id?: number
+    first_name?: string | null
+    last_name?: string | null
+    email?: string | null
+    phone?: string | null
+  } | null
+  source?: string | null
 }
 
 const Reviews = () => {
@@ -39,14 +43,69 @@ const Reviews = () => {
 
   const [page, setPage] = useState(1)
   const [count, setCount] = useState(0)
-  const [size, setSize] = useState(10)
+  const [size] = useState(10)
 
   const [reviews, setReviews] = useState<Review[]>([])
 
   const [searchKeyword, setSearchKeyword] = useState("")
   const [showExportModal, setShowExportModal] = useState(false)
+  const [loading, setLoading] = useState(false)
   const { reviews: reviewsExportConfig } = useExportConfig()
-  // const {reviews: reviewsExportConfig} = useAdvancedExportConfig();
+  const { startTask, AsyncTaskManager } = useAsyncTaskManager()
+
+  const handleExport = async (format: 'sheet' | 'pdf', selectedColumns: string[], customValues: Record<string, unknown>, pdfEngine?: 'xhtml2pdf' | 'reportlab') => {
+    const {
+      created_at__gte,
+      created_at__lte,
+      ratings,
+      includeRatingStats,
+      async: asyncGeneration,
+      email
+    } = customValues
+
+    const requestBody: Record<string, unknown> = {
+      format,
+      selected_columns: selectedColumns,
+      async_generation: asyncGeneration,
+      async: asyncGeneration,
+      customOptions: {
+        includeRatingStats: !!includeRatingStats,
+      },
+      pdf_engine: pdfEngine,
+    }
+
+    if (created_at__gte) requestBody.created_at__gte = created_at__gte
+    if (created_at__lte) requestBody.created_at__lte = created_at__lte
+    // if (ratings && ratings.length > 0) requestBody.ratings = ratings // has issues
+    if (searchKeyword) requestBody.search = searchKeyword
+    if (asyncGeneration && email) requestBody.email = email
+
+    try {
+      setLoading(true)
+      const response = await httpClient.post('/api/v1/bo/reports/reviews/', requestBody, {
+        responseType: asyncGeneration ? 'json' : 'blob',
+      })
+
+      if (asyncGeneration) {
+        const { task_id } = response.data
+        if (email) {
+          alert(`Report generation started. You will be notified by email at ${email}. Task ID: ${task_id}`)
+        } else {
+          startTask(task_id)
+        }
+      } else {
+        const blob = new Blob([response.data], { type: response.headers['content-type'] })
+        const filename = `reviews_export.${format === 'sheet' ? 'xlsx' : 'pdf'}`
+        saveAs(blob, filename)
+      }
+      setShowExportModal(false)
+    } catch (error) {
+      console.error("Export failed:", error)
+      alert("Failed to export data. Please check the console for details.")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const searchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
     const keyword = e.target.value.toLowerCase()
@@ -64,7 +123,7 @@ const Reviews = () => {
     end: null,
   })
 
-  const { data, isLoading, error } = useList({
+  const { isLoading } = useList({
     resource: "api/v1/reviews/",
     filters: [
       {
@@ -112,16 +171,18 @@ const Reviews = () => {
     }
   }, [reviewsAPIInfo])
 
-  const avg = (a: number, b: number, c: number, d: number) => {
-    return ((a + b + c + d) / 4).toFixed(2)
+  const avg = (a: string | number | null | undefined, b: string | number | null | undefined, c: string | number | null | undefined, d: string | number | null | undefined) => {
+    const numA = Number(a) || 0
+    const numB = Number(b) || 0
+    const numC = Number(c) || 0
+    const numD = Number(d) || 0
+    return ((numA + numB + numC + numD) / 4).toFixed(2)
   }
 
   const [focusedFilter, setFocusedFilter] = useState("")
   const [selectingDay, setSelectingDay] = useState("")
   const [focusedDate, setFocusedDate] = useState(false)
   const [searchResults, setSearchResults] = useState<Review[]>([])
-  const [focusReview, setFocusReview] = useState(false)
-  const [showModal, setShowModal] = useState(false)
   const [selectedClient, setSelectedClient] = useState<BaseKey>(0)
   const [selectedReview, setSelectedReview] = useState<Review>()
 
@@ -132,7 +193,7 @@ const Reviews = () => {
         setSelectedReview(review)
       }
     }
-  }, [selectedClient])
+  }, [selectedClient, reviews])
 
   const handleDateClick = (range: { start: Date; end: Date }) => {
     setSelectedDateRange(range)
@@ -156,23 +217,26 @@ const Reviews = () => {
     setSelectedDateRange({ start: null, end: null })
   }
 
-  let filteredReviews = reviews as Review[]
-
   useEffect(() => {
     if (searchResults.length === 0) {
       setSearchResults(reviews as Review[])
     }
-  }, [reviews])
+  }, [reviews, searchResults.length])
 
-  filteredReviews = searchResults?.filter((reservation: Review) => {
+  const filteredReviews = searchResults?.filter((reservation: Review) => {
     if (focusedFilter !== "") return false
-    if (selectedDateRange.start && selectedDateRange.end) {
-      const reservationDate = reservation.created_at.slice(0, 10)
-      const reservationDateObj = new Date(reservationDate)
-      return reservationDateObj >= selectedDateRange.start && reservationDateObj <= selectedDateRange.end
+    if (selectedDateRange.start && selectedDateRange.end && reservation.created_at) {
+      try {
+        const reservationDate = reservation.created_at.slice(0, 10)
+        const reservationDateObj = new Date(reservationDate)
+        return reservationDateObj >= selectedDateRange.start && reservationDateObj <= selectedDateRange.end
+      } catch (error) {
+        console.warn('Invalid date format:', reservation.created_at)
+        return false
+      }
     }
     return true
-  })
+  }) || []
 
   const stars = (rating: number) => {
     rating = Math.round(rating)
@@ -183,16 +247,35 @@ const Reviews = () => {
     return number
   }
 
+  // Helper function to safely get customer name
+  const getCustomerName = (customer?: { first_name?: string | null; last_name?: string | null } | null) => {
+    if (!customer) return "Unknown User"
+    const firstName = customer.first_name || "Unknown"
+    const lastName = customer.last_name || "User"
+    return `${firstName} ${lastName}`
+  }
+
+  // Helper function to safely get rating value
+  const getRatingValue = (rating?: string | null) => {
+    return rating || "No rating"
+  }
+
+  // Helper function to safely get rating number
+  const getRatingNumber = (rating?: string | null) => {
+    return Number(rating) || 0
+  }
+
   return (
     <div>
+      <AsyncTaskManager />
       {showExportModal && (
         <ExportModal
+          title="Export Reviews"
           columns={reviewsExportConfig.columns}
           customFields={reviewsExportConfig.customFields}
-          onExport={(format, selectedColumns, customValues) => {
-            setShowExportModal(false)
-          }}
+          onExport={handleExport}
           onClose={() => setShowExportModal(false)}
+          loading={loading}
         />
       )}
       {selectedClient !== 0 && (
@@ -204,7 +287,7 @@ const Reviews = () => {
             <h1 className="text-2xl font-[600] mb-4">
               {t("reviews.view.title")} by{" "}
               <span className="font-[800]">
-                {selectedReview?.customer.first_name} {selectedReview?.customer.last_name}
+                {getCustomerName(selectedReview?.customer)}
               </span>
             </h1>
             <div className="space-y-2">
@@ -212,7 +295,7 @@ const Reviews = () => {
                 <div className="font-[600] mb-[.4em]">{t("reviews.view.comment")}:</div>
                 {selectedReview && (
                   <p className={`p-2 border-[2px] rounded-md border-black dark:border-darkthemeitems`}>
-                    {selectedReview.description}
+                    {selectedReview.description || t("reviews.view.noComment")}
                   </p>
                 )}
 
@@ -220,39 +303,39 @@ const Reviews = () => {
                   <>
                     <div className="flex mt-4 gap-4">
                       <div className="font-[600]">{t("reviews.view.food")}:</div>
-                      {stars(Number(selectedReview.food_rating))}
-                      <span>{`(${selectedReview.food_rating})`}</span>
+                      {stars(getRatingNumber(selectedReview.food_rating))}
+                      <span>{`(${getRatingValue(selectedReview.food_rating)})`}</span>
                     </div>
                     <div className="flex mt-4 gap-4">
                       <div className="font-[600]">{t("reviews.view.service")}:</div>
-                      {stars(Number(selectedReview.service_rating))}
-                      <span>{`(${selectedReview.service_rating})`}</span>
+                      {stars(getRatingNumber(selectedReview.service_rating))}
+                      <span>{`(${getRatingValue(selectedReview.service_rating)})`}</span>
                     </div>
                     <div className="flex mt-4 gap-4">
                       <div className="font-[600]">{t("reviews.view.environment")}:</div>
-                      {stars(Number(selectedReview.ambience_rating))}
-                      <span>{`(${selectedReview.ambience_rating})`}</span>
+                      {stars(getRatingNumber(selectedReview.ambience_rating))}
+                      <span>{`(${getRatingValue(selectedReview.ambience_rating)})`}</span>
                     </div>
                     <div className="flex mt-4 gap-4">
                       <div className="font-[600]">{t("reviews.view.valueForMoney")}:</div>
-                      {stars(Number(selectedReview.value_for_money))}
-                      <span>{`(${selectedReview.value_for_money})`}</span>
+                      {stars(getRatingNumber(selectedReview.value_for_money))}
+                      <span>{`(${getRatingValue(selectedReview.value_for_money)})`}</span>
                     </div>
 
                     <div className="flex mt-4 gap-4">
                       <div className="font-[600]">{t("reviews.view.total")}:</div>
                       {stars(
-                        (Number(selectedReview.ambience_rating) +
-                          Number(selectedReview.service_rating) +
-                          Number(selectedReview.food_rating) +
-                          Number(selectedReview.value_for_money)) /
+                        (getRatingNumber(selectedReview.ambience_rating) +
+                          getRatingNumber(selectedReview.service_rating) +
+                          getRatingNumber(selectedReview.food_rating) +
+                          getRatingNumber(selectedReview.value_for_money)) /
                           4,
                       )}
                       <span>{`(${(
-                        (Number(selectedReview.ambience_rating) +
-                          Number(selectedReview.service_rating) +
-                          Number(selectedReview.food_rating) +
-                          Number(selectedReview.value_for_money)) /
+                        (getRatingNumber(selectedReview.ambience_rating) +
+                          getRatingNumber(selectedReview.service_rating) +
+                          getRatingNumber(selectedReview.food_rating) +
+                          getRatingNumber(selectedReview.value_for_money)) /
                           4
                       ).toFixed(2)})`}</span>
                     </div>
@@ -265,10 +348,11 @@ const Reviews = () => {
       )}
       <div className="flex justify-between items-center mb-2">
         <h1>{t("reviews.title")}</h1>
+        <DevOnly>
         <button onClick={() => setShowExportModal(true)} className={`dark:text-whitetheme btn-primary`}>
-          {/* {t('reviews.filters.all')} */}
-          export
+          {t("reviews.buttons.export")}
         </button>
+        </DevOnly>
       </div>
       <div className="flex lt-sm:flex-col lt-sm:gap-2 justify-between">
         <div className="">
@@ -349,58 +433,58 @@ const Reviews = () => {
                     </td>
                   </tr>
                 ))
-              : reviews.map((review) => (
+              : (reviews || []).map((review) => (
                   <tr key={review.id} className="hover:opacity-75">
                     <td
                       className="px-6 py-4 whitespace-nowrap cursor-pointer"
                       onClick={() => setSelectedClient(review.id)}
                     >
-                      {review.id}
+                      {review.id || 'N/A'}
                     </td>
                     <td
                       className="px-6 py-4 whitespace-nowrap cursor-pointer"
                       onClick={() => setSelectedClient(review.id)}
                     >
-                      {review.customer.first_name} {review.customer.last_name}
+                      {getCustomerName(review.customer)}
                     </td>
                     <td
                       className="px-6 py-4 max-w-[20em] whitespace-nowrap cursor-pointer"
                       onClick={() => setSelectedClient(review.id)}
                     >
-                      {review.description.length > 50
+                      {review.description && review.description.length > 50
                         ? `${review.description.substring(0, 40)}...`
-                        : review.description}
+                        : review.description || 'No comment'}
                     </td>
                     <td
                       className="px-6 py-4 whitespace-nowrap cursor-pointer"
                       onClick={() => setSelectedClient(review.id)}
                     >
-                      {review.food_rating}
+                      {getRatingValue(review.food_rating)}
                     </td>
                     <td
                       className="px-6 py-4 whitespace-nowrap cursor-pointer"
                       onClick={() => setSelectedClient(review.id)}
                     >
-                      {review.service_rating}
+                      {getRatingValue(review.service_rating)}
                     </td>
                     <td
                       className="px-6 py-4 whitespace-nowrap cursor-pointer"
                       onClick={() => setSelectedClient(review.id)}
                     >
-                      {review.ambience_rating}
+                      {getRatingValue(review.ambience_rating)}
                     </td>
                     <td
                       className="px-6 py-4 whitespace-nowrap cursor-pointer"
                       onClick={() => setSelectedClient(review.id)}
                     >
-                      {review.value_for_money}
+                      {getRatingValue(review.value_for_money)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap" onClick={() => setSelectedClient(review.id)}>
+                    <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => setSelectedClient(review.id)}>
                       {avg(
-                        Number(review.food_rating),
-                        Number(review.service_rating),
-                        Number(review.ambience_rating),
-                        Number(review.value_for_money),
+                        review.food_rating,
+                        review.service_rating,
+                        review.ambience_rating,
+                        review.value_for_money,
                       )}
                     </td>
                   </tr>
@@ -411,6 +495,7 @@ const Reviews = () => {
           setPage={(page: number) => {
             setPage(page)
           }}
+          page={page}
           size={size}
           count={count}
         />

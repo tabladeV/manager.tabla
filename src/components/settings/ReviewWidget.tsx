@@ -6,7 +6,7 @@ import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
-import axiosInstance from "../../providers/axiosInstance"
+import { httpClient } from "../../services/httpClient"
 
 interface ReviewSettings {
   id: BaseKey
@@ -14,6 +14,8 @@ interface ReviewSettings {
   description: string
   logo: string
   restaurant: number
+  auto_send_review: boolean
+  review_delay_hours: number
 }
 
 interface ToastProps {
@@ -63,6 +65,8 @@ const ReviewWidget = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [deleteLogo, setDeleteLogo] = useState<boolean>(false)
   const [formChanged, setFormChanged] = useState<boolean>(false)
+  const [autoSendReview, setAutoSendReview] = useState<boolean>(false)
+  const [reviewDelay, setReviewDelay] = useState<number>(0)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -75,6 +79,8 @@ const ReviewWidget = () => {
       setTitle(data.title || "")
       setDescription(data.description || "")
       setLogo(data.logo || null)
+      setAutoSendReview(data.auto_send_review || false)
+      setReviewDelay(data.review_delay_hours || 0)
       setDeleteLogo(false)
       setFormChanged(false)
     }
@@ -84,10 +90,15 @@ const ReviewWidget = () => {
   useEffect(() => {
     if (reviewSettings) {
       const hasChanges =
-        title !== reviewSettings.title || description !== reviewSettings.description || file !== null || deleteLogo
+        title !== reviewSettings.title ||
+        description !== reviewSettings.description ||
+        file !== null ||
+        deleteLogo ||
+        autoSendReview !== reviewSettings.auto_send_review ||
+        reviewDelay !== reviewSettings.review_delay_hours
       setFormChanged(hasChanges)
     }
-  }, [title, description, file, deleteLogo, reviewSettings])
+  }, [title, description, file, deleteLogo, reviewSettings, autoSendReview, reviewDelay])
 
   // Handle file selection
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -128,6 +139,8 @@ const ReviewWidget = () => {
       const formData = new FormData()
       formData.append("title", title)
       formData.append("description", description)
+      formData.append("auto_send_review", autoSendReview.toString())
+      formData.append("review_delay_hours", reviewDelay.toString())
 
       if (file) {
         formData.append("logo", file)
@@ -138,7 +151,8 @@ const ReviewWidget = () => {
         formData.append("clear_logo", "true")
       }
 
-      await axiosInstance.patch("/api/v1/reviews/widget", formData)
+      // Let the unified HTTP client handle FormData automatically
+      await httpClient.patch("/api/v1/reviews/widget", formData)
       showToast("success", "Configuration saved successfully!")
       refetch() // Refresh data after successful update
       setFormChanged(false)
@@ -183,7 +197,7 @@ const ReviewWidget = () => {
       </h1>
 
       <div className="mb-6">
-        <label className="block text-sm font-medium mb-2">Logo</label>
+        <label className="block text-sm font-medium mb-2">{t('settingsPage.reviewWidget.labels.logo')}</label>
         {logo || previewUrl ? (
           <div className="relative w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden border border-gray-200 dark:border-darkthemeitems">
             <img
@@ -214,7 +228,7 @@ const ReviewWidget = () => {
       <div className="space-y-4 mb-6">
         <div>
           <label htmlFor="title" className="block text-sm font-medium mb-2">
-            Title
+            {t("settingsPage.reviewWidget.labels.title")}
           </label>
           <input
             id="title"
@@ -228,7 +242,7 @@ const ReviewWidget = () => {
 
         <div>
           <label htmlFor="description" className="block text-sm font-medium mb-2">
-            Description
+            {t("settingsPage.reviewWidget.labels.description")}
           </label>
           <textarea
             id="description"
@@ -238,6 +252,41 @@ const ReviewWidget = () => {
             onChange={(e) => setDescription(e.target.value)}
           />
         </div>
+      </div>
+
+      <div className="mb-6 flex flex-wrap gap-4">
+        <label className="flex cursor-pointer">
+          <input
+            type="checkbox"
+            checked={autoSendReview}
+            onChange={() => setAutoSendReview((prev) => !prev)}
+            className="sr-only"
+          />
+          <span
+            className={`flex items-center justify-center w-6 h-6 border rounded-md mr-2 ${
+              autoSendReview ? "bg-greentheme border-greentheme" : "border-gray-300 dark:border-darkthemeitems"
+            }`}
+          >
+            {autoSendReview && <Check size={16} className="text-white" />}
+          </span>
+          <span className="text-sm font-medium">{t("settingsPage.reviewWidget.labels.enableAutoSend")}</span>
+        </label>
+
+        {autoSendReview && (
+          <div>
+            <label htmlFor="reviewDelay" className="block text-sm font-medium mb-2">
+              {t("settingsPage.reviewWidget.labels.reviewDelay")}
+            </label>
+            <input
+              id="reviewDelay"
+              type="number"
+              min="0"
+              value={reviewDelay}
+              onChange={(e) => setReviewDelay(Number(e.target.value))}
+              className="w-full inputs p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white"
+            />
+          </div>
+        )}
       </div>
 
       <div className="flex gap-3 lt-md:flex-col">

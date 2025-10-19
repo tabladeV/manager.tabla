@@ -517,7 +517,7 @@ const ClientInterface = () => {
                   }}
                   className="btn-primary mt-2 bg-softredtheme text-redtheme hover:bg-redtheme hover:text-white flex items-center gap-3"
                 >
-                  <Trash size={14} /> Delete client
+                  <Trash size={14} /> {t("clients.buttons.deleteClient")}
                 </button>
               </CanAccess>
             </div>
@@ -580,7 +580,7 @@ const ClientInterface = () => {
                             <td className="p-2 ">
                               <span className="flex gap-3 w-full px-3 py-2 rounded cursor-pointer  transition-colors dark:bg-bgdarktheme2  bg-gray-100 items-start ">
                                 <label htmlFor="Mr" className="text-sm font-medium text-[#555555] dark:text-[#cccccc]">
-                                  Mr.
+                                  {t("clients.titles.mr")}
                                 </label>
                                 <input
                                   type="checkbox"
@@ -590,7 +590,7 @@ const ClientInterface = () => {
                                   onChange={() => handleTitleChange("mr")}
                                 />
                                 <label htmlFor="Mrs" className="text-sm font-medium text-[#555555] dark:text-[#cccccc]">
-                                  Mrs.
+                                  {t("clients.titles.mrs")}
                                 </label>
                                 <input
                                   type="checkbox"
@@ -600,7 +600,7 @@ const ClientInterface = () => {
                                   onChange={() => handleTitleChange("mrs")}
                                 />
                                 <label htmlFor="Ms" className="text-sm font-medium text-[#555555] dark:text-[#cccccc]">
-                                  Ms.
+                                  {t("clients.titles.ms")}
                                 </label>
                                 <input
                                   type="checkbox"
@@ -630,7 +630,7 @@ const ClientInterface = () => {
                             <td className="font-medium p-2 border-l border-gray-300">{t('clients.profileSection.fields.email')}</td>
                             {renderCell('email')}
                           </tr> */}
-                          <tr className="border border-gray-300">
+                          <tr className="border  border-gray-300">
                             <td className="font-medium p-2">{t("clients.profileSection.fields.phoneNumber")}</td>
                             {renderCell("phone")}
                             {/* <td className="font-medium p-2 border-l border-gray-300 lt-sm:hidden">{t('clients.profileSection.fields.alternatePhone')}</td>
@@ -750,7 +750,7 @@ const ClientInterface = () => {
                         </tbody>
                       </table>
                     </div>
-                    <Pagination count={count} setPage={(page) => setPage(page)} size={pageSize} />
+                    <Pagination count={count} page={page} setPage={(page) => setPage(page)} size={pageSize} />
                   </div>
                 )}
               </div>

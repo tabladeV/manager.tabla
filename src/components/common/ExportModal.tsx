@@ -1,197 +1,211 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+"use client"
 
-export type InputType = 'text' | 'number' | 'checkbox' | 'radio' | 'select' | 'date';
-
-interface Column {
-  key: string;
-  label: string;
-}
-
-interface CustomFieldOption {
-  value: string;
-  label: string;
-}
-
-interface CustomField {
-  key: string;
-  label: string;
-  input: InputType;
-  options?: CustomFieldOption[];
-  defaultValue?: string | number | boolean;
-  children?: CustomField[];
-  showChildrenWhen?: {
-    value: any;  // Value that triggers showing children
-    condition?: 'equals' | 'notEquals' | 'includes' | 'truthy' | 'falsy';
-  };
-}
+import { useState } from "react"
+import { useTranslation } from "react-i18next"
+import type { Column, CustomField } from "./config/exportConfig"
+import BaseBtn from "./BaseBtn"
+import type { JSX } from "react/jsx-runtime" // Import JSX to fix the undeclared variable error
 
 interface ExportModalProps {
-  title?: string;
-  customOptionsTitle?: string;
-  columns: Column[];
-  customFields?: CustomField[];
-  onExport: (format: 'sheet' | 'pdf', selectedColumns: string[], customValues: Record<string, any>) => void;
-  onClose: () => void;
+  title?: string
+  customOptionsTitle?: string
+  columns: Column[]
+  customFields?: CustomField[]
+  onExport: (
+    format: "sheet" | "pdf",
+    selectedColumns: string[],
+    customValues: Record<string, any>,
+    pdfEngine?: "xhtml2pdf" | "reportlab",
+  ) => void
+  onClose: () => void
+  loading?: boolean
 }
 
-const ExportModal = ({ columns, customFields = [], title, customOptionsTitle, onExport, onClose }: ExportModalProps) => {
-  const { t } = useTranslation();
-  const [exportFormat, setExportFormat] = useState<'sheet' | 'pdf'>('sheet');
-  const [selectedColumns, setSelectedColumns] = useState<string[]>(columns.map(c => c.key));
+const ExportModal = ({
+  columns,
+  customFields = [],
+  title,
+  customOptionsTitle,
+  onExport,
+  onClose,
+  loading,
+}: ExportModalProps) => {
+  const { t } = useTranslation()
+  const [exportFormat, setExportFormat] = useState<"sheet" | "pdf">("sheet")
+  const [pdfEngine, setPdfEngine] = useState<"xhtml2pdf" | "reportlab">("xhtml2pdf")
+  const [selectedColumns, setSelectedColumns] = useState<string[]>(columns.map((c) => c.key))
   const [customValues, setCustomValues] = useState<Record<string, any>>(() => {
     // Initialize custom values with defaults (recursive function to handle nested fields)
     const initializeValues = (fields: CustomField[]): Record<string, any> => {
-      const values: Record<string, any> = {};
-      
-      fields.forEach(field => {
+      const values: Record<string, any> = {}
+      fields.forEach((field) => {
         if (field.defaultValue !== undefined) {
-          values[field.key] = field.defaultValue;
+          values[field.key] = field.defaultValue
         } else {
           // Set sensible defaults based on input type
           switch (field.input) {
-            case 'checkbox':
-              values[field.key] = false;
-              break;
-            case 'radio':
-            case 'select':
-              values[field.key] = field.options && field.options.length > 0 
-                ? field.options[0].value 
-                : '';
-              break;
-            case 'number':
-              values[field.key] = 0;
-              break;
-            case 'text':
+            case "checkbox":
+              values[field.key] = false
+              break
+            case "checkboxGroup":
+              values[field.key] = field.defaultValue || []
+              break
+            case "radio":
+            case "select":
+              values[field.key] = field.options && field.options.length > 0 ? field.options[0].value : ""
+              break
+            case "number":
+              values[field.key] = 0
+              break
+            case "text":
             default:
-              values[field.key] = '';
-              break;
+              values[field.key] = ""
+              break
           }
         }
-        
         // If field has children, initialize their values too
         if (field.children && field.children.length > 0) {
-          const childValues = initializeValues(field.children);
-          Object.assign(values, childValues);
+          const childValues = initializeValues(field.children)
+          Object.assign(values, childValues)
         }
-      });
-      
-      return values;
-    };
-    
-    return initializeValues(customFields);
-  });
+      })
+      return values
+    }
+    return initializeValues(customFields)
+  })
 
   const handleColumnChange = (key: string, checked: boolean) => {
     if (checked) {
-      setSelectedColumns(prev => [...prev, key]);
+      setSelectedColumns((prev) => [...prev, key])
     } else {
-      setSelectedColumns(prev => prev.filter(k => k !== key));
+      setSelectedColumns((prev) => prev.filter((k) => k !== key))
     }
-  };
+  }
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedColumns(columns.map(c => c.key));
+      setSelectedColumns(columns.map((c) => c.key))
     } else {
-      setSelectedColumns([]);
+      setSelectedColumns([])
     }
-  };
+  }
 
   const handleCustomFieldChange = (key: string, value: any) => {
-    setCustomValues(prev => ({
+    setCustomValues((prev) => ({
       ...prev,
-      [key]: value
-    }));
-  };
+      [key]: value,
+    }))
+  }
 
   // Function to determine if children should be shown
   const shouldShowChildren = (field: CustomField): boolean => {
     if (!field.showChildrenWhen || !field.children || field.children.length === 0) {
-      return false;
+      return false
     }
-    
-    const { value, condition = 'equals' } = field.showChildrenWhen;
-    const fieldValue = customValues[field.key];
-    
+    const { value, condition = "equals" } = field.showChildrenWhen
+    const fieldValue = customValues[field.key]
     switch (condition) {
-      case 'equals':
-        return fieldValue === value;
-      case 'notEquals':
-        return fieldValue !== value;
-      case 'includes':
-        return Array.isArray(fieldValue) && fieldValue.includes(value);
-      case 'truthy':
-        return !!fieldValue;
-      case 'falsy':
-        return !fieldValue;
+      case "equals":
+        return fieldValue === value
+      case "notEquals":
+        return fieldValue !== value
+      case "includes":
+        return Array.isArray(fieldValue) && fieldValue.includes(value)
+      case "truthy":
+        return !!fieldValue
+      case "falsy":
+        return !fieldValue
       default:
-        return fieldValue === value;
+        return fieldValue === value
     }
-  };
+  }
 
   // Recursive function to render a field and its children
   const renderFieldWithChildren = (field: CustomField, level = 0): JSX.Element => {
-    const showChildren = shouldShowChildren(field);
-    
+    const showChildren = shouldShowChildren(field)
     return (
       <div key={field.key} className="flex flex-col">
-        <div className={`${level > 0 ? 'ml-4' : ''}`}>
+        <div className={`${level > 0 ? "ml-4" : ""}`}>
           <label className="mb-1 font-medium mr-2">{field.label}</label>
           {renderCustomField(field)}
         </div>
-        
         {showChildren && field.children && (
           <div className="ml-6 mt-2 pl-2 border-l-2 border-gray-300 dark:border-gray-600 space-y-3">
-            {field.children.map(childField => renderFieldWithChildren(childField, level + 1))}
+            {field.children.map((childField) => renderFieldWithChildren(childField, level + 1))}
           </div>
         )}
       </div>
-    );
-  };
+    )
+  }
 
   const renderCustomField = (field: CustomField) => {
     switch (field.input) {
-      case 'text':
+      case "text":
         return (
           <input
             type="text"
-            value={customValues[field.key] || ''}
+            value={customValues[field.key] || ""}
             onChange={(e) => handleCustomFieldChange(field.key, e.target.value)}
+            placeholder={t("export.fields.textPlaceholder", "Enter text...")}
             className="inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white"
           />
-        );
-      case 'date':
+        )
+      case "date":
         return (
           <input
             type="date"
-            value={customValues[field.key] || ''}
+            value={customValues[field.key] || ""}
             onChange={(e) => handleCustomFieldChange(field.key, e.target.value)}
             className="inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white"
           />
-        );
-      case 'number':
+        )
+      case "number":
         return (
           <input
             type="number"
             value={customValues[field.key] || 0}
             onChange={(e) => handleCustomFieldChange(field.key, e.target.value)}
+            placeholder={t("export.fields.numberPlaceholder", "Enter number...")}
             className="inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white"
           />
-        );
-      case 'checkbox':
+        )
+      case "checkbox":
         return (
           <input
             type="checkbox"
             checked={!!customValues[field.key]}
             onChange={(e) => handleCustomFieldChange(field.key, e.target.checked)}
             className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61]"
+            aria-label={field.label}
           />
-        );
-      case 'radio':
+        )
+      case "checkboxGroup":
         return (
           <div className="flex flex-col space-y-2">
-            {field.options?.map(option => (
+            {field.options?.map((option) => (
+              <label key={`${field.key}_${option.value}`} className="flex items-center">
+                <input
+                  type="checkbox"
+                  value={option.value}
+                  checked={(customValues[field.key] || []).includes(option.value)}
+                  onChange={(e) => {
+                    const currentValues = customValues[field.key] || []
+                    const newValues = e.target.checked
+                      ? [...currentValues, option.value]
+                      : currentValues.filter((v: any) => v !== option.value)
+                    handleCustomFieldChange(field.key, newValues)
+                  }}
+                  className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61] mr-2"
+                />
+                {option.label}
+              </label>
+            ))}
+          </div>
+        )
+      case "radio":
+        return (
+          <div className="flex flex-col space-y-2">
+            {field.options?.map((option) => (
               <label key={option.value} className="flex items-center">
                 <input
                   type="radio"
@@ -204,119 +218,178 @@ const ExportModal = ({ columns, customFields = [], title, customOptionsTitle, on
               </label>
             ))}
           </div>
-        );
-      case 'select':
+        )
+      case "select":
         return (
           <select
-            value={customValues[field.key] || ''}
+            value={customValues[field.key] || ""}
             onChange={(e) => handleCustomFieldChange(field.key, e.target.value)}
-            className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white'
+            className="inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white"
+            aria-label={field.label}
           >
-            {field.options?.map(option => (
+            <option value="" disabled>
+              {t("export.fields.selectPlaceholder", "Select an option...")}
+            </option>
+            {field.options?.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
             ))}
           </select>
-        );
+        )
       default:
-        return null;
+        return null
     }
-  };
+  }
 
   return (
     <div>
       {/* Overlay for clicking outside to close */}
-      <div className="overlay" onClick={onClose}></div>
-      <div className={`sidepopup w-[45%] overflow-y-auto lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:overflow-y-auto h-full ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme text-white' : 'bg-white'}`}>
-        <h2 className="text-2xl font-[600] mb-4">{title || t('export.title', 'Export Data')}</h2>
+      <div
+        className="overlay"
+        onClick={onClose}
+        aria-label={t("export.closeOverlay", "Click to close export modal")}
+      ></div>
+      <div
+        className={`sidepopup w-[45%] overflow-y-auto lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:overflow-y-auto h-full ${localStorage.getItem("darkMode") === "true" ? "bg-bgdarktheme text-white" : "bg-white"} pb-0`}
+      >
+        <h2 className="text-2xl font-[600] mb-4">{title || t("export.title", "Export Data")}</h2>
+
         <div className="space-y-4">
           {/* Format Selection */}
           <div>
-            <h3 className="text-lg font-medium mb-2">{t('export.selectFormat', 'Select Format')}</h3>
+            <h3 className="text-lg font-medium mb-2">{t("export.selectFormat", "Select Format")}</h3>
             <div className="flex space-x-4">
               <label className="flex items-center">
                 <input
                   type="radio"
                   value="sheet"
-                  checked={exportFormat === 'sheet'}
-                  onChange={() => setExportFormat('sheet')}
+                  checked={exportFormat === "sheet"}
+                  onChange={() => setExportFormat("sheet")}
                   className="radio mr-2"
                 />
-                {t('export.formatSheet', 'Sheet (CSV)')}
+                {t("export.formatSheet", "Sheet (CSV)")}
               </label>
               <label className="flex items-center">
                 <input
                   type="radio"
                   value="pdf"
-                  checked={exportFormat === 'pdf'}
-                  onChange={() => setExportFormat('pdf')}
+                  checked={exportFormat === "pdf"}
+                  onChange={() => setExportFormat("pdf")}
                   className="radio mr-2"
                 />
-                {t('export.formatPDF', 'PDF')}
+                {t("export.formatPDF", "PDF")}
               </label>
             </div>
           </div>
 
+          {/* PDF Engine Selection */}
+          {exportFormat === "pdf" && (
+            <div>
+              <h3 className="text-lg font-medium mb-2">{t("export.pdfEngineTitle", "PDF Engine")}</h3>
+              <div className="flex space-x-4">
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    value="xhtml2pdf"
+                    checked={pdfEngine === "xhtml2pdf"}
+                    onChange={() => setPdfEngine("xhtml2pdf")}
+                    className="radio mr-2"
+                  />
+                  {t("export.pdfEngineStandard", "Standard (Web View)")}
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    value="reportlab"
+                    checked={pdfEngine === "reportlab"}
+                    onChange={() => setPdfEngine("reportlab")}
+                    className="radio mr-2"
+                  />
+                  {t("export.pdfEngineAdvanced", "Advanced (Complex Tables)")}
+                </label>
+              </div>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                {pdfEngine === "xhtml2pdf"
+                  ? t("export.pdfEngineStandardDesc", "Best for simple layouts and faster generation")
+                  : t("export.pdfEngineAdvancedDesc", "Better for complex tables and advanced formatting")}
+              </p>
+            </div>
+          )}
+
           {/* Column Selection */}
           <div>
-            <h3 className="text-lg font-medium mb-2">{t('export.selectColumns', 'Select Columns')}</h3>
+            <h3 className="text-lg font-medium mb-2">{t("export.selectColumns", "Select Columns")}</h3>
             <div className="mb-2">
               <label className="flex items-center">
                 <input
                   type="checkbox"
                   checked={selectedColumns.length === columns.length}
-                  onChange={e => handleSelectAll(e.target.checked)}
+                  onChange={(e) => handleSelectAll(e.target.checked)}
                   className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61] mr-2"
                 />
-                {t('export.selectAll', 'Select All')}
+                {t("export.selectAll", "Select All")}
               </label>
             </div>
             <div className="grid grid-cols-1 gap-2 max-h-60 overflow-y-auto bg-[#F6F6F6] dark:bg-bgdarktheme2 p-1 px-2 rounded-lg">
-              {columns.map(column => (
+              {columns.map((column) => (
                 <label key={column.key} className="flex items-center">
                   <input
                     type="checkbox"
                     checked={selectedColumns.includes(column.key)}
-                    onChange={e => handleColumnChange(column.key, e.target.checked)}
+                    onChange={(e) => handleColumnChange(column.key, e.target.checked)}
                     className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61] mr-2"
                   />
                   {column.label}
                 </label>
               ))}
             </div>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              {t("export.columnsSelected", "{{count}} column selected", {
+                count: selectedColumns.length,
+                defaultValue_plural: "{{count}} columns selected",
+              })}
+            </p>
           </div>
 
           {/* Custom Fields Section */}
           {customFields.length > 0 && (
             <div>
-              <h3 className="text-lg font-medium mb-2">{customOptionsTitle || t('export.customOptions', 'Custom Options')}</h3>
-              <div className="space-y-3">
-                {customFields.map(field => renderFieldWithChildren(field))}
-              </div>
+              <h3 className="text-lg font-medium mb-2">
+                {customOptionsTitle || t("export.customOptions")}
+              </h3>
+              <div className="space-y-3">{customFields.map((field) => renderFieldWithChildren(field))}</div>
             </div>
           )}
+        </div>
 
-          {/* Buttons */}
-          <div className="flex justify-center space-x-2 mt-6">
-            <button
-              onClick={onClose}
-              className="btn-secondary hover:bg-[#88AB6150] hover:text-greentheme transition-colors"
-            >
-              {t('export.closeButton', 'Close')}
-            </button>
-            <button
-              onClick={() => onExport(exportFormat, selectedColumns, customValues)}
-              className="btn-primary"
-              disabled={selectedColumns.length === 0}
-            >
-              {t('export.exportButton', 'Export')}
-            </button>
-          </div>
+        {/* Buttons */}
+        <div className="flex justify-center space-x-2 mt-6 bg-white dark:bg-bgdarktheme2 py-5 sticky bottom-0">
+          <BaseBtn
+            variant="primary"
+            loading={loading}
+            onClick={onClose}
+            className="btn-secondary hover:bg-[#88AB6150] hover:text-greentheme transition-colors"
+            aria-label={t("export.closeButtonAria", "Close export modal")}
+          >
+            {t("export.closeButton", "Close")}
+          </BaseBtn>
+          <BaseBtn
+            variant="primary"
+            loading={loading}
+            onClick={() =>
+              onExport(exportFormat, selectedColumns, customValues, exportFormat === "pdf" ? pdfEngine : undefined)
+            }
+            className="btn-primary"
+            disabled={selectedColumns.length === 0}
+            aria-label={t("export.exportButtonAria", "Export selected data")}
+          >
+            {loading ? t("export.exportingButton", "Exporting...") : t("export.exportButton", "Export")}
+          </BaseBtn>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ExportModal;
+export default ExportModal

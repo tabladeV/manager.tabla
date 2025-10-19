@@ -56,6 +56,16 @@ const EditReservationModal = ({
   const [occasions, setOccasions] = useState<Occasion[]>([])
   const [occasionsAPIInfo, setOccasionsAPIInfo] = useState<OccasionsType>()
 
+  const sources = [
+                  { value: 'MARKETPLACE', label: t('overview.charts.reservationsSource.legend.MarketPlace') },
+                { value: 'WIDGET', label: t('overview.charts.reservationsSource.legend.Widget') },
+                { value: 'WEBSITE', label: t('overview.charts.reservationsSource.legend.ThirdParty') },
+                { value: 'WALK_IN', label: t('overview.charts.reservationsSource.legend.WalkIn') },
+                { value: 'BACK_OFFICE', label: t('overview.charts.reservationsSource.legend.BackOffice') },
+]
+
+
+
   const { isLoading: loadingOccasions, error: occasionsError } = useList({
     resource: 'api/v1/bo/occasions/', // Placeholder API endpoint
     queryOptions: {
@@ -109,7 +119,6 @@ const EditReservationModal = ({
   const handleSave = () => {
     setShowConfirmPopup(true);
   };
-  console.log('tags',selectedClient)
 
 
   const confirmUpdate = () => {
@@ -332,13 +341,7 @@ const EditReservationModal = ({
             <div>
               <BaseSelect
                 label={t('reservations.edit.informations.madeBy')}
-                options={[
-                  { label: 'Market Place', value: 'MARKETPLACE' },
-                  { label: 'Widget', value: 'WIDGET' },
-                  { label: 'Website', value: 'WEBSITE' },
-                  { label: 'Back Office', value: 'BACK_OFFICE' },
-                  { label: 'Walk In', value: 'WALK_IN' }
-                ]}
+                options={sources}
                 value={selectedClient.source}
                 onChange={(value) => setSelectedClient({ ...selectedClient, source: value as ReservationSource })}
                 variant={isDarkMode ? "filled" : "outlined"}
@@ -385,9 +388,11 @@ const EditReservationModal = ({
                 }))}
                 value={selectedOccasion}
                 onChange={(value) => {
+                  console.log('change occais', value);
                   setSelectedOccasion(value as number);
-                  const selectedOccasionObj = occasions.find(occasion => occasion.id === value) || undefined;
-                  setSelectedClient({ ...selectedClient, occasion: selectedOccasionObj })
+                  const selectedOccasionObj = occasions.find(occasion => occasion.id === value) || null;
+                  setSelectedClient({ ...selectedClient, occasion: (selectedOccasionObj as any) })
+                  console.log('selectedOccasionObj', selectedOccasionObj)
                 }}
                 variant="filled"
                 clearable={true}

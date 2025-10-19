@@ -1,13 +1,12 @@
 "use client"
-
 import type React from "react"
-
 import { type BaseKey, useCreate, useDelete, useList, useUpdate, useCan, CanAccess } from "@refinedev/core"
 import { Trash } from "lucide-react"
 import { useState, useCallback, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { useDarkContext } from "../../context/DarkContext"
 import ActionPopup from "../popup/ActionPopup"
+import Portal from "../common/Portal"
 
 // Interfaces
 export interface Area {
@@ -47,22 +46,26 @@ function AreaModal({
   onInputAddChange,
 }: AreaModalProps) {
   const { darkMode: isDarkMode } = useDarkContext()
+  const { t } = useTranslation()
 
   if (!isOpen) return null
 
   return (
+    <Portal>
     <div>
       <div className="overlay" onClick={onClose}></div>
       <div
         className={`sidepopup lt-sm:popup lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:rounded-b-none lt-sm:w-full h-full ${isDarkMode ? "bg-bgdarktheme" : "bg-white"}`}
       >
-        <h1 className="text-2xl font-bold mb-3">{isUpdating ? "Modify" : "Add"} Area</h1>
+        <h1 className="text-2xl font-bold mb-3">
+          {isUpdating ? t("settingsPage.areas.modals.modifyArea") : t("settingsPage.areas.modals.addArea")}
+        </h1>
         {isUpdating ? (
           <div className="flex flex-col gap-3">
             <input
               type="text"
               id="name"
-              placeholder="Area Name"
+              placeholder={t("settingsPage.areas.form.placeholders.areaName")}
               className={`inputs ${isDarkMode ? "bg-darkthemeitems" : "bg-white"}`}
               value={area?.name || ""}
               onChange={onInputChange}
@@ -74,10 +77,10 @@ function AreaModal({
                 className={isDarkMode ? "btn text-white hover:text-redtheme border-white hover:border-redtheme" : "btn"}
                 onClick={onClose}
               >
-                Cancel
+                {t("settingsPage.areas.buttons.cancel")}
               </button>
               <button onClick={onUpdateArea} className="btn-primary">
-                Save
+                {t("settingsPage.areas.buttons.save")}
               </button>
             </div>
           </div>
@@ -86,7 +89,7 @@ function AreaModal({
             <input
               type="text"
               id="name"
-              placeholder="Area Name"
+              placeholder={t("settingsPage.areas.form.placeholders.areaName")}
               className={`inputs ${isDarkMode ? "bg-darkthemeitems" : "bg-white"}`}
               onChange={onInputAddChange}
               required
@@ -97,16 +100,17 @@ function AreaModal({
                 className={isDarkMode ? "btn text-white hover:text-redtheme border-white hover:border-redtheme" : "btn"}
                 onClick={onClose}
               >
-                Cancel
+                {t("settingsPage.areas.buttons.cancel")}
               </button>
               <button onClick={onAddArea} className="btn-primary">
-                Save
+                {t("settingsPage.areas.buttons.save")}
               </button>
             </div>
           </div>
         )}
       </div>
     </div>
+    </Portal>
   )
 }
 
@@ -119,6 +123,7 @@ interface AreaTableProps {
 
 function AreaTable({ areas, onEdit, onDelete }: AreaTableProps) {
   const { darkMode: isDarkMode } = useDarkContext()
+  const { t } = useTranslation()
   const { data: canDelete } = useCan({
     resource: "area",
     action: "delete",
@@ -132,13 +137,13 @@ function AreaTable({ areas, onEdit, onDelete }: AreaTableProps) {
         <thead className={`${isDarkMode ? "bg-bgdarktheme text-white" : "bg-white text-gray-900"}`}>
           <tr>
             <th scope="col" className="px-6 py-4 font-medium">
-              ID
+              {t("settingsPage.areas.tableHeaders.id")}
             </th>
             <th scope="col" className="px-6 py-4 font-medium">
-              Name
+              {t("settingsPage.areas.tableHeaders.name")}
             </th>
             <th scope="col" className="px-6 py-4 font-medium flex justify-end">
-              Actions
+              {t("settingsPage.areas.tableHeaders.actions")}
             </th>
           </tr>
         </thead>
@@ -176,9 +181,11 @@ function AreaTable({ areas, onEdit, onDelete }: AreaTableProps) {
 
 // Main Areas Component
 export default function Areas() {
+  const { t } = useTranslation()
+
   useEffect(() => {
-    document.title = "Areas Management | Tabla"
-  }, [])
+    document.title = t("settingsPage.areas.pageTitle")
+  }, [t])
 
   const { darkMode: isDarkMode } = useDarkContext()
   const { data: canCreate } = useCan({ resource: "area", action: "create" })
@@ -266,8 +273,6 @@ export default function Areas() {
     [selectedArea],
   )
 
-  const { t } = useTranslation()
-
   const { mutate: addAreaMutate } = useCreate({
     errorNotification(error, values, resource) {
       return {
@@ -313,7 +318,7 @@ export default function Areas() {
 
   const handleDeleteRequest = (id: BaseKey) => {
     setAction("delete")
-    setMessage("Are you sure you want to delete this area?")
+    setMessage(t("settingsPage.areas.confirmations.deleteArea"))
     setAreaToDelete(id)
     setShowPopup(true)
   }
@@ -354,7 +359,6 @@ export default function Areas() {
         showPopup={showPopup}
         setShowPopup={setShowPopup}
       />
-
       <CanAccess resource="area" action="change">
         <AreaModal
           isOpen={isModalOpen}
@@ -368,17 +372,14 @@ export default function Areas() {
           onInputAddChange={handleInputAddChange}
         />
       </CanAccess>
-
-      <h1 className="text-2xl font-bold mb-3">{t("settingsPage.areas.title", "Areas")}</h1>
-
+      <h1 className="text-2xl font-bold mb-3">{t("settingsPage.areas.title")}</h1>
       <CanAccess resource="area" action="create">
         <div>
           <button className="btn-primary mt-4" onClick={addArea}>
-            {t("settingsPage.areas.buttons.addArea", "Add Area")}
+            {t("settingsPage.areas.buttons.addArea")}
           </button>
         </div>
       </CanAccess>
-
       <AreaTable areas={areas} onEdit={(area) => canChange?.can && openModal(area)} onDelete={handleDeleteRequest} />
     </div>
   )
