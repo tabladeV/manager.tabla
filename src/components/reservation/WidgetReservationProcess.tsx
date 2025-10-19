@@ -1,5 +1,5 @@
 import React, { useState, useEffect, memo } from 'react';
-import { format } from 'date-fns';
+import { compareAsc, format, startOfDay } from 'date-fns';
 import OurCalendar from '../Calendar/OurCalendar';
 import { useList } from '@refinedev/core';
 import { useTranslation } from 'react-i18next';
@@ -30,6 +30,9 @@ type GroupedTimeSlots = {
 };
 
 type Tab = 'date' | 'guests' | 'time' | 'confirm';
+
+const FORM_DATA_KEY = 'tabla_widget_form_data'
+const RESERVATION_DATA_KEY = 'tabla_widget_reservation_data'
 // #endregion
 
 // #region Sub-components
@@ -269,6 +272,55 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
     props.getDateTime(selectedData);
     handleClose();
   }, 300);
+
+  // Check if cached reservation data is in the past and clear if needed
+  useEffect(() => {
+    const validateCachedReservation = () => {
+      // Only run validation if we have cached reservation data
+      if (props.resData?.reserveDate) {
+        const now = new Date();
+        const reservationDate = new Date(props.resData.reserveDate);
+        
+        // Check if date is in the past
+        if (compareAsc(startOfDay(reservationDate), startOfDay(now)) < 0) {
+          // Date is in the past - reset all data
+          setSelectedDate(null);
+          setSelectedTime(null);
+          setSelectedGuests(null);
+          setSelectedData({ reserveDate: '', time: '', guests: 0 });
+          return true; // Indicates we've reset the data
+        }
+        
+        // Check if the date is today but time is in the past
+        if (format(reservationDate, 'yyyy-MM-dd') === format(now, 'yyyy-MM-dd') && 
+            props.resData.time) {
+          const [hours, minutes] = props.resData.time.split(':').map(Number);
+          const isPastTime = hours < now.getHours() || 
+                            (hours === now.getHours() && minutes < now.getMinutes());
+          
+          if (isPastTime) {
+            // Time is in the past - reset all data
+            setSelectedDate(null);
+            setSelectedTime(null);
+            setSelectedGuests(null);
+            setSelectedData({ reserveDate: '', time: '', guests: 0 });
+            return true; // Indicates we've reset the data
+          }
+        }
+      }
+      return false; // No reset needed
+    };
+
+    const wasReset = validateCachedReservation();
+    
+    // If we reset the data, set activeTab back to 'date'
+    if (wasReset) {
+      setActiveTab('date');
+      localStorage.removeItem(FORM_DATA_KEY);
+      localStorage.removeItem(RESERVATION_DATA_KEY);
+    }
+  }, [props.resData]); // Only run when props.resData changes
+
 
   const handleMonthChange = useDebouncedCallback((newMonth: string) => {
     setCurrentMonth(newMonth);
