@@ -60,6 +60,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import PaymentSuccessPage from "./_plugin/pages/PaymentSuccessPage";
 import PaymentFailurePage from "./_plugin/pages/PaymentFailurePage";
 import SettingsPage from "./_root/pages/SettingsPage";
+
 const API_HOST = import.meta.env.VITE_API_URL || "https://api.dev.tabla.ma";
 
 function App() {

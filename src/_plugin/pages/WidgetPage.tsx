@@ -491,6 +491,19 @@ const WidgetPage = () => {
     i18n.changeLanguage(langToSet);
   }, [i18n]);
 
+  interface Area {
+    id: BaseKey
+    seq_id: BaseKey
+    name: string
+    restaurant: BaseKey
+  }
+  const [areas, setAreas] = useState<Area[]>([])
+
+  const [areaSelected, setAreaSelected] = useState<BaseKey>()
+
+  
+
+
   useEffect(() => {
     if (widgetData) {
       const info = widgetData.data;

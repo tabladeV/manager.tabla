@@ -534,6 +534,22 @@ export default function WidgetConfig() {
                 </span>
                 <span className="capitalize select-none">{t('settingsPage.widget.searchTabs.enableAreaSelection')}</span>
               </label>
+
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={(enableAreaSelection) as boolean}
+                  onChange={() => setEnableAreaSelection((prev) => !prev)}
+                  className="sr-only"
+                />
+                <span
+                  className={`flex items-center justify-center w-6 h-6 border rounded-md mr-2 ${enableAreaSelection ? 'bg-greentheme border-greentheme' : 'border-gray-300 dark:border-darkthemeitems'
+                    }`}
+                >
+                  {enableAreaSelection && <Check size={16} className="text-white" />}
+                </span>
+                <span className="capitalize">Enable areas selection</span>
+              </label>
               </div>
               {enableDressCode && (
               <div className="space-y-4 my-6">
