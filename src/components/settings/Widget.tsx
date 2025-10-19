@@ -40,10 +40,10 @@ interface Widget {
 export default function WidgetConfig() {
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   // Memoize searchParams to prevent unnecessary re-renders
   const searchParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
-  
+
   const restaurantId = localStorage.getItem('restaurant_id');
   const { t } = useTranslation();
 
@@ -54,13 +54,13 @@ export default function WidgetConfig() {
     navigate(`${location.pathname}?${newSearchParams.toString()}`, { replace: true });
   }, [location.pathname, location.search, navigate]);
 
-  const {data : subdomainData} = useList({
+  const { data: subdomainData } = useList({
     resource: 'api/v1/bo/restaurants/subdomain',
   })
   const [subdomain, setSubdomain] = useState<string>('')
   useEffect(() => {
-    if(subdomainData?.data){
-      const subdomainApi = subdomainData.data as unknown as {subdomain: string}
+    if (subdomainData?.data) {
+      const subdomainApi = subdomainData.data as unknown as { subdomain: string }
       setSubdomain(subdomainApi.subdomain as unknown as string)
     }
   }, [subdomainData])
@@ -69,7 +69,7 @@ export default function WidgetConfig() {
     resource: `api/v1/bo/restaurants/${restaurantId}/widget/`,
   });
 
-  
+
   useEffect(() => {
     document.title = 'Booking Widget Settings | Tabla'
     // Update URL to reflect current component if no section is specified
@@ -90,7 +90,7 @@ export default function WidgetConfig() {
   const [enablePayment, setEnablePayment] = useState<boolean>(false);
   const [minGuestsForPayment, setMinGuestsForPayment] = useState<number>(1);
   const [depositAmountPerGuest, setDepositAmountPerGuest] = useState<number>(0);
-  
+
 
   // Optimized checkbox handlers with useCallback
   const handlePaymentToggle = useCallback(() => {
@@ -134,7 +134,7 @@ export default function WidgetConfig() {
       setHasMenu(data.has_menu);
       setAutoConfirmation(data.auto_confirmation);
       setMaxGuestsPerReservation(data.max_of_guests_par_reservation)
-      setSearchTabs((prev) => ({ ...prev, menu: data.has_menu}));
+      setSearchTabs((prev) => ({ ...prev, menu: data.has_menu }));
       setWidgetInfo(data);
       setTitle(data.title);
       setDisabledTitle(data.disabled_title);
@@ -156,7 +156,7 @@ export default function WidgetConfig() {
     }
   }, [widgetData]);
 
-  
+
 
   const [file, setFile] = useState<File | null>(null);
   const [filePDF, setFilePDF] = useState<File | null>(null);
@@ -173,7 +173,7 @@ export default function WidgetConfig() {
       setImage(objectUrl);
     }
   };
-  
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const selectedFile = event.target.files[0];
@@ -217,14 +217,14 @@ export default function WidgetConfig() {
   }, [showToast])
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(currentUrl.includes('dev')?`https://${subdomain}.dev.tabla.ma/make/reservation`: currentUrl.includes('localhost') ? `http://italiana.localhost:5173/make/reservation`: `https://${subdomain}.tabla.ma/make/reservation`);
+    navigator.clipboard.writeText(currentUrl.includes('dev') ? `https://${subdomain}.dev.tabla.ma/make/reservation` : currentUrl.includes('localhost') ? `http://italiana.localhost:5173/make/reservation` : `https://${subdomain}.tabla.ma/make/reservation`);
     setShowToast(true)
   };
 
 
 
 
-  
+
 
   const { mutate: updateWidget, isLoading: isLoadingUpdate } = useUpdate({
     errorNotification(error) {
@@ -243,9 +243,9 @@ export default function WidgetConfig() {
     const formData = new FormData();
     formData.append('title', title);
     // formData.append('description', description);
-    if(hasMenu){
+    if (hasMenu) {
       formData.append('has_menu', 'true');
-    }else{
+    } else {
       formData.append('has_menu', 'false');
     }
     formData.append('content', description);
@@ -253,17 +253,17 @@ export default function WidgetConfig() {
     formData.append('disabled_description', disabledDescription);
     formData.append('max_of_guests_par_reservation', maxGuestsPerReservation?.toString() || '0');
 
-    if(file){
+    if (file) {
       formData.append('image', file);
     }
-    if(deleteLogo){
+    if (deleteLogo) {
       formData.append('clear_image', 'true');
     }
 
     if (imageFile) {
       formData.append('image_2', imageFile);
     }
-    if(deleteImage){
+    if (deleteImage) {
       formData.append('clear_image_2', 'true');
     }
 
@@ -279,13 +279,13 @@ export default function WidgetConfig() {
     formData.append('enable_paymant', enablePayment?.toString() || '0');
     formData.append('min_number_of_guests_required_deposite', minGuestsForPayment?.toString() || '1');
     formData.append('deposite_amount_for_guest', depositAmountPerGuest?.toString() || '0');
-    
+
     try {
       await updateWidget({
         id: `${restaurantId}/widget_partial_update/`,
         resource: `api/v1/bo/restaurants`,
         values: formData,
-        successNotification(){
+        successNotification() {
           return {
             type: 'success',
             message: 'Configuration saved successfully!'
@@ -303,7 +303,7 @@ export default function WidgetConfig() {
 
   const darkModeClass = 'dark:bg-bgdarktheme dark:text-white bg-white text-black';
 
-   const isFormValid = () => {
+  const isFormValid = () => {
     if (isWidgetActivated) {
       // Validate active widget fields
       if (!title.trim()) {
@@ -338,7 +338,7 @@ export default function WidgetConfig() {
 
   if (isLoading) return <div className="text-center">Loading...</div>;
 
-  
+
 
   return (
     <div className={`w-full min-h-[100vh] mx-auto p-6 rounded-[10px] ${darkModeClass}`}>
@@ -367,9 +367,9 @@ export default function WidgetConfig() {
           <h2 className="text-lg font-semibold mb-2">{t('settingsPage.widget.logo')}</h2>
           {logo ? (
             <div className="relative  w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden">
-              <img src={ logo} alt="Logo" className="w-full h-full object-contain" />
+              <img src={logo} alt="Logo" className="w-full h-full object-contain" />
               <button
-                onClick={() => {setLogo(null);setDeleteLogo(true)}}
+                onClick={() => { setLogo(null); setDeleteLogo(true) }}
                 className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
               >
                 <X size={16} />
@@ -377,7 +377,7 @@ export default function WidgetConfig() {
             </div>
           ) : (
             <button
-              onClick={() => {fileInputRef.current?.click();setDeleteLogo(false)}}
+              onClick={() => { fileInputRef.current?.click(); setDeleteLogo(false) }}
               className="w-full py-4 border-2 border-dashed border-gray-300 dark:border-darkthemeitems rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-darkthemeitems transition-colors"
             >
               <Upload className="mr-2" size={20} />
@@ -391,7 +391,7 @@ export default function WidgetConfig() {
             <div className="relative w-full h-40 bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden">
               <img src={image} alt="Image" className="w-full h-full object-contain" />
               <button
-                onClick={() => {setImage(null);setDeleteImage(true)}}
+                onClick={() => { setImage(null); setDeleteImage(true) }}
                 className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
               >
                 <X size={16} />
@@ -399,7 +399,7 @@ export default function WidgetConfig() {
             </div>
           ) : (
             <button
-              onClick={() => {fileInputRefImage.current?.click();setDeleteImage(false)}}
+              onClick={() => { fileInputRefImage.current?.click(); setDeleteImage(false) }}
               className="w-full py-4 border-2 border-dashed border-gray-300 dark:border-darkthemeitems rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-darkthemeitems transition-colors"
             >
               <Upload className="mr-2" size={20} />
@@ -441,24 +441,24 @@ export default function WidgetConfig() {
         />
       </div>}
 
-      
-      
+
+
       {isWidgetActivated ? (
-          <>
-            <div className="mb-6">
-              <h2 className="text-lg font-semibold mb-2">{t('settingsPage.widget.searchTabs.title')}</h2>
-              <div className="flex flex-wrap gap-4">
+        <>
+          <div className="mb-6">
+            <h2 className="text-lg font-semibold mb-2">{t('settingsPage.widget.searchTabs.title')}</h2>
+            <div className="flex flex-wrap gap-4">
               <label className="flex items-center w-full">
-              <span className='mr-2'>{t('settingsPage.widget.searchTabs.maxGuests')}</span>
-              <input
-                type="number"
-                value={maxGuestsPerReservation}
-                onChange={(e) => setMaxGuestsPerReservation(Number(e.target.value))}
-                className="inputs max-w-[300px] p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white"
-              />
+                <span className='mr-2'>{t('settingsPage.widget.searchTabs.maxGuests')}</span>
+                <input
+                  type="number"
+                  value={maxGuestsPerReservation}
+                  onChange={(e) => setMaxGuestsPerReservation(Number(e.target.value))}
+                  className="inputs max-w-[300px] p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white"
+                />
               </label>
-                {Object.entries(searchTabs).map(([key]) => (
-                  <React.Fragment key={key}>
+              {Object.entries(searchTabs).map(([key]) => (
+                <React.Fragment key={key}>
                   {key === 'menu' && <label className="flex items-center cursor-pointer">
                     <input
                       type="checkbox"
@@ -470,16 +470,15 @@ export default function WidgetConfig() {
                       className="sr-only"
                     />
                     <span
-                      className={`flex items-center justify-center w-6 h-6 border rounded-md mr-2 transition-all duration-200 ${
-                        hasMenu ? 'bg-greentheme border-greentheme' : 'border-gray-300 dark:border-darkthemeitems'
-                      }`}
+                      className={`flex items-center justify-center w-6 h-6 border rounded-md mr-2 transition-all duration-200 ${hasMenu ? 'bg-greentheme border-greentheme' : 'border-gray-300 dark:border-darkthemeitems'
+                        }`}
                     >
                       {hasMenu && <Check size={16} className="text-white" />}
                     </span>
                     <span className="capitalize select-none">{t('settingsPage.widget.searchTabs.menu')}</span>
                   </label>}
-                  </React.Fragment>
-                ))}
+                </React.Fragment>
+              ))}
               <label className="flex items-center cursor-pointer">
                 <input
                   type="checkbox"
@@ -550,8 +549,8 @@ export default function WidgetConfig() {
                 </span>
                 <span className="capitalize">Enable areas selection</span>
               </label>
-              </div>
-              {enableDressCode && (
+            </div>
+            {enableDressCode && (
               <div className="space-y-4 my-6">
                 <div className="relative">
                   <textarea
@@ -563,127 +562,125 @@ export default function WidgetConfig() {
                     }}
                   />
                 </div>
-                <div className="flex flex-col items-start gap-3 mb-6">
-                  <h2 className="text-lg font-semibold mb-2">{t('settingsPage.widget.payment.title')}</h2>
-                  <div className="px-2 flex flex-col gap-4 py-1">
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={enablePayment}
-                        onChange={(e) => {
-                          e.preventDefault();
-                          handlePaymentToggle();
-                        }}
-                        className="sr-only"
-                      />
-                      <span
-                        className={`flex items-center justify-center w-6 h-6 border rounded-md mr-2 transition-all duration-200 ${
-                          enablePayment ? 'bg-greentheme border-greentheme' : 'border-gray-300 dark:border-darkthemeitems'
-                        }`}
-                      >
-                        {enablePayment && <Check size={16} className="text-white" />}
-                      </span>
-                      <span className="capitalize select-none">{t('settingsPage.widget.payment.enable')}</span>
-                    </label>
-                    
-                    {enablePayment && (
-                      <div className="ml-8 flex flex-col gap-4">
-                        <label className="flex items-center gap-2">
-                          <span className="text-sm text-gray-600 dark:text-gray-400">
-                            {t('settingsPage.widget.payment.minGuestsForPayment')}:
-                          </span>
-                          <input
-                            type="number"
-                            min={1}
-                            value={minGuestsForPayment}
-                            onChange={(e) => {
-                              const val = Number(e.target.value);
-                              setMinGuestsForPayment(val > 0 ? val : 1);
-                            }}
-                            className="inputs w-20 p-2 border border-gray-300 dark:border-darkthemeitems rounded-md bg-white dark:bg-darkthemeitems text-black dark:text-white"
-                          />
-                        </label>
-                        <label className="flex items-center gap-2">
-                          <span className="text-sm text-gray-600 dark:text-gray-400">
-                            {t('settingsPage.widget.payment.depositAmountPerGuest')}:
-                          </span>
-                          <input
-                            type="number"
-                            min={0}
-                            step="0.01"
-                            value={depositAmountPerGuest}
-                            onChange={(e) => {
-                              const val = Number(e.target.value);
-                              setDepositAmountPerGuest(val >= 0 ? val : 0);
-                            }}
-                            className="inputs w-24 p-2 border border-gray-300 dark:border-darkthemeitems rounded-md bg-white dark:bg-darkthemeitems text-black dark:text-white"
-                            placeholder="0.00"
-                          />
-                        </label>
-                      </div>
-                    )}
-                    
-                    {!enablePayment && (
-                      <div className="ml-8 mt-2">
-                        <p className="text-sm text-orange-600 dark:text-orange-400 italic">
-                          {t('settingsPage.widget.payment.disabledNote')}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
               </div>
-              
-              )}
-              {(hasMenu) && (
-                <div className="flex justify-around gap-2 items-center">
-                  <button
-                    onClick={() => filePdfInputRef.current?.click()}
-                    className="btn-secondary gap-2 flex items-center mt-3"
-                  >
-                    <Upload className="mr-2" size={20} />
-                    {t('settingsPage.widget.uploadMenu')}
-                  </button>
+            )}
+            <div className="flex flex-col items-start gap-3 mb-6 mt-2">
+              <h2 className="text-lg font-semibold mb-2">{t('settingsPage.widget.payment.title')}</h2>
+              <div className="px-2 flex flex-col gap-4 py-1">
+                <label className="flex items-center cursor-pointer">
                   <input
-                    type="file"
-                    ref={filePdfInputRef}
-                    onChange={handleMenuUpload}
-                    accept="application/pdf"
-                    className="hidden"
+                    type="checkbox"
+                    checked={enablePayment}
+                    onChange={(e) => {
+                      e.preventDefault();
+                      handlePaymentToggle();
+                    }}
+                    className="sr-only"
                   />
-                  
-                  {menuPdf ? (
-                    <div
-                      className="btn-secondary flex gap-4 items-center mt-3 justify-center cursor-pointer"
-                      onClick={openPdfInNewTab}
-                    >
-                      {t('settingsPage.widget.openMenu')}
-                      <ScreenShareIcon size={20} />
-                    </div>
-                  ) : (
-                    <span>{t('settingsPage.widget.noMenu')}</span>
-                  )}
-                </div>
-              )}
+                  <span
+                    className={`flex items-center justify-center w-6 h-6 border rounded-md mr-2 transition-all duration-200 ${enablePayment ? 'bg-greentheme border-greentheme' : 'border-gray-300 dark:border-darkthemeitems'
+                      }`}
+                  >
+                    {enablePayment && <Check size={16} className="text-white" />}
+                  </span>
+                  <span className="capitalize select-none">{t('settingsPage.widget.payment.enable')}</span>
+                </label>
+
+                {enablePayment && (
+                  <div className="ml-8 flex flex-col gap-4">
+                    <label className="flex items-center gap-2">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        {t('settingsPage.widget.payment.minGuestsForPayment')}:
+                      </span>
+                      <input
+                        type="number"
+                        min={1}
+                        value={minGuestsForPayment}
+                        onChange={(e) => {
+                          const val = Number(e.target.value);
+                          setMinGuestsForPayment(val > 0 ? val : 1);
+                        }}
+                        className="inputs w-20 p-2 border border-gray-300 dark:border-darkthemeitems rounded-md bg-white dark:bg-darkthemeitems text-black dark:text-white"
+                      />
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        {t('settingsPage.widget.payment.depositAmountPerGuest')}:
+                      </span>
+                      <input
+                        type="number"
+                        min={0}
+                        step="0.01"
+                        value={depositAmountPerGuest}
+                        onChange={(e) => {
+                          const val = Number(e.target.value);
+                          setDepositAmountPerGuest(val >= 0 ? val : 0);
+                        }}
+                        className="inputs w-24 p-2 border border-gray-300 dark:border-darkthemeitems rounded-md bg-white dark:bg-darkthemeitems text-black dark:text-white"
+                        placeholder="0.00"
+                      />
+                    </label>
+                  </div>
+                )}
+
+                {!enablePayment && (
+                  <div className="ml-8 mt-2">
+                    <p className="text-sm text-orange-600 dark:text-orange-400 italic">
+                      {t('settingsPage.widget.payment.disabledNote')}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
-          </>):
-          (
-            <div className="space-y-4 mb-6">
-              <input
-                type="text"
-                placeholder={t('settingsPage.widget.addTitlePlaceholder')}
-                className="inputs p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white"
-                value={disabledTitle}
-                onChange={(e) => setDisabledTitle(e.target.value)}
-              />
-              <textarea
-                placeholder={t('settingsPage.widget.addDescriptionPlaceholder')}
-                className="w-full inputs p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white lt-sm:w-full h-24 resize-none"
-                value={disabledDescription}
-                onChange={(e) => setDisabledDescription(e.target.value)}
-              />
-            </div>
-          )
+            {(hasMenu) && (
+              <div className="flex justify-around gap-2 items-center">
+                <button
+                  onClick={() => filePdfInputRef.current?.click()}
+                  className="btn-secondary gap-2 flex items-center mt-3"
+                >
+                  <Upload className="mr-2" size={20} />
+                  {t('settingsPage.widget.uploadMenu')}
+                </button>
+                <input
+                  type="file"
+                  ref={filePdfInputRef}
+                  onChange={handleMenuUpload}
+                  accept="application/pdf"
+                  className="hidden"
+                />
+
+                {menuPdf ? (
+                  <div
+                    className="btn-secondary flex gap-4 items-center mt-3 justify-center cursor-pointer"
+                    onClick={openPdfInNewTab}
+                  >
+                    {t('settingsPage.widget.openMenu')}
+                    <ScreenShareIcon size={20} />
+                  </div>
+                ) : (
+                  <span>{t('settingsPage.widget.noMenu')}</span>
+                )}
+              </div>
+            )}
+          </div>
+        </>) :
+        (
+          <div className="space-y-4 mb-6">
+            <input
+              type="text"
+              placeholder={t('settingsPage.widget.addTitlePlaceholder')}
+              className="inputs p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white"
+              value={disabledTitle}
+              onChange={(e) => setDisabledTitle(e.target.value)}
+            />
+            <textarea
+              placeholder={t('settingsPage.widget.addDescriptionPlaceholder')}
+              className="w-full inputs p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white lt-sm:w-full h-24 resize-none"
+              value={disabledDescription}
+              onChange={(e) => setDisabledDescription(e.target.value)}
+            />
+          </div>
+        )
       }
 
       <div className="flex lt-md:grid gap-3 lt-md:grid-cols-2">
@@ -695,10 +692,10 @@ export default function WidgetConfig() {
         >
           {t('settingsPage.widget.buttons.save')}
         </BaseBtn>
-        <Link to={currentUrl.includes('dev')?`https://${subdomain}.dev.tabla.ma/make/reservation`: currentUrl.includes('localhost') ? `http://italiana.localhost:5173/make/reservation`: `https://${subdomain}.tabla.ma/make/reservation`} target="_blank" className="btn-secondary w-1/4 text-center lt-md:w-full">
+        <Link to={currentUrl.includes('dev') ? `https://${subdomain}.dev.tabla.ma/make/reservation` : currentUrl.includes('localhost') ? `http://italiana.localhost:5173/make/reservation` : `https://${subdomain}.tabla.ma/make/reservation`} target="_blank" className="btn-secondary w-1/4 text-center lt-md:w-full">
           {t('settingsPage.widget.buttons.preview')} {t('settingsPage.widget.reservation')}
         </Link>
-        <Link to={currentUrl.includes('dev')?`https://${subdomain}.dev.tabla.ma/make/modification/preview`: currentUrl.includes('localhost') ? `http://${subdomain}.localhost:5173/make/modification/preview`:`https://${subdomain}.tabla.ma/make/modification/preview`} target="_blank" className="btn-secondary w-1/4 text-center lt-md:w-full">
+        <Link to={currentUrl.includes('dev') ? `https://${subdomain}.dev.tabla.ma/make/modification/preview` : currentUrl.includes('localhost') ? `http://${subdomain}.localhost:5173/make/modification/preview` : `https://${subdomain}.tabla.ma/make/modification/preview`} target="_blank" className="btn-secondary w-1/4 text-center lt-md:w-full">
           {t('settingsPage.widget.buttons.preview')} {t('settingsPage.widget.modification')}
         </Link>
       </div>
@@ -711,7 +708,7 @@ export default function WidgetConfig() {
           <div>
             <h3 className="font-medium text-blacktheme dark:text-textdarktheme">{t('settingsPage.widget.linkCopied')}</h3>
             <p className="text-subblack dark:text-textdarktheme/80 text-sm">
-             {currentUrl.includes('dev')?`https://${subdomain}.dev.tabla.ma/make/reservation`: currentUrl.includes('localhost') ? `http://italiana.localhost:5173/make/reservation`: `https://${subdomain}.tabla.ma/make/reservation`} {t('settingsPage.widget.copied')}
+              {currentUrl.includes('dev') ? `https://${subdomain}.dev.tabla.ma/make/reservation` : currentUrl.includes('localhost') ? `http://italiana.localhost:5173/make/reservation` : `https://${subdomain}.tabla.ma/make/reservation`} {t('settingsPage.widget.copied')}
             </p>
           </div>
         </div>
