@@ -497,12 +497,6 @@ const WidgetPage = () => {
     name: string
     restaurant: BaseKey
   }
-  const [areas, setAreas] = useState<Area[]>([])
-
-  const [areaSelected, setAreaSelected] = useState<BaseKey>()
-
-  
-
 
   useEffect(() => {
     if (widgetData) {
