@@ -37,7 +37,7 @@ export const SharedWidgetFooter = memo(({ widgetInfo, isPaymentRequired, showDes
                     </div>
                 </div>
             )}
-            <div className="px-6 pb-6">
+            {/* <div className="px-6 pb-6">
                 <div className="border-t border-[#dddddd] dark:border-[#444444] pt-4">
                     <h3 className="text-lg font-medium mb-4 text-center text-[#333333] dark:text-[#e1e1e1]">{t("reservationWidget.contact.followUs")}</h3>
                     <div className="flex justify-center items-center gap-4 flex-wrap">
@@ -61,7 +61,7 @@ export const SharedWidgetFooter = memo(({ widgetInfo, isPaymentRequired, showDes
                         )}
                     </div>
                 </div>
-            </div>
+            </div> */}
             <div className="bg-gray-100 dark:bg-[#88AB61]/20 px-6 py-4 text-center space-y-3">
                 <div className="flex flex-col items-center space-y-2">
                     {isPaymentRequired && (
