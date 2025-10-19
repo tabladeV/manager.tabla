@@ -29,7 +29,7 @@ interface Widget {
   has_menu: boolean;
   auto_confirmation: boolean;
   enable_paymant: boolean;
-  min_number_of_guests_without_deposite?: number;
+  min_number_of_guests_required_deposite?: number;
   deposite_amount_for_guest?: number;
 }
 
@@ -148,7 +148,7 @@ export default function WidgetConfig() {
       setEnableAreaSelection(data.enbale_area_selection);
       setDressCode(data.dress_code || '');
       setEnablePayment(data.enable_paymant);
-      setMinGuestsForPayment(data.min_number_of_guests_without_deposite || 1);
+      setMinGuestsForPayment(data.min_number_of_guests_required_deposite || 1);
       setDepositAmountPerGuest(data.deposite_amount_for_guest || 0);
       // if(logo === null){
       //   setNewLogo(true);
@@ -277,7 +277,7 @@ export default function WidgetConfig() {
     formData.append('enbale_area_selection', enableAreaSelection?.toString() || '0');
     formData.append('dress_code', dressCode || '');
     formData.append('enable_paymant', enablePayment?.toString() || '0');
-    formData.append('min_number_of_guests_without_deposite', minGuestsForPayment?.toString() || '1');
+    formData.append('min_number_of_guests_required_deposite', minGuestsForPayment?.toString() || '1');
     formData.append('deposite_amount_for_guest', depositAmountPerGuest?.toString() || '0');
     
     try {
