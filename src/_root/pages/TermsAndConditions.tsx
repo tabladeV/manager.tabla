@@ -70,7 +70,7 @@ export default function TermsAndConditions() {
     {
       title: "AVERTISSEMENT",
       content:
-        "Vous venez de vous connecter sur le site Tabla.ma de la société Skale Valley. Vous devez lire attentivement les dispositions qui vont suivre car elles constituent un contact établissant les conditions générales des produits et services du catalogue (ou de la boutique) électronique de la société Skale Valley. Le « clic » que vous exécuterez après avoir rempli votre bon de commande constitue la validation de votre commande et vaudra acceptation irrévocable des présentes conditions générales. En conséquence, vous ne pouvez commander de produits ou services que si vous acceptez les conditions prévues ci-dessous.",
+        "Vous venez de vous connecter sur le site Tabla.ma de la société Scale Valley. Vous devez lire attentivement les dispositions qui vont suivre car elles constituent un contact établissant les conditions générales des produits et services du catalogue (ou de la boutique) électronique de la société Scale Valley. Le « clic » que vous exécuterez après avoir rempli votre bon de commande constitue la validation de votre commande et vaudra acceptation irrévocable des présentes conditions générales. En conséquence, vous ne pouvez commander de produits ou services que si vous acceptez les conditions prévues ci-dessous.",
     },
     {
       title: "Préambule",
@@ -80,21 +80,21 @@ export default function TermsAndConditions() {
     {
       title: "Objet",
       content:
-        "Le présent contrat est un contrat à distance qui a pour objet de définir les droits et obligations des parties dans le cadre de la vente des produits de la société Skale Valley sur Internet, par l’intermédiaire de la plate-forme sécurisée de paiement en ligne du Centre Monétique Interbancaire. Tabla.ma est un service et une marque déposés par Tabla.",
+        "Le présent contrat est un contrat à distance qui a pour objet de définir les droits et obligations des parties dans le cadre de la vente des produits de la société Scale Valley sur Internet, par l’intermédiaire de la plate-forme sécurisée de paiement en ligne du Centre Monétique Interbancaire. Tabla.ma est un service et une marque déposés par Tabla.",
     },
     {
       title: "Définitions",
       items: [
-        "« Contrat à distance » : tout contrat concernant des biens ou services entre la société Skale Valley et un Consommateur dans le cadre d’un système de vente ou de prestations de service à distance organisé par la société Skale Valley qui, pour ce contrat, utilise exclusivement le réseau Internet jusqu’à la conclusion du contrat, y compris la conclusion du contrat elle-même.",
+        "« Contrat à distance » : tout contrat concernant des biens ou services entre la société Scale Valley et un Consommateur dans le cadre d’un système de vente ou de prestations de service à distance organisé par la société Scale Valley qui, pour ce contrat, utilise exclusivement le réseau Internet jusqu’à la conclusion du contrat, y compris la conclusion du contrat elle-même.",
         "« Consommateur » : toute personne physique qui, dans le présent contrat, agit à des fins qui n’entrent pas dans le cadre de son activité professionnelle.",
         "« Bon de commande » : document qui indique les caractéristiques des Produits commandés par le Consommateur et qui doit être signé de lui par « double clic » pour l’engager.",
-        "« Commande » : acte par lequel le Consommateur s’engage à acheter des Produits et la société Skale Valley à les livrer.",
+        "« Commande » : acte par lequel le Consommateur s’engage à acheter des Produits et la société Scale Valley à les livrer.",
       ],
     },
     {
       title: "Produit",
       content:
-        "Tous les produits présents dans le catalogue sont commercialisés jusqu'à épuisement des stocks. la société Skale Valley se réserve le droit de retirer du catalogue un article, et ceci sans préavis. Elle ne peut en aucun cas être tenu de dédommager ou d'annuler une commande suite à l'impossibilité d'utiliser le produit acheté pour une raison d'incompatibilité avec le matériel déjà possédé par l'acheteur.",
+        "Tous les produits présents dans le catalogue sont commercialisés jusqu'à épuisement des stocks. la société Scale Valley se réserve le droit de retirer du catalogue un article, et ceci sans préavis. Elle ne peut en aucun cas être tenu de dédommager ou d'annuler une commande suite à l'impossibilité d'utiliser le produit acheté pour une raison d'incompatibilité avec le matériel déjà possédé par l'acheteur.",
     },
     {
       title: "Passer une commande",
@@ -114,7 +114,7 @@ export default function TermsAndConditions() {
     {
       title: "Livraison",
       content:
-        "La livraison n’est pas assurée par Tabla. Le client récupèrera sa marchandise dans l’adresse de livraison indiquée sur son Bon de commande. Les Produits sont livrés à l’adresse indiquée par le Consommateur sur le Bon de commande. Le Consommateur est tenu de vérifier la marchandise à la livraison et de signaler les dommages dus au transporteur sur le bon de livraison ainsi qu’à la société Skale Valley dans un délai d’un jour. Le Consommateur peut, à sa demande, obtenir l’envoi d’une facture à l’adresse de livraison en validant l’option prévue à cet effet sur le Bon de commande.",
+        "La livraison n’est pas assurée par Tabla. Le client récupèrera sa marchandise dans l’adresse de livraison indiquée sur son Bon de commande. Les Produits sont livrés à l’adresse indiquée par le Consommateur sur le Bon de commande. Le Consommateur est tenu de vérifier la marchandise à la livraison et de signaler les dommages dus au transporteur sur le bon de livraison ainsi qu’à la société Scale Valley dans un délai d’un jour. Le Consommateur peut, à sa demande, obtenir l’envoi d’une facture à l’adresse de livraison en validant l’option prévue à cet effet sur le Bon de commande.",
       subsections: [
         {
           subtitle: "Combien coûte la livraison ?",
@@ -131,7 +131,7 @@ export default function TermsAndConditions() {
     {
       title: "Mode de paiement",
       content:
-        "Pour régler votre commande, vous choisissez le moyen de paiement parmi ceux proposés par Tabla au niveau de la page de paiement. Dans ce cas, la remise de la transaction pour débit de votre compte est effectuée dans la journée qui suit la date de la confirmation de livraison. Vos paiements en ligne sont sécurisés par le Centre Monétique Interbancaire (CMI) qui offre un service de paiement entièrement sécurisé. Le Consommateur garantit la société Skale Valley qu’il dispose des autorisations éventuellement nécessaires pour utiliser le mode de paiement choisi par lui, lors de la validation du Bon de commande. En cas de paiement par carte bancaire, les dispositions relatives à l’utilisation frauduleuse du moyen de paiement prévues dans les conventions conclues entre le Consommateur et l’émetteur de la carte et entre la société Skale Valley et son établissement bancaire s’appliquent.",
+        "Pour régler votre commande, vous choisissez le moyen de paiement parmi ceux proposés par Tabla au niveau de la page de paiement. Dans ce cas, la remise de la transaction pour débit de votre compte est effectuée dans la journée qui suit la date de la confirmation de livraison. Vos paiements en ligne sont sécurisés par le Centre Monétique Interbancaire (CMI) qui offre un service de paiement entièrement sécurisé. Le Consommateur garantit la société Scale Valley qu’il dispose des autorisations éventuellement nécessaires pour utiliser le mode de paiement choisi par lui, lors de la validation du Bon de commande. En cas de paiement par carte bancaire, les dispositions relatives à l’utilisation frauduleuse du moyen de paiement prévues dans les conventions conclues entre le Consommateur et l’émetteur de la carte et entre la société Scale Valley et son établissement bancaire s’appliquent.",
     },
     {
       title: "Confidentialité des données",
@@ -155,7 +155,7 @@ export default function TermsAndConditions() {
     {
       title: "Preuve des transactions payés par carte bancaire",
       content:
-        "Les données enregistrées par le CMI sur la plate-forme de paiement en ligne pour le compte de Tabla constituent la preuve des transactions commerciales passées entre vous et la société Skale Valley.",
+        "Les données enregistrées par le CMI sur la plate-forme de paiement en ligne pour le compte de Tabla constituent la preuve des transactions commerciales passées entre vous et la société Scale Valley.",
     },
     {
       title: "Force majeure",
