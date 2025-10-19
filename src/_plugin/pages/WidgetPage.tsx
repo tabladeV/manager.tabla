@@ -692,7 +692,7 @@ const WidgetPage = () => {
 
   const isPaymentRequired = (guestCount: number) => {
     if (!widgetInfo?.enable_paymant) return false;
-    const minGuestsForPayment = widgetInfo?.min_number_of_guests_without_deposite || 1;
+    const minGuestsForPayment = widgetInfo?.min_number_of_guests_required_deposite || 1;
     return guestCount >= minGuestsForPayment;
   };
 
