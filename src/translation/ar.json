@@ -1742,6 +1742,18 @@
         "inactive": "غير نشط",
         "optional": "اختياري",
         "upload": "رفع",
-"uploading": "جاري الرفع..."
+        "uploading": "جاري الرفع...",
+"select": "اختيار",
+"selectFile": "اختيار ملف",
+"selectImage": "اختيار صورة",
+"change": "تغيير",
+"hour": "ساعة",
+"minute": "دقيقة",
+"second": "ثانية",
+"hours": "ساعات",
+"minutes": "دقائق",
+"seconds": "ثوان",
+"confirm": "تأكيد",
+"selectTime": "اختيار الوقت"
     }
 }

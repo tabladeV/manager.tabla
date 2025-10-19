@@ -19,6 +19,7 @@ import BaseSelect from "../common/BaseSelect"
 import BaseBtn from "../common/BaseBtn"
 import ActionPopup from "../popup/ActionPopup"
 import Pagination from "../reservation/Pagination"
+import Portal from "../common/Portal"
 
 interface User {
   id: number
@@ -322,6 +323,7 @@ export default function Users() {
       />
       {!isUpdating
         ? isModalOpen && (
+          <Portal>
             <div>
               <div className="overlay" onClick={closeModal}></div>
               <div className="sidepopup lt-sm:popup lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:rounded-b-none lt-sm:w-full h-full dark:bg-bgdarktheme bg-white">
@@ -378,8 +380,10 @@ export default function Users() {
                 </div>
               </div>
             </div>
+            </Portal>
           )
         : isModalOpen && (
+          <Portal>
             <div>
               <div className="overlay" onClick={closeModal}></div>
               <div className="sidepopup lt-sm:popup lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:rounded-b-none lt-sm:w-full h-full dark:bg-bgdarktheme bg-white">
@@ -441,6 +445,7 @@ export default function Users() {
                 </div>
               </div>
             </div>
+            </Portal>
           )}
       <h1 className="text-2xl font-bold mb-3">{t("settingsPage.users.title")}</h1>
       <div>

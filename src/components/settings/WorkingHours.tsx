@@ -5,6 +5,8 @@ import i18next, { use } from 'i18next';
 import { BaseKey, BaseRecord, CanAccess, useCreate, useList, useUpdate } from '@refinedev/core';
 import { id } from 'date-fns/locale';
 import { set } from 'date-fns';
+import Portal from '../common/Portal';
+import BaseTimeInput from '../common/BaseTimeInput';
 
 interface SlotData {
   name: string;
@@ -213,6 +215,7 @@ const WorkingHours = () => {
   return (
     <div className={`rounded-lg p-4 md:p-6 w-full dark:bg-bgdarktheme bg-white`}>
       {manageWeekly && (
+        <Portal>
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setManageWeekly(false)}></div>
           <div className={`relative rounded-lg p-4 md:p-6 w-full max-w-2xl mx-4 dark:bg-bgdarktheme bg-white`}>
@@ -235,22 +238,20 @@ const WorkingHours = () => {
                 </div>
                 <div className="flex items-center gap-2 w-full md:w-auto">
                   <div className="flex flex-col flex-1">
-                    <label className="text-sm">{t('settingsPage.workingHours.from')}</label>
-                    <input
-                      type="time"
+                    <BaseTimeInput
+                      label={t('settingsPage.workingHours.from')}
                       value={slot.start_shift}
-                      onChange={(e) => updateWeeklySlot(index, 'start_shift', e.target.value)}
-                      className={`inputs w-full dark:bg-darkthemeitems bg-white`}
+                      onChange={(value) => updateWeeklySlot(index, 'start_shift', value || '')}
+                      inputClassName='!p-[10px]'
                     />
                   </div>
                   <span className="self-end mb-2">-</span>
                   <div className="flex flex-col flex-1">
-                    <label className="text-sm">{t('settingsPage.workingHours.to')}</label>
-                    <input
-                      type="time"
+                    <BaseTimeInput
+                      label={t('settingsPage.workingHours.to')}
                       value={slot.end_shift}
-                      onChange={(e) => updateWeeklySlot(index, 'end_shift', e.target.value)}
-                      className={`inputs w-full dark:bg-darkthemeitems bg-white`}
+                      onChange={(value) => updateWeeklySlot(index, 'end_shift', value || '')}
+                      inputClassName='!p-[10px]'
                     />
                   </div>
                 </div>
@@ -289,6 +290,7 @@ const WorkingHours = () => {
             </button>
           </div>
         </div>
+        </Portal>
       )}
 
       <div className="flex flex-col md:flex-row md:justify-between mb-4 gap-4 items-start md:items-center">
@@ -361,7 +363,7 @@ const WorkingHours = () => {
                         action='change'
                         fallback={
                           <div className="flex flex-col">
-                            <label className="text-xs sm:hidden">Type</label>
+                            <label className="text-xs sm:hidden">{t('settingsPage.workingHours.type')}</label>
                             <input
                               type="text"
                               value={slot.name}
@@ -373,7 +375,7 @@ const WorkingHours = () => {
                         }
                       >
                         <div className="flex flex-col">
-                          <label className="text-xs sm:hidden">Type</label>
+                          <label className="text-xs sm:hidden">{t('settingsPage.workingHours.type')}</label>
                           <input
                             type="text"
                             value={slot.name}
@@ -388,24 +390,21 @@ const WorkingHours = () => {
                         action='change'
                         fallback={
                           <div className="flex flex-col">
-                            <label className="text-xs sm:hidden">From</label>
-                            <input
-                              type="time"
+                            <label className="text-xs sm:hidden">{t('settingsPage.workingHours.from')}</label>
+                            <BaseTimeInput
                               value={slot.start_shift}
                               disabled={true}
-                              readOnly={true}
-                              className={`inputs w-full dark:bg-darkthemeitems bg-white`}
+                              inputClassName='!p-[10px]'
                             />
                           </div>
                         }
                       >
                         <div className="flex flex-col">
-                          <label className="text-xs sm:hidden">From</label>
-                          <input
-                            type="time"
+                          <label className="text-xs sm:hidden">{t('settingsPage.workingHours.from')}</label>
+                          <BaseTimeInput
                             value={slot.start_shift}
-                            onChange={(e) => updateSlot(dayIndex, slotIndex, 'start_shift', e.target.value)}
-                            className={`inputs w-full dark:bg-darkthemeitems bg-white`}
+                            onChange={(value) => updateSlot(dayIndex, slotIndex, 'start_shift', value || '')}
+                            inputClassName='!p-[10px]'
                           />
                         </div>
                       </CanAccess>
@@ -419,51 +418,28 @@ const WorkingHours = () => {
                         action='change'
                         fallback={
                           <div className="flex flex-col">
-                            <label className="text-xs sm:hidden">To</label>
-                            <input
-                              type="time"
+                            <label className="text-xs sm:hidden">{t('settingsPage.workingHours.to')}</label>
+                            <BaseTimeInput
                               value={slot.end_shift}
                               disabled={true}
-                              readOnly={true}
-                              className={`inputs w-full dark:bg-darkthemeitems bg-white`}
+                              inputClassName='!p-[10px]'
                             />
                           </div>
                         }
                       >
                         <div className="flex flex-col">
-                          <label className="text-xs sm:hidden">To</label>
-                          <input
-                            type="time"
+                          <label className="text-xs sm:hidden">{t('settingsPage.workingHours.to')}</label>
+                          <BaseTimeInput
                             value={slot.end_shift}
-                            onChange={(e) => updateSlot(dayIndex, slotIndex, 'end_shift', e.target.value)}
-                            className={`inputs w-full dark:bg-darkthemeitems bg-white`}
+                            onChange={(value) => updateSlot(dayIndex, slotIndex, 'end_shift', value || '')}
+                            inputClassName='!p-[10px]'
                           />
                         </div>
                       </CanAccess>
 
                       <div className="flex flex-col">
-                        {/* <label className="text-xs sm:hidden">{t('settingsPage.workingHours.placeLimitLabel')}</label> */}
+                        {/* Place limit section removed/commented out */}
                         <div className="flex items-center gap-2">
-                          {/* <CanAccess
-                            resource='availabilityhour'
-                            action='change'
-                            fallback={
-                              <input
-                                disabled={true}
-                                readOnly={true}
-                                value={slot.place_limit}
-                                className={`inputs-unique w-full dark:bg-darkthemeitems bg-white`}
-                              />
-                            }
-                          >
-                            <input
-                              type="number"
-                              value={slot.place_limit}
-                              onChange={(e) => updateSlot(dayIndex, slotIndex, 'place_limit', parseInt(e.target.value))}
-                              className={`inputs-unique w-full sm:w-16 dark:bg-darkthemeitems bg-white`}
-                            />
-                          </CanAccess> */}
-
                           <CanAccess resource='availabilityhour' action='remove'>
                             <button
                               onClick={() => removeSlot(dayIndex, slotIndex)}
@@ -475,12 +451,6 @@ const WorkingHours = () => {
                         </div>
                       </div>
                     </div>
-
-                    {/* <div className="sm:hidden mt-2">
-                      <span className="text-xs text-gray-500">
-                        {t('settingsPage.workingHours.placeLimitLabel')}
-                      </span>
-                    </div> */}
                   </div>
                 ))
               ) : (
@@ -489,6 +459,7 @@ const WorkingHours = () => {
                 </div>
               )}
 
+              {/* Add slot button */}
               {!day.closed_day && (
                 <div className="mt-2">
                   <CanAccess resource='availabilityhour' action='add'>
