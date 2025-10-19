@@ -227,7 +227,7 @@ const DraggableItem = (props: DraggableItemProps) => {
                     </div>}
                   </div>}
                 </div>
-                  {!itemData.is_payed && (
+                  {itemData.is_payed && (
                     <div className="flex gap-1 my-1 text-sm bg-softyellowtheme items-center text-yellowtheme w-fit px-2 py-1 rounded">
                       <DollarSign size={14} className={`dark:text-yellowtheme text-yellowtheme`} />
                       <span>{t('reservations.tableHeaders.paid')}{itemData.amount && `: ${itemData.amount} DH`}</span>
