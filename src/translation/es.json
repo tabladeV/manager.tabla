@@ -1711,6 +1711,18 @@
     "inactive": "Inactivo",
     "optional": "Opcional",
     "upload": "Subir",
-"uploading": "Subiendo..."
+    "uploading": "Subiendo...",
+    "select": "Seleccionar",
+"selectFile": "Seleccionar archivo",
+"selectImage": "Seleccionar imagen",
+"change": "Cambiar",
+"hour": "Hora",
+"minute": "Minuto",
+"second": "Segundo",
+"hours": "Horas",
+"minutes": "Minutos",
+"seconds": "Segundos",
+"confirm": "Confirmar",
+"selectTime": "Seleccionar hora"
 }
 }
