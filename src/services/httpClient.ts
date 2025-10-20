@@ -207,6 +207,16 @@ export class UnifiedHttpClient {
         axiosConfig.headers = config.headers;
       }
 
+      // Important: For FormData, make sure correct content-type is NOT set
+      // Let browser set it automatically with the boundary
+      if (isFormData) {
+        axiosConfig.headers = {
+          ...axiosConfig.headers,
+          'Content-Type': 'multipart/form-data'
+        };
+      }
+
+
       switch (config.method) {
         case 'GET':
           response = await axiosInstance.get(config.url, axiosConfig);

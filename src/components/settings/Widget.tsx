@@ -248,7 +248,7 @@ export default function WidgetConfig() {
     } else {
       formData.append('has_menu', 'false');
     }
-    formData.append('content', description);
+    formData.append('content', JSON.stringify(description) || '');
     formData.append('disabled_title', disabledTitle);
     formData.append('disabled_description', disabledDescription);
     formData.append('max_of_guests_par_reservation', maxGuestsPerReservation?.toString() || '0');
@@ -266,9 +266,11 @@ export default function WidgetConfig() {
     if (deleteImage) {
       formData.append('clear_image_2', 'true');
     }
-
+    console.log('filePDF', filePDF, searchTabs.menu);
     if (filePDF && searchTabs.menu) {
+      console.log('heyo', formData.get('menu_file'));
       formData.append('menu_file', filePDF);
+      console.log('heyo so', formData.get('menu_file'));
     }
 
     formData.append('auto_confirmation', autoConfirmation?.toString() || '0');
@@ -532,22 +534,6 @@ export default function WidgetConfig() {
                   {enableAreaSelection && <Check size={16} className="text-white" />}
                 </span>
                 <span className="capitalize select-none">{t('settingsPage.widget.searchTabs.enableAreaSelection')}</span>
-              </label>
-
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={(enableAreaSelection) as boolean}
-                  onChange={() => setEnableAreaSelection((prev) => !prev)}
-                  className="sr-only"
-                />
-                <span
-                  className={`flex items-center justify-center w-6 h-6 border rounded-md mr-2 ${enableAreaSelection ? 'bg-greentheme border-greentheme' : 'border-gray-300 dark:border-darkthemeitems'
-                    }`}
-                >
-                  {enableAreaSelection && <Check size={16} className="text-white" />}
-                </span>
-                <span className="capitalize">Enable areas selection</span>
               </label>
             </div>
             {enableDressCode && (
