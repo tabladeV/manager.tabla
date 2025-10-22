@@ -1,6 +1,7 @@
 import { CapacitorHttp, HttpResponse } from '@capacitor/core';
 import { Capacitor } from '@capacitor/core';
 import axiosInstance from '../providers/axiosInstance';
+import { handleUnauthorizedResponse } from "../providers/authProvider";
 
 /**
  * HTTP Response interface that standardizes responses across platforms
@@ -266,6 +267,12 @@ export class UnifiedHttpClient {
       headers['Content-Type'] = 'application/json';
     }
 
+    // Add Authorization header from access token
+    const token = localStorage.getItem("access");
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
     // Add restaurant ID header if available (convert to number for Django compatibility)
     const restaurantId = localStorage.getItem("restaurant_id");
     if (restaurantId) {
@@ -335,19 +342,14 @@ export class UnifiedHttpClient {
   /**
    * Handles authentication errors (401, 403, 411) by clearing auth data and redirecting
    */
-  private static handleAuthenticationError(error: any): void {
+  private static async handleAuthenticationError(error: any): Promise<boolean> {
     const status = error.response?.status;
-    
-    // Handle authentication errors like axiosInstance interceptor
-    if (status === 401 || status === 411 || status === 403) {
-      localStorage.removeItem("isLogedIn");
-      localStorage.removeItem("restaurant_id");
-      localStorage.removeItem("refresh");
-      localStorage.removeItem("permissions");
-      localStorage.removeItem("is_manager");
 
-      window.location.href = "/sign-in";
+    // If status indicates auth problem, try refreshing token
+    if (status === 401 || status === 411 || status === 403) {
+      return handleUnauthorizedResponse(status);
     }
+    return false;
   }
 
   /**
