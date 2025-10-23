@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from 'react-i18next';
-import { BaseKey, CanAccess, useList } from "@refinedev/core";
+import { BaseKey, CanAccess, useList, useNotification, useCreate } from "@refinedev/core";
 import BaseSelect from "../common/BaseSelect";
 import { ReservationSource, ReservationStatus } from "../common/types/Reservation";
 import { TableType as OriginalTableType } from "../../_root/pages/PlacesPage";
 import ActionPopup from "../popup/ActionPopup";
-import { Clock, User2, Users2, Calendar, XCircle } from "lucide-react";
+import { Clock, User2, Users2, Calendar, XCircle, Mail, Copy } from "lucide-react";
+import BaseBtn from "../common/BaseBtn";
+import { useRestaurantConfig } from "../../hooks/useRestaurantConfig";
 
 interface TableType extends OriginalTableType {
   id: number;
@@ -64,7 +66,22 @@ const EditReservationModal = ({
                 { value: 'BACK_OFFICE', label: t('overview.charts.reservationsSource.legend.BackOffice') },
 ]
 
-
+const { open } = useNotification();
+  
+  // Get restaurant configuration using our custom hook
+  const { 
+    widgetConfig, 
+    getPaymentLink, 
+    isLoading: isLoadingConfig 
+  } = useRestaurantConfig();
+  
+  // Extract payment configuration
+  const isPaymentEnabled = widgetConfig.enable_payment;
+  
+  // State for payment link actions
+  const [isSendingPaymentLink, setIsSendingPaymentLink] = useState(false);
+  const [isCopyingPaymentLink, setIsCopyingPaymentLink] = useState(false);
+  
 
   const { isLoading: loadingOccasions, error: occasionsError } = useList({
     resource: 'api/v1/bo/occasions/', // Placeholder API endpoint
@@ -113,8 +130,6 @@ const EditReservationModal = ({
     setSelectedOccasion(reservation?.occasion?.id as number);
     setSelectedTables(reservation?.tables?.map(t=>t.id) as number[])
   },[])
-  
-  if (!showModal || !selectedClient) return null;
 
   const handleSave = () => {
     setShowConfirmPopup(true);
@@ -143,6 +158,91 @@ const EditReservationModal = ({
         return t('reservations.statusLabels.cancelled');
     }
   }
+
+  // Add the API hook for sending payment link
+  const { mutate: sendPaymentLinkMutate } = useCreate({
+    errorNotification(error) {
+      return {
+        type: 'error',
+        message: error?.message || t('notifications.paymentLink.sendErrorDescription'),
+      };
+    },
+  });
+  
+  // Function to check if we can send payment link (requires email)
+  const canSendPaymentLink = () => {
+    return isPaymentEnabled && selectedClient?.email && selectedClient.email.includes('@');
+  };
+  
+  // Function to send payment link
+  const handleSendPaymentLink = async () => {
+    if (!selectedClient?.seq_id) {
+      open?.({
+        type: "error",
+        message: t("notifications.paymentLink.error"),
+        description: t("notifications.paymentLink.missingSeqId"),
+      });
+      return;
+    }
+    
+    setIsSendingPaymentLink(true);
+    try {
+      sendPaymentLinkMutate({
+        resource: `api/v1/bo/reservations/${selectedClient.seq_id}/send_payment_link/`,
+        values: {},
+        successNotification: ()=> ({
+          type: "success",
+          message: t("notifications.paymentLink.sent")
+        }),
+        errorNotification: (error)=> ({
+          type: "error",
+          message: t("notifications.paymentLink.sendError")
+        })
+      });
+    } catch (error) {
+      console.error("Error sending payment link:", error);
+    } finally {
+      setIsSendingPaymentLink(false);
+    }
+  };
+  
+  // Function to copy payment link
+  const handleCopyPaymentLink = async () => {
+    if (!selectedClient?.seq_id) {
+      open?.({
+        type: "error",
+        message: t("notifications.paymentLink.error"),
+        description: t("notifications.paymentLink.missingSeqId"),
+      });
+      return;
+    }
+    
+    setIsCopyingPaymentLink(true);
+    try {
+      // Generate the payment link using our helper function
+      const paymentLink = getPaymentLink(selectedClient.seq_id);
+      
+      // Copy to clipboard
+      await navigator.clipboard.writeText(paymentLink);
+      
+      open?.({
+        type: "success",
+        message: t("notifications.paymentLink.copied"),
+        description: t("notifications.paymentLink.copiedDescription"),
+      });
+    } catch (error) {
+      console.error("Error copying payment link:", error);
+      open?.({
+        type: "error",
+        message: t("notifications.paymentLink.copyError"),
+        description: t("notifications.paymentLink.copyErrorDescription"),
+      });
+    } finally {
+      setIsCopyingPaymentLink(false);
+    }
+  };
+
+  if (!showModal || !selectedClient) return null;
 
   return (
     <div>
@@ -439,6 +539,30 @@ const EditReservationModal = ({
               {(reservationProgressData.time === '') ? <div>Time </div> : <span>{reservationProgressData.time}</span>}
               {(reservationProgressData.guests === 0) ? <div>Guests </div> : <span>{reservationProgressData.guests}</span>}
             </div>
+
+            {/* Add payment link buttons */}
+      {isPaymentEnabled && (
+        <div className="flex gap-2 mt-4 mb-2 justify-center flex-wrap">
+          <BaseBtn
+            variant="secondary"
+            onClick={handleSendPaymentLink}
+            loading={isSendingPaymentLink}
+            disabled={!canSendPaymentLink()}
+          >
+            <Mail size={16} />
+            {t('reservations.buttons.sendPaymentLink')}
+          </BaseBtn>
+          
+          <BaseBtn
+            variant="secondary"
+            onClick={handleCopyPaymentLink}
+            loading={isCopyingPaymentLink}
+          >
+            <Copy size={16} />
+            {t('reservations.buttons.copyPaymentLink')}
+          </BaseBtn>
+        </div>
+      )}
 
             <div className="h-10 sm:hidden"></div>
             <div className="flex justify-center lt-sm:fixed lt-sm:bottom-0 lt-sm: lt-sm:p-3 lt-sm:w-full space-x-2">

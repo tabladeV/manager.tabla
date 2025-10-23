@@ -146,7 +146,11 @@
     },
     "buttons": {
       "addReservation": "Ajouter une Réservation",
-      "export": "Exporter"
+      "export": "Exporter",
+      "createAndSendPaymentLink": "Ajouter et envoyer un lien de paiement",
+      "createAndCopyPaymentLink": "Ajouter et copier un lien de paiement",
+      "sendPaymentLink": "Envoyer un lien de paiement",
+      "copyPaymentLink": "Copier le lien de paiement"
     },
     "tableHeaders": {
       "id": "ID",
@@ -339,7 +343,7 @@
       "or": "ou",
       "more": "plus"
     },
-    "titles":{
+    "titles": {
       "mr": "Monsieur",
       "mrs": "Madame",
       "ms": "Mademoiselle"
@@ -1634,7 +1638,23 @@
       "detailsNotFound": "Détails de la réservation non trouvés. Veuillez commencer une nouvelle réservation."
     }
   },
-  "calendarPopup":{
+  "paymentLink": {
+    "page": {
+      "title": "Finaliser le paiement | Tabla"
+    },
+    "processing": "Traitement de votre demande de paiement...",
+    "errors": {
+      "title": "Erreur de paiement",
+      "restaurantNotFound": "Les informations du restaurant n'ont pas pu être chargées. Veuillez réessayer plus tard.",
+      "missingReservationId": "L'identifiant de réservation est manquant. Veuillez vérifier votre lien.",
+      "paymentDetailsError": "Les détails du paiement sont incomplets. Veuillez contacter le restaurant.",
+      "paymentInitiationFailed": "Échec de l'initiation du paiement. Veuillez réessayer plus tard.",
+      "paymentDisabled": "Le paiement en ligne n'est pas activé pour ce restaurant. Veuillez contacter directement le restaurant.",
+      "reservationNotFound": "La réservation n'a pas été trouvée. Elle a peut-être été annulée ou déjà traitée."
+    },
+    "makeReservation": "Faire une réservation"
+  },
+  "calendarPopup": {
     "months": {
       "january": "Janvier",
       "february": "Février",
@@ -1658,15 +1678,15 @@
       "friday": "Ven",
       "saturday": "Sam"
     },
-    "labels":{
+    "labels": {
       "selectedRange": "Plage de Dates Sélectionnée"
     },
-    "buttons":{
+    "buttons": {
       "confirm": "Confirmer",
       "cancel": "Annuler"
     }
   },
-  "reservationProcess":{
+  "reservationProcess": {
     "date": "Date",
     "time": "Heure",
     "guests": "Invités",
@@ -1681,25 +1701,43 @@
     "for": "pour",
     "yourReservationIsSetFor": "Votre réservation est fixée pour",
     "common": {
-        "cancel": "Annuler",
-        "add": "Ajouter",
-        "update": "Mettre à jour",
-        "delete": "Supprimer",
-        "active": "Actif",
-        "inactive": "Inactif",
-        "optional": "Optionnel",
-        "days": {
-            "sunday": "Dimanche",
-            "monday": "Lundi",
-            "tuesday": "Mardi",
-            "wednesday": "Mercredi",
-            "thursday": "Jeudi",
-            "friday": "Vendredi",
-            "saturday": "Samedi"
-        }
+      "cancel": "Annuler",
+      "add": "Ajouter",
+      "update": "Mettre à jour",
+      "delete": "Supprimer",
+      "active": "Actif",
+      "inactive": "Inactif",
+      "optional": "Optionnel",
+      "days": {
+        "sunday": "Dimanche",
+        "monday": "Lundi",
+        "tuesday": "Mardi",
+        "wednesday": "Mercredi",
+        "thursday": "Jeudi",
+        "friday": "Vendredi",
+        "saturday": "Samedi"
+      }
     }
-},
-"common": {
+  },
+  "notifications": {
+    "paymentLink": {
+      "sent": "Lien de paiement envoyé",
+      "sentDescription": "Le lien de paiement a été envoyé par e-mail",
+      "sendError": "Échec de l'envoi du lien de paiement",
+      "sendErrorDescription": "Une erreur s'est produite lors de l'envoi du lien de paiement",
+      "copied": "Lien de paiement copié",
+      "copiedDescription": "Le lien de paiement a été copié dans le presse-papiers",
+      "copyError": "Échec de la copie du lien de paiement",
+      "copyErrorDescription": "Une erreur s'est produite lors de la copie du lien de paiement",
+      "error": "Erreur de lien de paiement",
+      "missingSeqId": "Impossible d'obtenir l'identifiant de réservation"
+    },
+    "reservation": {
+      "createError": "Échec de création de la réservation",
+      "createErrorDescription": "Une erreur s'est produite lors de la création de la réservation"
+    }
+  },
+  "common": {
     "cancel": "Annuler",
     "add": "Ajouter",
     "update": "Mettre à jour",
@@ -1713,17 +1751,16 @@
     "upload": "Téléverser",
     "uploading": "Téléversement en cours...",
     "select": "Sélectionner",
-"selectFile": "Sélectionner un fichier",
-"selectImage": "Sélectionner une image",
-"change": "Modifier",
-"hour": "Heure",
-"minute": "Minute",
-"second": "Seconde",
-"hours": "Heures",
-"minutes": "Minutes",
-"seconds": "Secondes",
-"confirm": "Confirmer",
-"selectTime": "Sélectionner l'heure"
-}
-
+    "selectFile": "Sélectionner un fichier",
+    "selectImage": "Sélectionner une image",
+    "change": "Modifier",
+    "hour": "Heure",
+    "minute": "Minute",
+    "second": "Seconde",
+    "hours": "Heures",
+    "minutes": "Minutes",
+    "seconds": "Secondes",
+    "confirm": "Confirmer",
+    "selectTime": "Sélectionner l'heure"
+  }
 }

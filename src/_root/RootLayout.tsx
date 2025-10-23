@@ -243,7 +243,7 @@ const RootLayout = () => {
                 alt="pending"
                 className="size-4 lt-lg:size-3 hidden dark:block"
               />
-              <span className="text-[1.2rem] lt-lg:text-[1rem] font-[600]">{actions[0].count}</span>
+              <span className="text-[1.2rem] lt-lg:text-[1rem] font-[600]">{actions?.[1]?.count}</span>
             </div>
             <div className="flex items-center gap-2 btn border-softgreentheme cursor-default hover:border-greentheme text-greentheme">
               <img
@@ -256,7 +256,7 @@ const RootLayout = () => {
                 alt="confirm"
                 className="size-4 lt-lg:size-3 hidden dark:block"
               />
-              <span className="text-[1.2rem] lt-lg:text-[1rem] font-[600]">{actions[1].count}</span>
+              <span className="text-[1.2rem] lt-lg:text-[1rem] font-[600]">{actions?.[2]?.count}</span>
             </div>
             <div className="flex items-center gap-2 btn border-softredtheme cursor-default hover:border-redtheme text-redtheme">
               <img src={cancel || "/placeholder.svg"} alt="cancel" className="size-4 lt-lg:size-3 block dark:hidden" />
@@ -265,7 +265,7 @@ const RootLayout = () => {
                 alt="cancel"
                 className="size-4 lt-lg:size-3 hidden dark:block"
               />
-              <span className="text-[1.2rem] lt-lg:text-[1rem] font-[600]">{actions[2].count}</span>
+              <span className="text-[1.2rem] lt-lg:text-[1rem] font-[600]">{actions?.[3]?.count}</span>
             </div>
             <div className="flex items-center gap-2 btn border-softyellowtheme cursor-default hover:border-yellowtheme text-yellowtheme">
               <img src={seated || "/placeholder.svg"} alt="seated" className="size-4 lt-lg:size-3 block dark:hidden" />
@@ -274,7 +274,7 @@ const RootLayout = () => {
                 alt="seated"
                 className="size-4 lt-lg:size-3 hidden dark:block"
               />
-              <span className="text-[1.2rem] lt-lg:text-[1rem] font-[600]">{actions[4].count}</span>
+              <span className="text-[1.2rem] lt-lg:text-[1rem] font-[600]">{actions?.[5]?.count}</span>
             </div>
           </div>
           <DateSelection />

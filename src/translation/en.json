@@ -150,7 +150,11 @@
         },
         "buttons": {
             "addReservation": "Add Reservation",
-            "export": "Export"
+            "export": "Export",
+            "createAndSendPaymentLink": "Create & Send Payment Link",
+      "createAndCopyPaymentLink": "Create & Copy Payment Link",
+      "sendPaymentLink": "Send Payment Link",
+      "copyPaymentLink": "Copy Payment Link"
         },
         "tableHeaders": {
             "id": "ID",
@@ -1669,6 +1673,22 @@
             "detailsNotFound": "Reservation details not found. Please start a new reservation."
         }
     },
+    "paymentLink": {
+        "page": {
+            "title": "Complete Payment | Tabla"
+        },
+        "processing": "Processing your payment request...",
+        "errors": {
+            "title": "Payment Error",
+            "restaurantNotFound": "Restaurant information could not be loaded. Please try again later.",
+            "missingReservationId": "Reservation ID is missing. Please check your link.",
+            "paymentDetailsError": "Payment details are incomplete. Please contact the restaurant.",
+            "paymentInitiationFailed": "Failed to initiate payment. Please try again later.",
+            "paymentDisabled": "Online payment is not enabled for this restaurant. Please contact the restaurant directly.",
+            "reservationNotFound": "The reservation was not found. It may have been canceled or already processed."
+        },
+        "makeReservation": "Make a Reservation"
+    },
     "reservationProcess": {
         "date": "Date",
         "time": "Time",
@@ -1702,6 +1722,24 @@
             }
         }
     },
+    "notifications": {
+    "paymentLink": {
+      "sent": "Payment link sent",
+      "sentDescription": "Payment link has been sent via email",
+      "sendError": "Failed to send payment link",
+      "sendErrorDescription": "There was an error sending the payment link",
+      "copied": "Payment link copied",
+      "copiedDescription": "Payment link has been copied to clipboard",
+      "copyError": "Failed to copy payment link",
+      "copyErrorDescription": "There was an error copying the payment link",
+      "error": "Payment link error",
+      "missingSeqId": "Couldn't get reservation ID"
+    },
+    "reservation": {
+      "createError": "Failed to create reservation",
+      "createErrorDescription": "There was an error creating the reservation"
+    }
+  },
     "common": {
         "cancel": "Cancel",
         "add": "Add",

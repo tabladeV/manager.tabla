@@ -1,19 +1,17 @@
 "use client"
 import type React from "react"
 import { useEffect, useState, memo } from "react"
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useSearchParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import Logo from "../../components/header/Logo"
-import { ChevronDown, Facebook, Instagram, Twitter, Phone, Mail, MessageCircle } from "lucide-react"
+import { LoaderCircle, AlertOctagon } from "lucide-react"
 import { SunIcon, MoonIcon, CheckIcon } from "../../components/icons"
-import { type BaseRecord, useList, useOne } from "@refinedev/core"
+import { useList } from "@refinedev/core"
 import { format } from "date-fns"
-import spanish from "../../assets/spanish.png"
-import arabic from "../../assets/arabic.jpg"
-import english from "../../assets/english.png"
-import french from "../../assets/french.png"
 import { useDateContext } from "../../context/DateContext"
 import { SharedWidgetFooter } from "../../components/reservation/SharedWidgetFooter"
+import { useWidgetData } from "../../hooks/useWidgetData"
+import LanguageSelector from "./LanguageSelector"
 
 // #region Types
 interface ReservationData {
@@ -51,13 +49,6 @@ interface ReservationData {
   };
 }
 
-interface WidgetInfo {
-  image: string;
-  image_2: string;
-  content: string;
-  [key: string]: any;
-}
-
 interface QuillPreviewProps {
   content: string
   className?: string
@@ -76,67 +67,6 @@ const QuillPreview = memo(({ content, className = "" }: QuillPreviewProps) => {
   return (
     <div className={`quill-preview ${className}`}>
       <div className="prose max-w-none overflow-auto" dangerouslySetInnerHTML={{ __html: content }} />
-    </div>
-  )
-})
-
-const LanguageSelector = memo(() => {
-  const { i18n } = useTranslation()
-  const [isOpen, setIsOpen] = useState(false)
-
-  const languages = [
-    { code: "en", name: "English", icon: english },
-    { code: "es", name: "Español", icon: spanish },
-    { code: "fr", name: "Français", icon: french },
-    { code: "ar", name: "العربية", icon: arabic },
-  ]
-
-  const currentLanguage = languages.find((lang) => lang.code === i18n.language) || languages[0]
-
-  const handleLanguageChange = (languageCode: string) => {
-    i18n.changeLanguage(languageCode)
-    localStorage.setItem("preferredLanguage", languageCode);
-    setIsOpen(false)
-  }
-
-  return (
-    <div className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 p-2 rounded-lg bg-[#f5f5f5] dark:bg-[#333333] bg-opacity-80 hover:bg-[#f5f5f5] dark:hover:bg-[#444444] transition-colors"
-        aria-label="Select language"
-      >
-        <img
-          src={currentLanguage.icon || "/placeholder.svg"}
-          alt={currentLanguage.name}
-          className="w-6 h-6 rounded-full object-cover"
-        />
-        <span className="text-sm font-medium hidden sm:block">{currentLanguage.name}</span>
-        <ChevronDown size={16} className={`transition-transform ${isOpen ? "rotate-180" : ""}`} />
-      </button>
-
-      {isOpen && (
-        <>
-          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className="absolute right-0 top-full mt-2 bg-white dark:bg-darkthemeitems rounded-lg shadow-lg border border-[#dddddd] dark:border-[#444444] z-50 min-w-[160px]">
-            {languages.map((language) => (
-              <button
-                key={language.code}
-                onClick={() => handleLanguageChange(language.code)}
-                className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-[#f5f5f5] dark:hover:bg-bgdarktheme2 transition-colors first:rounded-t-lg last:rounded-b-lg ${currentLanguage.code === language.code ? "bg-[#f0f7e6] dark:bg-bgdarktheme2" : ""
-                  }`}
-              >
-                <img
-                  src={language.icon || "/placeholder.svg"}
-                  alt={language.name}
-                  className="w-5 h-5 rounded-sm object-cover"
-                />
-                <span className="text-sm font-medium">{language.name}</span>
-              </button>
-            ))}
-          </div>
-        </>
-      )}
     </div>
   )
 })
@@ -164,7 +94,7 @@ const SuccessHeader = memo(({ onThemeToggle }: { onThemeToggle: () => void }) =>
   )
 })
 
-const SuccessHero = memo(({ widgetInfo }: { widgetInfo: WidgetInfo | undefined }) => {
+const SuccessHero = memo(({ widgetInfo }: { widgetInfo: any }) => {
   const { t } = useTranslation()
   return (
     <div className="fixed w-full h-[80vh] min-h-[500px] overflow-hidden ">
@@ -268,39 +198,26 @@ const PaymentDetails = memo(({ payment }: { payment: ReservationData['payment'] 
   )
 })
 
-
 // #endregion
 
 const PaymentSuccessPage = () => {
   const { t, i18n } = useTranslation()
   const { search } = useLocation()
   const { preferredLanguage } = useDateContext()
-
+  
   const [reservationData, setReservationData] = useState<ReservationData>()
-  const [widgetInfo, setWidgetInfo] = useState<WidgetInfo>()
-
+  
   const queryParams = new URLSearchParams(search)
   const oid = queryParams.get('oid')
   const lang = queryParams.get('lang')
+
+  // Use useWidgetData hook instead of direct API call
+  const { widgetInfo, isLoading: isLoadingWidget, error: widgetError } = useWidgetData();
 
   // Clear form data from widget on successful payment
   useEffect(() => {
     localStorage.removeItem('tabla_widget_form_data');
   }, []);
-
-  // Fetch general widget data
-  const { data: mainWidgetData } = useOne({
-    resource: `api/v1/bo/subdomains/public/cutomer/reservations`,
-    id: "",
-    queryOptions: {
-      enabled: true,
-      onSuccess: (data) => {
-        if (data?.data) {
-          setWidgetInfo(data.data as WidgetInfo);
-        }
-      }
-    }
-  });
 
   // Fetch reservation data using oid
   const { isLoading: isLoadingReservation, error: reservationError } = useList({
@@ -336,7 +253,7 @@ const PaymentSuccessPage = () => {
 
   // Set page title
   useEffect(() => {
-    document.title = t("reservationWidget.page.title")
+    document.title = t("paymentSuccess.page.title")
   }, [t])
 
   // Initialize dark mode from localStorage
@@ -350,6 +267,32 @@ const PaymentSuccessPage = () => {
   const toggleDarkMode = () => {
     const isDark = document.documentElement.classList.toggle("dark")
     localStorage.setItem("darkMode", isDark ? "true" : "false")
+  }
+
+  // If we're still loading widget data, show a full page loader
+  if (isLoadingWidget) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-white dark:bg-bgdarktheme2">
+        <LoaderCircle className="animate-spin text-greentheme" size={48} />
+      </div>
+    );
+  }
+
+  // If there was an error loading the widget data, show an error message
+  if (widgetError) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-white dark:bg-bgdarktheme2 p-4 text-center">
+        <div className="p-6 bg-softredtheme dark:bg-softredtheme rounded-xl text-center border border-redtheme/30 dark:border-redtheme/50 shadow-sm max-w-md">
+          <AlertOctagon className="h-12 w-12 mx-auto mb-4 text-redtheme" />
+          <h2 className="text-xl font-semibold mb-2 text-redtheme">
+            {t("paymentSuccess.errors.title")}
+          </h2>
+          <p className="text-sm text-redtheme">
+            {t("paymentLink.errors.restaurantNotFound")}
+          </p>
+        </div>
+      </div>
+    );
   }
 
   const renderContent = () => {

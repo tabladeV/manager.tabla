@@ -146,7 +146,11 @@
         },
         "buttons": {
             "addReservation": "إضافة حجز",
-            "export": "تصدير"
+            "export": "تصدير",
+            "createAndSendPaymentLink": "إضافة وإرسال رابط الدفع",
+            "createAndCopyPaymentLink": "إضافة ونسخ رابط الدفع",
+            "sendPaymentLink": "إرسال رابط الدفع",
+            "copyPaymentLink": "نسخ رابط الدفع"
         },
         "tableHeaders": {
             "id": "المعرف",
@@ -546,8 +550,8 @@
             "content": "المحتوى",
             "dynamicVariables": "المتغيرات الديناميكية",
             "assetManager": "مدير الأصول",
-"loadingAssets": "جاري تحميل الأصول...",
-"errorFetchingAssets": "خطأ في جلب الأصول."
+            "loadingAssets": "جاري تحميل الأصول...",
+            "errorFetchingAssets": "خطأ في جلب الأصول."
         },
         "general": {
             "basicInformationForm": {
@@ -1639,6 +1643,22 @@
             "detailsNotFound": "لم يتم العثور على تفاصيل الحجز. يرجى بدء حجز جديد."
         }
     },
+    "paymentLink": {
+        "page": {
+            "title": "إتمام الدفع | Tabla"
+        },
+        "processing": "جاري معالجة طلب الدفع الخاص بك...",
+        "errors": {
+            "title": "خطأ في الدفع",
+            "restaurantNotFound": "تعذر تحميل معلومات المطعم. يرجى المحاولة مرة أخرى لاحقًا.",
+            "missingReservationId": "معرّف الحجز مفقود. يرجى التحقق من الرابط الخاص بك.",
+            "paymentDetailsError": "تفاصيل الدفع غير مكتملة. يرجى الاتصال بالمطعم.",
+            "paymentInitiationFailed": "فشل في بدء الدفع. يرجى المحاولة مرة أخرى لاحقًا.",
+            "paymentDisabled": "الدفع عبر الإنترنت غير مفعّل لهذا المطعم. يرجى الاتصال بالمطعم مباشرةً.",
+            "reservationNotFound": "لم يتم العثور على الحجز. ربما تم إلغاؤه أو معالجته بالفعل."
+        },
+        "makeReservation": "إجراء حجز"
+    },
     "reviewPage": {
         "page": {
             "title": "اترك تقييماً | طابلا"
@@ -1730,6 +1750,24 @@
             }
         }
     },
+    "notifications": {
+        "paymentLink": {
+            "sent": "تم إرسال رابط الدفع",
+            "sentDescription": "تم إرسال رابط الدفع عبر البريد الإلكتروني",
+            "sendError": "فشل إرسال رابط الدفع",
+            "sendErrorDescription": "حدث خطأ أثناء إرسال رابط الدفع",
+            "copied": "تم نسخ رابط الدفع",
+            "copiedDescription": "تم نسخ رابط الدفع إلى الحافظة",
+            "copyError": "فشل نسخ رابط الدفع",
+            "copyErrorDescription": "حدث خطأ أثناء نسخ رابط الدفع",
+            "error": "خطأ في رابط الدفع",
+            "missingSeqId": "تعذر الحصول على رقم تعريف الحجز"
+        },
+        "reservation": {
+            "createError": "فشل إنشاء الحجز",
+            "createErrorDescription": "حدث خطأ أثناء إنشاء الحجز"
+        }
+    },
     "common": {
         "cancel": "إلغاء",
         "add": "إضافة",
@@ -1743,17 +1781,17 @@
         "optional": "اختياري",
         "upload": "رفع",
         "uploading": "جاري الرفع...",
-"select": "اختيار",
-"selectFile": "اختيار ملف",
-"selectImage": "اختيار صورة",
-"change": "تغيير",
-"hour": "ساعة",
-"minute": "دقيقة",
-"second": "ثانية",
-"hours": "ساعات",
-"minutes": "دقائق",
-"seconds": "ثوان",
-"confirm": "تأكيد",
-"selectTime": "اختيار الوقت"
+        "select": "اختيار",
+        "selectFile": "اختيار ملف",
+        "selectImage": "اختيار صورة",
+        "change": "تغيير",
+        "hour": "ساعة",
+        "minute": "دقيقة",
+        "second": "ثانية",
+        "hours": "ساعات",
+        "minutes": "دقائق",
+        "seconds": "ثوان",
+        "confirm": "تأكيد",
+        "selectTime": "اختيار الوقت"
     }
 }
