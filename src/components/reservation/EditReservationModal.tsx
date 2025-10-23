@@ -178,7 +178,7 @@ const { open } = useNotification();
   
   // Function to send payment link
   const handleSendPaymentLink = async () => {
-    if (!selectedClient?.seq_id) {
+    if (!selectedClient?.id) {
       open?.({
         type: "error",
         message: t("notifications.paymentLink.error"),
@@ -190,7 +190,7 @@ const { open } = useNotification();
     setIsSendingPaymentLink(true);
     try {
       sendPaymentLinkMutate({
-        resource: `api/v1/bo/reservations/${selectedClient.seq_id}/send_payment_link/`,
+        resource: `api/v1/bo/reservations/${selectedClient.id}/send_payment_link/`,
         values: {},
         successNotification: ()=> ({
           type: "success",
@@ -210,7 +210,7 @@ const { open } = useNotification();
   
   // Function to copy payment link
   const handleCopyPaymentLink = async () => {
-    if (!selectedClient?.seq_id) {
+    if (!selectedClient?.id) {
       open?.({
         type: "error",
         message: t("notifications.paymentLink.error"),
@@ -222,7 +222,7 @@ const { open } = useNotification();
     setIsCopyingPaymentLink(true);
     try {
       // Generate the payment link using our helper function
-      const paymentLink = getPaymentLink(selectedClient.seq_id);
+      const paymentLink = getPaymentLink(selectedClient.id as string);
       
       // Copy to clipboard
       await navigator.clipboard.writeText(paymentLink);

@@ -20,7 +20,7 @@ export interface RestaurantConfig {
   };
   
   // API URL helpers for payment links
-  getPaymentLink: (seqId: string) => string;
+  getPaymentLink: (seqId: string | number) => string;
   
   // Loading and error states
   isLoading: boolean;
@@ -92,7 +92,7 @@ export const useRestaurantConfig = (): RestaurantConfig => {
   /**
    * Helper function to generate payment links
    */
-  const getPaymentLink = (seqId: string): string => {
+  const getPaymentLink = (seqId: string | number): string => {
     const API_HOST = import.meta.env.VITE_API_URL || "https://api.dev.tabla.ma";
     const baseUrl = API_HOST.includes('dev') ? 
       `https://${subdomain}.dev.tabla.ma` : 

@@ -425,7 +425,7 @@ const sources = [
   };
   
   // Function to send payment link
-  const sendPaymentLink = async (seqId: string) => {
+  const sendPaymentLink = async (seqId: string | number) => {
     setIsSendingPaymentLink(true);
     try {
       await mutate({
@@ -457,7 +457,7 @@ const sources = [
   };
   
   // Function to copy payment link to clipboard
-  const copyPaymentLink = async (seqId: string) => {
+  const copyPaymentLink = async (seqId: string | number) => {
     setIsCopyingPaymentLink(true);
     try {
       // Generate the payment link using our helper function
@@ -513,7 +513,7 @@ const sources = [
     }, {
       onSuccess: (response) => {
         // Extract seq_id from response
-        const seqId = response.data?.seq_id;
+        const seqId = response.data?.id;
         if (seqId) {
           sendPaymentLink(seqId);
         } else {
@@ -563,7 +563,7 @@ const sources = [
     }, {
       onSuccess: (response) => {
         // Extract seq_id from response
-        const seqId = response.data?.seq_id;
+        const seqId = response.data?.id;
         if (seqId) {
           copyPaymentLink(seqId);
         } else {
@@ -608,7 +608,7 @@ const createAndSendPaymentLinkForExistingCustomer = () => {
   }, {
     onSuccess: (response) => {
       // Extract seq_id from response
-      const seqId = response.data?.seq_id;
+      const seqId = response.data?.id;
       if (seqId) {
         sendPaymentLink(seqId);
       } else {
@@ -653,7 +653,7 @@ const createAndCopyPaymentLinkForExistingCustomer = () => {
   }, {
     onSuccess: (response) => {
       // Extract seq_id from response
-      const seqId = response.data?.seq_id;
+      const seqId = response.data?.id;
       if (seqId) {
         copyPaymentLink(seqId);
       } else {
