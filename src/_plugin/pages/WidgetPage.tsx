@@ -7,7 +7,7 @@ import Logo from "../../components/header/Logo"
 import { LoaderCircle, ScreenShareIcon, ChevronDown, Facebook, Instagram, Twitter, Phone, Mail, MessageCircle, BadgeInfo, Globe } from "lucide-react"
 import { SunIcon, MoonIcon, CheckIcon } from "../../components/icons"
 import { type BaseKey, type BaseRecord, useCreate, useList, useOne } from "@refinedev/core"
-import { format } from "date-fns"
+import { format, startOfDay, compareAsc, parse } from "date-fns"
 import { getSubdomain } from "../../utils/getSubdomain"
 import spanish from "../../assets/spanish.png"
 import arabic from "../../assets/arabic.jpg"
@@ -23,6 +23,7 @@ import 'react-international-phone/style.css'
 import { useDebouncedCallback } from "../../hooks/useDebouncedCallback"
 import { useNavigate } from "react-router-dom";
 import { SharedWidgetFooter } from "../../components/reservation/SharedWidgetFooter"
+import LanguageSelector from "./LanguageSelector"
 // #region Child Components
 
 interface QuillPreviewProps {
@@ -40,57 +41,6 @@ const QuillPreview = memo(({ content, className = "" }: QuillPreviewProps) => {
   return (
     <div className={`quill-preview ${className}`}>
       <div className="prose max-w-none overflow-auto" dangerouslySetInnerHTML={{ __html: content }} />
-    </div>
-  )
-})
-
-const LanguageSelector = memo(() => {
-  const { i18n } = useTranslation()
-  const [isOpen, setIsOpen] = useState(false)
-
-  const languages = [
-    { code: "en", name: "English", icon: english },
-    { code: "es", name: "Español", icon: spanish },
-    { code: "fr", name: "Français", icon: french },
-    { code: "ar", name: "العربية", icon: arabic },
-  ]
-
-  const currentLanguage = languages.find((lang) => lang.code === i18n.language) || languages[0]
-
-  const handleLanguageChange = (languageCode: string) => {
-    i18n.changeLanguage(languageCode)
-    localStorage.setItem("preferredLanguage", languageCode);
-    setIsOpen(false)
-  }
-
-  return (
-    <div className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 p-2 rounded-lg bg-[#f5f5f5] dark:bg-[#333333] bg-opacity-80 hover:bg-[#f5f5f5] dark:hover:bg-[#444444] transition-colors"
-        aria-label="Select language"
-      >
-        <img src={currentLanguage.icon} alt={currentLanguage.name} className="w-6 h-6 rounded-full object-cover" />
-        <span className="text-sm font-medium hidden sm:block">{currentLanguage.name}</span>
-        <ChevronDown size={16} className={`transition-transform ${isOpen ? "rotate-180" : ""}`} />
-      </button>
-      {isOpen && (
-        <>
-          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className="absolute right-0 top-full mt-2 bg-white dark:bg-darkthemeitems rounded-lg shadow-lg border border-[#dddddd] dark:border-[#444444] z-50 min-w-[160px]">
-            {languages.map((language) => (
-              <button
-                key={language.code}
-                onClick={() => handleLanguageChange(language.code)}
-                className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-[#f5f5f5] dark:hover:bg-bgdarktheme2 transition-colors first:rounded-t-lg last:rounded-b-lg ${currentLanguage.code === language.code ? "bg-[#f0f7e6] dark:bg-bgdarktheme2" : ""}`}
-              >
-                <img src={language.icon} alt={language.name} className="w-5 h-5 rounded-sm object-cover" />
-                <span className="text-sm font-medium">{language.name}</span>
-              </button>
-            ))}
-          </div>
-        </>
-      )}
     </div>
   )
 })
@@ -426,6 +376,14 @@ const WidgetPage = () => {
   const { data: occasionsData } = useList({ resource: `api/v1/bo/restaurants/subdomain/occasions` })
   const { mutate: createReservation } = useCreate()
   const { mutate: createPaymentInitiation } = useCreate()
+  const currentMonth = format(new Date(), 'yyyy-MM');
+  const { data: availabilityData } = useList({
+    resource: `api/v1/bo/subdomains/availability/${currentMonth}/`,
+    queryOptions: {
+      // Only fetch if we might need to auto-select
+      enabled: !localStorage.getItem(FORM_DATA_KEY)
+    }
+  });
 
   // Component State
   const [widgetInfo, setWidgetInfo] = useState<BaseRecord>()
@@ -542,6 +500,70 @@ const WidgetPage = () => {
   useEffect(() => {
     setIsAnimating(true);
   }, [step]);
+
+  // Cache validation and auto-selection logic
+  useEffect(() => {
+    const savedDataString = localStorage.getItem(FORM_DATA_KEY);
+    let shouldAutoSelect = true;
+    let isCacheInvalid = false;
+
+    if (savedDataString) {
+      const savedData = JSON.parse(savedDataString).data;
+      if (savedData?.reserveDate && savedData?.time) {
+        shouldAutoSelect = false; // Data exists, no need to auto-select
+        const now = new Date();
+        const reservationDateTime = parse(`${savedData.reserveDate} ${savedData.time}`, 'yyyy-MM-dd HH:mm', new Date());
+        
+        if (compareAsc(reservationDateTime, now) < 0) {
+          isCacheInvalid = true;
+        }
+      }
+    }
+
+    if (isCacheInvalid) {
+      // Clear everything except theme and language
+      const theme = localStorage.getItem("darkMode");
+      const lang = localStorage.getItem("preferredLanguage");
+      localStorage.clear();
+      if (theme) localStorage.setItem("darkMode", theme);
+      if (lang) localStorage.setItem("preferredLanguage", lang);
+      
+      // Reset state
+      setData({ reserveDate: "", time: "", guests: 0 });
+      setUserInformation({ firstname: "", lastname: "", email: "", phone: "", preferences: "", allergies: "", occasion: "" });
+      setChosenTitle(undefined);
+      setCheckedConditions(false);
+      setCheckedDressCode(false);
+      setAreaSelected(undefined);
+      shouldAutoSelect = true; // Now we should auto-select
+    }
+
+    if (shouldAutoSelect && availabilityData?.data) {
+      const availability = availabilityData.data as { day: number; isAvailable: boolean }[];
+      const today = new Date();
+      const todayDay = today.getDate();
+      
+      let dateToSelect: Date | null = null;
+      const todayIsAvailable = availability.find(d => d.day === todayDay)?.isAvailable;
+
+      if (todayIsAvailable) {
+        dateToSelect = today;
+      } else {
+        const firstAvailable = availability.find(d => d.isAvailable && d.day > todayDay);
+        if (firstAvailable) {
+          dateToSelect = parse(`${firstAvailable.day}`, 'd', new Date(currentMonth));
+        }
+      }
+
+      if (dateToSelect) {
+        setData({
+          reserveDate: format(dateToSelect, 'yyyy-MM-dd'),
+          guests: 2,
+          time: ''
+        });
+      }
+    }
+  }, [availabilityData]);
 
   // Validation
   const validateForm = useCallback(() => {
@@ -706,6 +728,15 @@ const WidgetPage = () => {
   const handleNewReservation = () => {
     localStorage.removeItem(FORM_DATA_KEY);
     localStorage.removeItem(RESERVATION_DATA_KEY);
+    // reset all inputs
+    setData({ reserveDate: "", time: "", guests: 0 });
+    setUserInformation({ firstname: "", lastname: "", email: "", phone: "", preferences: "", allergies: "", occasion: "" });
+    setChosenTitle(undefined);
+    setCheckedConditions(false);
+    setCheckedDressCode(false);
+    setAreaSelected(undefined);
+    // navigate to step 1
+    changeStep(1);
     navigate('/make/reservation');
   };
 
