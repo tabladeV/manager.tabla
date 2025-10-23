@@ -137,7 +137,9 @@ const { open } = useNotification();
 
 
   const confirmUpdate = () => {
-    upDateHandler(selectedClient);
+    if (selectedClient) {
+      upDateHandler(selectedClient);
+    }
     setShowConfirmPopup(false);
     setShowModal(false);
   };

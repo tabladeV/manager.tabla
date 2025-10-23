@@ -587,8 +587,8 @@ const sources = [
   };
 
   // Function to create reservation with existing customer and send payment link
-const createAndSendPaymentLinkForExistingCustomer = (event: React.FormEvent) => {
-  event.preventDefault();
+const createAndSendPaymentLinkForExistingCustomer = () => {
+  // event.preventDefault();
   setIsCreatingReservation(true);
   
   mutate({
@@ -632,8 +632,8 @@ const createAndSendPaymentLinkForExistingCustomer = (event: React.FormEvent) => 
 };
 
 // Function to create reservation with existing customer and copy payment link
-const createAndCopyPaymentLinkForExistingCustomer = (event: React.FormEvent) => {
-  event.preventDefault();
+const createAndCopyPaymentLinkForExistingCustomer = () => {
+  // event.preventDefault();
   setIsCreatingReservation(true);
   
   mutate({

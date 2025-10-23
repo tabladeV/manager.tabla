@@ -57,7 +57,7 @@ export const useRestaurantConfig = (): RestaurantConfig => {
     queryOptions: {
       onSuccess: (data) => {
         if (data?.data) {
-          const subdomainInfo = data.data as { subdomain: string };
+          const subdomainInfo = data.data as any as { subdomain: string };
           setSubdomain(subdomainInfo.subdomain);
         }
       }
