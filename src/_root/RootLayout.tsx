@@ -283,6 +283,7 @@ const RootLayout = () => {
         <section className="flex justify-between h-[calc(100vh-80px)]">
           <div
             className={`p-[1em] w-full h-full lt-sm:pb-[10em] overflow-x-hidden overflow-y-scroll bg-[#F6F6F6] dark:bg-bgdarktheme2 dark:text-textdarktheme`}
+            id="main-root-layout"
           >
             <Outlet />
             <div className="lt-sm:h-[4em]"></div>

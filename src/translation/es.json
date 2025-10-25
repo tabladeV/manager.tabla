@@ -934,6 +934,63 @@
       }
     }
   },
+  "paymentSettings": {
+    "title": "Ajustes de Pago",
+    "editRule": "Editar Regla",
+    "addRule": "Añadir Regla",
+    "ruleName": "Nombre de la Regla",
+    "ruleNameRequired": "El nombre de la regla es obligatorio",
+    "ruleNamePlaceholder": "ej: Cena de Fin de Semana",
+    "startDate": "Fecha de Inicio",
+    "endDate": "Fecha de Fin",
+    "allDay": "Todo el Día",
+    "fromTime": "Desde la Hora",
+    "toTime": "Hasta la Hora",
+    "advanced": "Avanzado (Recurrencia)",
+    "alwaysRequire": "Siempre requerir pago",
+    "useRules": "Usar reglas",
+    "alwaysDescription": "Cuando el pago es siempre requerido, se solicitará un depósito para todas las reservas que cumplan los criterios siguientes.",
+    "status": "Estado",
+    "actions": "Acciones",
+    "errors": {
+      "startDateAfterEnd": "La fecha de inicio no puede ser posterior a la fecha de fin",
+      "endDateBeforeStart": "La fecha de fin no puede ser anterior a la fecha de inicio"
+    },
+    "description": {
+      "deposit": "Depósito de {{amount}} DH para {{count}} o más comensales.",
+      "allDay": "Todo el día.",
+      "fromToTime": "De {{from}} a {{to}}.",
+      "onDate": "El {{date}}.",
+      "fromToDate": "Del {{from}} al {{to}}."
+    }
+  },
+  "rrule": {
+    "repeatEvery": "Repetir cada",
+    "repeatOn": "Repetir en",
+    "ends": "Termina",
+    "never": "Nunca",
+    "on": "el",
+    "after": "Después de",
+    "occurrences": "ocurrencia(s)",
+    "daily": "Diariamente",
+    "weekly": "Semanalmente",
+    "monthly": "Mensualmente",
+    "yearly": "Anualmente",
+    "everyX": "Cada {{count}} {{unit}}",
+    "everyXPlural": "Cada {{count}} {{unit}}",
+    "freq_DAILY_singular": "día",
+    "freq_DAILY_plural": "días",
+    "freq_WEEKLY_singular": "semana",
+    "freq_WEEKLY_plural": "semanas",
+    "freq_MONTHLY_singular": "mes",
+    "freq_MONTHLY_plural": "meses",
+    "freq_YEARLY_singular": "año",
+    "freq_YEARLY_plural": "años",
+    "untilDate": "hasta {{date}}",
+    "afterXOccurrences": "después de {{count}} ocurrencia",
+    "afterXOccurrencesPlural": "después de {{count}} ocurrencias",
+    "startingFrom": "a partir de {{date}}"
+  },
   "marketplaceSettings": {
     "title": "Configuración del Marketplace",
     "chooseSettingPrompt": "Elige una configuración del marketplace para modificar",
@@ -1761,6 +1818,15 @@
     "minutes": "Minutos",
     "seconds": "Segundos",
     "confirm": "Confirmar",
-    "selectTime": "Seleccionar hora"
+    "selectTime": "Seleccionar hora",
+    "days": {
+      "sunday": "Domingo",
+      "monday": "Lunes",
+      "tuesday": "Martes",
+      "wednesday": "Miércoles",
+      "thursday": "Jueves",
+      "friday": "Viernes",
+      "saturday": "Sábado"
+    }
   }
 }
