@@ -20,6 +20,7 @@ import Reviews from '../../components/marketplace/Reviews';
 import ExtraServices from '../../components/marketplace/ExtraServices';
 import OnlineBookingBlockage from '../../components/marketplace/OnlineBookingBlockage';
 import PaymentSettings from '../../components/settings/PaymentSettings';
+import Alerts from '../../components/settings/Alerts';
 
 const componentMap: { [key: string]: React.ComponentType<any> } = {
   general: General,
@@ -43,6 +44,7 @@ const componentMap: { [key: string]: React.ComponentType<any> } = {
   reviews: Reviews,
   extraServices: ExtraServices,
   bookingRestrictions: OnlineBookingBlockage,
+  alerts: Alerts,
 };
 
 const SettingsPage: React.FC = () => {

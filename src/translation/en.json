@@ -543,7 +543,8 @@
             "roles": "Roles",
             "permissions": "Permissions",
             "services": "Services",
-            "messagingTemplates": "Messaging Templates"
+            "messagingTemplates": "Messaging Templates",
+            "alerts": "Events/Offers Alerts"
         },
         "messagingTemplates": {
             "description": "Create and manage templates for automated messages.",
@@ -1031,6 +1032,25 @@
         "onlineBookingBlockage": {
             "title": "Booking Restrictions",
             "description": "Set up booking restrictions and blackout dates for marketplace reservations. Control availability for online bookings."
+        }
+    },
+    "alerts": {
+        "title": "Events/Offers Alerts",
+        "addNew": "Add New Alert",
+        "editTitle": "Edit Alert",
+        "addTitle": "Add New Alert",
+        "image": "Image",
+        "uploadImage": "Upload Image",
+        "titleLabel": "Title",
+        "titlePlaceholder": "Enter alert title",
+        "descriptionLabel": "Description",
+        "descriptionPlaceholder": "Enter alert description...",
+        "active": "Active",
+        "table": {
+            "image": "Image",
+            "title": "Title",
+            "status": "Status",
+            "actions": "Actions"
         }
     },
     "unifiedSettings": {
