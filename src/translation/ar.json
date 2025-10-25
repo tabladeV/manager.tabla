@@ -539,7 +539,8 @@
             "roles": "الأدوار",
             "permissions": "الصلاحيات",
             "services": "الخدمات",
-            "messagingTemplates": "قوالب المراسلة"
+            "messagingTemplates": "قوالب المراسلة",
+            "alerts": "تنبيهات الأحداث / العروض"
         },
         "messagingTemplates": {
             "description": "إنشاء وإدارة قوالب للرسائل التلقائية.",
@@ -1027,6 +1028,25 @@
         "onlineBookingBlockage": {
             "title": "قيود الحجز",
             "description": "إعداد قيود الحجز وتواريخ عدم التوفر لحجوزات السوق. التحكم في التوفر للحجوزات عبر الإنترنت."
+        }
+    },
+    "alerts": {
+        "title": "تنبيهات الفعاليات/العروض",
+        "addNew": "إضافة تنبيه جديد",
+        "editTitle": "تعديل التنبيه",
+        "addTitle": "إضافة تنبيه جديد",
+        "image": "صورة",
+        "uploadImage": "تحميل صورة",
+        "titleLabel": "العنوان",
+        "titlePlaceholder": "أدخل عنوان التنبيه",
+        "descriptionLabel": "الوصف",
+        "descriptionPlaceholder": "أدخل وصف التنبيه...",
+        "active": "نشط",
+        "table": {
+            "image": "صورة",
+            "title": "العنوان",
+            "status": "الحالة",
+            "actions": "الإجراءات"
         }
     },
     "unifiedSettings": {

@@ -539,7 +539,8 @@
       "roles": "Rôles",
       "permissions": "Permissions",
       "services": "Services",
-      "messagingTemplates": "Modèles de Messagerie"
+      "messagingTemplates": "Modèles de Messagerie",
+      "alerts": "Alertes d'Événements/Offres"
     },
     "messagingTemplates": {
       "description": "Gérez vos modèles de messagerie pour les notifications par email et SMS envoyées aux clients.",
@@ -1027,6 +1028,25 @@
     "onlineBookingBlockage": {
       "title": "Restrictions de Réservation",
       "description": "Configurez les restrictions de réservation et les dates d'indisponibilité pour les réservations du marketplace. Contrôlez la disponibilité pour les réservations en ligne."
+    }
+  },
+  "alerts": {
+    "title": "Alertes Événements/Offres",
+    "addNew": "Ajouter une Nouvelle Alerte",
+    "editTitle": "Modifier l'Alerte",
+    "addTitle": "Ajouter une Nouvelle Alerte",
+    "image": "Image",
+    "uploadImage": "Téléverser une Image",
+    "titleLabel": "Titre",
+    "titlePlaceholder": "Saisir le titre de l'alerte",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Saisir la description de l'alerte...",
+    "active": "Active",
+    "table": {
+      "image": "Image",
+      "title": "Titre",
+      "status": "Statut",
+      "actions": "Actions"
     }
   },
   "unifiedSettings": {
