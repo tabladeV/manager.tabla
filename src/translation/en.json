@@ -938,6 +938,63 @@
             }
         }
     },
+    "paymentSettings": {
+        "title": "Payment Settings",
+        "editRule": "Edit Rule",
+        "addRule": "Add Rule",
+        "ruleName": "Rule Name",
+        "ruleNameRequired": "Rule name is required",
+        "ruleNamePlaceholder": "e.g., Weekend Dinner",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "allDay": "All Day",
+        "fromTime": "From Time",
+        "toTime": "To Time",
+        "advanced": "Advanced (Recurrence)",
+        "alwaysRequire": "Always require payment",
+        "useRules": "Use rules",
+        "alwaysDescription": "When payment is always required, a deposit will be requested for all reservations meeting the criteria below.",
+        "status": "Status",
+        "actions": "Actions",
+        "errors": {
+            "startDateAfterEnd": "Start date cannot be after end date",
+            "endDateBeforeStart": "End date cannot be before start date"
+        },
+        "description": {
+            "deposit": "Deposit of {{amount}} DH for {{count}} or more guests.",
+            "allDay": "All day.",
+            "fromToTime": "From {{from}} to {{to}}.",
+            "onDate": "On {{date}}.",
+            "fromToDate": "From {{from}} to {{to}}."
+        }
+    },
+    "rrule": {
+        "repeatEvery": "Repeat every",
+        "repeatOn": "Repeat on",
+        "ends": "Ends",
+        "never": "Never",
+        "on": "on",
+        "after": "After",
+        "occurrences": "occurrence(s)",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "monthly": "Monthly",
+        "yearly": "Yearly",
+        "everyX": "Every {{count}} {{unit}}",
+        "everyXPlural": "Every {{count}} {{unit}}",
+        "freq_DAILY_singular": "day",
+        "freq_DAILY_plural": "days",
+        "freq_WEEKLY_singular": "week",
+        "freq_WEEKLY_plural": "weeks",
+        "freq_MONTHLY_singular": "month",
+        "freq_MONTHLY_plural": "months",
+        "freq_YEARLY_singular": "year",
+        "freq_YEARLY_plural": "years",
+        "untilDate": "until {{date}}",
+        "afterXOccurrences": "after {{count}} occurrence",
+        "afterXOccurrencesPlural": "after {{count}} occurrences",
+        "startingFrom": "starting from {{date}}"
+    },
     "marketplaceSettings": {
         "title": "Marketplace Settings",
         "chooseSettingPrompt": "Choose a marketplace setting to modify",
@@ -1764,6 +1821,15 @@
         "minutes": "Minutes",
         "seconds": "Seconds",
         "confirm": "Confirm",
-        "selectTime": "Select Time"
+        "selectTime": "Select Time",
+        "days": {
+            "sunday": "Sunday",
+            "monday": "Monday",
+            "tuesday": "Tuesday",
+            "wednesday": "Wednesday",
+            "thursday": "Thursday",
+            "friday": "Friday",
+            "saturday": "Saturday"
+        }
     }
 }
