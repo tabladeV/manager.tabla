@@ -168,7 +168,7 @@ const PaymentLinkPage = () => {
       // If we get here, payment is enabled and we have a reservation ID
       initiatePayment()
     } else if (widgetError) {
-      setError(t("paymentLink.errors.restaurantNotFound"))
+      setError(t("common.errors.restaurantNotFoundMessage"))
       setIsLoading(false)
     }
   }, [widgetInfo, isLoadingWidget, widgetError, id])

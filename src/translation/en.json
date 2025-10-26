@@ -152,9 +152,9 @@
             "addReservation": "Add Reservation",
             "export": "Export",
             "createAndSendPaymentLink": "Create & Send Payment Link",
-      "createAndCopyPaymentLink": "Create & Copy Payment Link",
-      "sendPaymentLink": "Send Payment Link",
-      "copyPaymentLink": "Copy Payment Link"
+            "createAndCopyPaymentLink": "Create & Copy Payment Link",
+            "sendPaymentLink": "Send Payment Link",
+            "copyPaymentLink": "Copy Payment Link"
         },
         "tableHeaders": {
             "id": "ID",
@@ -1800,23 +1800,23 @@
         }
     },
     "notifications": {
-    "paymentLink": {
-      "sent": "Payment link sent",
-      "sentDescription": "Payment link has been sent via email",
-      "sendError": "Failed to send payment link",
-      "sendErrorDescription": "There was an error sending the payment link",
-      "copied": "Payment link copied",
-      "copiedDescription": "Payment link has been copied to clipboard",
-      "copyError": "Failed to copy payment link",
-      "copyErrorDescription": "There was an error copying the payment link",
-      "error": "Payment link error",
-      "missingSeqId": "Couldn't get reservation ID"
+        "paymentLink": {
+            "sent": "Payment link sent",
+            "sentDescription": "Payment link has been sent via email",
+            "sendError": "Failed to send payment link",
+            "sendErrorDescription": "There was an error sending the payment link",
+            "copied": "Payment link copied",
+            "copiedDescription": "Payment link has been copied to clipboard",
+            "copyError": "Failed to copy payment link",
+            "copyErrorDescription": "There was an error copying the payment link",
+            "error": "Payment link error",
+            "missingSeqId": "Couldn't get reservation ID"
+        },
+        "reservation": {
+            "createError": "Failed to create reservation",
+            "createErrorDescription": "There was an error creating the reservation"
+        }
     },
-    "reservation": {
-      "createError": "Failed to create reservation",
-      "createErrorDescription": "There was an error creating the reservation"
-    }
-  },
     "common": {
         "cancel": "Cancel",
         "add": "Add",
@@ -1842,6 +1842,11 @@
         "seconds": "Seconds",
         "confirm": "Confirm",
         "selectTime": "Select Time",
+        "dismiss": "Dismiss",
+        "close": "Close",
+        "dismissAll": "Dismiss All",
+        "closeAll": "Close All",
+        "loading": "Loading...",
         "days": {
             "sunday": "Sunday",
             "monday": "Monday",
@@ -1850,6 +1855,23 @@
             "thursday": "Thursday",
             "friday": "Friday",
             "saturday": "Saturday"
+        },
+        "validation": {
+            "requiredField": "This field is required",
+            "invalidDate": "Please enter a valid date",
+            "invalidTime": "Please enter a valid time",
+            "invalidNumber": "Please enter a valid number",
+            "minValue": "Value must be at least {{min}}",
+            "maxValue": "Value must be at most {{max}}",
+            "minLength": "Must be at least {{min}} characters",
+            "maxLength": "Must be at most {{max}} characters",
+            "invalidEmail": "Please enter a valid email address",
+            "invalidPhone": "Please enter a valid phone number",
+            "invalidURL": "Please enter a valid URL"
+        },
+        "errors": {
+            "restaurantNotFoundTitle": "Restaurant Not Found",
+            "restaurantNotFoundMessage": "The restaurant information could not be loaded. Please check the URL or contact support."
         }
     }
 }

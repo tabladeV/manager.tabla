@@ -1,96 +1,97 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, Trash, Pencil, X, Upload, Eye } from 'lucide-react';
+import { Plus, Trash, Pencil, X, Upload, Loader2 } from 'lucide-react';
 import BaseInput from '../common/BaseInput';
 import InlineQuillEditor from '../common/InlineQuillEditor';
 import BaseBtn from '../common/BaseBtn';
 import Portal from '../common/Portal';
 import { useDarkContext } from '../../context/DarkContext';
+import { useList, useCreate, useUpdate, useDelete, BaseKey, HttpError, useOne } from '@refinedev/core';
 
+// The Alert type used throughout the component
 interface Alert {
-  id: string;
+  id: BaseKey;
   title: string;
   description: string;
-  image: string | null;
-  isActive: boolean;
+  image: string | File | null; // Can be a server URL (string), a local file, or null
+  is_active: boolean;
 }
 
-const initialAlerts: Alert[] = [
-  {
-    id: '1',
-    title: 'Summer Sale',
-    description: '<p>Get <strong>50% off</strong> on all drinks this summer!</p>',
-    image: 'https://picsum.photos/seed/1/800/450',
-    isActive: true,
-  },
-  {
-    id: '2',
-    title: 'New Year Special Menu',
-    description: '<p>Join us for a special menu to celebrate the new year. Book your table now!</p>',
-    image: 'https://picsum.photos/seed/2/800/450',
-    isActive: false,
-  },
-];
-
+// Default state for a new alert
 const defaultAlertState: Omit<Alert, 'id'> = {
     title: '',
     description: '',
     image: null,
-    isActive: true,
+    is_active: true,
 };
 
+// Props for the modal component
 interface AlertModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSave: (alert: Alert) => void;
     alert: Alert | null;
+    isLoading: boolean; // Prop to indicate loading state
 }
 
-const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose, onSave, alert }) => {
+const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose, onSave, alert, isLoading }) => {
     const { t } = useTranslation();
-    const { darkMode: isDarkMode } = useDarkContext();
-    const [currentAlert, setCurrentAlert] = useState<Alert>({ ...defaultAlertState, id: Date.now().toString() });
+    const [currentAlert, setCurrentAlert] = useState<Alert>({ ...defaultAlertState, id: '' });
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
     const imageInputRef = React.useRef<HTMLInputElement>(null);
+
     const quillModules = {
         toolbar: [
-            [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
-            [{ size: [] }],
-            ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-            [{ 'list': 'ordered' }, { 'list': 'bullet' },
-            { 'indent': '-1' }, { 'indent': '+1' }],
-            [{ 'align': [] }],
-            ['link'],
-            [{ 'color': [] }, { 'background': [] }],
-            ['clean']
+            [{ 'header': '1' }, { 'header': '2' }], ['bold', 'italic', 'underline'],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            [{ 'align': [] }], ['link'], [{ 'color': [] }, { 'background': [] }], ['clean']
         ],
     };
 
-    React.useEffect(() => {
+    // Effect to set up the modal state when it opens or the alert prop changes
+    useEffect(() => {
         if (isOpen) {
-            if (alert) {
-                setCurrentAlert(alert);
+            const initialAlert = alert ? { ...alert } : { ...defaultAlertState, id: '' };
+            setCurrentAlert(initialAlert);
+
+            if (initialAlert.image) {
+                if (typeof initialAlert.image === 'string') {
+                    setImagePreview(initialAlert.image); // It's a URL from the server
+                } else {
+                    // It's a File object, should not happen on initial load but handle anyway
+                    const objectUrl = URL.createObjectURL(initialAlert.image);
+                    setImagePreview(objectUrl);
+                    return () => URL.revokeObjectURL(objectUrl);
+                }
             } else {
-                setCurrentAlert({ ...defaultAlertState, id: Date.now().toString() });
+                setImagePreview(null);
             }
         }
     }, [alert, isOpen]);
 
+    // Handle new image selection
     const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                if (e.target?.result) {
-                    setCurrentAlert(prev => ({ ...prev, image: e.target?.result as string }));
-                }
-            };
-            reader.readAsDataURL(file);
+            setCurrentAlert(prev => ({ ...prev, image: file }));
+            const objectUrl = URL.createObjectURL(file);
+            setImagePreview(objectUrl);
+        }
+    };
+
+    // Handle image removal
+    const removeImage = () => {
+        setCurrentAlert(prev => ({ ...prev, image: null }));
+        setImagePreview(null);
+        // Reset file input
+        if (imageInputRef.current) {
+            imageInputRef.current.value = "";
         }
     };
 
     const handleSave = () => {
         onSave(currentAlert);
-        onClose();
+        // Don't close automatically, let the parent decide after the save is successful
     };
 
     if (!isOpen) return null;
@@ -101,7 +102,7 @@ const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose, onSave, alert 
             <div className={`sidepopup w-[60%] lt-sm:popup lt-sm:h-auto lt-sm:bottom-0 lt-sm:rounded-b-none lt-sm:w-full h-full pa-0 dark:bg-bgdarktheme bg-white`}>
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-2xl font-bold">{alert ? t('alerts.editTitle') : t('alerts.addTitle')}</h1>
-                    <button onClick={onClose} className="p-2 rounded-full hover:bg-softgreytheme dark:hover:bg-darkthemeitems">
+                    <button onClick={onClose} className="p-2 rounded-full hover:bg-softgreytheme dark:hover:bg-darkthemeitems" disabled={isLoading}>
                         <X size={20} />
                     </button>
                 </div>
@@ -109,12 +110,13 @@ const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose, onSave, alert 
                     <div>
                         <label className="block text-sm font-medium mb-2">{t('alerts.image')}</label>
                         <div className="relative w-[60%] mx-auto aspect-video bg-gray-100 dark:bg-darkthemeitems rounded-lg overflow-hidden">
-                            {currentAlert.image ? (
+                            {imagePreview ? (
                                 <>
-                                    <img src={currentAlert.image} alt="Alert" className="w-full h-full object-cover" />
+                                    <img src={imagePreview} alt="Alert Preview" className="w-full h-full object-cover" />
                                     <button
-                                        onClick={() => setCurrentAlert(prev => ({ ...prev, image: null }))}
+                                        onClick={removeImage}
                                         className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
+                                        disabled={isLoading}
                                     >
                                         <X size={16} />
                                     </button>
@@ -123,6 +125,7 @@ const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose, onSave, alert 
                                 <button
                                     onClick={() => imageInputRef.current?.click()}
                                     className="w-full h-full flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-darkthemeitems/50"
+                                    disabled={isLoading}
                                 >
                                     <Upload size={24} />
                                     <span>{t('alerts.uploadImage')}</span>
@@ -135,6 +138,7 @@ const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose, onSave, alert 
                             onChange={handleImageUpload}
                             accept="image/*"
                             className="hidden"
+                            disabled={isLoading}
                         />
                     </div>
 
@@ -144,6 +148,7 @@ const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose, onSave, alert 
                         onChange={(val) => setCurrentAlert({ ...currentAlert, title: val })}
                         placeholder={t('alerts.titlePlaceholder')}
                         variant="outlined"
+                        disabled={isLoading}
                     />
 
                     <div>
@@ -157,16 +162,19 @@ const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose, onSave, alert 
                     </div>
                     
                     <label className="flex items-center cursor-pointer">
-                        <input type="checkbox" checked={currentAlert.isActive} onChange={(e) => setCurrentAlert({ ...currentAlert, isActive: e.target.checked })} className="sr-only" />
-                        <span className={`w-10 h-5 rounded-full p-1 flex items-center transition-colors ${currentAlert.isActive ? 'bg-greentheme' : 'bg-gray-300 dark:bg-gray-600'}`}>
-                            <span className={`w-3.5 h-3.5 bg-white rounded-full shadow-md transform transition-transform ${currentAlert.isActive ? 'translate-x-5' : ''}`} />
+                        <input type="checkbox" checked={currentAlert.is_active} onChange={(e) => setCurrentAlert({ ...currentAlert, is_active: e.target.checked })} className="sr-only" disabled={isLoading} />
+                        <span className={`w-10 h-5 rounded-full p-1 flex items-center transition-colors ${currentAlert.is_active ? 'bg-greentheme' : 'bg-gray-300 dark:bg-gray-600'}`}>
+                            <span className={`w-3.5 h-3.5 bg-white rounded-full shadow-md transform transition-transform ${currentAlert.is_active ? 'translate-x-5' : ''}`} />
                         </span>
                         <span className="ml-3 select-none">{t('alerts.active')}</span>
                     </label>
                 </div>
                 <div className="flex justify-end gap-2 mt-4 absolute bottom-[10px] right-[40px] w-[calc(100%-20px)]">
-                    <BaseBtn variant="outlined" onClick={onClose}>{t('common.cancel')}</BaseBtn>
-                    <BaseBtn onClick={handleSave}>{t('common.save')}</BaseBtn>
+                    <BaseBtn variant="outlined" onClick={onClose} disabled={isLoading}>{t('common.cancel')}</BaseBtn>
+                    <BaseBtn onClick={handleSave} disabled={isLoading}>
+                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {t('common.save')}
+                    </BaseBtn>
                 </div>
             </div>
         </Portal>
@@ -176,9 +184,28 @@ const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose, onSave, alert 
 export default function Alerts() {
     const { t } = useTranslation();
     const { darkMode: isDarkMode } = useDarkContext();
-    const [alerts, setAlerts] = useState<Alert[]>(initialAlerts);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingAlert, setEditingAlert] = useState<Alert | null>(null);
+    const [editingAlertId, setEditingAlertId] = useState<BaseKey | null>(null);
+
+    const { data: alertsData, refetch } = useList<Alert>({
+        resource: "api/v1/bo/events/",
+        pagination: { pageSize: 100 }
+    });
+
+    const { data: singleAlertData, refetch: fetchOneAlert, isLoading: isFetchingOne } = useOne<Alert>({
+        resource: "api/v1/bo/events",
+        id: (editingAlertId || "")+'/',
+        queryOptions: {
+            enabled: false, // We will trigger this fetch manually
+        }
+    });
+
+    const { mutate: createAlert, isLoading: isCreateLoading } = useCreate<Alert, HttpError, FormData>();
+    const { mutate: updateAlert, isLoading: isUpdateLoading } = useUpdate<Alert, HttpError, FormData>();
+    const { mutate: deleteAlert } = useDelete();
+
+    const alerts = useMemo(() => (alertsData?.data as any)?.results || [], [alertsData]);
 
     const handleAddAlert = () => {
         setEditingAlert(null);
@@ -186,25 +213,85 @@ export default function Alerts() {
     };
 
     const handleEditAlert = (alert: Alert) => {
-        setEditingAlert(alert);
-        setIsModalOpen(true);
+        setEditingAlertId(alert.id);
     };
 
-    const handleDeleteAlert = (id: string) => {
-        setAlerts(alerts.filter(alert => alert.id !== id));
+    useEffect(() => {
+        if (editingAlertId) {
+            fetchOneAlert();
+        }
+    }, [editingAlertId, fetchOneAlert]);
+
+    useEffect(() => {
+        if (singleAlertData?.data) {
+            try {
+                setEditingAlert({ ...singleAlertData.data, description: JSON.parse(singleAlertData.data.description) } as Alert);
+            } catch {
+                setEditingAlert(singleAlertData.data);
+            }
+            
+            setIsModalOpen(true);
+        }
+    }, [singleAlertData]);
+
+    const handleDeleteAlert = (id: BaseKey) => {
+        deleteAlert({
+            resource: "api/v1/bo/events",
+            id: `${id}/`,
+        }, {
+            onSuccess: () => refetch(),
+        });
     };
 
     const handleSaveAlert = (alert: Alert) => {
-        const exists = alerts.some(a => a.id === alert.id);
-        if (exists) {
-            setAlerts(alerts.map(a => a.id === alert.id ? alert : a));
+        const formData = new FormData();
+        formData.append('title', alert.title);
+        formData.append('description', JSON.stringify(alert.description));
+        formData.append('is_active', String(alert.is_active));
+
+        // Handle image: append only if it's a new File object.
+        // If it's a string, it's an existing URL, so we don't send it.
+        // The backend should not clear the image if the field is not present.
+        if (alert.image instanceof File) {
+            formData.append('image', alert.image);
+        } else if (alert.image === null) {
+            // If image was removed, send an empty value to signal the backend to clear it.
+            formData.append('image', '');
+        }
+
+        const onSaveSuccess = () => {
+            refetch();
+            setIsModalOpen(false);
+        };
+
+        if (alert.id && alert.id !== '') {
+            updateAlert({
+                resource: "api/v1/bo/events",
+                id: `${alert.id}/`,
+                values: formData,
+            }, {
+                onSuccess: onSaveSuccess,
+            });
         } else {
-            setAlerts([...alerts, { ...alert, id: Date.now().toString() }]);
+            createAlert({
+                resource: "api/v1/bo/events/",
+                values: formData,
+            }, {
+                onSuccess: onSaveSuccess,
+            });
         }
     };
 
-    const handleToggleStatus = (id: string) => {
-        setAlerts(alerts.map(alert => alert.id === id ? { ...alert, isActive: !alert.isActive } : alert));
+    const handleToggleStatus = (alert: Alert) => {
+        // This specific endpoint might still expect JSON. If it also needs FormData, this would need adjustment.
+        // Assuming JSON is fine for a simple status toggle.
+        updateAlert({
+            resource: `api/v1/bo/events`,
+            id: `${alert.id}/status/`,
+            values: { is_active: !alert.is_active } as any, // Cast to any to bypass FormData type
+        }, {
+            onSuccess: () => refetch(),
+        });
     };
 
     return (
@@ -225,17 +312,17 @@ export default function Alerts() {
                         </tr>
                     </thead>
                     <tbody className={`divide-y border-t ${isDarkMode ? "border-darkthemeitems divide-darkthemeitems" : "border-gray-200"}`}>
-                        {alerts.map((alert) => (
+                        {alerts.map((alert: Alert) => (
                             <tr key={alert.id} className={`${isDarkMode ? "hover:bg-bgdarktheme" : "hover:bg-gray-50"}`}>
                                 <td className="px-6 py-4">
-                                    <img src={alert.image || 'https://picsum.photos/seed/seed/1920/1080'} alt={alert.title} className="w-16 h-10 object-cover rounded-md" />
+                                    <img src={typeof alert.image === 'string' ? alert.image : 'https://picsum.photos/seed/placeholder/192/108'} alt={alert.title} className="w-16 h-10 object-cover rounded-md bg-gray-200" />
                                 </td>
                                 <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{alert.title}</td>
                                 <td className="px-6 py-4">
                                     <label className="flex items-center cursor-pointer">
-                                        <input type="checkbox" checked={alert.isActive} onChange={() => handleToggleStatus(alert.id)} className="sr-only" />
-                                        <span className={`w-10 h-5 rounded-full p-1 flex items-center transition-colors ${alert.isActive ? 'bg-greentheme' : 'bg-gray-300 dark:bg-gray-600'}`}>
-                                            <span className={`w-3.5 h-3.5 bg-white rounded-full shadow-md transform transition-transform ${alert.isActive ? 'translate-x-5' : ''}`} />
+                                        <input type="checkbox" checked={alert.is_active} onChange={() => handleToggleStatus(alert)} className="sr-only" />
+                                        <span className={`w-10 h-5 rounded-full p-1 flex items-center transition-colors ${alert.is_active ? 'bg-greentheme' : 'bg-gray-300 dark:bg-gray-600'}`}>
+                                            <span className={`w-3.5 h-3.5 bg-white rounded-full shadow-md transform transition-transform ${alert.is_active ? 'translate-x-5' : ''}`} />
                                         </span>
                                     </label>
                                 </td>
@@ -250,7 +337,13 @@ export default function Alerts() {
                     </tbody>
                 </table>
             </div>
-            <AlertModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={handleSaveAlert} alert={editingAlert} />
+            <AlertModal 
+                isOpen={isModalOpen} 
+                onClose={() => setIsModalOpen(false)} 
+                onSave={handleSaveAlert} 
+                alert={editingAlert}
+                isLoading={isCreateLoading || isUpdateLoading || isFetchingOne}
+            />
         </div>
     );
 }

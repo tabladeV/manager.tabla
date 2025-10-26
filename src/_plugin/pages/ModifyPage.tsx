@@ -33,13 +33,6 @@ interface QuillPreviewProps {
 }
 
 export function QuillPreview({ content, className = "" }: QuillPreviewProps) {
-  // Import Quill styles on the client side for proper rendering
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      import("quill/dist/quill.core.css")
-    }
-  }, [])
-
   return (
     <div className={`quill-preview ${className}`}>
       <div className="prose max-w-none overflow-auto" dangerouslySetInnerHTML={{ __html: content }} />

@@ -1870,6 +1870,11 @@
         "seconds": "ثوان",
         "confirm": "تأكيد",
         "selectTime": "اختيار الوقت",
+        "dismiss": "رفض",
+        "close": "إغلاق",
+        "dismissAll": "رفض الكل",
+        "closeAll": "إغلاق الكل",
+        "loading": "جارٍ التحميل...",
         "days": {
             "sunday": "الأحد",
             "monday": "الإثنين",
@@ -1878,6 +1883,23 @@
             "thursday": "الخميس",
             "friday": "الجمعة",
             "saturday": "السبت"
+        },
+        "validation": {
+            "requiredField": "هذا الحقل مطلوب",
+            "invalidDate": "يرجى إدخال تاريخ صحيح",
+            "invalidTime": "يرجى إدخال وقت صحيح",
+            "invalidNumber": "يرجى إدخال رقم صحيح",
+            "minValue": "يجب أن تكون القيمة {{min}} على الأقل",
+            "maxValue": "يجب أن تكون القيمة {{max}} على الأكثر",
+            "minLength": "يجب أن تتكون من {{min}} أحرف على الأقل",
+            "maxLength": "يجب أن تتكون من {{max}} أحرف على الأكثر",
+            "invalidEmail": "يرجى إدخال عنوان بريد إلكتروني صحيح",
+            "invalidPhone": "يرجى إدخال رقم هاتف صحيح",
+            "invalidURL": "يرجى إدخال رابط URL صحيح"
+        },
+        "errors": {
+            "restaurantNotFoundTitle": "المطعم غير موجود",
+            "restaurantNotFoundMessage": "تعذر تحميل معلومات المطعم. يرجى التحقق من عنوان URL أو الاتصال بالدعم."
         }
     }
 }

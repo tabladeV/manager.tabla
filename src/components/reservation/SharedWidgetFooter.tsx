@@ -11,12 +11,6 @@ interface QuillPreviewProps {
 }
 
 const QuillPreview = memo(({ content, className = "" }: QuillPreviewProps) => {
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-            import("quill/dist/quill.core.css");
-        }
-    }, []);
-
     return (
         <div className={`quill-preview ${className}`}>
             <div className="prose max-w-none overflow-auto" dangerouslySetInnerHTML={{ __html: content }} />

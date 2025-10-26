@@ -1,21 +1,13 @@
 "use client"
 import type React from "react"
-import { useCallback, useEffect, useState, memo } from "react"
+import { useCallback, useEffect, useState, memo, useMemo } from "react"
 import { Link, useLocation, useParams, useSearchParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import Logo from "../../components/header/Logo"
-import { LoaderCircle, ScreenShareIcon, ChevronDown, Facebook, Instagram, Twitter, Phone, Mail, MessageCircle, BadgeInfo, Globe } from "lucide-react"
+import { LoaderCircle, ScreenShareIcon, ChevronDown, Facebook, Instagram, Twitter, Phone, Mail, MessageCircle, BadgeInfo, Globe, X, AlertOctagon, Bell, Layers } from "lucide-react"
 import { SunIcon, MoonIcon, CheckIcon } from "../../components/icons"
-import { type BaseKey, type BaseRecord, useCreate, useList, useOne } from "@refinedev/core"
-import { format, startOfDay, compareAsc, parse } from "date-fns"
-import { getSubdomain } from "../../utils/getSubdomain"
-import spanish from "../../assets/spanish.png"
-import arabic from "../../assets/arabic.jpg"
-import english from "../../assets/english.png"
-import french from "../../assets/french.png"
-import visaLogo from "../../assets/VISA.jpg"
-import masterCardLogo from "../../assets/MasterCard.jpg"
-import cmiLogo from "../../assets/CMI.jpg"
+import { type BaseKey, type BaseRecord, useCreate, useList } from "@refinedev/core"
+import { format, compareAsc, parse } from "date-fns"
 import { PhoneInput } from 'react-international-phone'
 import WidgetReservationProcess from "../../components/reservation/WidgetReservationProcess"
 import { useDateContext } from "../../context/DateContext"
@@ -24,6 +16,199 @@ import { useDebouncedCallback } from "../../hooks/useDebouncedCallback"
 import { useNavigate } from "react-router-dom";
 import { SharedWidgetFooter } from "../../components/reservation/SharedWidgetFooter"
 import LanguageSelector from "./LanguageSelector"
+import { useWidgetData } from "../../hooks/useWidgetData"
+
+// #region Alert Display Component
+interface Alert {
+  id: BaseKey;
+  title: string;
+  description: string;
+  image: string | null;
+  is_active: boolean;
+}
+
+interface AlertCardProps {
+  alert: Alert;
+  onDismiss: () => void;
+  onDismissAll: () => void;
+  widgetLogoUrl?: string | null;
+  isTopCard: boolean;
+}
+
+const AlertCard: React.FC<AlertCardProps> = memo(({ alert, onDismiss, onDismissAll, widgetLogoUrl, isTopCard }) => {
+  const { t } = useTranslation();
+  const [imageError, setImageError] = useState(false);
+  const [logoError, setLogoError] = useState(false);
+
+  const handleImageError = () => setImageError(true);
+  const handleLogoError = () => setLogoError(true);
+
+  const showPrimaryImage = alert.image && !imageError;
+  const showWidgetLogo = widgetLogoUrl && !logoError && !showPrimaryImage;
+  const showDefaultLogo = !showPrimaryImage && !showWidgetLogo;
+
+  return (
+    <div className="relative bg-white dark:bg-bgdarktheme2 shadow-2xl rounded-lg overflow-hidden w-full h-full flex flex-col">
+      {isTopCard && (
+        <>
+          <button
+            onClick={onDismissAll}
+            className="absolute top-2 left-2 z-20 bg-black/30 text-white p-1.5 rounded-full hover:bg-black/50 transition-colors flex gap-2 items-center"
+            aria-label={t('common.dismissAll')}
+          >
+            <Layers size={18} /> <span>{t('common.dismissAll')}</span>
+          </button>
+          <button
+            onClick={onDismiss}
+            className="absolute top-2 right-2 z-20 bg-black/30 text-white p-1.5 rounded-full hover:bg-black/50 transition-colors"
+            aria-label={t('common.dismiss')}
+          >
+            <X size={18} />
+          </button>
+        </>
+      )}
+      <div className="relative h-40 w-full overflow-hidden bg-gray-100 dark:bg-darkthemeitems flex items-center justify-center flex-shrink-0">
+        {showPrimaryImage && (
+          <img src={alert.image!} alt={alert.title} onError={handleImageError} className="w-full h-full object-cover" />
+        )}
+        {showWidgetLogo && (
+          <img src={widgetLogoUrl!} alt="Logo" onError={handleLogoError} className="h-16 w-auto object-contain" />
+        )}
+        {showDefaultLogo && (
+          <Logo className="h-16" nolink={true} />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+        <h3 className="absolute bottom-2 left-4 text-xl font-bold text-white drop-shadow-md">
+          {alert.title}
+        </h3>
+      </div>
+      <div className="p-4 flex-grow overflow-y-auto">
+        <QuillPreview content={alert.description} />
+      </div>
+    </div>
+  );
+});
+
+interface AlertDisplayProps {
+  alerts: Alert[];
+  mode: 'popup' | 'inline' | 'none';
+  widgetLogoUrl?: string | null;
+}
+
+const AlertDisplay: React.FC<AlertDisplayProps> = ({ alerts, mode, widgetLogoUrl }) => {
+  const [activeAlerts, setActiveAlerts] = useState<Alert[]>([]);
+  const [visibleAlerts, setVisibleAlerts] = useState<Alert[]>([]);
+  const [isStackVisible, setIsStackVisible] = useState(false);
+  const [initialLoad, setInitialLoad] = useState(false);
+
+  useEffect(() => {
+    if (mode === 'none' || !alerts || alerts.length === 0) return;
+
+    const filteredActive = alerts.filter(alert => alert.is_active);
+    setActiveAlerts(filteredActive);
+    setVisibleAlerts(filteredActive);
+
+    const hasBeenDismissed = sessionStorage.getItem('alertsDismissed');
+    if (!hasBeenDismissed && filteredActive.length > 0) {
+      setIsStackVisible(true);
+    }
+    setTimeout(() => setInitialLoad(true), 100);
+  }, [alerts, mode]);
+
+  const handleDismiss = (alertId: BaseKey) => {
+    const newVisible = visibleAlerts.filter(alert => alert.id !== alertId);
+    setVisibleAlerts(newVisible);
+    if (newVisible.length === 0) {
+      setIsStackVisible(false);
+      sessionStorage.setItem('alertsDismissed', 'true');
+    }
+  };
+
+  const handleDismissAll = () => {
+    setVisibleAlerts([]);
+    setIsStackVisible(false);
+    sessionStorage.setItem('alertsDismissed', 'true');
+  };
+
+  const toggleStackVisibility = () => {
+    if (visibleAlerts.length > 0) {
+      setIsStackVisible(prev => !prev);
+    } else if (activeAlerts.length > 0) {
+      // If all were dismissed, toggle brings them back
+      setVisibleAlerts(activeAlerts);
+      setIsStackVisible(true);
+      sessionStorage.removeItem('alertsDismissed');
+    }
+  };
+
+  if (mode === 'none' || activeAlerts.length === 0) {
+    return null;
+  }
+
+  const containerClasses = mode === 'popup'
+    ? 'fixed top-5 right-5 z-[60] w-[350px] max-w-[90vw] lt-sm:h-[230px] h-[250px]'
+    : 'relative mb-6 w-full lt-sm:h-[230px] h-[250px]';
+
+  const alertCount = activeAlerts?.length;
+
+  return (
+    <>
+      {mode === 'popup' && (
+        <button
+          onClick={toggleStackVisibility}
+          className="fixed bottom-5 right-5 z-[70] w-10 h-10 bg-[#88AB61] text-white rounded-xl shadow-lg flex items-center justify-center hover:bg-[#769c4f] transition-all duration-300"
+          aria-label="Toggle alerts"
+          // style={{ transform: isStackVisible ? 'scale(0)' : 'scale(1)' }}
+        >
+          <Bell size={24} />
+          {alertCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+              {alertCount}
+            </span>
+          )}
+        </button>
+      )}
+
+      <div
+        className={`${containerClasses} transition-all duration-500 ease-out`}
+        style={{
+          visibility: isStackVisible ? 'visible' : 'hidden',
+          opacity: isStackVisible ? 1 : 0,
+          transform: isStackVisible ? 'translateY(0)' : 'translateY(20px)',
+        }}
+      >
+        {visibleAlerts.map((alert, index) => {
+          const isTopCard = index === visibleAlerts.length - 1;
+          const cardIndex = visibleAlerts.length - 1 - index;
+          const scale = Math.max(1 - cardIndex * 0.05, 0);
+          const translateY = cardIndex * 12;
+
+          return (
+            <div
+              key={alert.id}
+              className="absolute inset-0 transition-all duration-300 ease-in-out"
+              style={{
+                transform: `scale(${scale}) translateY(${translateY}px)`,
+                zIndex: index,
+                opacity: initialLoad ? 1 : 0,
+              }}
+            >
+              <AlertCard
+                alert={alert}
+                onDismiss={() => handleDismiss(alert.id)}
+                onDismissAll={handleDismissAll}
+                widgetLogoUrl={widgetLogoUrl}
+                isTopCard={isTopCard}
+              />
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
+};
+// #endregion
+
 // #region Child Components
 
 interface QuillPreviewProps {
@@ -32,15 +217,22 @@ interface QuillPreviewProps {
 }
 
 const QuillPreview = memo(({ content, className = "" }: QuillPreviewProps) => {
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      import("quill/dist/quill.core.css")
+  const sanitizedContent = useMemo(()=> {
+    let htmlContent = null;
+    try {
+      // Attempt to parse if it's a JSON string from a rich text editor
+      const parsed = JSON.parse(content);
+      htmlContent = parsed;
+    } catch {
+      // If parsing fails, assume it's already a valid HTML string
+      htmlContent = content;
     }
-  }, [])
+    return htmlContent;
+  }, [content])
 
   return (
     <div className={`quill-preview ${className}`}>
-      <div className="prose max-w-none overflow-auto" dangerouslySetInnerHTML={{ __html: content }} />
+      <div className="prose prose-sm max-w-none dark:prose-invert" dangerouslySetInnerHTML={{ __html: sanitizedContent}} />
     </div>
   )
 })
@@ -361,18 +553,19 @@ const UnavailableStep = memo(({ widgetInfo }: { widgetInfo: any }) => {
 const WidgetPage = () => {
   const { t, i18n } = useTranslation()
   const { pathname } = useLocation()
-  const { restaurant } = useParams()
   const [searchParams, setSearchParams] = useSearchParams();
   const step = parseInt(searchParams.get("step") || "1", 10);
 
+  // --- Alert Configuration ---
+  const alertDisplayMode: 'popup' | 'inline' | 'none' = 'popup'; // Change this to 'inline' or 'none'
+
   const { preferredLanguage } = useDateContext()
 
-  const PAYMENT_ENABLED = true
   const FORM_DATA_KEY = 'tabla_widget_form_data'
   const RESERVATION_DATA_KEY = 'tabla_widget_reservation_data'
 
   // API Data Fetching
-  const { data: widgetData } = useOne({ resource: `api/v1/bo/subdomains/public/cutomer/reservations`, id: "" })
+  const { widgetInfo, isLoading: isWidgetLoading, error: widgetError } = useWidgetData();
   const { data: occasionsData } = useList({ resource: `api/v1/bo/restaurants/subdomain/occasions` })
   const { mutate: createReservation } = useCreate()
   const { mutate: createPaymentInitiation } = useCreate()
@@ -380,13 +573,11 @@ const WidgetPage = () => {
   const { data: availabilityData } = useList({
     resource: `api/v1/bo/subdomains/availability/${currentMonth}/`,
     queryOptions: {
-      // Only fetch if we might need to auto-select
       enabled: !localStorage.getItem(FORM_DATA_KEY)
     }
   });
 
   // Component State
-  const [widgetInfo, setWidgetInfo] = useState<BaseRecord>()
   const [restaurantID, setRestaurantID] = useState<BaseKey>()
   const [occasions, setOccasions] = useState<BaseRecord[]>()
   const [areas, setAreas] = useState<any[]>([])
@@ -395,9 +586,6 @@ const WidgetPage = () => {
   const [serverError, setServerError] = useState<string>()
   const [showProcess, setShowProcess] = useState(false)
   const [dressCodePopupOpen, setDressCodePopupOpen] = useState(false)
-  const [showFullDescription, setShowFullDescription] = useState(false)
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
-
 
   // Form State
   const [data, setData] = useState(() => {
@@ -438,7 +626,6 @@ const WidgetPage = () => {
   // Effects
   useEffect(() => { document.title = t("reservationWidget.page.title") }, [pathname, t])
 
-
   useEffect(() => {
     const storedLang = localStorage.getItem("preferredLanguage");
     const browserLang = navigator.language.split('-')[0];
@@ -449,25 +636,15 @@ const WidgetPage = () => {
     i18n.changeLanguage(langToSet);
   }, [i18n]);
 
-  interface Area {
-    id: BaseKey
-    seq_id: BaseKey
-    name: string
-    restaurant: BaseKey
-  }
-
   useEffect(() => {
-    if (widgetData) {
-      const info = widgetData.data;
-      setWidgetInfo(info);
-      setRestaurantID(info.restaurant);
-      setAreas(info.areas || []);
+    if (widgetInfo) {
+      setRestaurantID(widgetInfo.restaurant);
+      setAreas(widgetInfo.areas || []);
 
-      // Perform step validation and redirection logic here, once data is loaded
       const isStep1DataMissing = !data.reserveDate || !data.time || !data.guests;
       const isStep2DataMissing = !userInformation.firstname || !userInformation.lastname || !userInformation.email || !userInformation.phone;
 
-      if (!info.is_widget_activated) {
+      if (!widgetInfo.is_widget_activated) {
         setSearchParams({ step: "6" }, { replace: true });
       } else if (step > 1 && step < 5 && isStep1DataMissing) {
         setSearchParams({ step: "1" }, { replace: true });
@@ -476,10 +653,8 @@ const WidgetPage = () => {
       } else if (!searchParams.has("step")) {
         setSearchParams({ step: "1" }, { replace: true });
       }
-      
-      setIsInitialLoading(false); // Mark initial loading as complete
     }
-  }, [widgetData, data, userInformation, step, setSearchParams]);
+  }, [widgetInfo, data, userInformation, step, setSearchParams]);
 
   useEffect(() => { if (occasionsData) setOccasions(occasionsData.data as unknown as BaseRecord[]) }, [occasionsData]);
 
@@ -487,7 +662,6 @@ const WidgetPage = () => {
     const formData = { data, userInformation, chosenTitle, checkedConditions, checkedDressCode, areaSelected };
     localStorage.setItem(FORM_DATA_KEY, JSON.stringify(formData));
   }, [data, userInformation, chosenTitle, checkedConditions, checkedDressCode, areaSelected]);
-
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -501,7 +675,6 @@ const WidgetPage = () => {
     setIsAnimating(true);
   }, [step]);
 
-  // Cache validation and auto-selection logic
   useEffect(() => {
     const savedDataString = localStorage.getItem(FORM_DATA_KEY);
     let shouldAutoSelect = true;
@@ -510,7 +683,7 @@ const WidgetPage = () => {
     if (savedDataString) {
       const savedData = JSON.parse(savedDataString).data;
       if (savedData?.reserveDate && savedData?.time) {
-        shouldAutoSelect = false; // Data exists, no need to auto-select
+        shouldAutoSelect = false;
         const now = new Date();
         const reservationDateTime = parse(`${savedData.reserveDate} ${savedData.time}`, 'yyyy-MM-dd HH:mm', new Date());
         
@@ -521,21 +694,19 @@ const WidgetPage = () => {
     }
 
     if (isCacheInvalid) {
-      // Clear everything except theme and language
       const theme = localStorage.getItem("darkMode");
       const lang = localStorage.getItem("preferredLanguage");
       localStorage.clear();
       if (theme) localStorage.setItem("darkMode", theme);
       if (lang) localStorage.setItem("preferredLanguage", lang);
       
-      // Reset state
       setData({ reserveDate: "", time: "", guests: 0 });
       setUserInformation({ firstname: "", lastname: "", email: "", phone: "", preferences: "", allergies: "", occasion: "" });
       setChosenTitle(undefined);
       setCheckedConditions(false);
       setCheckedDressCode(false);
       setAreaSelected(undefined);
-      shouldAutoSelect = true; // Now we should auto-select
+      shouldAutoSelect = true;
     }
 
     if (shouldAutoSelect && availabilityData?.data) {
@@ -565,7 +736,6 @@ const WidgetPage = () => {
     }
   }, [availabilityData]);
 
-  // Validation
   const validateForm = useCallback(() => {
     const errors = { firstname: "", lastname: "", email: "", phone: "" };
     let isValid = true;
@@ -592,22 +762,19 @@ const WidgetPage = () => {
     return isValid;
   }, [userInformation, t]);
 
-  // Re-validate form on user input to provide reactive feedback
   useEffect(() => {
-    // Don't run validation on initial mount or if there are no errors to clear
     const hasErrors = Object.values(formErrors).some(error => error !== "");
     if (hasErrors) {
       validateForm();
     }
   }, [userInformation, formErrors, validateForm]);
 
-  // Handlers
   const changeStep = useCallback((newStep: number) => {
     setIsAnimating(false);
     setPaymentError(null);
     setTimeout(() => {
       setSearchParams({ step: newStep.toString() });
-    }, 300); // Match this with your transition duration
+    }, 300);
   }, [setSearchParams]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -649,10 +816,9 @@ const WidgetPage = () => {
             initiatePayment(numericId);
           } else {
             setIsLoading(false);
-            changeStep(5); // Success step
+            changeStep(5);
           }
         } else {
-          // This case might indicate a server issue where reservation is created but ID is not returned
           setIsLoading(false);
           setServerError(t("reservationWidget.errors.serverError"));
         }
@@ -672,12 +838,9 @@ const WidgetPage = () => {
     }, {
       onSuccess: (response) => {
         setPaymentData(response.data);
-        // Automatically submit the payment form upon successful initiation
         submitPaymentForm(response.data);
       },
       onError: (error) => {
-        console.log('heyy')
-        console.log({...error})
         setIsLoading(false);
         setPaymentError(error?.response?.data?.non_field_errors?.join(", ") || error?.message || t("reservationWidget.errors.paymentInitiationFailed"));
       }
@@ -702,15 +865,12 @@ const WidgetPage = () => {
     }
     document.body.appendChild(form);
     form.submit();
-    // No need to set isLoading to false here, as the page will redirect
   };
 
   const toggleDarkMode = () => {
     document.documentElement.classList.toggle("dark");
     localStorage.setItem("darkMode", document.documentElement.classList.contains("dark") ? "true" : "false");
   };
-
-  const handleDescriptionToggle = useDebouncedCallback(() => setShowFullDescription(prev => !prev), 300);
 
   const calculateTotalAmount = () => {
     if (widgetInfo?.enable_paymant && widgetInfo?.deposite_amount_for_guest) {
@@ -728,14 +888,12 @@ const WidgetPage = () => {
   const handleNewReservation = () => {
     localStorage.removeItem(FORM_DATA_KEY);
     localStorage.removeItem(RESERVATION_DATA_KEY);
-    // reset all inputs
     setData({ reserveDate: "", time: "", guests: 0 });
     setUserInformation({ firstname: "", lastname: "", email: "", phone: "", preferences: "", allergies: "", occasion: "" });
     setChosenTitle(undefined);
     setCheckedConditions(false);
     setCheckedDressCode(false);
     setAreaSelected(undefined);
-    // navigate to step 1
     changeStep(1);
     navigate('/make/reservation');
   };
@@ -751,7 +909,7 @@ const WidgetPage = () => {
     }
   };
 
-  if (isInitialLoading) {
+  if (isWidgetLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-white dark:bg-bgdarktheme2">
         <LoaderCircle className="animate-spin text-[#88AB61]" size={48} />
@@ -759,8 +917,25 @@ const WidgetPage = () => {
     );
   }
 
+  if (widgetError) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-white dark:bg-bgdarktheme2 p-4 text-center">
+        <div className="p-6 bg-softredtheme dark:bg-softredtheme rounded-xl text-center border border-redtheme/30 dark:border-redtheme/50 shadow-sm max-w-md">
+          <AlertOctagon className="h-12 w-12 mx-auto mb-4 text-redtheme" />
+          <h2 className="text-xl font-semibold mb-2 text-redtheme">
+            {t("common.errors.restaurantNotFoundTitle")}
+          </h2>
+          <p className="text-sm text-redtheme">
+            {t("common.errors.restaurantNotFoundMessage")}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`overflow-y-auto min-h-screen max-h-screen bg-white dark:bg-bgdarktheme2 text-black dark:text-white ${preferredLanguage === "ar" ? "rtl" : ""}`}>
+      <AlertDisplay alerts={widgetInfo?.events || []} mode={alertDisplayMode} widgetLogoUrl={widgetInfo?.image} />
       <WidgetHeader widgetInfo={widgetInfo} onThemeToggle={toggleDarkMode} />
       <div className="relative pt-[370px]">
         <div className="w-full max-w-[800px] mx-auto px-0">

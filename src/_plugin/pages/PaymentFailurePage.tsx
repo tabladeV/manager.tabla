@@ -39,22 +39,6 @@ interface QuillPreviewProps {
 }
 // #endregion
 
-// #region Child Components
-
-const QuillPreview = memo(({ content, className = "" }: QuillPreviewProps) => {
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      import("quill/dist/quill.core.css")
-    }
-  }, [])
-
-  return (
-    <div className={`quill-preview ${className}`}>
-      <div className="prose max-w-none overflow-auto" dangerouslySetInnerHTML={{ __html: content }} />
-    </div>
-  )
-})
-
 const FailureHeader = memo(({ onThemeToggle }: { onThemeToggle: () => void }) => {
   const { t } = useTranslation()
   return (
@@ -334,10 +318,10 @@ const PaymentFailurePage = () => {
         <div className="p-6 bg-softredtheme dark:bg-softredtheme rounded-xl text-center border border-redtheme/30 dark:border-redtheme/50 shadow-sm max-w-md">
           <AlertOctagon className="h-12 w-12 mx-auto mb-4 text-redtheme" />
           <h2 className="text-xl font-semibold mb-2 text-redtheme">
-            {t("paymentFailure.error.title")}
+            {t("common.errors.restaurantNotFoundTitle")}
           </h2>
           <p className="text-sm text-redtheme">
-            {t("paymentLink.errors.restaurantNotFound")}
+            {t("common.errors.restaurantNotFoundMessage")}
           </p>
         </div>
       </div>
