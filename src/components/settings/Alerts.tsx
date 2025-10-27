@@ -44,6 +44,15 @@ const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose, onSave, alert,
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const imageInputRef = React.useRef<HTMLInputElement>(null);
 
+    const isFormValid = useMemo(() => {
+        return (
+            currentAlert.title.trim() !== '' &&
+            currentAlert.start_date !== '' &&
+            currentAlert.end_date !== '' &&
+            (!currentAlert.start_date || !currentAlert.end_date || currentAlert.start_date <= currentAlert.end_date)
+        );
+    }, [currentAlert.title, currentAlert.start_date, currentAlert.end_date]);
+
     const quillModules = {
         toolbar: [
             [{ 'header': '1' }, { 'header': '2' }], ['bold', 'italic', 'underline'],
@@ -58,18 +67,15 @@ const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose, onSave, alert,
             const initialAlert = alert ? { ...alert } : { ...defaultAlertState, id: '' };
             setCurrentAlert(initialAlert);
 
-            if (initialAlert.image) {
-                if (typeof initialAlert.image === 'string') {
-                    setImagePreview(initialAlert.image); // It's a URL from the server
-                } else {
-                    // It's a File object, should not happen on initial load but handle anyway
-                    const objectUrl = URL.createObjectURL(initialAlert.image);
-                    setImagePreview(objectUrl);
-                    return () => URL.revokeObjectURL(objectUrl);
-                }
+            if (initialAlert.image && typeof initialAlert.image === 'string') {
+                setImagePreview(initialAlert.image); // It's a URL from the server
             } else {
                 setImagePreview(null);
             }
+        } else {
+            // When modal is closed, reset everything to default
+            setCurrentAlert({ ...defaultAlertState, id: '' });
+            setImagePreview(null);
         }
     }, [alert, isOpen]);
 
@@ -87,15 +93,14 @@ const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose, onSave, alert,
     const removeImage = () => {
         setCurrentAlert(prev => ({ ...prev, image: null }));
         setImagePreview(null);
-        // Reset file input
         if (imageInputRef.current) {
             imageInputRef.current.value = "";
         }
     };
 
     const handleSave = () => {
+        if (!isFormValid) return;
         onSave(currentAlert);
-        // Don't close automatically, let the parent decide after the save is successful
     };
 
     if (!isOpen) return null;
@@ -153,10 +158,11 @@ const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose, onSave, alert,
                         placeholder={t('alerts.titlePlaceholder')}
                         variant="outlined"
                         disabled={isLoading}
+                        rules={[(value) => !!value.trim() ? null : t('common.validation.requiredField')]}
                     />
                     <div className="grid grid-cols-2 gap-4">
-                        <BaseInput label={t('paymentSettings.startDate')} type="date" value={currentAlert.start_date} onChange={(val) => setCurrentAlert({ ...currentAlert, start_date: val })} rules={[(value) => !!value ? null : t('common.validation.requiredField'), (value) => (currentAlert.end_date && value > currentAlert.end_date) ? t('paymentSettings.errors.startDateAfterEnd') : null,]} variant="outlined" />
-                        <BaseInput label={t('paymentSettings.endDate')} type="date" value={currentAlert.end_date} onChange={(val) => setCurrentAlert({ ...currentAlert, end_date: val })} rules={[(value) => !!value ? null : t('common.validation.requiredField'), (value) => (currentAlert.start_date && value < currentAlert.start_date) ? t('paymentSettings.errors.endDateBeforeStart') : null,]} variant="outlined" />
+                        <BaseInput label={t('paymentSettings.startDate')} type="date" value={currentAlert.start_date} onChange={(val) => setCurrentAlert({ ...currentAlert, start_date: val })} rules={[(value) => !!value ? null : t('common.validation.requiredField'), (value) => (currentAlert.end_date && value > currentAlert.end_date) ? t('paymentSettings.errors.startDateAfterEnd') : null,]} variant="outlined" disabled={isLoading} />
+                        <BaseInput label={t('paymentSettings.endDate')} type="date" value={currentAlert.end_date} onChange={(val) => setCurrentAlert({ ...currentAlert, end_date: val })} rules={[(value) => !!value ? null : t('common.validation.requiredField'), (value) => (currentAlert.start_date && value < currentAlert.start_date) ? t('paymentSettings.errors.endDateBeforeStart') : null,]} variant="outlined" disabled={isLoading} />
                     </div>
 
                     <div>
@@ -179,8 +185,7 @@ const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose, onSave, alert,
                 </div>
                 <div className="flex justify-end gap-2 mt-4 absolute bottom-[10px] right-[40px] w-[calc(100%-20px)]">
                     <BaseBtn variant="outlined" onClick={onClose} disabled={isLoading}>{t('common.cancel')}</BaseBtn>
-                    <BaseBtn onClick={handleSave} disabled={isLoading}>
-                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    <BaseBtn onClick={handleSave} disabled={isLoading || !isFormValid} loading={isLoading}>
                         {t('common.save')}
                     </BaseBtn>
                 </div>
@@ -203,7 +208,7 @@ export default function Alerts() {
 
     const { data: singleAlertData, refetch: fetchOneAlert, isLoading: isFetchingOne } = useOne<Alert>({
         resource: "api/v1/bo/events",
-        id: (editingAlertId || "")+'/',
+        id: (editingAlertId || "") + '/',
         queryOptions: {
             enabled: false, // We will trigger this fetch manually
         }
@@ -217,30 +222,43 @@ export default function Alerts() {
 
     const handleAddAlert = () => {
         setEditingAlert(null);
+        setEditingAlertId(null);
         setIsModalOpen(true);
     };
 
     const handleEditAlert = (alert: Alert) => {
         setEditingAlertId(alert.id);
+        setIsModalOpen(true); // Open modal immediately
     };
 
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setEditingAlert(null);
+        setEditingAlertId(null);
+    };
+
+    // Fetch data when modal is opened for an existing alert
     useEffect(() => {
-        if (editingAlertId) {
+        if (editingAlertId && isModalOpen) {
             fetchOneAlert();
         }
-    }, [editingAlertId, fetchOneAlert]);
+    }, [editingAlertId, isModalOpen, fetchOneAlert]);
 
+    // Populate form when fetched data is available
     useEffect(() => {
-        if (singleAlertData?.data) {
-            try {
-                setEditingAlert({ ...singleAlertData.data, description: JSON.parse(singleAlertData.data.description) } as Alert);
-            } catch {
-                setEditingAlert(singleAlertData.data);
+        // This effect runs when the data comes back from the fetch OR when we decide to edit a new item.
+        // If we have an ID we want to edit and the corresponding data is available, we set the state.
+        if (editingAlertId && singleAlertData?.data) {
+            // Ensure the data we have matches the ID we want to edit
+            if (singleAlertData.data.id == editingAlertId) {
+                try {
+                    setEditingAlert({ ...singleAlertData.data, description: JSON.parse(singleAlertData.data.description) } as Alert);
+                } catch {
+                    setEditingAlert(singleAlertData.data);
+                }
             }
-            
-            setIsModalOpen(true);
         }
-    }, [singleAlertData]);
+    }, [singleAlertData, editingAlertId]); // Add editingAlertId to the dependency array
 
     const handleDeleteAlert = (id: BaseKey) => {
         deleteAlert({
@@ -259,19 +277,15 @@ export default function Alerts() {
         formData.append('start_date', alert.start_date);
         formData.append('end_date', alert.end_date);
 
-        // Handle image: append only if it's a new File object.
-        // If it's a string, it's an existing URL, so we don't send it.
-        // The backend should not clear the image if the field is not present.
         if (alert.image instanceof File) {
             formData.append('image', alert.image);
         } else if (alert.image === null) {
-            // If image was removed, send an empty value to signal the backend to clear it.
             formData.append('image', '');
         }
 
         const onSaveSuccess = () => {
             refetch();
-            setIsModalOpen(false);
+            handleCloseModal();
         };
 
         if (alert.id && alert.id !== '') {
@@ -293,16 +307,17 @@ export default function Alerts() {
     };
 
     const handleToggleStatus = (alert: Alert) => {
-        // This specific endpoint might still expect JSON. If it also needs FormData, this would need adjustment.
-        // Assuming JSON is fine for a simple status toggle.
         updateAlert({
             resource: `api/v1/bo/events`,
             id: `${alert.id}/status/`,
-            values: { is_active: !alert.is_active } as any, // Cast to any to bypass FormData type
+            values: { is_active: !alert.is_active } as any,
         }, {
             onSuccess: () => refetch(),
         });
     };
+
+    // Determine the overall loading state for the modal
+    const isModalLoading = isCreateLoading || isUpdateLoading || (isFetchingOne && !!editingAlertId);
 
     return (
         <div className={`w-full rounded-[10px] p-4 ${isDarkMode ? "bg-bgdarktheme" : "bg-white"}`}>
@@ -317,6 +332,7 @@ export default function Alerts() {
                         <tr>
                             <th scope="col" className="px-6 py-4 font-medium">{t('alerts.table.image')}</th>
                             <th scope="col" className="px-6 py-4 font-medium">{t('alerts.table.title')}</th>
+                            <th scope="col" className="px-6 py-4 font-medium">{t('alerts.table.period')}</th>
                             <th scope="col" className="px-6 py-4 font-medium">{t('alerts.table.status')}</th>
                             <th scope="col" className="px-6 py-4 font-medium text-right">{t('alerts.table.actions')}</th>
                         </tr>
@@ -328,6 +344,9 @@ export default function Alerts() {
                                     <img src={typeof alert.image === 'string' ? alert.image : 'https://picsum.photos/seed/placeholder/192/108'} alt={alert.title} className="w-16 h-10 object-cover rounded-md bg-gray-200" />
                                 </td>
                                 <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{alert.title}</td>
+                                <td className="px-6 py-4 text-gray-900 dark:text-white">
+                                    {alert.start_date} / {alert.end_date}
+                                </td>
                                 <td className="px-6 py-4">
                                     <label className="flex items-center cursor-pointer">
                                         <input type="checkbox" checked={alert.is_active} onChange={() => handleToggleStatus(alert)} className="sr-only" />
@@ -349,10 +368,10 @@ export default function Alerts() {
             </div>
             <AlertModal 
                 isOpen={isModalOpen} 
-                onClose={() => setIsModalOpen(false)} 
+                onClose={handleCloseModal} 
                 onSave={handleSaveAlert} 
                 alert={editingAlert}
-                isLoading={isCreateLoading || isUpdateLoading}
+                isLoading={isModalLoading}
             />
         </div>
     );

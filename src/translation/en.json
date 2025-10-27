@@ -1050,7 +1050,8 @@
             "image": "Image",
             "title": "Title",
             "status": "Status",
-            "actions": "Actions"
+            "actions": "Actions",
+            "period": "Period"
         }
     },
     "unifiedSettings": {
@@ -1570,7 +1571,8 @@
             "cancelPayment": "Skip Payment",
             "proceedToPayment": "Proceed to Payment",
             "paymentNoticeTitle": "Prepayment is required",
-            "paymentNoticeDescription": "A prepayment is required for this reservation."
+            "paymentNoticeDescription": "A prepayment is required for this reservation.",
+            "checking": "Checking payment status..."
         },
         "confirmation": {
             "title": "Confirm Your Information",
@@ -1847,6 +1849,8 @@
         "dismissAll": "Dismiss All",
         "closeAll": "Close All",
         "loading": "Loading...",
+        "from": "From",
+        "to": "To",
         "days": {
             "sunday": "Sunday",
             "monday": "Monday",

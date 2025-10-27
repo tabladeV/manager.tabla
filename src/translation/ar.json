@@ -1046,7 +1046,8 @@
             "image": "صورة",
             "title": "العنوان",
             "status": "الحالة",
-            "actions": "الإجراءات"
+            "actions": "الإجراءات",
+            "period": "الفترة"
         }
     },
     "unifiedSettings": {
@@ -1875,6 +1876,8 @@
         "dismissAll": "رفض الكل",
         "closeAll": "إغلاق الكل",
         "loading": "جارٍ التحميل...",
+        "from": "من",
+        "to": "إلى",
         "days": {
             "sunday": "الأحد",
             "monday": "الإثنين",

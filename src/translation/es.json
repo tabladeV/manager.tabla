@@ -1046,7 +1046,8 @@
       "image": "Imagen",
       "title": "Título",
       "status": "Estado",
-      "actions": "Acciones"
+      "actions": "Acciones",
+      "period": "Período"
     }
   },
   "unifiedSettings": {
@@ -1567,7 +1568,8 @@
       "cancelPayment": "Omitir Pago",
       "proceedToPayment": "Proceder al Pago",
       "paymentNoticeTitle": "Se requiere un pago por adelantado",
-      "paymentNoticeDescription": "Se requiere un pago por adelantado para esta reserva."
+      "paymentNoticeDescription": "Se requiere un pago por adelantado para esta reserva.",
+      "checking": "Verificando el estado del pago..."
     },
     "confirmation": {
       "title": "Confirme Su Información",
@@ -1844,6 +1846,8 @@
     "dismissAll": "Descartar Todo",
     "closeAll": "Cerrar Todo",
     "loading": "Cargando...",
+    "from": "Desde",
+    "to": "Hasta",
     "days": {
       "sunday": "Domingo",
       "monday": "Lunes",
