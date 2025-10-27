@@ -49,10 +49,6 @@ interface ReservationData {
   };
 }
 
-interface QuillPreviewProps {
-  content: string
-  className?: string
-}
 // #endregion
 
 // #region Child Components

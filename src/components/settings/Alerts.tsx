@@ -14,6 +14,8 @@ interface Alert {
   title: string;
   description: string;
   image: string | File | null; // Can be a server URL (string), a local file, or null
+  start_date: string;
+  end_date: string;
   is_active: boolean;
 }
 
@@ -22,6 +24,8 @@ const defaultAlertState: Omit<Alert, 'id'> = {
     title: '',
     description: '',
     image: null,
+    start_date: '',
+    end_date: '',
     is_active: true,
 };
 
@@ -150,6 +154,10 @@ const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose, onSave, alert,
                         variant="outlined"
                         disabled={isLoading}
                     />
+                    <div className="grid grid-cols-2 gap-4">
+                        <BaseInput label={t('paymentSettings.startDate')} type="date" value={currentAlert.start_date} onChange={(val) => setCurrentAlert({ ...currentAlert, start_date: val })} rules={[(value) => !!value ? null : t('common.validation.requiredField'), (value) => (currentAlert.end_date && value > currentAlert.end_date) ? t('paymentSettings.errors.startDateAfterEnd') : null,]} variant="outlined" />
+                        <BaseInput label={t('paymentSettings.endDate')} type="date" value={currentAlert.end_date} onChange={(val) => setCurrentAlert({ ...currentAlert, end_date: val })} rules={[(value) => !!value ? null : t('common.validation.requiredField'), (value) => (currentAlert.start_date && value < currentAlert.start_date) ? t('paymentSettings.errors.endDateBeforeStart') : null,]} variant="outlined" />
+                    </div>
 
                     <div>
                         <label className="block text-sm font-medium mb-2">{t('alerts.descriptionLabel')}</label>
@@ -248,6 +256,8 @@ export default function Alerts() {
         formData.append('title', alert.title);
         formData.append('description', JSON.stringify(alert.description));
         formData.append('is_active', String(alert.is_active));
+        formData.append('start_date', alert.start_date);
+        formData.append('end_date', alert.end_date);
 
         // Handle image: append only if it's a new File object.
         // If it's a string, it's an existing URL, so we don't send it.
@@ -342,7 +352,7 @@ export default function Alerts() {
                 onClose={() => setIsModalOpen(false)} 
                 onSave={handleSaveAlert} 
                 alert={editingAlert}
-                isLoading={isCreateLoading || isUpdateLoading || isFetchingOne}
+                isLoading={isCreateLoading || isUpdateLoading}
             />
         </div>
     );

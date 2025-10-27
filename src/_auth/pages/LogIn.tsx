@@ -39,7 +39,7 @@ const LogIn: React.FC = () => {
         }
 
         if (data.data?.access) {
-          localStorage.setItem("token", data.data?.access);
+          localStorage.setItem("access", data.data?.access);
         }
         
         if (data?.data.user.is_manager) {

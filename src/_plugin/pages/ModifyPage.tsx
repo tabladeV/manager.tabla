@@ -26,19 +26,7 @@ import arabic from "../../assets/arabic.jpg"
 import english from "../../assets/english.png"
 import french from "../../assets/french.png"
 import { useDateContext } from "../../context/DateContext"
-
-interface QuillPreviewProps {
-  content: string
-  className?: string
-}
-
-export function QuillPreview({ content, className = "" }: QuillPreviewProps) {
-  return (
-    <div className={`quill-preview ${className}`}>
-      <div className="prose max-w-none overflow-auto" dangerouslySetInnerHTML={{ __html: content }} />
-    </div>
-  )
-}
+import QuillPreview from "../../components/common/QuillPreview"
 
 // Language Selector Component
 const LanguageSelector = () => {

@@ -238,8 +238,8 @@ const PaymentFailurePage = () => {
   };
 
   const calculateTotalAmount = () => {
-    if (widgetInfo?.enable_paymant && widgetInfo?.deposite_amount_for_guest && reservationData?.reservation?.number_of_guests) {
-      return (Number(widgetInfo.deposite_amount_for_guest) * reservationData.reservation.number_of_guests).toFixed(2) + " " + (widgetInfo?.currency || "MAD");
+    if (widgetInfo?.enable_paymant && widgetInfo?.deposit_amount_par_guest && reservationData?.reservation?.number_of_guests) {
+      return (Number(widgetInfo.deposit_amount_par_guest) * reservationData.reservation.number_of_guests).toFixed(2) + " " + (widgetInfo?.currency || "MAD");
     }
     return "0.00 " + (widgetInfo?.currency || "MAD");
   };

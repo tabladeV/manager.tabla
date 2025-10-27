@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next"
 import Logo from "../../components/header/Logo"
 import { LoaderCircle, ScreenShareIcon, ChevronDown, Facebook, Instagram, Twitter, Phone, Mail, MessageCircle, BadgeInfo, Globe, X, AlertOctagon, Bell, Layers } from "lucide-react"
 import { SunIcon, MoonIcon, CheckIcon } from "../../components/icons"
-import { type BaseKey, type BaseRecord, useCreate, useList } from "@refinedev/core"
+import { type BaseKey, type BaseRecord, useCreate, useList, useCustom } from "@refinedev/core"
 import { format, compareAsc, parse } from "date-fns"
 import { PhoneInput } from 'react-international-phone'
 import WidgetReservationProcess from "../../components/reservation/WidgetReservationProcess"
@@ -108,7 +108,7 @@ const AlertDisplay: React.FC<AlertDisplayProps> = ({ alerts, mode, widgetLogoUrl
     setActiveAlerts(filteredActive);
     setVisibleAlerts(filteredActive);
 
-    const hasBeenDismissed = sessionStorage.getItem('alertsDismissed');
+    const hasBeenDismissed = false;
     if (!hasBeenDismissed && filteredActive.length > 0) {
       setIsStackVisible(true);
     }
@@ -120,14 +120,12 @@ const AlertDisplay: React.FC<AlertDisplayProps> = ({ alerts, mode, widgetLogoUrl
     setVisibleAlerts(newVisible);
     if (newVisible.length === 0) {
       setIsStackVisible(false);
-      sessionStorage.setItem('alertsDismissed', 'true');
     }
   };
 
   const handleDismissAll = () => {
     setVisibleAlerts([]);
     setIsStackVisible(false);
-    sessionStorage.setItem('alertsDismissed', 'true');
   };
 
   const toggleStackVisibility = () => {
@@ -137,7 +135,6 @@ const AlertDisplay: React.FC<AlertDisplayProps> = ({ alerts, mode, widgetLogoUrl
       // If all were dismissed, toggle brings them back
       setVisibleAlerts(activeAlerts);
       setIsStackVisible(true);
-      sessionStorage.removeItem('alertsDismissed');
     }
   };
 
@@ -274,10 +271,11 @@ const WidgetHeader = memo(({ widgetInfo, onThemeToggle }: { widgetInfo: BaseReco
   )
 })
 
-const ReservationPickerStep = memo(({ data, onShowProcess, onNextStep, widgetInfo }: { data: any, onShowProcess: () => void, onNextStep: () => void, widgetInfo: BaseRecord | undefined }) => {
+const ReservationPickerStep = memo(({ data, onShowProcess, onNextStep, widgetInfo, isCheckingPayment }: { data: any, onShowProcess: () => void, onNextStep: () => void, widgetInfo: BaseRecord | undefined, isCheckingPayment: boolean }) => {
   const { t } = useTranslation()
   const formatedDate = data.reserveDate ? format(new Date(data.reserveDate), "MMM-dd") : "----/--/--";
-  const isButtonDisabled = !data.reserveDate || !data.time || !data.guests;
+  const isDataComplete = data.reserveDate && data.time && data.guests > 0;
+  const isButtonDisabled = !isDataComplete || isCheckingPayment;
 
   return (
     <>
@@ -303,9 +301,10 @@ const ReservationPickerStep = memo(({ data, onShowProcess, onNextStep, widgetInf
       <button
         onClick={onNextStep}
         disabled={isButtonDisabled}
-        className={`w-full py-3 px-4 rounded-md font-medium transition-colors ${isButtonDisabled ? "bg-[#88AB61] opacity-50 cursor-not-allowed" : "bg-[#88AB61] hover:bg-[#769c4f] text-white"}`}
+        className={`w-full py-3 px-4 rounded-md font-medium transition-colors flex items-center justify-center ${isButtonDisabled ? "bg-[#88AB61] opacity-50 cursor-not-allowed" : "bg-[#88AB61] hover:bg-[#769c4f] text-white"}`}
       >
-        {t("reservationWidget.reservation.bookNow")}
+        {isCheckingPayment && <LoaderCircle className="animate-spin mr-2" size={18} />}
+        {isCheckingPayment ? t("reservationWidget.payment.checking") : t("reservationWidget.reservation.bookNow")}
       </button>
       {widgetInfo?.menu_file && (
         <button
@@ -471,8 +470,10 @@ const UserInfoFormStep = memo(({
   )
 })
 
-const ConfirmationStep = memo(({ data, userInformation, chosenTitle, occasions, areas, areaSelected, onConfirm, onBack, isLoading, isPaymentRequired, totalAmount, paymentError }: any) => {
+const ConfirmationStep = memo(({ data, userInformation, chosenTitle, occasions, areas, areaSelected, onConfirm, onBack, isLoading, isPaymentRequired, totalAmount, paymentError, currency }: any) => {
   const { t } = useTranslation()
+  const formattedTotalAmount = `${totalAmount.toFixed(2)} ${currency || 'MAD'}`;
+
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">{t("reservationWidget.payment.reservationSummary")}</h2>
@@ -504,7 +505,7 @@ const ConfirmationStep = memo(({ data, userInformation, chosenTitle, occasions, 
               <div className="border-t border-[#dddddd] dark:border-[#444444] pt-3">
                 <div className="flex items-center justify-between">
                   <span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.payment.amountToPay")}</span>
-                  <span className="font-bold text-[#88AB61] text-lg">{totalAmount}</span>
+                  <span className="font-bold text-[#88AB61] text-lg">{formattedTotalAmount}</span>
                 </div>
               </div>
             )}
@@ -559,7 +560,7 @@ const WidgetPage = () => {
   // --- Alert Configuration ---
   const alertDisplayMode: 'popup' | 'inline' | 'none' = 'popup'; // Change this to 'inline' or 'none'
 
-  const { preferredLanguage } = useDateContext()
+  const { preferredLanguage } = useDateContext();
 
   const FORM_DATA_KEY = 'tabla_widget_form_data'
   const RESERVATION_DATA_KEY = 'tabla_widget_reservation_data'
@@ -618,10 +619,39 @@ const WidgetPage = () => {
   const [paymentData, setPaymentData] = useState<any | null>(null)
   const [paymentError, setPaymentError] = useState<string | null>(null)
   const [reservationId, setReservationId] = useState<number | null>(null);
+  const [isPaymentNeeded, setIsPaymentNeeded] = useState(false);
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [isCheckingPayment, setIsCheckingPayment] = useState(false);
   const navigate = useNavigate();
 
   // Browser Info
   const [browserInfo, setBrowserInfo] = useState({ userAgent: "", screenHeight: 0, screenWidth: 0, colorDepth: 0 })
+
+  const { refetch: checkPayment } = useCustom<any>({
+    url: 'api/v1/bo/subdomains/public/customer/payment/check/',
+    method: 'get',
+    config: {
+        query: {
+            date: data.reserveDate,
+            time: data.time,
+            number_of_guests: data.guests,
+        },
+    },
+    queryOptions: {
+        enabled: false, // Manually trigger this
+        onSuccess: (response) => {
+            setIsPaymentNeeded(response.data.is_payment_enabled);
+            setTotalAmount(response.data.amount || 0);
+        },
+        onError: () => {
+            setIsPaymentNeeded(false); // Default to false on error
+            setTotalAmount(0);
+        },
+        onSettled: () => {
+            setIsCheckingPayment(false);
+        }
+    },
+  });
 
   // Effects
   useEffect(() => { document.title = t("reservationWidget.page.title") }, [pathname, t])
@@ -658,10 +688,43 @@ const WidgetPage = () => {
 
   useEffect(() => { if (occasionsData) setOccasions(occasionsData.data as unknown as BaseRecord[]) }, [occasionsData]);
 
+  // Combined effect for saving form data and checking payment
   useEffect(() => {
     const formData = { data, userInformation, chosenTitle, checkedConditions, checkedDressCode, areaSelected };
     localStorage.setItem(FORM_DATA_KEY, JSON.stringify(formData));
-  }, [data, userInformation, chosenTitle, checkedConditions, checkedDressCode, areaSelected]);
+
+    // --- Payment Check Logic ---
+    if (!widgetInfo || !data.reserveDate || !data.time || !data.guests) {
+        setIsPaymentNeeded(false);
+        setTotalAmount(0);
+        return;
+    }
+
+    if (!widgetInfo.enable_paymant) {
+        setIsPaymentNeeded(false);
+        setTotalAmount(0);
+        return;
+    }
+
+    if (widgetInfo.payment_mode === 'always') {
+        const minGuests = widgetInfo.min_guests_for_payment || 1;
+        if (data.guests >= minGuests) {
+            setIsPaymentNeeded(true);
+            const amountPerGuest = widgetInfo.deposit_amount_par_guest || 0;
+            setTotalAmount(data.guests * parseFloat(amountPerGuest));
+        } else {
+            setIsPaymentNeeded(false);
+            setTotalAmount(0);
+        }
+    } else if (widgetInfo.payment_mode === 'rules') {
+        setIsCheckingPayment(true);
+        checkPayment();
+    } else {
+        setIsPaymentNeeded(false);
+        setTotalAmount(0);
+    }
+  }, [data, widgetInfo, checkPayment, userInformation, chosenTitle, checkedConditions, checkedDressCode, areaSelected]);
+
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -734,7 +797,7 @@ const WidgetPage = () => {
         });
       }
     }
-  }, [availabilityData]);
+  }, [availabilityData, currentMonth]);
 
   const validateForm = useCallback(() => {
     const errors = { firstname: "", lastname: "", email: "", phone: "" };
@@ -792,7 +855,7 @@ const WidgetPage = () => {
     createReservation({
       resource: `api/v1/bo/subdomains/public/cutomer/reservations/`,
       values: {
-        customer: { title: chosenTitle, email: userInformation.email, first_name: userInformation.firstname, last_name: userInformation.lastname, phone: userInformation.phone },
+        customer: { title: chosenTitle, email: userInformation.email, first_name: userInformation.firstname, last_name: userInformation.lastname, phone: userInformation.phone, preferred_language: preferredLanguage },
         restaurant: restaurantID as number,
         occasion: Number(userInformation.occasion) || null,
         source: "WIDGET",
@@ -812,7 +875,7 @@ const WidgetPage = () => {
           setReservationId(numericId);
           
           localStorage.setItem(RESERVATION_DATA_KEY, JSON.stringify({ reservationId: numericId, timestamp: Date.now() }));
-          if (isPaymentRequired(data.guests)) {
+          if (isPaymentNeeded) {
             initiatePayment(numericId);
           } else {
             setIsLoading(false);
@@ -872,18 +935,9 @@ const WidgetPage = () => {
     localStorage.setItem("darkMode", document.documentElement.classList.contains("dark") ? "true" : "false");
   };
 
-  const calculateTotalAmount = () => {
-    if (widgetInfo?.enable_paymant && widgetInfo?.deposite_amount_for_guest) {
-      return (Number(widgetInfo.deposite_amount_for_guest) * data.guests).toFixed(2) + " " + (widgetInfo?.currency || "MAD");
-    }
-    return "0.00";
-  };
-
-  const isPaymentRequired = (guestCount: number) => {
-    if (!widgetInfo?.enable_paymant) return false;
-    const minGuestsForPayment = widgetInfo?.min_number_of_guests_required_deposite || 1;
-    return guestCount >= minGuestsForPayment;
-  };
+  const formattedTotalAmount = useMemo(() => {
+    return `${totalAmount.toFixed(2)} ${widgetInfo?.currency || "MAD"}`;
+  }, [totalAmount, widgetInfo?.currency]);
 
   const handleNewReservation = () => {
     localStorage.removeItem(FORM_DATA_KEY);
@@ -900,9 +954,9 @@ const WidgetPage = () => {
 
   const renderStep = () => {
     switch (step) {
-      case 1: return <ReservationPickerStep data={data} onShowProcess={() => setShowProcess(true)} onNextStep={() => changeStep(2)} widgetInfo={widgetInfo} />;
+      case 1: return <ReservationPickerStep data={data} onShowProcess={() => setShowProcess(true)} onNextStep={() => changeStep(2)} widgetInfo={widgetInfo} isCheckingPayment={isCheckingPayment} />;
       case 2: return <UserInfoFormStep userInformation={userInformation} formErrors={formErrors} chosenTitle={chosenTitle} checkedConditions={checkedConditions} checkedDressCode={checkedDressCode} widgetInfo={widgetInfo} occasions={occasions} areas={areas} areaSelected={areaSelected} onUserInformationChange={setUserInformation} onChosenTitleChange={setChosenTitle} onCheckedConditionsChange={setCheckedConditions} onCheckedDressCodeChange={setCheckedDressCode} onAreaSelectedChange={setAreaSelected} onSubmit={handleSubmit} onBack={() => changeStep(1)} onDressCodePopupOpen={() => setDressCodePopupOpen(true)} />;
-      case 3: return <ConfirmationStep data={data} userInformation={userInformation} chosenTitle={chosenTitle} occasions={occasions} areas={areas} areaSelected={areaSelected} onConfirm={handleConfirmation} onBack={() => changeStep(2)} isLoading={isLoading} isPaymentRequired={isPaymentRequired(data.guests)} totalAmount={calculateTotalAmount()} paymentError={paymentError || serverError} />;
+      case 3: return <ConfirmationStep data={data} userInformation={userInformation} chosenTitle={chosenTitle} occasions={occasions} areas={areas} areaSelected={areaSelected} onConfirm={handleConfirmation} onBack={() => changeStep(2)} isLoading={isLoading} isPaymentRequired={isPaymentNeeded} totalAmount={totalAmount} currency={widgetInfo?.currency} paymentError={paymentError || serverError} />;
       case 5: return <SuccessStep widgetInfo={widgetInfo} onReset={() => handleNewReservation()} />;
       case 6: return <UnavailableStep widgetInfo={widgetInfo} />;
       default: return null;
@@ -940,7 +994,7 @@ const WidgetPage = () => {
       <div className="relative pt-[370px]">
         <div className="w-full max-w-[800px] mx-auto px-0">
           <div className="bg-white dark:bg-darkthemeitems rounded-t-3xl shadow-2xl overflow-hidden">
-            {isPaymentRequired(data.guests) && (
+            {isPaymentNeeded && step < 3 && (
               <div className="bg-softbluetheme mx-4 mt-4 rounded-xl flex justify-between text-bluetheme p-2">
                 <div className="flex gap-2 justify-start items-center" role="alert">
                   <BadgeInfo className="inline-block mx-2" />
@@ -950,14 +1004,14 @@ const WidgetPage = () => {
                   </div>
                 </div>
                 <div className="flex-1 font-[900] p-2 rounded-lg flex items-center justify-center w-fit h-fit text-bluetheme">
-                  {calculateTotalAmount()}
+                  {formattedTotalAmount}
                 </div>
               </div>
             )}
             <div className={`p-6 transition-all duration-300 ease-in-out ${isAnimating ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
               {renderStep()}
             </div>
-            <SharedWidgetFooter widgetInfo={widgetInfo} isPaymentRequired={isPaymentRequired(data.guests)} showDescription={step === 1} />
+            <SharedWidgetFooter widgetInfo={widgetInfo} isPaymentRequired={isPaymentNeeded} showDescription={step === 1} />
           </div>
         </div>
       </div>
