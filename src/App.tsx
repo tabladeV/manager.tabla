@@ -8,6 +8,7 @@ import routerBindings, {
   DocumentTitleHandler,
 } from "@refinedev/react-router-v6";
 import "./index.css";
+import "react-quill/dist/quill.snow.css";
 import RootLayout from "./_root/RootLayout";
 import Plugins from "./_plugin/Plugins";
 import { Home } from "./_root/pages";

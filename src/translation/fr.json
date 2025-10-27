@@ -1839,6 +1839,11 @@
     "seconds": "Secondes",
     "confirm": "Confirmer",
     "selectTime": "Sélectionner l'heure",
+    "dismiss": "Ignorer",
+    "close": "Fermer",
+    "dismissAll": "Ignorer Tout",
+    "closeAll": "Fermer Tout",
+    "loading": "Chargement...",
     "days": {
       "sunday": "Dimanche",
       "monday": "Lundi",
@@ -1847,6 +1852,23 @@
       "thursday": "Jeudi",
       "friday": "Vendredi",
       "saturday": "Samedi"
+    },
+    "validation": {
+      "requiredField": "Ce champ est obligatoire",
+      "invalidDate": "Veuillez entrer une date valide",
+      "invalidTime": "Veuillez entrer une heure valide",
+      "invalidNumber": "Veuillez entrer un nombre valide",
+      "minValue": "La valeur doit être au moins {{min}}",
+      "maxValue": "La valeur doit être au plus {{max}}",
+      "minLength": "Doit contenir au moins {{min}} caractères",
+      "maxLength": "Doit contenir au plus {{max}} caractères",
+      "invalidEmail": "Veuillez entrer une adresse e-mail valide",
+      "invalidPhone": "Veuillez entrer un numéro de téléphone valide",
+      "invalidURL": "Veuillez entrer une URL valide"
+    },
+    "errors": {
+      "restaurantNotFoundTitle": "Restaurant non trouvé",
+      "restaurantNotFoundMessage": "Les informations sur le restaurant n'ont pas pu être chargées. Veuillez vérifier l'URL ou contacter le support."
     }
   }
 }

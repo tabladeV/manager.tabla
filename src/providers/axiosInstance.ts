@@ -29,19 +29,50 @@ const formatDjangoErrorMessage = (error: { response: { data: any; status: any; s
     messages.push(djangoError.detail);
   }
 
-  // Add field-specific errors
-  Object.entries(djangoError).forEach(([key, value]) => {
-    if (key !== 'non_field_errors' && key !== 'detail') {
-      // Convert field name to readable format
-      const readableField = key
-        .split('_')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
+  const errorData = { ...djangoError };
 
-      const fieldErrors = Array.isArray(value) ? value : [value];
-      messages.push(`${readableField}: ${fieldErrors.join(', ')}`);
+  // Handle 'message': only process if it's a string or array of strings
+  if (errorData.message) {
+    if (typeof errorData.message === 'string') {
+      messages.push(errorData.message);
+      delete errorData.message;
+    } else if (Array.isArray(errorData.message) && errorData.message.every((item: any) => typeof item === 'string')) {
+      messages.push(...errorData.message);
+      delete errorData.message;
     }
-  });
+    // If 'message' is an object (like a field error dict), it'll be caught in Step 3
+  }
+  
+  // Handle 'error_code': only process if it's a string or array of strings
+  if (errorData.error_code) {
+    let errorCodes: string[] = [];
+    
+    if (typeof errorData.error_code === 'string') {
+      errorCodes = [errorData.error_code];
+    } else if (Array.isArray(errorData.error_code) && errorData.error_code.every((item: any) => typeof item === 'string')) {
+      errorCodes = errorData.error_code;
+    }
+    
+    if (errorCodes.length > 0) {
+        messages.push(`Error Code(s): ${errorCodes.join(', ')}`);
+        delete errorData.error_code;
+    }
+  }
+
+  // Add field-specific errors
+  // comment for now
+  // Object.entries(djangoError).forEach(([key, value]) => {
+  //   if (key !== 'non_field_errors' && key !== 'detail') {
+  //     // Convert field name to readable format
+  //     const readableField = key
+  //       .split('_')
+  //       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+  //       .join(' ');
+
+  //     const fieldErrors = Array.isArray(value) ? value : [value];
+  //     messages.push(`${readableField}: ${fieldErrors.join(', ')}`);
+  //   }
+  // });
 
   // If no specific errors were found, use a generic message
   if (messages.length === 0) {

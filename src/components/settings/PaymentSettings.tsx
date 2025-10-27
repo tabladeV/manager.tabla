@@ -7,26 +7,18 @@ import BaseBtn from "../common/BaseBtn"
 import Portal from "../common/Portal"
 import BaseInput from "../common/BaseInput"
 import BaseTimeInput from "../common/BaseTimeInput"
-import BaseSelect from "../common/BaseSelect"
 import { useRRule } from "../../hooks/useRRule"
-import { PaymentRule, RRuleFreq } from "../../types/rrule"
+import { PaymentRule } from "../../types/rrule"
+import { useList, useUpdate, useCreate, useDelete, useOne, BaseKey } from "@refinedev/core"
 
 interface PaymentRuleModalProps {
     isOpen: boolean
+    loadingUpdateRule?: boolean
+    loadingCreateRule?: boolean
     onClose: () => void
     onSave: (rule: PaymentRule) => void
     rule: PaymentRule | null
 }
-
-// Dummy Data
-const initialRules: PaymentRule[] = [
-    { id: 1, name: "Weekend Dinner", status: true, startDate: "2025-01-04", endDate: "2025-12-28", allDay: false, fromTime: "18:00", toTime: "22:00", minGuestsForPayment: 4, depositAmountPerGuest: 15, advanced: { freq: 'WEEKLY', interval: 1, byweekday: ['SA', 'SU'] } },
-    { id: 2, name: "New Year's Eve Special", status: true, startDate: "2025-12-31", endDate: "2025-12-31", allDay: true, fromTime: "", toTime: "", minGuestsForPayment: 2, depositAmountPerGuest: 50, advanced: null },
-    { id: 3, name: "Valentine's Day", status: false, startDate: "2026-02-14", endDate: "2026-02-14", allDay: true, fromTime: "", toTime: "", minGuestsForPayment: 1, depositAmountPerGuest: 20, advanced: null },
-    { id: 4, name: "Taco Tuesdays", status: true, startDate: "2025-11-04", endDate: "2026-04-28", allDay: false, fromTime: "17:00", toTime: "21:00", minGuestsForPayment: 2, depositAmountPerGuest: 5, advanced: { freq: 'WEEKLY', interval: 1, byweekday: ['TU'] } },
-    { id: 5, name: "Happy Hour (10 times)", status: true, startDate: "2025-11-03", endDate: "", allDay: false, fromTime: "16:00", toTime: "18:00", minGuestsForPayment: 1, depositAmountPerGuest: 8, advanced: { freq: 'DAILY', interval: 1, count: 10 } },
-    { id: 6, name: "Annual Summer Party", status: true, startDate: "2026-07-20", endDate: "", allDay: true, fromTime: "", toTime: "", minGuestsForPayment: 10, depositAmountPerGuest: 25, advanced: { freq: 'YEARLY', interval: 1 } },
-];
 
 const defaultRuleState: Omit<PaymentRule, 'id'> = {
     name: '',
@@ -42,24 +34,17 @@ const defaultRuleState: Omit<PaymentRule, 'id'> = {
 };
 
 // Modal Component
-const PaymentRuleModal: React.FC<PaymentRuleModalProps> = ({ isOpen, onClose, onSave, rule }) => {
+const PaymentRuleModal: React.FC<PaymentRuleModalProps> = ({ isOpen, onClose, onSave, rule, loadingUpdateRule, loadingCreateRule }) => {
     const { t } = useTranslation();
-    const { darkMode: isDarkMode } = useDarkContext();
     const [currentRule, setCurrentRule] = useState<PaymentRule>({ ...defaultRuleState, id: Date.now() });
 
     const {
-        isAdvanced,
-        endType,
-        handleAdvancedToggle,
-        handleRRuleChange,
-        handleEndTypeChange,
-        freqOptions,
-        weekdayOptions,
         generatePaymentRuleDescription
     } = useRRule(currentRule, setCurrentRule);
 
     const isFormValid = useMemo(() => {
         if (!currentRule.name.trim()) return false;
+        if (!currentRule.startDate || !currentRule.endDate) return false;
         if (currentRule.startDate && currentRule.endDate && currentRule.startDate > currentRule.endDate) return false;
         return true;
     }, [currentRule]);
@@ -69,22 +54,16 @@ const PaymentRuleModal: React.FC<PaymentRuleModalProps> = ({ isOpen, onClose, on
             if (rule) {
                 setCurrentRule(rule);
             } else {
-                setCurrentRule({ ...defaultRuleState, id: Date.now() });
+                setCurrentRule({ ...defaultRuleState, id: 0 }); // Use 0 or another indicator for a new rule
             }
         }
     }, [rule, isOpen]);
 
     const handleSave = () => {
-        if (!currentRule.name.trim()) {
-            console.error("Rule name is required.");
-            return;
-        }
-        if (currentRule.startDate && currentRule.endDate && currentRule.startDate > currentRule.endDate) {
-            console.error("Start date cannot be after end date.");
+        if (!isFormValid) {
             return;
         }
         onSave(currentRule);
-        onClose();
     };
 
     if (!isOpen) return null;
@@ -127,10 +106,10 @@ const PaymentRuleModal: React.FC<PaymentRuleModalProps> = ({ isOpen, onClose, on
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                        <BaseInput label={t('paymentSettings.startDate')} type="date" value={currentRule.startDate} onChange={(val) => setCurrentRule({ ...currentRule, startDate: val })} rules={[(value) => (currentRule.endDate && value > currentRule.endDate) ? t('paymentSettings.errors.startDateAfterEnd') : null,]} variant="outlined" />
-                        <BaseInput label={t('paymentSettings.endDate')} type="date" value={currentRule.endDate} onChange={(val) => setCurrentRule({ ...currentRule, endDate: val })} rules={[(value) => (currentRule.startDate && value < currentRule.startDate) ? t('paymentSettings.errors.endDateBeforeStart') : null,]} variant="outlined" disabled={isAdvanced && endType !== 'on'} />
+                        <BaseInput label={t('paymentSettings.startDate')} type="date" value={currentRule.startDate} onChange={(val) => setCurrentRule({ ...currentRule, startDate: val })} rules={[(value)=> !!value? null : t('common.validation.requiredField') ,(value) => (currentRule.endDate && value > currentRule.endDate) ? t('paymentSettings.errors.startDateAfterEnd') : null,]} variant="outlined" />
+                        <BaseInput label={t('paymentSettings.endDate')} type="date" value={currentRule.endDate} onChange={(val) => setCurrentRule({ ...currentRule, endDate: val })} rules={[(value)=> !!value? null : t('common.validation.requiredField') ,(value) => (currentRule.startDate && value < currentRule.startDate) ? t('paymentSettings.errors.endDateBeforeStart') : null,]} variant="outlined" />
                     </div>
-                    <label className="flex items-center cursor-pointer">
+                    {/* <label className="flex items-center cursor-pointer">
                         <input type="checkbox" checked={currentRule.allDay} onChange={(e) => setCurrentRule({ ...currentRule, allDay: e.target.checked })} className="sr-only" />
                         <span className={`flex items-center justify-center w-5 h-5 border rounded-md mr-2 transition-all duration-200 ${currentRule.allDay ? 'bg-greentheme border-greentheme' : 'border-gray-300 dark:border-darkthemeitems'}`}>
                             {currentRule.allDay && <Check size={14} className="text-white" />}
@@ -142,9 +121,9 @@ const PaymentRuleModal: React.FC<PaymentRuleModalProps> = ({ isOpen, onClose, on
                             <BaseTimeInput label={t('paymentSettings.fromTime')} value={currentRule.fromTime} onChange={(val) => setCurrentRule({ ...currentRule, fromTime: val || '' })} variant="outlined" clearable={false} />
                             <BaseTimeInput label={t('paymentSettings.toTime')} value={currentRule.toTime} onChange={(val) => setCurrentRule({ ...currentRule, toTime: val || '' })} variant="outlined" clearable={false} />
                         </div>
-                    )}
+                    )} */}
 
-                    <label className="flex items-center cursor-pointer mt-2">
+                    {/* <label className="flex items-center cursor-pointer mt-2">
                         <input type="checkbox" checked={isAdvanced} onChange={(e) => handleAdvancedToggle(e.target.checked)} className="sr-only" />
                         <span className={`flex items-center justify-center w-5 h-5 border rounded-md mr-2 transition-all duration-200 ${isAdvanced ? 'bg-greentheme border-greentheme' : 'border-gray-300 dark:border-darkthemeitems'}`}>
                             {isAdvanced && <Check size={14} className="text-white" />}
@@ -205,11 +184,11 @@ const PaymentRuleModal: React.FC<PaymentRuleModalProps> = ({ isOpen, onClose, on
                                 </div>
                             </div>
                         </div>
-                    )}
+                    )} */}
                 </div>
                 <div className="flex justify-end gap-2 mt-4 absolute bottom-[10px] right-[40px] w-[calc(100%-20px)]">
                     <BaseBtn variant="outlined" onClick={onClose}>{t('common.cancel')}</BaseBtn>
-                    <BaseBtn onClick={handleSave} disabled={!isFormValid}>{t('common.save')}</BaseBtn>
+                    <BaseBtn onClick={handleSave} disabled={!isFormValid} loading={loadingUpdateRule || loadingCreateRule}>{t('common.save')}</BaseBtn>
                 </div>
             </div>
         </Portal>
@@ -222,16 +201,112 @@ export default function PaymentSettings() {
     const { darkMode: isDarkMode } = useDarkContext();
     const [enablePayment, setEnablePayment] = useState(true);
     const [paymentMode, setPaymentMode] = useState<'always' | 'rules'>('rules');
-    const [rules, setRules] = useState<PaymentRule[]>(initialRules);
+    const [rules, setRules] = useState<PaymentRule[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingRule, setEditingRule] = useState<PaymentRule | null>(null);
-    const {
-        generatePaymentRuleDescription
-    } = useRRule();
+    const { generatePaymentRuleDescription } = useRRule();
+    const restaurantId = localStorage.getItem('restaurant_id') || '1';
 
     // State for 'Always' mode
     const [minGuestsForPayment, setMinGuestsForPayment] = useState<number>(1);
     const [depositAmountPerGuest, setDepositAmountPerGuest] = useState<number>(10);
+
+    // State to track initial settings for change detection
+    const [initialSettings, setInitialSettings] = useState<any>(null);
+
+    // API Hooks for Payment Settings
+    const { data: settingsData, refetch: refetchSettings } = useOne({
+        resource: "api/v1/bo/payments/settings",
+        id: "1/", // Placeholder ID
+    });
+
+    const { mutate: updateSettings } = useUpdate();
+
+    // API Hooks for Payment Rules
+    const { data: rulesData, refetch: refetchRules } = useList({
+        resource: "api/v1/bo/payments/rules/",
+        pagination: { pageSize: 100 },
+        queryOptions: {
+            enabled: paymentMode === 'rules',
+        }
+    });
+    const { mutate: createRule, isLoading: loadingCreateRule } = useCreate();
+    const { mutate: updateRule, isLoading: loadingUpdateRule } = useUpdate();
+    const { mutate: deleteRule, isLoading: loadingDeleteRule } = useDelete();
+
+    // Effect to load settings from API
+    useEffect(() => {
+        if (settingsData?.data) {
+            const data = settingsData.data as any;
+            const loadedSettings = {
+                enablePayment: data.enable_paymant,
+                paymentMode: data.payment_mode,
+                minGuestsForPayment: data.min_guests_for_payment,
+                depositAmountPerGuest: parseFloat(data.deposit_amount_par_guest)
+            };
+            setEnablePayment(loadedSettings.enablePayment);
+            setPaymentMode(loadedSettings.paymentMode);
+            setMinGuestsForPayment(loadedSettings.minGuestsForPayment);
+            setDepositAmountPerGuest(loadedSettings.depositAmountPerGuest);
+            setInitialSettings(loadedSettings);
+        }
+    }, [settingsData]);
+
+    // Effect to load rules from API
+    useEffect(() => {
+        if (rulesData?.data) {
+            const apiRules = (rulesData.data as any).results.map((rule: any) => ({
+                id: rule.id,
+                name: rule.name,
+                status: rule.is_enbaled,
+                startDate: rule.start_date,
+                endDate: rule.end_date,
+                fromTime: rule.from_time?.substring(0, 5) || "",
+                toTime: rule.to_time?.substring(0, 5) || "",
+                minGuestsForPayment: rule.min_guests_for_payment,
+                depositAmountPerGuest: parseFloat(rule.deposit_amount_par_guest),
+                allDay: rule.all_day,
+                advanced: null
+            }));
+            setRules(apiRules);
+        }
+    }, [rulesData]);
+
+    const haveSettingsChanged = useMemo(() => {
+        if (!initialSettings) return false;
+        return (
+            initialSettings.enablePayment !== enablePayment ||
+            initialSettings.paymentMode !== paymentMode ||
+            initialSettings.minGuestsForPayment !== minGuestsForPayment ||
+            initialSettings.depositAmountPerGuest !== depositAmountPerGuest
+        );
+    }, [initialSettings, enablePayment, paymentMode, minGuestsForPayment, depositAmountPerGuest]);
+
+    const handleSaveSettings = () => {
+        updateSettings({
+            resource: "api/v1/bo/payments/settings",
+            id: "1/",
+            values: {
+                enable_paymant: enablePayment,
+                payment_mode: paymentMode,
+                min_guests_for_payment: minGuestsForPayment,
+                deposit_amount_par_guest: depositAmountPerGuest.toString(),
+                restaurant: restaurantId
+            },
+        }, {
+            onSuccess: (data) => {
+                // After successful save, update the initial settings to match the current state
+                const savedData = data.data as any;
+                const newInitialSettings = {
+                    enablePayment: savedData.enable_paymant,
+                    paymentMode: savedData.payment_mode,
+                    minGuestsForPayment: savedData.min_guests_for_payment,
+                    depositAmountPerGuest: parseFloat(savedData.deposit_amount_par_guest)
+                };
+                setInitialSettings(newInitialSettings);
+            }
+        });
+    };
 
     const handleAddRule = () => {
         setEditingRule(null);
@@ -243,26 +318,85 @@ export default function PaymentSettings() {
         setIsModalOpen(true);
     };
 
-    const handleDeleteRule = (id: number) => {
-        setRules(rules.filter(rule => rule.id !== id));
+    const handleDeleteRule = (id: BaseKey) => {
+        deleteRule({
+            resource: "api/v1/bo/payments/rules",
+            id: `${id}/`,
+        }, {
+            onSuccess: () => refetchRules(),
+        });
     };
 
     const handleSaveRule = (rule: PaymentRule) => {
-        const exists = rules.some(r => r.id === rule.id);
-        if (exists) {
-            setRules(rules.map(r => r.id === rule.id ? rule : r));
+        const values = {
+            name: rule.name,
+            is_enbaled: rule.status,
+            start_date: rule.startDate || null,
+            end_date: rule.endDate || null,
+            from_time: rule.allDay ? '10:00' : `${rule.fromTime}:00`,
+            to_time: rule.allDay ? '22:00' : `${rule.toTime}:00`,
+            min_guests_for_payment: rule.minGuestsForPayment,
+            deposit_amount_par_guest: rule.depositAmountPerGuest.toString(),
+            all_day: rule.allDay,
+            restaurant: restaurantId
+        };
+
+        if (rule.id && rule.id !== 0) {
+            updateRule({
+                resource: "api/v1/bo/payments/rules",
+                id: `${rule.id}/`,
+                values,
+                errorNotification(error, values, resource) {
+                    return {
+                        type: "error",
+                        message: error?.formattedMessage,
+                    }
+                },
+            }, {
+                onSuccess: () => {
+                    setIsModalOpen(false);
+                    refetchRules();
+                },
+            });
         } else {
-            setRules([...rules, { ...rule, id: Date.now() }]);
+            createRule({
+                resource: "api/v1/bo/payments/rules/",
+                values,
+                errorNotification(error, values, resource) {
+                    return {
+                        type: "error",
+                        message: error?.formattedMessage,
+                    }
+                },
+            }, {
+                onSuccess: () => {
+                    setIsModalOpen(false);
+                    refetchRules();
+                },
+            });
         }
     };
 
-    const handleToggleRuleStatus = (id: number) => {
-        setRules(rules.map(rule => rule.id === id ? { ...rule, status: !rule.status } : rule));
+    const handleToggleRuleStatus = (ruleToToggle: PaymentRule) => {
+        updateRule({
+            resource: "api/v1/bo/payments/rules",
+            id: `${ruleToToggle.id}/`,
+            values: { is_enbaled: !ruleToToggle.status }
+        }, {
+            onSuccess: () => refetchRules(),
+        });
     };
 
     return (
         <div className={`w-full rounded-[10px] p-4 ${isDarkMode ? "bg-bgdarktheme" : "bg-white"}`}>
-            <h1 className="text-2xl font-bold mb-4">{t('paymentSettings.title')}</h1>
+            <div className="flex justify-between items-start mb-4">
+                <h1 className="text-2xl font-bold">{t('paymentSettings.title')}</h1>
+                {haveSettingsChanged && (
+                     <BaseBtn onClick={handleSaveSettings} className="animate-fadeIn">
+                        {t('common.save')}
+                    </BaseBtn>
+                )}
+            </div>
 
             <div className="flex flex-col gap-4">
                 <label className="flex items-center cursor-pointer">
@@ -338,16 +472,16 @@ export default function PaymentSettings() {
                                                     </td>
                                                     <td className="px-6 py-4">
                                                         <label className="flex items-center cursor-pointer">
-                                                            <input type="checkbox" checked={rule.status} onChange={() => handleToggleRuleStatus(rule.id)} className="sr-only" />
+                                                            <input type="checkbox" checked={rule.status} onChange={() => handleToggleRuleStatus(rule)} className="sr-only" />
                                                             <span className={`w-10 h-5 rounded-full p-1 flex items-center transition-colors ${rule.status ? 'bg-greentheme' : 'bg-gray-300 dark:bg-gray-600'}`}>
                                                                 <span className={`w-3.5 h-3.5 bg-white rounded-full shadow-md transform transition-transform ${rule.status ? 'translate-x-5' : ''}`} />
                                                             </span>
                                                         </label>
                                                     </td>
                                                     <td className="px-6 py-4">
-                                                        <div className="flex items-center gap-1">
-                                                        <button className="btn-secondary p-2" onClick={() => handleEditRule(rule)}><Pencil size={15} /></button>
-                                                        <button className="btn-secondary bg-softredtheme text-redtheme hover:bg-redtheme hover:text-white p-2" onClick={() => handleDeleteRule(rule.id)}><Trash size={15} /></button>
+                                                        <div className="flex items-center justify-end gap-1">
+                                                            <button className="btn-secondary p-2" onClick={() => handleEditRule(rule)}><Pencil size={15} /></button>
+                                                            <button className="btn-secondary bg-softredtheme text-redtheme hover:bg-redtheme hover:text-white p-2" onClick={() => handleDeleteRule(rule.id)}><Trash size={15} /></button>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -367,7 +501,7 @@ export default function PaymentSettings() {
                     </div>
                 )}
             </div>
-            <PaymentRuleModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={handleSaveRule} rule={editingRule} />
+            <PaymentRuleModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={handleSaveRule} rule={editingRule} loadingUpdateRule={loadingUpdateRule} loadingCreateRule={loadingCreateRule} />
         </div>
     );
 }

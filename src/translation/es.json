@@ -1839,6 +1839,11 @@
     "seconds": "Segundos",
     "confirm": "Confirmar",
     "selectTime": "Seleccionar hora",
+    "dismiss": "Descartar",
+    "close": "Cerrar",
+    "dismissAll": "Descartar Todo",
+    "closeAll": "Cerrar Todo",
+    "loading": "Cargando...",
     "days": {
       "sunday": "Domingo",
       "monday": "Lunes",
@@ -1847,6 +1852,23 @@
       "thursday": "Jueves",
       "friday": "Viernes",
       "saturday": "Sábado"
+    },
+    "validation": {
+      "requiredField": "Este campo es obligatorio",
+      "invalidDate": "Por favor, introduzca una fecha válida",
+      "invalidTime": "Por favor, introduzca una hora válida",
+      "invalidNumber": "Por favor, introduzca un número válido",
+      "minValue": "El valor debe ser al menos {{min}}",
+      "maxValue": "El valor debe ser como máximo {{max}}",
+      "minLength": "Debe tener al menos {{min}} caracteres",
+      "maxLength": "Debe tener como máximo {{max}} caracteres",
+      "invalidEmail": "Por favor, introduzca una dirección de correo electrónico válida",
+      "invalidPhone": "Por favor, introduzca un número de teléfono válido",
+      "invalidURL": "Por favor, introduzca una URL válida"
+    },
+    "errors": {
+      "restaurantNotFoundTitle": "Restaurante no encontrado",
+      "restaurantNotFoundMessage": "No se pudieron cargar las información del restaurante. Por favor, verifique la URL o contacte al soporte."
     }
   }
 }
