@@ -29,6 +29,6 @@ export interface PaymentRule extends RecurrenceRuleHolder {
     allDay: boolean;
     fromTime: string;
     toTime: string;
-    minGuestsForPayment: number;
-    depositAmountPerGuest: number;
+    minGuestsForPayment: number | null;
+    depositAmountPerGuest: number | null;
 }

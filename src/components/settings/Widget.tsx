@@ -87,15 +87,8 @@ export default function WidgetConfig() {
   const [autoConfirmation, setAutoConfirmation] = useState<boolean>(false);
   const [enableDressCode, setEnableDressCode] = useState<boolean>(false);
   const [enableAreaSelection, setEnableAreaSelection] = useState<boolean>(false);
-  const [enablePayment, setEnablePayment] = useState<boolean>(false);
   const [minGuestsForPayment, setMinGuestsForPayment] = useState<number>(1);
   const [depositAmountPerGuest, setDepositAmountPerGuest] = useState<number>(0);
-
-
-  // Optimized checkbox handlers with useCallback
-  const handlePaymentToggle = useCallback(() => {
-    setEnablePayment(prev => !prev);
-  }, []);
 
   const handleMenuToggle = useCallback(() => {
     setHasMenu(prev => !prev);
@@ -147,7 +140,6 @@ export default function WidgetConfig() {
       setEnableDressCode(data.enable_dress_code);
       setEnableAreaSelection(data.enbale_area_selection);
       setDressCode(data.dress_code || '');
-      setEnablePayment(data.enable_paymant);
       setMinGuestsForPayment(data.min_number_of_guests_required_deposite || 1);
       setDepositAmountPerGuest(data.deposite_amount_for_guest || 0);
       // if(logo === null){
@@ -278,7 +270,6 @@ export default function WidgetConfig() {
     formData.append('enable_dress_code', enableDressCode?.toString() || '0');
     formData.append('enbale_area_selection', enableAreaSelection?.toString() || '0');
     formData.append('dress_code', dressCode || '');
-    formData.append('enable_paymant', enablePayment?.toString() || '0');
     formData.append('min_number_of_guests_required_deposite', minGuestsForPayment?.toString() || '1');
     formData.append('deposite_amount_for_guest', depositAmountPerGuest?.toString() || '0');
 
@@ -550,74 +541,6 @@ export default function WidgetConfig() {
                 </div>
               </div>
             )}
-            <div className="flex flex-col items-start gap-3 mb-6 mt-2">
-              <h2 className="text-lg font-semibold mb-2">{t('settingsPage.widget.payment.title')}</h2>
-              <div className="px-2 flex flex-col gap-4 py-1">
-                <label className="flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={enablePayment}
-                    onChange={(e) => {
-                      e.preventDefault();
-                      handlePaymentToggle();
-                    }}
-                    className="sr-only"
-                  />
-                  <span
-                    className={`flex items-center justify-center w-6 h-6 border rounded-md mr-2 transition-all duration-200 ${enablePayment ? 'bg-greentheme border-greentheme' : 'border-gray-300 dark:border-darkthemeitems'
-                      }`}
-                  >
-                    {enablePayment && <Check size={16} className="text-white" />}
-                  </span>
-                  <span className="capitalize select-none">{t('settingsPage.widget.payment.enable')}</span>
-                </label>
-
-                {enablePayment && (
-                  <div className="ml-8 flex flex-col gap-4">
-                    <label className="flex items-center gap-2">
-                      <span className="text-sm text-gray-600 dark:text-gray-400">
-                        {t('settingsPage.widget.payment.minGuestsForPayment')}:
-                      </span>
-                      <input
-                        type="number"
-                        min={1}
-                        value={minGuestsForPayment}
-                        onChange={(e) => {
-                          const val = Number(e.target.value);
-                          setMinGuestsForPayment(val > 0 ? val : 1);
-                        }}
-                        className="inputs w-20 p-2 border border-gray-300 dark:border-darkthemeitems rounded-md bg-white dark:bg-darkthemeitems text-black dark:text-white"
-                      />
-                    </label>
-                    <label className="flex items-center gap-2">
-                      <span className="text-sm text-gray-600 dark:text-gray-400">
-                        {t('settingsPage.widget.payment.depositAmountPerGuest')}:
-                      </span>
-                      <input
-                        type="number"
-                        min={0}
-                        step="0.01"
-                        value={depositAmountPerGuest}
-                        onChange={(e) => {
-                          const val = Number(e.target.value);
-                          setDepositAmountPerGuest(val >= 0 ? val : 0);
-                        }}
-                        className="inputs w-24 p-2 border border-gray-300 dark:border-darkthemeitems rounded-md bg-white dark:bg-darkthemeitems text-black dark:text-white"
-                        placeholder="0.00"
-                      />
-                    </label>
-                  </div>
-                )}
-
-                {!enablePayment && (
-                  <div className="ml-8 mt-2">
-                    <p className="text-sm text-orange-600 dark:text-orange-400 italic">
-                      {t('settingsPage.widget.payment.disabledNote')}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
             {(hasMenu) && (
               <div className="flex justify-around gap-2 items-center">
                 <button

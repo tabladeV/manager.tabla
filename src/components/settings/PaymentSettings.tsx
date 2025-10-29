@@ -44,6 +44,7 @@ const PaymentRuleModal: React.FC<PaymentRuleModalProps> = ({ isOpen, onClose, on
 
     const isFormValid = useMemo(() => {
         if (!currentRule.name.trim()) return false;
+        if (!currentRule.minGuestsForPayment || !currentRule.depositAmountPerGuest) return false;
         if (!currentRule.startDate || !currentRule.endDate) return false;
         if (currentRule.startDate && currentRule.endDate && currentRule.startDate > currentRule.endDate) return false;
         return true;
@@ -92,15 +93,17 @@ const PaymentRuleModal: React.FC<PaymentRuleModalProps> = ({ isOpen, onClose, on
                         <BaseInput
                             label={t('export.minGuests')}
                             type="number"
-                            value={currentRule.minGuestsForPayment.toString()}
-                            onChange={(val) => setCurrentRule({ ...currentRule, minGuestsForPayment: Number(val) > 0 ? Number(val) : 1 })}
+                            value={currentRule.minGuestsForPayment?.toString() || ''}
+                            rules={[(value)=> !!value? null : t('common.validation.requiredField')]}
+                            onChange={(val) => setCurrentRule({ ...currentRule, minGuestsForPayment: Number(val) > 0 ? Number(val) : null })}
                             variant="outlined"
                         />
                         <BaseInput
                             label={t('settingsPage.widget.payment.depositAmountPerGuest')}
                             type="number"
-                            value={currentRule.depositAmountPerGuest.toString()}
-                            onChange={(val) => setCurrentRule({ ...currentRule, depositAmountPerGuest: Number(val) >= 0 ? Number(val) : 0 })}
+                            value={currentRule.depositAmountPerGuest?.toString() || ''}
+                            rules={[(value)=> !!value? null : t('common.validation.requiredField')]}
+                            onChange={(val) => setCurrentRule({ ...currentRule, depositAmountPerGuest: Number(val) > 0 ? Number(val) : null })}
                             variant="outlined"
                         />
                     </div>
@@ -208,8 +211,8 @@ export default function PaymentSettings() {
     const restaurantId = localStorage.getItem('restaurant_id') || '1';
 
     // State for 'Always' mode
-    const [minGuestsForPayment, setMinGuestsForPayment] = useState<number>(1);
-    const [depositAmountPerGuest, setDepositAmountPerGuest] = useState<number>(10);
+    const [minGuestsForPayment, setMinGuestsForPayment] = useState<number | null>(1);
+    const [depositAmountPerGuest, setDepositAmountPerGuest] = useState<number | null>(10);
 
     // State to track initial settings for change detection
     const [initialSettings, setInitialSettings] = useState<any>(null);
@@ -233,6 +236,13 @@ export default function PaymentSettings() {
     const { mutate: createRule, isLoading: loadingCreateRule } = useCreate();
     const { mutate: updateRule, isLoading: loadingUpdateRule } = useUpdate();
     const { mutate: deleteRule, isLoading: loadingDeleteRule } = useDelete();
+
+    const isValidSettingsForm = useMemo(() => {
+        return (
+            minGuestsForPayment !== null &&
+            depositAmountPerGuest !== null
+        );
+    }, [minGuestsForPayment, depositAmountPerGuest]);
 
     // Effect to load settings from API
     useEffect(() => {
@@ -290,7 +300,7 @@ export default function PaymentSettings() {
                 enable_paymant: enablePayment,
                 payment_mode: paymentMode,
                 min_guests_for_payment: minGuestsForPayment,
-                deposit_amount_par_guest: depositAmountPerGuest.toString(),
+                deposit_amount_par_guest: depositAmountPerGuest?.toString(),
                 restaurant: restaurantId
             },
         }, {
@@ -336,7 +346,7 @@ export default function PaymentSettings() {
             from_time: rule.allDay ? '10:00' : `${rule.fromTime}:00`,
             to_time: rule.allDay ? '22:00' : `${rule.toTime}:00`,
             min_guests_for_payment: rule.minGuestsForPayment,
-            deposit_amount_par_guest: rule.depositAmountPerGuest.toString(),
+            deposit_amount_par_guest: rule.depositAmountPerGuest?.toString() || 0,
             all_day: rule.allDay,
             restaurant: restaurantId
         };
@@ -391,11 +401,6 @@ export default function PaymentSettings() {
         <div className={`w-full rounded-[10px] p-4 ${isDarkMode ? "bg-bgdarktheme" : "bg-white"}`}>
             <div className="flex justify-between items-start mb-4">
                 <h1 className="text-2xl font-bold">{t('paymentSettings.title')}</h1>
-                {haveSettingsChanged && (
-                     <BaseBtn onClick={handleSaveSettings} className="animate-fadeIn">
-                        {t('common.save')}
-                    </BaseBtn>
-                )}
             </div>
 
             <div className="flex flex-col gap-4">
@@ -432,22 +437,31 @@ export default function PaymentSettings() {
                                     <BaseInput
                                         label={t('settingsPage.widget.payment.minGuestsForPayment')}
                                         type="number"
-                                        value={minGuestsForPayment.toString()}
-                                        onChange={(val) => setMinGuestsForPayment(Number(val) > 0 ? Number(val) : 1)}
+                                        value={minGuestsForPayment?.toString() || ''}
+                                        rules={[(value)=> !!value? null : t('common.validation.requiredField')]}
+                                        onChange={(val) => setMinGuestsForPayment(Number(val) > 0 ? Number(val) : null)}
                                         className="max-w-xs"
                                         variant="outlined"
                                     />
                                     <BaseInput
                                         label={t('settingsPage.widget.payment.depositAmountPerGuest')}
                                         type="number"
-                                        value={depositAmountPerGuest.toString()}
-                                        onChange={(val) => setDepositAmountPerGuest(Number(val) >= 0 ? Number(val) : 0)}
+                                        value={depositAmountPerGuest?.toString() || ''}
+                                        rules={[(value)=> !!value? null : t('common.validation.requiredField')]}
+                                        onChange={(val) => setDepositAmountPerGuest(Number(val) >= 0 ? Number(val) : null)}
                                         className="max-w-xs"
                                         variant="outlined"
                                     />
                                 </div>
                             </div>
                         )}
+                        <div className="flex gap-6 justify-center">
+                            {haveSettingsChanged && (
+                                        <BaseBtn onClick={handleSaveSettings} disabled={!isValidSettingsForm} className="animate-fadeIn w-1/4">
+                                            {t('common.save')}
+                                        </BaseBtn>
+                                    )}
+                        </div>
 
                         {paymentMode === 'rules' && (
                             <div className="animate-fadeIn">

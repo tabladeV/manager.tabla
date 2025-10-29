@@ -1,4 +1,4 @@
-import { useState, memo } from "react";
+import { useState, memo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronDown } from "lucide-react";
 
@@ -6,11 +6,12 @@ import spanish from "../../assets/spanish.png";
 import arabic from "../../assets/arabic.jpg";
 import english from "../../assets/english.png";
 import french from "../../assets/french.png";
+import { useDateContext } from "../../context/DateContext";
 
 const LanguageSelector = memo(() => {
     const { i18n } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
-
+    const { preferredLanguage, setPreferredLanguage } = useDateContext();
     const languages = [
         { code: "en", name: "English", icon: english },
         { code: "es", name: "Español", icon: spanish },
@@ -19,6 +20,10 @@ const LanguageSelector = memo(() => {
     ];
 
     const currentLanguage = languages.find((lang) => lang.code === i18n.language) || languages[0];
+
+    useEffect(() => {
+        setPreferredLanguage(currentLanguage.code);
+    }, [currentLanguage, setPreferredLanguage]);
 
     const handleLanguageChange = (languageCode: string) => {
         i18n.changeLanguage(languageCode);
