@@ -401,11 +401,6 @@ export default function PaymentSettings() {
         <div className={`w-full rounded-[10px] p-4 ${isDarkMode ? "bg-bgdarktheme" : "bg-white"}`}>
             <div className="flex justify-between items-start mb-4">
                 <h1 className="text-2xl font-bold">{t('paymentSettings.title')}</h1>
-                {haveSettingsChanged && (
-                     <BaseBtn onClick={handleSaveSettings} disabled={!isValidSettingsForm} className="animate-fadeIn">
-                        {t('common.save')}
-                    </BaseBtn>
-                )}
             </div>
 
             <div className="flex flex-col gap-4">
@@ -460,6 +455,13 @@ export default function PaymentSettings() {
                                 </div>
                             </div>
                         )}
+                        <div className="flex gap-6 justify-center">
+                            {haveSettingsChanged && (
+                                        <BaseBtn onClick={handleSaveSettings} disabled={!isValidSettingsForm} className="animate-fadeIn w-1/4">
+                                            {t('common.save')}
+                                        </BaseBtn>
+                                    )}
+                        </div>
 
                         {paymentMode === 'rules' && (
                             <div className="animate-fadeIn">
