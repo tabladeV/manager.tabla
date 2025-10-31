@@ -191,19 +191,6 @@ const Modify = () => {
     console.log("areaSelected", areaSelected)
   }, [areaSelected])
 
-  const {
-    data: areasList,
-    isLoading: areasListLoading,
-    error: areasEroor,
-  } = useList({
-    resource: `api/v1/bo/areas/`,
-    queryOptions: {
-      onSuccess: (data) => {
-        setAreas(data.data as Area[])
-      },
-    },
-  })
-
   const modifyReservation = () => {
     console.log("updateInfo", updateInfo?.occasion)
     mutate({
@@ -367,6 +354,7 @@ const Modify = () => {
     if (widgetData) {
       setWidgetInfo(widgetData.data)
       setRestaurantID(widgetData.data.restaurant)
+      setAreas(widgetData.data.areas)
       console.log("widgetInfo", widgetData.data)
     }
   }, [widgetData])
