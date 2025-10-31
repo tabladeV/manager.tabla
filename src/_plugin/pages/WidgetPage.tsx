@@ -326,7 +326,7 @@ const ConfirmationStep = memo(({ data, userInformation, chosenTitle, occasions, 
         </div>
         {paymentError && (
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 p-3 rounded-md">
-            <p className="font-medium">{t("reservationWidget.payment.errorTitle")}:</p><p className="text-sm mt-1">{paymentError}</p>
+            <p className="font-medium">{isPaymentRequired?t("reservationWidget.payment.errorTitle"):t('common.errors.anErrorOccurred')}</p><p className="text-sm mt-1">{paymentError}</p>
           </div>
         )}
       </div>

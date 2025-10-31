@@ -1875,7 +1875,9 @@
         },
         "errors": {
             "restaurantNotFoundTitle": "Restaurant Not Found",
-            "restaurantNotFoundMessage": "The restaurant information could not be loaded. Please check the URL or contact support."
+            "restaurantNotFoundMessage": "The restaurant information could not be loaded. Please check the URL or contact support.",
+            "anErrorOccurred": "An error occurred",
+            "tryAgain": "Please try again later."
         }
     }
 }

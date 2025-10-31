@@ -1902,7 +1902,9 @@
         },
         "errors": {
             "restaurantNotFoundTitle": "المطعم غير موجود",
-            "restaurantNotFoundMessage": "تعذر تحميل معلومات المطعم. يرجى التحقق من عنوان URL أو الاتصال بالدعم."
+            "restaurantNotFoundMessage": "تعذر تحميل معلومات المطعم. يرجى التحقق من عنوان URL أو الاتصال بالدعم.",
+            "anErrorOccurred": "حدث خطأ",
+            "tryAgain": "يرجى المحاولة مرة أخرى لاحقًا."
         }
     }
 }

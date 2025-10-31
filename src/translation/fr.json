@@ -1872,7 +1872,9 @@
     },
     "errors": {
       "restaurantNotFoundTitle": "Restaurant non trouvé",
-      "restaurantNotFoundMessage": "Les informations sur le restaurant n'ont pas pu être chargées. Veuillez vérifier l'URL ou contacter le support."
+      "restaurantNotFoundMessage": "Les informations sur le restaurant n'ont pas pu être chargées. Veuillez vérifier l'URL ou contacter le support.",
+      "anErrorOccurred": "Une erreur s'est produite",
+      "tryAgain": "Veuillez réessayer plus tard."
     }
   }
 }
