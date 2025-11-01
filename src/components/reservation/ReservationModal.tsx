@@ -931,7 +931,6 @@ const canSendPaymentLinkForExistingCustomer = () => {
             }`}
           onSubmit={(event) => {
             event.preventDefault();
-            if (paymentRequired) return;
             const reservationData: Reservation = {
               id: Date.now().toString(),
               phone: formData.phone,
