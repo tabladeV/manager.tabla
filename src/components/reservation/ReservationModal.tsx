@@ -894,7 +894,7 @@ const canSendPaymentLinkForExistingCustomer = () => {
                     {data.guests === 0 ? <div>Guests</div> : <span>{data.guests}</span>}
                   </div>
                   {renderPaymentInfo()}
-                  <button onClick={handleNewReservationNewCustomer} className='w-full py-2 bg-greentheme text-white rounded-lg hover:opacity-90 transition-opacity mt-3' disabled={disabledButton || paymentRequired}>{t('reservations.buttons.addReservation')}</button>
+                  <button onClick={handleNewReservationNewCustomer} className='w-full py-2 bg-greentheme text-white rounded-lg hover:opacity-90 transition-opacity mt-3' disabled={disabledButton}>{t('reservations.buttons.addReservation')}</button>
                   {isPaymentEnabled && (
             <div className="flex gap-2 mt-2 justify-center flex-wrap">
               <BaseBtn
