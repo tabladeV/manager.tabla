@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ReservationProcess from './ReservationProcess';
-import { ArrowLeft, User, X, Mail, Copy, LoaderCircle} from 'lucide-react';
+import { ArrowLeft, User, X, Mail, Copy, LoaderCircle, DollarSign} from 'lucide-react';
 import { BaseKey, BaseRecord, useCreate, useList, useNotification} from '@refinedev/core';
 import BaseBtn from '../common/BaseBtn';
 import { Occasion, OccasionsType } from '../settings/Occasions';
@@ -58,9 +58,11 @@ const ReservationModal = (props: ReservationModalProps) => {
   
   // Use our custom hook to get restaurant configuration
   const { 
-    subdomain, 
     widgetConfig, 
     getPaymentLink, 
+    checkPayment,
+    paymentCheckResult,
+    isCheckingPayment,
     isLoading: isLoadingConfig 
   } = useRestaurantConfig();
   
@@ -72,6 +74,8 @@ const ReservationModal = (props: ReservationModalProps) => {
   const [isSendingPaymentLink, setIsSendingPaymentLink] = useState(false);
   const [isCopyingPaymentLink, setIsCopyingPaymentLink] = useState(false);
   
+  const [paymentRequired, setPaymentRequired] = useState(false);
+  const [paymentAmount, setPaymentAmount] = useState<number | null>(null);
 
   const [searchKeyword, setSearchKeyword] = useState('');
 
@@ -205,7 +209,35 @@ const sources = [
                 { value: 'BACK_OFFICE', label: t('overview.charts.reservationsSource.legend.BackOffice') },
 ]
 
-  
+  useEffect(() => {
+    const canCheckPayment = isPaymentEnabled && data.reserveDate && data.time && data.guests > 0;
+
+    if (!canCheckPayment) {
+        setPaymentRequired(false);
+        setPaymentAmount(null);
+        return;
+    }
+
+    if (widgetConfig.payment_mode === 'always') {
+        if (data.guests >= widgetConfig.min_guests_for_payment) {
+            setPaymentRequired(true);
+            setPaymentAmount(data.guests * widgetConfig.deposit_amount_per_guest);
+        } else {
+            setPaymentRequired(false);
+            setPaymentAmount(null);
+        }
+    } else if (widgetConfig.payment_mode === 'rules') {
+        checkPayment(data.reserveDate, data.time, data.guests);
+    }
+  }, [data, widgetConfig, isPaymentEnabled, checkPayment]);
+
+  useEffect(() => {
+    if (widgetConfig.payment_mode === 'rules' && paymentCheckResult) {
+        setPaymentRequired(paymentCheckResult.is_payment_enabled);
+        setPaymentAmount(paymentCheckResult.is_payment_enabled ? paymentCheckResult.amount : null);
+    }
+  }, [paymentCheckResult, widgetConfig.payment_mode]);
+
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
@@ -421,7 +453,7 @@ const sources = [
 
   // Function to check if we can send payment link (requires email)
   const canSendPaymentLink = () => {
-    return isPaymentEnabled && newCustomerData.email && newCustomerData.email.includes('@');
+    return paymentRequired && newCustomerData.email && newCustomerData.email.includes('@');
   };
   
   // Function to send payment link
@@ -678,11 +710,33 @@ const createAndCopyPaymentLinkForExistingCustomer = () => {
 
 // Function to check if we can send payment link for existing customer (requires email)
 const canSendPaymentLinkForExistingCustomer = () => {
-  return isPaymentEnabled && formData.email && formData.email.includes('@');
+  return paymentRequired && formData.email && formData.email.includes('@');
 };
 
   const [disabledButton, setDisabledButton] = useState(false);
   const [disabledButton2, setDisabledButton2] = useState(false);
+
+  const renderPaymentInfo = () => {
+    if (isCheckingPayment) {
+        return (
+            <div className="flex gap-1 my-1 text-sm items-center w-fit px-2 py-1 rounded">
+                <LoaderCircle size={14} className="animate-spin" />
+                <span>{t('reservationWidget.payment.checking')}</span>
+            </div>
+        );
+    }
+
+    if (paymentRequired && paymentAmount !== null) {
+        return (
+            <div className="flex gap-1 my-1 text-sm bg-softyellowtheme items-center text-yellowtheme w-fit px-2 py-1 rounded">
+                <DollarSign size={14} className={`dark:text-yellowtheme text-yellowtheme`} />
+                <span>{t('reservationWidget.payment.amountToPay')}{paymentAmount > 0 && `: ${paymentAmount} ${widgetConfig.currency}`}</span>
+            </div>
+        );
+    }
+
+    return null;
+  };
 
   return (
     <div>
@@ -839,14 +893,15 @@ const canSendPaymentLinkForExistingCustomer = () => {
                     {data.time === '' ? <div>Time</div> : <span>{data.time}</span>}
                     {data.guests === 0 ? <div>Guests</div> : <span>{data.guests}</span>}
                   </div>
-                  <button onClick={handleNewReservationNewCustomer} className='w-full py-2 bg-greentheme text-white rounded-lg hover:opacity-90 transition-opacity mt-3' disabled={disabledButton}>{t('reservations.buttons.addReservation')}</button>
+                  {renderPaymentInfo()}
+                  <button onClick={handleNewReservationNewCustomer} className='w-full py-2 bg-greentheme text-white rounded-lg hover:opacity-90 transition-opacity mt-3' disabled={disabledButton || paymentRequired}>{t('reservations.buttons.addReservation')}</button>
                   {isPaymentEnabled && (
             <div className="flex gap-2 mt-2 justify-center flex-wrap">
               <BaseBtn
                 variant="secondary"
                 onClick={createAndSendPaymentLink}
                 loading={isSendingPaymentLink}
-                disabled={!canSendPaymentLink() || isCreatingReservation || disabledButton}
+                disabled={!canSendPaymentLink() || isCreatingReservation || disabledButton || isCheckingPayment}
                 className="w-1/2"
               >
                 <Mail size={16} />
@@ -857,7 +912,7 @@ const canSendPaymentLinkForExistingCustomer = () => {
                 variant="secondary"
                 onClick={createAndCopyPaymentLink}
                 loading={isCopyingPaymentLink}
-                disabled={isCreatingReservation || disabledButton}
+                disabled={!paymentRequired || isCreatingReservation || disabledButton || isCheckingPayment}
                 className="w-1/2"
               >
                 <Copy size={16} />
@@ -876,6 +931,7 @@ const canSendPaymentLinkForExistingCustomer = () => {
             }`}
           onSubmit={(event) => {
             event.preventDefault();
+            if (paymentRequired) return;
             const reservationData: Reservation = {
               id: Date.now().toString(),
               phone: formData.phone,
@@ -985,9 +1041,7 @@ const canSendPaymentLinkForExistingCustomer = () => {
             {data.time === '' ? <div>Time</div> : <span>{data.time}</span>}
             {data.guests === 0 ? <div>Guests</div> : <span>{data.guests}</span>}
           </div>
-          {/* <BaseBtn type="submit" loading={loadingCreatReservation}>
-            {t('grid.buttons.addReservation')}
-          </BaseBtn> */}
+          {renderPaymentInfo()}
           <div className="flex flex-col gap-2">
   <BaseBtn type="submit" loading={loadingCreatReservation}>
     {t('grid.buttons.addReservation')}
@@ -1000,7 +1054,7 @@ const canSendPaymentLinkForExistingCustomer = () => {
         variant="secondary"
         onClick={createAndSendPaymentLinkForExistingCustomer}
         loading={isSendingPaymentLink}
-        disabled={!canSendPaymentLinkForExistingCustomer() || isCreatingReservation}
+        disabled={!canSendPaymentLinkForExistingCustomer() || isCreatingReservation || isCheckingPayment}
       >
         <Mail size={16} />
         {t('reservations.buttons.createAndSendPaymentLink')}
@@ -1010,7 +1064,7 @@ const canSendPaymentLinkForExistingCustomer = () => {
         variant="secondary"
         onClick={createAndCopyPaymentLinkForExistingCustomer}
         loading={isCopyingPaymentLink}
-        disabled={isCreatingReservation}
+        disabled={!paymentRequired || isCreatingReservation || isCheckingPayment}
       >
         <Copy size={16} />
         {t('reservations.buttons.createAndCopyPaymentLink')}

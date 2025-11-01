@@ -5,7 +5,7 @@ import BaseSelect from "../common/BaseSelect";
 import { ReservationSource, ReservationStatus } from "../common/types/Reservation";
 import { TableType as OriginalTableType } from "../../_root/pages/PlacesPage";
 import ActionPopup from "../popup/ActionPopup";
-import { Clock, User2, Users2, Calendar, XCircle, Mail, Copy } from "lucide-react";
+import { Clock, User2, Users2, Calendar, XCircle, Mail, Copy, DollarSign, LoaderCircle } from "lucide-react";
 import BaseBtn from "../common/BaseBtn";
 import { useRestaurantConfig } from "../../hooks/useRestaurantConfig";
 
@@ -72,6 +72,9 @@ const { open } = useNotification();
   const { 
     widgetConfig, 
     getPaymentLink, 
+    checkPayment,
+    paymentCheckResult,
+    isCheckingPayment,
     isLoading: isLoadingConfig 
   } = useRestaurantConfig();
   
@@ -81,6 +84,8 @@ const { open } = useNotification();
   // State for payment link actions
   const [isSendingPaymentLink, setIsSendingPaymentLink] = useState(false);
   const [isCopyingPaymentLink, setIsCopyingPaymentLink] = useState(false);
+  const [paymentRequired, setPaymentRequired] = useState(false);
+  const [paymentAmount, setPaymentAmount] = useState<number | null>(null);
   
 
   const { isLoading: loadingOccasions, error: occasionsError } = useList({
@@ -129,7 +134,36 @@ const { open } = useNotification();
     setSelectedClient(reservation);
     setSelectedOccasion(reservation?.occasion?.id as number);
     setSelectedTables(reservation?.tables?.map(t=>t.id) as number[])
-  },[])
+  },[reservation])
+
+  useEffect(() => {
+    const canCheckPayment = isPaymentEnabled && reservationProgressData.reserveDate && reservationProgressData.time && reservationProgressData.guests > 0;
+
+    if (!canCheckPayment) {
+        setPaymentRequired(false);
+        setPaymentAmount(null);
+        return;
+    }
+
+    if (widgetConfig.payment_mode === 'always') {
+        if (reservationProgressData.guests >= widgetConfig.min_guests_for_payment) {
+            setPaymentRequired(true);
+            setPaymentAmount(reservationProgressData.guests * widgetConfig.deposit_amount_per_guest);
+        } else {
+            setPaymentRequired(false);
+            setPaymentAmount(null);
+        }
+    } else if (widgetConfig.payment_mode === 'rules') {
+        checkPayment(reservationProgressData.reserveDate, reservationProgressData.time, reservationProgressData.guests);
+    }
+  }, [reservationProgressData, widgetConfig, isPaymentEnabled, checkPayment]);
+
+  useEffect(() => {
+    if (widgetConfig.payment_mode === 'rules' && paymentCheckResult) {
+        setPaymentRequired(paymentCheckResult.is_payment_enabled);
+        setPaymentAmount(paymentCheckResult.is_payment_enabled ? paymentCheckResult.amount : null);
+    }
+  }, [paymentCheckResult, widgetConfig.payment_mode]);
 
   const handleSave = () => {
     setShowConfirmPopup(true);
@@ -171,9 +205,9 @@ const { open } = useNotification();
     },
   });
   
-  // Function to check if we can send payment link (requires email)
+  // Function to check if we can send payment link (requires email and payment is required)
   const canSendPaymentLink = () => {
-    return isPaymentEnabled && selectedClient?.email && selectedClient.email.includes('@');
+    return paymentRequired && selectedClient?.email && selectedClient.email.includes('@');
   };
   
   // Function to send payment link
@@ -242,6 +276,28 @@ const { open } = useNotification();
     } finally {
       setIsCopyingPaymentLink(false);
     }
+  };
+
+  const renderPaymentInfo = () => {
+    if (isCheckingPayment) {
+        return (
+            <div className="flex gap-1 my-1 text-sm items-center w-fit px-2 py-1 rounded">
+                <LoaderCircle size={14} className="animate-spin" />
+                <span>{t('reservationWidget.payment.checking')}</span>
+            </div>
+        );
+    }
+
+    if (paymentRequired && paymentAmount !== null) {
+        return (
+            <div className="flex gap-1 my-1 text-sm bg-softyellowtheme items-center text-yellowtheme w-fit px-2 py-1 rounded">
+                <DollarSign size={14} className={`dark:text-yellowtheme text-yellowtheme`} />
+                <span>{t('reservationWidget.payment.amountToPay')}{paymentAmount > 0 && `: ${paymentAmount} ${widgetConfig.currency}`}</span>
+            </div>
+        );
+    }
+
+    return null;
   };
 
   if (!showModal || !selectedClient) return null;
@@ -541,6 +597,8 @@ const { open } = useNotification();
               {(reservationProgressData.time === '') ? <div>Time </div> : <span>{reservationProgressData.time}</span>}
               {(reservationProgressData.guests === 0) ? <div>Guests </div> : <span>{reservationProgressData.guests}</span>}
             </div>
+            
+            {renderPaymentInfo()}
 
             {/* Add payment link buttons */}
       {isPaymentEnabled && (
@@ -549,7 +607,7 @@ const { open } = useNotification();
             variant="secondary"
             onClick={handleSendPaymentLink}
             loading={isSendingPaymentLink}
-            disabled={!canSendPaymentLink()}
+            disabled={!canSendPaymentLink() || isCheckingPayment}
           >
             <Mail size={16} />
             {t('reservations.buttons.sendPaymentLink')}
@@ -559,6 +617,7 @@ const { open } = useNotification();
             variant="secondary"
             onClick={handleCopyPaymentLink}
             loading={isCopyingPaymentLink}
+            disabled={!paymentRequired || isCheckingPayment}
           >
             <Copy size={16} />
             {t('reservations.buttons.copyPaymentLink')}
