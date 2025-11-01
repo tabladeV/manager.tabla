@@ -416,6 +416,7 @@ export default function PaymentSettings() {
                     </span>
                     <span className="capitalize select-none text-lg font-semibold">{t('settingsPage.widget.payment.enable')}</span>
                 </label>
+                
 
                 {enablePayment && (
                     <div className="animate-fadeIn space-y-6">
@@ -508,11 +509,20 @@ export default function PaymentSettings() {
                     </div>
                 )}
                 {!enablePayment && (
+                    <>
                     <div className="pl-8 mt-2 animate-fadeIn">
                         <p className="text-sm text-orange-600 dark:text-orange-400 italic">
                             {t('settingsPage.widget.payment.disabledNote')}
                         </p>
                     </div>
+                    <div className="flex gap-6 justify-center">
+                            {haveSettingsChanged && (
+                                        <BaseBtn onClick={handleSaveSettings} disabled={!isValidSettingsForm} className="animate-fadeIn w-1/4">
+                                            {t('common.save')}
+                                        </BaseBtn>
+                                    )}
+                        </div>
+                    </>
                 )}
             </div>
             <PaymentRuleModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={handleSaveRule} rule={editingRule} loadingUpdateRule={loadingUpdateRule} loadingCreateRule={loadingCreateRule} />
