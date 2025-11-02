@@ -146,7 +146,11 @@
         },
         "buttons": {
             "addReservation": "إضافة حجز",
-            "export": "تصدير"
+            "export": "تصدير",
+            "createAndSendPaymentLink": "إضافة وإرسال رابط الدفع",
+            "createAndCopyPaymentLink": "إضافة ونسخ رابط الدفع",
+            "sendPaymentLink": "إرسال رابط الدفع",
+            "copyPaymentLink": "نسخ رابط الدفع"
         },
         "tableHeaders": {
             "id": "المعرف",
@@ -535,7 +539,8 @@
             "roles": "الأدوار",
             "permissions": "الصلاحيات",
             "services": "الخدمات",
-            "messagingTemplates": "قوالب المراسلة"
+            "messagingTemplates": "قوالب المراسلة",
+            "alerts": "تنبيهات الأحداث / العروض"
         },
         "messagingTemplates": {
             "description": "إنشاء وإدارة قوالب للرسائل التلقائية.",
@@ -546,8 +551,8 @@
             "content": "المحتوى",
             "dynamicVariables": "المتغيرات الديناميكية",
             "assetManager": "مدير الأصول",
-"loadingAssets": "جاري تحميل الأصول...",
-"errorFetchingAssets": "خطأ في جلب الأصول."
+            "loadingAssets": "جاري تحميل الأصول...",
+            "errorFetchingAssets": "خطأ في جلب الأصول."
         },
         "general": {
             "basicInformationForm": {
@@ -930,6 +935,63 @@
             }
         }
     },
+    "paymentSettings": {
+        "title": "إعدادات الدفع",
+        "editRule": "تعديل القاعدة",
+        "addRule": "إضافة قاعدة",
+        "ruleName": "اسم القاعدة",
+        "ruleNameRequired": "اسم القاعدة مطلوب",
+        "ruleNamePlaceholder": "مثال: عشاء نهاية الأسبوع",
+        "startDate": "تاريخ البدء",
+        "endDate": "تاريخ الانتهاء",
+        "allDay": "طوال اليوم",
+        "fromTime": "من الساعة",
+        "toTime": "إلى الساعة",
+        "advanced": "متقدم (تكرار)",
+        "alwaysRequire": "طلب الدفع دائماً",
+        "useRules": "استخدام القواعد",
+        "alwaysDescription": "عندما يكون الدفع مطلوبًا دائمًا، سيتم طلب وديعة لجميع الحجوزات التي تستوفي المعايير أدناه.",
+        "status": "الحالة",
+        "actions": "الإجراءات",
+        "errors": {
+            "startDateAfterEnd": "لا يمكن أن يكون تاريخ البدء بعد تاريخ الانتهاء",
+            "endDateBeforeStart": "لا يمكن أن يكون تاريخ الانتهاء قبل تاريخ البدء"
+        },
+        "description": {
+            "deposit": "وديعة بقيمة {{amount}} درهم لـ {{count}} ضيف أو أكثر.",
+            "allDay": "طوال اليوم.",
+            "fromToTime": "من {{from}} إلى {{to}}.",
+            "onDate": "في {{date}}.",
+            "fromToDate": "من {{from}} إلى {{to}}."
+        }
+    },
+    "rrule": {
+        "repeatEvery": "تكرار كل",
+        "repeatOn": "التكرار في",
+        "ends": "ينتهي",
+        "never": "أبداً",
+        "on": "في",
+        "after": "بعد",
+        "occurrences": "مرة/مرات",
+        "daily": "يومياً",
+        "weekly": "أسبوعياً",
+        "monthly": "شهرياً",
+        "yearly": "سنوياً",
+        "everyX": "كل {{count}} {{unit}}",
+        "everyXPlural": "كل {{count}} {{unit}}",
+        "freq_DAILY_singular": "يوم",
+        "freq_DAILY_plural": "أيام",
+        "freq_WEEKLY_singular": "أسبوع",
+        "freq_WEEKLY_plural": "أسابيع",
+        "freq_MONTHLY_singular": "شهر",
+        "freq_MONTHLY_plural": "أشهر",
+        "freq_YEARLY_singular": "سنة",
+        "freq_YEARLY_plural": "سنوات",
+        "untilDate": "حتى {{date}}",
+        "afterXOccurrences": "بعد {{count}} مرة",
+        "afterXOccurrencesPlural": "بعد {{count}} مرات",
+        "startingFrom": "بدءاً من {{date}}"
+    },
     "marketplaceSettings": {
         "title": "إعدادات السوق",
         "chooseSettingPrompt": "اختر إعداد السوق الذي تريد تعديله",
@@ -966,6 +1028,26 @@
         "onlineBookingBlockage": {
             "title": "قيود الحجز",
             "description": "إعداد قيود الحجز وتواريخ عدم التوفر لحجوزات السوق. التحكم في التوفر للحجوزات عبر الإنترنت."
+        }
+    },
+    "alerts": {
+        "title": "تنبيهات الفعاليات/العروض",
+        "addNew": "إضافة تنبيه جديد",
+        "editTitle": "تعديل التنبيه",
+        "addTitle": "إضافة تنبيه جديد",
+        "image": "صورة",
+        "uploadImage": "تحميل صورة",
+        "titleLabel": "العنوان",
+        "titlePlaceholder": "أدخل عنوان التنبيه",
+        "descriptionLabel": "الوصف",
+        "descriptionPlaceholder": "أدخل وصف التنبيه...",
+        "active": "نشط",
+        "table": {
+            "image": "صورة",
+            "title": "العنوان",
+            "status": "الحالة",
+            "actions": "الإجراءات",
+            "period": "الفترة"
         }
     },
     "unifiedSettings": {
@@ -1639,6 +1721,22 @@
             "detailsNotFound": "لم يتم العثور على تفاصيل الحجز. يرجى بدء حجز جديد."
         }
     },
+    "paymentLink": {
+        "page": {
+            "title": "إتمام الدفع | Tabla"
+        },
+        "processing": "جاري معالجة طلب الدفع الخاص بك...",
+        "errors": {
+            "title": "خطأ في الدفع",
+            "restaurantNotFound": "تعذر تحميل معلومات المطعم. يرجى المحاولة مرة أخرى لاحقًا.",
+            "missingReservationId": "معرّف الحجز مفقود. يرجى التحقق من الرابط الخاص بك.",
+            "paymentDetailsError": "تفاصيل الدفع غير مكتملة. يرجى الاتصال بالمطعم.",
+            "paymentInitiationFailed": "فشل في بدء الدفع. يرجى المحاولة مرة أخرى لاحقًا.",
+            "paymentDisabled": "الدفع عبر الإنترنت غير مفعّل لهذا المطعم. يرجى الاتصال بالمطعم مباشرةً.",
+            "reservationNotFound": "لم يتم العثور على الحجز. ربما تم إلغاؤه أو معالجته بالفعل."
+        },
+        "makeReservation": "إجراء حجز"
+    },
     "reviewPage": {
         "page": {
             "title": "اترك تقييماً | طابلا"
@@ -1730,6 +1828,24 @@
             }
         }
     },
+    "notifications": {
+        "paymentLink": {
+            "sent": "تم إرسال رابط الدفع",
+            "sentDescription": "تم إرسال رابط الدفع عبر البريد الإلكتروني",
+            "sendError": "فشل إرسال رابط الدفع",
+            "sendErrorDescription": "حدث خطأ أثناء إرسال رابط الدفع",
+            "copied": "تم نسخ رابط الدفع",
+            "copiedDescription": "تم نسخ رابط الدفع إلى الحافظة",
+            "copyError": "فشل نسخ رابط الدفع",
+            "copyErrorDescription": "حدث خطأ أثناء نسخ رابط الدفع",
+            "error": "خطأ في رابط الدفع",
+            "missingSeqId": "تعذر الحصول على رقم تعريف الحجز"
+        },
+        "reservation": {
+            "createError": "فشل إنشاء الحجز",
+            "createErrorDescription": "حدث خطأ أثناء إنشاء الحجز"
+        }
+    },
     "common": {
         "cancel": "إلغاء",
         "add": "إضافة",
@@ -1743,17 +1859,52 @@
         "optional": "اختياري",
         "upload": "رفع",
         "uploading": "جاري الرفع...",
-"select": "اختيار",
-"selectFile": "اختيار ملف",
-"selectImage": "اختيار صورة",
-"change": "تغيير",
-"hour": "ساعة",
-"minute": "دقيقة",
-"second": "ثانية",
-"hours": "ساعات",
-"minutes": "دقائق",
-"seconds": "ثوان",
-"confirm": "تأكيد",
-"selectTime": "اختيار الوقت"
+        "select": "اختيار",
+        "selectFile": "اختيار ملف",
+        "selectImage": "اختيار صورة",
+        "change": "تغيير",
+        "hour": "ساعة",
+        "minute": "دقيقة",
+        "second": "ثانية",
+        "hours": "ساعات",
+        "minutes": "دقائق",
+        "seconds": "ثوان",
+        "confirm": "تأكيد",
+        "selectTime": "اختيار الوقت",
+        "dismiss": "رفض",
+        "close": "إغلاق",
+        "dismissAll": "رفض الكل",
+        "closeAll": "إغلاق الكل",
+        "loading": "جارٍ التحميل...",
+        "from": "من",
+        "to": "إلى",
+        "days": {
+            "sunday": "الأحد",
+            "monday": "الإثنين",
+            "tuesday": "الثلاثاء",
+            "wednesday": "الأربعاء",
+            "thursday": "الخميس",
+            "friday": "الجمعة",
+            "saturday": "السبت"
+        },
+        "validation": {
+            "requiredField": "هذا الحقل مطلوب",
+            "invalidDate": "يرجى إدخال تاريخ صحيح",
+            "invalidTime": "يرجى إدخال وقت صحيح",
+            "invalidNumber": "يرجى إدخال رقم صحيح",
+            "minValue": "يجب أن تكون القيمة {{min}} على الأقل",
+            "maxValue": "يجب أن تكون القيمة {{max}} على الأكثر",
+            "minLength": "يجب أن تتكون من {{min}} أحرف على الأقل",
+            "maxLength": "يجب أن تتكون من {{max}} أحرف على الأكثر",
+            "invalidEmail": "يرجى إدخال عنوان بريد إلكتروني صحيح",
+            "invalidPhone": "يرجى إدخال رقم هاتف صحيح",
+            "invalidURL": "يرجى إدخال رابط URL صحيح"
+        },
+        "errors": {
+            "restaurantNotFoundTitle": "المطعم غير موجود",
+            "restaurantNotFoundMessage": "تعذر تحميل معلومات المطعم. يرجى التحقق من عنوان URL أو الاتصال بالدعم.",
+            "anErrorOccurred": "حدث خطأ",
+            "tryAgain": "يرجى المحاولة مرة أخرى لاحقًا."
+        }
     }
 }

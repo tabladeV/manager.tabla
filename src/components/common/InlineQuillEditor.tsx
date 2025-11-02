@@ -1,6 +1,5 @@
 import React, { forwardRef, useImperativeHandle, useRef } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
 import { useDarkContext } from '../../context/DarkContext';
 // @ts-ignore
 import ImageResize from 'quill-image-resize';

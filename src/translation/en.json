@@ -150,7 +150,11 @@
         },
         "buttons": {
             "addReservation": "Add Reservation",
-            "export": "Export"
+            "export": "Export",
+            "createAndSendPaymentLink": "Create & Send Payment Link",
+            "createAndCopyPaymentLink": "Create & Copy Payment Link",
+            "sendPaymentLink": "Send Payment Link",
+            "copyPaymentLink": "Copy Payment Link"
         },
         "tableHeaders": {
             "id": "ID",
@@ -539,7 +543,8 @@
             "roles": "Roles",
             "permissions": "Permissions",
             "services": "Services",
-            "messagingTemplates": "Messaging Templates"
+            "messagingTemplates": "Messaging Templates",
+            "alerts": "Events/Offers Alerts"
         },
         "messagingTemplates": {
             "description": "Create and manage templates for automated messages.",
@@ -934,6 +939,63 @@
             }
         }
     },
+    "paymentSettings": {
+        "title": "Payment Settings",
+        "editRule": "Edit Rule",
+        "addRule": "Add Rule",
+        "ruleName": "Rule Name",
+        "ruleNameRequired": "Rule name is required",
+        "ruleNamePlaceholder": "e.g., Weekend Dinner",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "allDay": "All Day",
+        "fromTime": "From Time",
+        "toTime": "To Time",
+        "advanced": "Advanced (Recurrence)",
+        "alwaysRequire": "Always require payment",
+        "useRules": "Use rules",
+        "alwaysDescription": "When payment is always required, a deposit will be requested for all reservations meeting the criteria below.",
+        "status": "Status",
+        "actions": "Actions",
+        "errors": {
+            "startDateAfterEnd": "Start date cannot be after end date",
+            "endDateBeforeStart": "End date cannot be before start date"
+        },
+        "description": {
+            "deposit": "Deposit of {{amount}} DH for {{count}} or more guests.",
+            "allDay": "All day.",
+            "fromToTime": "From {{from}} to {{to}}.",
+            "onDate": "On {{date}}.",
+            "fromToDate": "From {{from}} to {{to}}."
+        }
+    },
+    "rrule": {
+        "repeatEvery": "Repeat every",
+        "repeatOn": "Repeat on",
+        "ends": "Ends",
+        "never": "Never",
+        "on": "on",
+        "after": "After",
+        "occurrences": "occurrence(s)",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "monthly": "Monthly",
+        "yearly": "Yearly",
+        "everyX": "Every {{count}} {{unit}}",
+        "everyXPlural": "Every {{count}} {{unit}}",
+        "freq_DAILY_singular": "day",
+        "freq_DAILY_plural": "days",
+        "freq_WEEKLY_singular": "week",
+        "freq_WEEKLY_plural": "weeks",
+        "freq_MONTHLY_singular": "month",
+        "freq_MONTHLY_plural": "months",
+        "freq_YEARLY_singular": "year",
+        "freq_YEARLY_plural": "years",
+        "untilDate": "until {{date}}",
+        "afterXOccurrences": "after {{count}} occurrence",
+        "afterXOccurrencesPlural": "after {{count}} occurrences",
+        "startingFrom": "starting from {{date}}"
+    },
     "marketplaceSettings": {
         "title": "Marketplace Settings",
         "chooseSettingPrompt": "Choose a marketplace setting to modify",
@@ -970,6 +1032,26 @@
         "onlineBookingBlockage": {
             "title": "Booking Restrictions",
             "description": "Set up booking restrictions and blackout dates for marketplace reservations. Control availability for online bookings."
+        }
+    },
+    "alerts": {
+        "title": "Events/Offers Alerts",
+        "addNew": "Add New Alert",
+        "editTitle": "Edit Alert",
+        "addTitle": "Add New Alert",
+        "image": "Image",
+        "uploadImage": "Upload Image",
+        "titleLabel": "Title",
+        "titlePlaceholder": "Enter alert title",
+        "descriptionLabel": "Description",
+        "descriptionPlaceholder": "Enter alert description...",
+        "active": "Active",
+        "table": {
+            "image": "Image",
+            "title": "Title",
+            "status": "Status",
+            "actions": "Actions",
+            "period": "Period"
         }
     },
     "unifiedSettings": {
@@ -1489,7 +1571,8 @@
             "cancelPayment": "Skip Payment",
             "proceedToPayment": "Proceed to Payment",
             "paymentNoticeTitle": "Prepayment is required",
-            "paymentNoticeDescription": "A prepayment is required for this reservation."
+            "paymentNoticeDescription": "A prepayment is required for this reservation.",
+            "checking": "Checking payment status..."
         },
         "confirmation": {
             "title": "Confirm Your Information",
@@ -1669,6 +1752,22 @@
             "detailsNotFound": "Reservation details not found. Please start a new reservation."
         }
     },
+    "paymentLink": {
+        "page": {
+            "title": "Complete Payment | Tabla"
+        },
+        "processing": "Processing your payment request...",
+        "errors": {
+            "title": "Payment Error",
+            "restaurantNotFound": "Restaurant information could not be loaded. Please try again later.",
+            "missingReservationId": "Reservation ID is missing. Please check your link.",
+            "paymentDetailsError": "Payment details are incomplete. Please contact the restaurant.",
+            "paymentInitiationFailed": "Failed to initiate payment. Please try again later.",
+            "paymentDisabled": "Online payment is not enabled for this restaurant. Please contact the restaurant directly.",
+            "reservationNotFound": "The reservation was not found. It may have been canceled or already processed."
+        },
+        "makeReservation": "Make a Reservation"
+    },
     "reservationProcess": {
         "date": "Date",
         "time": "Time",
@@ -1702,6 +1801,24 @@
             }
         }
     },
+    "notifications": {
+        "paymentLink": {
+            "sent": "Payment link sent",
+            "sentDescription": "Payment link has been sent via email",
+            "sendError": "Failed to send payment link",
+            "sendErrorDescription": "There was an error sending the payment link",
+            "copied": "Payment link copied",
+            "copiedDescription": "Payment link has been copied to clipboard",
+            "copyError": "Failed to copy payment link",
+            "copyErrorDescription": "There was an error copying the payment link",
+            "error": "Payment link error",
+            "missingSeqId": "Couldn't get reservation ID"
+        },
+        "reservation": {
+            "createError": "Failed to create reservation",
+            "createErrorDescription": "There was an error creating the reservation"
+        }
+    },
     "common": {
         "cancel": "Cancel",
         "add": "Add",
@@ -1726,6 +1843,41 @@
         "minutes": "Minutes",
         "seconds": "Seconds",
         "confirm": "Confirm",
-        "selectTime": "Select Time"
+        "selectTime": "Select Time",
+        "dismiss": "Dismiss",
+        "close": "Close",
+        "dismissAll": "Dismiss All",
+        "closeAll": "Close All",
+        "loading": "Loading...",
+        "from": "From",
+        "to": "To",
+        "days": {
+            "sunday": "Sunday",
+            "monday": "Monday",
+            "tuesday": "Tuesday",
+            "wednesday": "Wednesday",
+            "thursday": "Thursday",
+            "friday": "Friday",
+            "saturday": "Saturday"
+        },
+        "validation": {
+            "requiredField": "This field is required",
+            "invalidDate": "Please enter a valid date",
+            "invalidTime": "Please enter a valid time",
+            "invalidNumber": "Please enter a valid number",
+            "minValue": "Value must be at least {{min}}",
+            "maxValue": "Value must be at most {{max}}",
+            "minLength": "Must be at least {{min}} characters",
+            "maxLength": "Must be at most {{max}} characters",
+            "invalidEmail": "Please enter a valid email address",
+            "invalidPhone": "Please enter a valid phone number",
+            "invalidURL": "Please enter a valid URL"
+        },
+        "errors": {
+            "restaurantNotFoundTitle": "Restaurant Not Found",
+            "restaurantNotFoundMessage": "The restaurant information could not be loaded. Please check the URL or contact support.",
+            "anErrorOccurred": "An error occurred",
+            "tryAgain": "Please try again later."
+        }
     }
 }

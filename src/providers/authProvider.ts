@@ -20,20 +20,41 @@ interface LoginCredentials {
  * Auth response interface
  */
 interface AuthResponse {
-    token: string;
+    access: string;
     refresh: string;
     user: {
         is_manager: boolean;
     };
 }
 
+// Flag to prevent multiple concurrent refresh attempts
+let isRefreshing = false;
+// Token refresh promise that can be reused by multiple requests
+let refreshPromise: Promise<{ success: boolean }> | null = null;
+
+// Refresh token if it's close to expiring (10 minutes)
+const TOKEN_REFRESH_THRESHOLD = 10 * 60 * 1000; // 10 minutes in milliseconds
 let refreshInterval: ReturnType<typeof setInterval> | null = null;
+
+const clearAuthData = () => {
+    localStorage.removeItem("isLogedIn");
+    localStorage.removeItem("refresh");
+    localStorage.removeItem("access");
+    localStorage.removeItem("restaurant_id");
+    localStorage.removeItem("permissions");
+    localStorage.removeItem("is_manager");
+    
+    if (refreshInterval) {
+        clearInterval(refreshInterval);
+        refreshInterval = null;
+    }
+};
 
 const startRefreshTimer = (authProvider: ExtendedAuthProvider) => {
     if (refreshInterval) {
         clearInterval(refreshInterval);
     }
-    // Set an interval of 50 minutes (50 * 60 * 1000 ms)
+    // Check every 5 minutes if token needs refreshing
     refreshInterval = setInterval(async () => {
         const isLoggedIn = localStorage.getItem("isLogedIn") === "true";
         const refreshToken = localStorage.getItem("refresh");
@@ -44,7 +65,7 @@ const startRefreshTimer = (authProvider: ExtendedAuthProvider) => {
                 console.error("Token refresh failed", error);
             }
         }
-    }, 50 * 60 * 1000);
+    }, 5 * 60 * 1000); // Check every 5 minutes
 };
 
 const authProvider: ExtendedAuthProvider = {
@@ -56,20 +77,22 @@ const authProvider: ExtendedAuthProvider = {
     login: async ({ email, password }: LoginCredentials) => {
         try {
             const response = await httpClient.post("/api/v1/bo/managers/login/", { email, password });
-            if (response.data.token) {
+            const data = response.data;
+            
+            if (data.access && data.refresh) {
                 localStorage.setItem("isLogedIn", "true");
-                localStorage.setItem("refresh", response.data.refresh);
-                localStorage.setItem("token", response.data.refresh);
+                localStorage.setItem("refresh", data.refresh);
+                localStorage.setItem("access", data.access); // Store access token correctly
 
-                if (response?.data.user.is_manager) {
+                if (data.user?.is_manager) {
                     localStorage.setItem("is_manager", "true");
                 }
 
-                // Start the refresh timer after a successful login.
+                // Start the refresh timer after a successful login
                 startRefreshTimer(authProvider);
                 return Promise.resolve({ success: true });
             } else {
-                return Promise.reject({ success: false });
+                return Promise.reject({ success: false, message: "Invalid response format" });
             }
         } catch (error) {
             return Promise.reject(error);
@@ -78,24 +101,17 @@ const authProvider: ExtendedAuthProvider = {
 
     logout: async () => {
         try {
-            const response = await httpClient.post("/api/v1/auth/logout/");
-            if (response.status === 204 || response.status === 200) {
-                localStorage.removeItem("isLogedIn");
-                localStorage.removeItem("refresh");
-                localStorage.removeItem("token");
-                localStorage.removeItem("restaurant_id");
-                localStorage.removeItem("permissions");
-                localStorage.removeItem("is_manager");
-
-                if (refreshInterval) {
-                    clearInterval(refreshInterval);
-                    refreshInterval = null;
-                }
-                window.location.href = "/sign-in";
-                return Promise.resolve({ success: true });
-            } else {
-                return Promise.reject({ success: false });
+            // Try to call logout API, but proceed even if it fails
+            try {
+                await httpClient.post("/api/v1/auth/logout/");
+            } catch (error) {
+                console.warn("Error during logout API call:", error);
             }
+            
+            // Always clear auth data and redirect
+            clearAuthData();
+            window.location.href = "/sign-in";
+            return Promise.resolve({ success: true });
         } catch (error) {
             return Promise.reject(error);
         }
@@ -108,7 +124,7 @@ const authProvider: ExtendedAuthProvider = {
                 authenticated: false,
                 error: { message: "Not authenticated", name: "Unauthorized" },
                 logout: true,
-                redirectTo: "/login",
+                redirectTo: "/sign-in",
             });
     },
 
@@ -118,8 +134,8 @@ const authProvider: ExtendedAuthProvider = {
     },
 
     getIdentity: async () => {
-        const token = localStorage.getItem("token");
-        if (!token) return Promise.reject({ message: "No token available" });
+        const token = localStorage.getItem("access");
+        if (!token) return Promise.reject({ message: "No access token available" });
         try {
             const response = await httpClient.get("/api/v1/bo/restaurants/users/me/");
 
@@ -127,7 +143,7 @@ const authProvider: ExtendedAuthProvider = {
                 localStorage.setItem("permissions", JSON.stringify(response.data.permissions));
             }
 
-            if (response?.data.is_manager) {
+            if (response.data.is_manager) {
                 localStorage.setItem("is_manager", "true");
             }
 
@@ -137,24 +153,59 @@ const authProvider: ExtendedAuthProvider = {
         }
     },
 
-    // Custom refresh method to update the refresh token.
+    // Shared refresh method with synchronization
     refresh: async () => {
-        try {
-            const refreshToken = localStorage.getItem("refresh");
-            if (!refreshToken) {
-                return Promise.reject("No refresh token available");
-            }
-            const response = await httpClient.post("/api/v1/auth/token/refresh/", { refresh: refreshToken });
-            if (response.data.refresh) {
-                localStorage.setItem("refresh", response.data.refresh);
-                return Promise.resolve({ success: true });
-            } else {
-                return Promise.reject({ success: false });
-            }
-        } catch (error) {
-            return Promise.reject(error);
+        // If a refresh is already in progress, return that promise
+        if (isRefreshing && refreshPromise) {
+            return refreshPromise;
         }
+        
+        isRefreshing = true;
+        refreshPromise = (async () => {
+            try {
+                const refreshToken = localStorage.getItem("refresh");
+                if (!refreshToken) {
+                    throw new Error("No refresh token available");
+                }
+                
+                const response = await httpClient.post("/api/v1/auth/token/refresh/", { refresh: refreshToken });
+                const data = response.data;
+                
+                if (data.access && data.refresh) {
+                    localStorage.setItem("access", data.access);
+                    localStorage.setItem("refresh", data.refresh);
+                    return { success: true };
+                } else {
+                    throw new Error("Invalid response from refresh endpoint");
+                }
+            } catch (error) {
+                console.error("Token refresh failed, logging out:", error);
+                clearAuthData();
+                window.location.href = "/sign-in";
+                throw error;
+            } finally {
+                isRefreshing = false;
+                refreshPromise = null;
+            }
+        })();
+        
+        return refreshPromise;
     },
+};
+
+// Export method to handle unauthorized responses in HTTP clients
+export const handleUnauthorizedResponse = async (status: number): Promise<boolean> => {
+    // If status is unauthorized/forbidden, try to refresh token first
+    if (status === 401 || status === 403 || status === 411) {
+        try {
+            await authProvider.refresh?.();
+            return true; // Token refreshed successfully
+        } catch (error) {
+            // Refresh failed, clearing auth data is handled in refresh method
+            return false;
+        }
+    }
+    return false;
 };
 
 export default authProvider;

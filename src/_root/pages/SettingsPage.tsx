@@ -19,6 +19,8 @@ import Offers from '../../components/marketplace/Offers';
 import Reviews from '../../components/marketplace/Reviews';
 import ExtraServices from '../../components/marketplace/ExtraServices';
 import OnlineBookingBlockage from '../../components/marketplace/OnlineBookingBlockage';
+import PaymentSettings from '../../components/settings/PaymentSettings';
+import Alerts from '../../components/settings/Alerts';
 
 const componentMap: { [key: string]: React.ComponentType<any> } = {
   general: General,
@@ -36,11 +38,13 @@ const componentMap: { [key: string]: React.ComponentType<any> } = {
   'messaging-templates/edit': MessagingTemplatesForm,
   billing: Billing,
   gallery: Gallery,
+  payment: PaymentSettings,
   menu: MenuPricing,
   offers: Offers,
   reviews: Reviews,
   extraServices: ExtraServices,
   bookingRestrictions: OnlineBookingBlockage,
+  alerts: Alerts,
 };
 
 const SettingsPage: React.FC = () => {

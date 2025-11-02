@@ -4,25 +4,7 @@ import { Phone, Mail, Globe } from 'lucide-react';
 import visaLogo from "../../assets/VISA.jpg";
 import masterCardLogo from "../../assets/MasterCard.jpg";
 import cmiLogo from "../../assets/CMI.jpg";
-
-interface QuillPreviewProps {
-    content: string;
-    className?: string;
-}
-
-const QuillPreview = memo(({ content, className = "" }: QuillPreviewProps) => {
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-            import("quill/dist/quill.core.css");
-        }
-    }, []);
-
-    return (
-        <div className={`quill-preview ${className}`}>
-            <div className="prose max-w-none overflow-auto" dangerouslySetInnerHTML={{ __html: content }} />
-        </div>
-    );
-});
+import QuillPreview from '../common/QuillPreview';
 
 export const SharedWidgetFooter = memo(({ widgetInfo, isPaymentRequired, showDescription = false }: { widgetInfo: any, isPaymentRequired: boolean, showDescription?: boolean }) => {
     const { t } = useTranslation();

@@ -16,6 +16,8 @@ import {
   Star,
   PcCase,
   DollarSign,
+  BadgeDollarSign,
+  Megaphone,
   UserCheck,
   Store,
   Plus,
@@ -46,6 +48,8 @@ import Offers from '../marketplace/Offers'
 import Reviews from '../marketplace/Reviews'
 import ExtraServices from '../marketplace/ExtraServices'
 import OnlineBookingBlockage from '../marketplace/OnlineBookingBlockage'
+import PaymentSettings from './PaymentSettings'
+import Alerts from '../../components/settings/Alerts';
 
 interface MenuItem {
   id: string
@@ -147,9 +151,11 @@ const UnifiedSettings = () => {
       items: [
         { id: 'widget', title: t('settingsPage.menuItems.widget'), icon: PcCase, component: Widget, permission: { resource: 'widget', action: 'view' } },
         { id: 'reviewWidget', title: t('settingsPage.menuItems.reviewWidget'), icon: Star, component: ReviewWidget, permission: { resource: 'reviewwidget', action: 'view' } },
-        { id: 'messaging-templates', title: t('settingsPage.menuItems.messagingTemplates'), icon: Mail, component: MessagingTemplates, permission: { resource: 'reviewwidget', action: 'view' } },
-        { id: 'messaging-templates/new', title: t('settingsPage.menuItems.messagingTemplatesNew'), icon: Plus, component: MessagingTemplatesForm, hideInMenu: true, permission: { resource: 'reviewwidget', action: 'view' } },
-        { id: 'messaging-templates/edit', title: t('settingsPage.menuItems.messagingTemplatesEdit'), icon: Plus, component: MessagingTemplatesForm, hideInMenu: true, permission: { resource: 'reviewwidget', action: 'view' } },
+        { id: 'alerts', title: t('settingsPage.menuItems.alerts'), icon: Megaphone, component: Alerts, permission: { resource: 'widget', action: 'view' }},
+        { id: 'messaging-templates', title: t('settingsPage.menuItems.messagingTemplates'), icon: Mail, component: MessagingTemplates, permission: { resource: 'widget', action: 'view' } },
+        { id: 'messaging-templates/new', title: t('settingsPage.menuItems.messagingTemplatesNew'), icon: Plus, component: MessagingTemplatesForm, hideInMenu: true, permission: { resource: 'widget', action: 'view' } },
+        { id: 'messaging-templates/edit', title: t('settingsPage.menuItems.messagingTemplatesEdit'), icon: Plus, component: MessagingTemplatesForm, hideInMenu: true, permission: { resource: 'widget', action: 'view' } },
+        { id: 'payment', title: t('settingsPage.widget.payment.title'), icon: BadgeDollarSign, component: PaymentSettings, permission: { resource: 'widget', action: 'view' } },
         { id: 'billing', title: t('settingsPage.menuItems.billing'), icon: DollarSign, component: Billing, permission: { resource: 'billing', action: 'view' } }
       ]
     }
@@ -202,7 +208,7 @@ const UnifiedSettings = () => {
 
   return (
     <div className="">
-      <div className="mb-6">
+      <div className="mb-2">
         <h1 className="text-2xl font-bold text-blacktheme dark:text-textdarktheme">{t("settingsPage.title")}</h1>
         <p className="text-subblack dark:text-softwhitetheme mt-1">{t("unifiedSettings.subtitle")}</p>
       </div>

@@ -16,6 +16,9 @@ interface BaseInputProps {
   rounded?: string;
   className?: string;
   rules?: ValidationRule[];
+  dense?: boolean;
+  disabled?: boolean;
+  readonly?: boolean;
 }
 
 const BaseInput: React.FC<BaseInputProps> = ({
@@ -31,6 +34,9 @@ const BaseInput: React.FC<BaseInputProps> = ({
   rounded = 'md', // Default rounded corners
   className,
   rules = [],
+  dense = false,
+  disabled = false,
+  readonly = false,
 }) => {
   const [touched, setTouched] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
@@ -59,7 +65,8 @@ const BaseInput: React.FC<BaseInputProps> = ({
   };
 
   const getVariantClasses = () => {
-    const base = 'w-full px-3 py-2 focus:outline-none transition-colors duration-300';
+    const padding = dense ? 'py-1 px-2' : 'py-2 px-3';
+    const base = `w-full ${padding} focus:outline-none transition-colors duration-300`;
     const roundedClass = rounded ? `rounded-${rounded}` : '';
 
     let variantClasses = '';
@@ -83,9 +90,11 @@ const BaseInput: React.FC<BaseInputProps> = ({
 
   const baseClasses = getVariantClasses();
   const colorClasses = getFocusClasses();
+  const disabledClasses = disabled ? 'opacity-50 cursor-not-allowed' : '';
+  const readonlyClasses = readonly ? 'bg-gray-100 dark:bg-darkthemeitems' : '';
 
   return (
-    <div className={`mb-4 ${className}`}>
+    <div className={`${className}`}>
       {label && (
         <label className={`block mb-1 ${darkMode ? 'text-textdarktheme' : 'text-gray-700'}`} htmlFor={name}>
           {label}
@@ -99,7 +108,10 @@ const BaseInput: React.FC<BaseInputProps> = ({
         placeholder={placeholder}
         onChange={handleChange}
         onBlur={handleBlur}
-        className={`${baseClasses} ${colorClasses}`}
+        className={`${baseClasses} ${colorClasses} ${disabledClasses} ${readonlyClasses}`}
+        disabled={disabled}
+        readOnly={readonly}
+        aria-readonly={readonly}
       />
       {hint && errors.length === 0 && (
         <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{hint}</p>

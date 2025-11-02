@@ -1,21 +1,13 @@
 "use client"
 import type React from "react"
-import { useCallback, useEffect, useState, memo } from "react"
+import { useCallback, useEffect, useState, memo, useMemo } from "react"
 import { Link, useLocation, useParams, useSearchParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import Logo from "../../components/header/Logo"
-import { LoaderCircle, ScreenShareIcon, ChevronDown, Facebook, Instagram, Twitter, Phone, Mail, MessageCircle, BadgeInfo, Globe } from "lucide-react"
+import { LoaderCircle, ScreenShareIcon, ChevronDown, Facebook, Instagram, Twitter, Phone, Mail, MessageCircle, BadgeInfo, Globe, X, AlertOctagon, Bell, Layers } from "lucide-react"
 import { SunIcon, MoonIcon, CheckIcon } from "../../components/icons"
-import { type BaseKey, type BaseRecord, useCreate, useList, useOne } from "@refinedev/core"
-import { format } from "date-fns"
-import { getSubdomain } from "../../utils/getSubdomain"
-import spanish from "../../assets/spanish.png"
-import arabic from "../../assets/arabic.jpg"
-import english from "../../assets/english.png"
-import french from "../../assets/french.png"
-import visaLogo from "../../assets/VISA.jpg"
-import masterCardLogo from "../../assets/MasterCard.jpg"
-import cmiLogo from "../../assets/CMI.jpg"
+import { type BaseKey, type BaseRecord, useCreate, useList, useCustom } from "@refinedev/core"
+import { format, compareAsc, parse } from "date-fns"
 import { PhoneInput } from 'react-international-phone'
 import WidgetReservationProcess from "../../components/reservation/WidgetReservationProcess"
 import { useDateContext } from "../../context/DateContext"
@@ -23,6 +15,10 @@ import 'react-international-phone/style.css'
 import { useDebouncedCallback } from "../../hooks/useDebouncedCallback"
 import { useNavigate } from "react-router-dom";
 import { SharedWidgetFooter } from "../../components/reservation/SharedWidgetFooter"
+import LanguageSelector from "./LanguageSelector"
+import { useWidgetData } from "../../hooks/useWidgetData"
+import AlertDisplay from "../../components/reservation/EventAlerts"
+
 // #region Child Components
 
 interface QuillPreviewProps {
@@ -31,66 +27,22 @@ interface QuillPreviewProps {
 }
 
 const QuillPreview = memo(({ content, className = "" }: QuillPreviewProps) => {
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      import("quill/dist/quill.core.css")
+  const sanitizedContent = useMemo(()=> {
+    let htmlContent = null;
+    try {
+      // Attempt to parse if it's a JSON string from a rich text editor
+      const parsed = JSON.parse(content);
+      htmlContent = parsed;
+    } catch {
+      // If parsing fails, assume it's already a valid HTML string
+      htmlContent = content;
     }
-  }, [])
+    return htmlContent;
+  }, [content])
 
   return (
     <div className={`quill-preview ${className}`}>
-      <div className="prose max-w-none overflow-auto" dangerouslySetInnerHTML={{ __html: content }} />
-    </div>
-  )
-})
-
-const LanguageSelector = memo(() => {
-  const { i18n } = useTranslation()
-  const [isOpen, setIsOpen] = useState(false)
-
-  const languages = [
-    { code: "en", name: "English", icon: english },
-    { code: "es", name: "Español", icon: spanish },
-    { code: "fr", name: "Français", icon: french },
-    { code: "ar", name: "العربية", icon: arabic },
-  ]
-
-  const currentLanguage = languages.find((lang) => lang.code === i18n.language) || languages[0]
-
-  const handleLanguageChange = (languageCode: string) => {
-    i18n.changeLanguage(languageCode)
-    localStorage.setItem("preferredLanguage", languageCode);
-    setIsOpen(false)
-  }
-
-  return (
-    <div className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 p-2 rounded-lg bg-[#f5f5f5] dark:bg-[#333333] bg-opacity-80 hover:bg-[#f5f5f5] dark:hover:bg-[#444444] transition-colors"
-        aria-label="Select language"
-      >
-        <img src={currentLanguage.icon} alt={currentLanguage.name} className="w-6 h-6 rounded-full object-cover" />
-        <span className="text-sm font-medium hidden sm:block">{currentLanguage.name}</span>
-        <ChevronDown size={16} className={`transition-transform ${isOpen ? "rotate-180" : ""}`} />
-      </button>
-      {isOpen && (
-        <>
-          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className="absolute right-0 top-full mt-2 bg-white dark:bg-darkthemeitems rounded-lg shadow-lg border border-[#dddddd] dark:border-[#444444] z-50 min-w-[160px]">
-            {languages.map((language) => (
-              <button
-                key={language.code}
-                onClick={() => handleLanguageChange(language.code)}
-                className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-[#f5f5f5] dark:hover:bg-bgdarktheme2 transition-colors first:rounded-t-lg last:rounded-b-lg ${currentLanguage.code === language.code ? "bg-[#f0f7e6] dark:bg-bgdarktheme2" : ""}`}
-              >
-                <img src={language.icon} alt={language.name} className="w-5 h-5 rounded-sm object-cover" />
-                <span className="text-sm font-medium">{language.name}</span>
-              </button>
-            ))}
-          </div>
-        </>
-      )}
+      <div className="prose prose-sm max-w-none dark:prose-invert" dangerouslySetInnerHTML={{ __html: sanitizedContent}} />
     </div>
   )
 })
@@ -132,10 +84,11 @@ const WidgetHeader = memo(({ widgetInfo, onThemeToggle }: { widgetInfo: BaseReco
   )
 })
 
-const ReservationPickerStep = memo(({ data, onShowProcess, onNextStep, widgetInfo }: { data: any, onShowProcess: () => void, onNextStep: () => void, widgetInfo: BaseRecord | undefined }) => {
+const ReservationPickerStep = memo(({ data, onShowProcess, onNextStep, widgetInfo, isCheckingPayment }: { data: any, onShowProcess: () => void, onNextStep: () => void, widgetInfo: BaseRecord | undefined, isCheckingPayment: boolean }) => {
   const { t } = useTranslation()
   const formatedDate = data.reserveDate ? format(new Date(data.reserveDate), "MMM-dd") : "----/--/--";
-  const isButtonDisabled = !data.reserveDate || !data.time || !data.guests;
+  const isDataComplete = data.reserveDate && data.time && data.guests > 0;
+  const isButtonDisabled = !isDataComplete || isCheckingPayment;
 
   return (
     <>
@@ -161,9 +114,10 @@ const ReservationPickerStep = memo(({ data, onShowProcess, onNextStep, widgetInf
       <button
         onClick={onNextStep}
         disabled={isButtonDisabled}
-        className={`w-full py-3 px-4 rounded-md font-medium transition-colors ${isButtonDisabled ? "bg-[#88AB61] opacity-50 cursor-not-allowed" : "bg-[#88AB61] hover:bg-[#769c4f] text-white"}`}
+        className={`w-full py-3 px-4 rounded-md font-medium transition-colors flex items-center justify-center ${isButtonDisabled ? "bg-[#88AB61] opacity-50 cursor-not-allowed" : "bg-[#88AB61] hover:bg-[#769c4f] text-white"}`}
       >
-        {t("reservationWidget.reservation.bookNow")}
+        {isCheckingPayment && <LoaderCircle className="animate-spin mr-2" size={18} />}
+        {isCheckingPayment ? t("reservationWidget.payment.checking") : t("reservationWidget.reservation.bookNow")}
       </button>
       {widgetInfo?.menu_file && (
         <button
@@ -329,8 +283,10 @@ const UserInfoFormStep = memo(({
   )
 })
 
-const ConfirmationStep = memo(({ data, userInformation, chosenTitle, occasions, areas, areaSelected, onConfirm, onBack, isLoading, isPaymentRequired, totalAmount, paymentError }: any) => {
+const ConfirmationStep = memo(({ data, userInformation, chosenTitle, occasions, areas, areaSelected, onConfirm, onBack, isLoading, isPaymentRequired, totalAmount, paymentError, currency }: any) => {
   const { t } = useTranslation()
+  const formattedTotalAmount = `${totalAmount.toFixed(2)} ${currency || 'MAD'}`;
+
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">{t("reservationWidget.payment.reservationSummary")}</h2>
@@ -362,7 +318,7 @@ const ConfirmationStep = memo(({ data, userInformation, chosenTitle, occasions, 
               <div className="border-t border-[#dddddd] dark:border-[#444444] pt-3">
                 <div className="flex items-center justify-between">
                   <span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.payment.amountToPay")}</span>
-                  <span className="font-bold text-[#88AB61] text-lg">{totalAmount}</span>
+                  <span className="font-bold text-[#88AB61] text-lg">{formattedTotalAmount}</span>
                 </div>
               </div>
             )}
@@ -370,7 +326,7 @@ const ConfirmationStep = memo(({ data, userInformation, chosenTitle, occasions, 
         </div>
         {paymentError && (
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 p-3 rounded-md">
-            <p className="font-medium">{t("reservationWidget.payment.errorTitle")}:</p><p className="text-sm mt-1">{paymentError}</p>
+            <p className="font-medium">{isPaymentRequired?t("reservationWidget.payment.errorTitle"):t('common.errors.anErrorOccurred')}</p><p className="text-sm mt-1">{paymentError}</p>
           </div>
         )}
       </div>
@@ -411,24 +367,31 @@ const UnavailableStep = memo(({ widgetInfo }: { widgetInfo: any }) => {
 const WidgetPage = () => {
   const { t, i18n } = useTranslation()
   const { pathname } = useLocation()
-  const { restaurant } = useParams()
   const [searchParams, setSearchParams] = useSearchParams();
   const step = parseInt(searchParams.get("step") || "1", 10);
 
-  const { preferredLanguage } = useDateContext()
+  // --- Alert Configuration ---
+  const alertDisplayMode: 'popup' | 'inline' | 'modal' | 'none' = 'popup'; // Change this to 'inline' or 'none'
 
-  const PAYMENT_ENABLED = true
+  const { preferredLanguage } = useDateContext();
+
   const FORM_DATA_KEY = 'tabla_widget_form_data'
   const RESERVATION_DATA_KEY = 'tabla_widget_reservation_data'
 
   // API Data Fetching
-  const { data: widgetData } = useOne({ resource: `api/v1/bo/subdomains/public/cutomer/reservations`, id: "" })
+  const { widgetInfo, isLoading: isWidgetLoading, error: widgetError } = useWidgetData();
   const { data: occasionsData } = useList({ resource: `api/v1/bo/restaurants/subdomain/occasions` })
   const { mutate: createReservation } = useCreate()
   const { mutate: createPaymentInitiation } = useCreate()
+  const currentMonth = format(new Date(), 'yyyy-MM');
+  const { data: availabilityData } = useList({
+    resource: `api/v1/bo/subdomains/availability/${currentMonth}/`,
+    queryOptions: {
+      enabled: !localStorage.getItem(FORM_DATA_KEY)
+    }
+  });
 
   // Component State
-  const [widgetInfo, setWidgetInfo] = useState<BaseRecord>()
   const [restaurantID, setRestaurantID] = useState<BaseKey>()
   const [occasions, setOccasions] = useState<BaseRecord[]>()
   const [areas, setAreas] = useState<any[]>([])
@@ -437,9 +400,6 @@ const WidgetPage = () => {
   const [serverError, setServerError] = useState<string>()
   const [showProcess, setShowProcess] = useState(false)
   const [dressCodePopupOpen, setDressCodePopupOpen] = useState(false)
-  const [showFullDescription, setShowFullDescription] = useState(false)
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
-
 
   // Form State
   const [data, setData] = useState(() => {
@@ -472,14 +432,42 @@ const WidgetPage = () => {
   const [paymentData, setPaymentData] = useState<any | null>(null)
   const [paymentError, setPaymentError] = useState<string | null>(null)
   const [reservationId, setReservationId] = useState<number | null>(null);
+  const [isPaymentNeeded, setIsPaymentNeeded] = useState(false);
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [isCheckingPayment, setIsCheckingPayment] = useState(false);
   const navigate = useNavigate();
 
   // Browser Info
   const [browserInfo, setBrowserInfo] = useState({ userAgent: "", screenHeight: 0, screenWidth: 0, colorDepth: 0 })
 
+  const { refetch: checkPayment } = useCustom<any>({
+    url: 'api/v1/bo/subdomains/public/customer/payment/check/',
+    method: 'get',
+    config: {
+        query: {
+            date: data.reserveDate,
+            time: data.time,
+            number_of_guests: data.guests,
+        },
+    },
+    queryOptions: {
+        enabled: false, // Manually trigger this
+        onSuccess: (response) => {
+            setIsPaymentNeeded(response.data.is_payment_enabled);
+            setTotalAmount(response.data.amount || 0);
+        },
+        onError: () => {
+            setIsPaymentNeeded(false); // Default to false on error
+            setTotalAmount(0);
+        },
+        onSettled: () => {
+            setIsCheckingPayment(false);
+        }
+    },
+  });
+
   // Effects
   useEffect(() => { document.title = t("reservationWidget.page.title") }, [pathname, t])
-
 
   useEffect(() => {
     const storedLang = localStorage.getItem("preferredLanguage");
@@ -491,25 +479,15 @@ const WidgetPage = () => {
     i18n.changeLanguage(langToSet);
   }, [i18n]);
 
-  interface Area {
-    id: BaseKey
-    seq_id: BaseKey
-    name: string
-    restaurant: BaseKey
-  }
-
   useEffect(() => {
-    if (widgetData) {
-      const info = widgetData.data;
-      setWidgetInfo(info);
-      setRestaurantID(info.restaurant);
-      setAreas(info.areas || []);
+    if (widgetInfo) {
+      setRestaurantID(widgetInfo.restaurant);
+      setAreas(widgetInfo.areas || []);
 
-      // Perform step validation and redirection logic here, once data is loaded
       const isStep1DataMissing = !data.reserveDate || !data.time || !data.guests;
       const isStep2DataMissing = !userInformation.firstname || !userInformation.lastname || !userInformation.email || !userInformation.phone;
 
-      if (!info.is_widget_activated) {
+      if (!widgetInfo.is_widget_activated) {
         setSearchParams({ step: "6" }, { replace: true });
       } else if (step > 1 && step < 5 && isStep1DataMissing) {
         setSearchParams({ step: "1" }, { replace: true });
@@ -518,17 +496,47 @@ const WidgetPage = () => {
       } else if (!searchParams.has("step")) {
         setSearchParams({ step: "1" }, { replace: true });
       }
-      
-      setIsInitialLoading(false); // Mark initial loading as complete
     }
-  }, [widgetData, data, userInformation, step, setSearchParams]);
+  }, [widgetInfo, data, userInformation, step, setSearchParams]);
 
   useEffect(() => { if (occasionsData) setOccasions(occasionsData.data as unknown as BaseRecord[]) }, [occasionsData]);
 
+  // Combined effect for saving form data and checking payment
   useEffect(() => {
     const formData = { data, userInformation, chosenTitle, checkedConditions, checkedDressCode, areaSelected };
     localStorage.setItem(FORM_DATA_KEY, JSON.stringify(formData));
-  }, [data, userInformation, chosenTitle, checkedConditions, checkedDressCode, areaSelected]);
+
+    // --- Payment Check Logic ---
+    if (!widgetInfo || !data.reserveDate || !data.time || !data.guests) {
+        setIsPaymentNeeded(false);
+        setTotalAmount(0);
+        return;
+    }
+
+    if (!widgetInfo.enable_paymant) {
+        setIsPaymentNeeded(false);
+        setTotalAmount(0);
+        return;
+    }
+
+    if (widgetInfo.payment_mode === 'always') {
+        const minGuests = widgetInfo.min_guests_for_payment || 1;
+        if (data.guests >= minGuests) {
+            setIsPaymentNeeded(true);
+            const amountPerGuest = widgetInfo.deposit_amount_par_guest || 0;
+            setTotalAmount(data.guests * parseFloat(amountPerGuest));
+        } else {
+            setIsPaymentNeeded(false);
+            setTotalAmount(0);
+        }
+    } else if (widgetInfo.payment_mode === 'rules') {
+        setIsCheckingPayment(true);
+        checkPayment();
+    } else {
+        setIsPaymentNeeded(false);
+        setTotalAmount(0);
+    }
+  }, [data, widgetInfo, checkPayment, userInformation, chosenTitle, checkedConditions, checkedDressCode, areaSelected]);
 
 
   useEffect(() => {
@@ -543,7 +551,67 @@ const WidgetPage = () => {
     setIsAnimating(true);
   }, [step]);
 
-  // Validation
+  useEffect(() => {
+    const savedDataString = localStorage.getItem(FORM_DATA_KEY);
+    let shouldAutoSelect = true;
+    let isCacheInvalid = false;
+
+    if (savedDataString) {
+      const savedData = JSON.parse(savedDataString).data;
+      if (savedData?.reserveDate && savedData?.time) {
+        shouldAutoSelect = false;
+        const now = new Date();
+        const reservationDateTime = parse(`${savedData.reserveDate} ${savedData.time}`, 'yyyy-MM-dd HH:mm', new Date());
+        
+        if (compareAsc(reservationDateTime, now) < 0) {
+          isCacheInvalid = true;
+        }
+      }
+    }
+
+    if (isCacheInvalid) {
+      const theme = localStorage.getItem("darkMode");
+      const lang = localStorage.getItem("preferredLanguage");
+      localStorage.clear();
+      if (theme) localStorage.setItem("darkMode", theme);
+      if (lang) localStorage.setItem("preferredLanguage", lang);
+      
+      setData({ reserveDate: "", time: "", guests: 0 });
+      setUserInformation({ firstname: "", lastname: "", email: "", phone: "", preferences: "", allergies: "", occasion: "" });
+      setChosenTitle(undefined);
+      setCheckedConditions(false);
+      setCheckedDressCode(false);
+      setAreaSelected(undefined);
+      shouldAutoSelect = true;
+    }
+
+    if (shouldAutoSelect && availabilityData?.data) {
+      const availability = availabilityData.data as { day: number; isAvailable: boolean }[];
+      const today = new Date();
+      const todayDay = today.getDate();
+      
+      let dateToSelect: Date | null = null;
+      const todayIsAvailable = availability.find(d => d.day === todayDay)?.isAvailable;
+
+      if (todayIsAvailable) {
+        dateToSelect = today;
+      } else {
+        const firstAvailable = availability.find(d => d.isAvailable && d.day > todayDay);
+        if (firstAvailable) {
+          dateToSelect = parse(`${firstAvailable.day}`, 'd', new Date(currentMonth));
+        }
+      }
+
+      if (dateToSelect) {
+        setData({
+          reserveDate: format(dateToSelect, 'yyyy-MM-dd'),
+          guests: 2,
+          time: ''
+        });
+      }
+    }
+  }, [availabilityData, currentMonth]);
+
   const validateForm = useCallback(() => {
     const errors = { firstname: "", lastname: "", email: "", phone: "" };
     let isValid = true;
@@ -570,22 +638,19 @@ const WidgetPage = () => {
     return isValid;
   }, [userInformation, t]);
 
-  // Re-validate form on user input to provide reactive feedback
   useEffect(() => {
-    // Don't run validation on initial mount or if there are no errors to clear
     const hasErrors = Object.values(formErrors).some(error => error !== "");
     if (hasErrors) {
       validateForm();
     }
   }, [userInformation, formErrors, validateForm]);
 
-  // Handlers
   const changeStep = useCallback((newStep: number) => {
     setIsAnimating(false);
     setPaymentError(null);
     setTimeout(() => {
       setSearchParams({ step: newStep.toString() });
-    }, 300); // Match this with your transition duration
+    }, 300);
   }, [setSearchParams]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -603,7 +668,7 @@ const WidgetPage = () => {
     createReservation({
       resource: `api/v1/bo/subdomains/public/cutomer/reservations/`,
       values: {
-        customer: { title: chosenTitle, email: userInformation.email, first_name: userInformation.firstname, last_name: userInformation.lastname, phone: userInformation.phone },
+        customer: { title: chosenTitle, email: userInformation.email, first_name: userInformation.firstname, last_name: userInformation.lastname, phone: userInformation.phone, preferred_language: preferredLanguage },
         restaurant: restaurantID as number,
         occasion: Number(userInformation.occasion) || null,
         source: "WIDGET",
@@ -623,14 +688,13 @@ const WidgetPage = () => {
           setReservationId(numericId);
           
           localStorage.setItem(RESERVATION_DATA_KEY, JSON.stringify({ reservationId: numericId, timestamp: Date.now() }));
-          if (isPaymentRequired(data.guests)) {
+          if (isPaymentNeeded) {
             initiatePayment(numericId);
           } else {
             setIsLoading(false);
-            changeStep(5); // Success step
+            changeStep(5);
           }
         } else {
-          // This case might indicate a server issue where reservation is created but ID is not returned
           setIsLoading(false);
           setServerError(t("reservationWidget.errors.serverError"));
         }
@@ -650,12 +714,9 @@ const WidgetPage = () => {
     }, {
       onSuccess: (response) => {
         setPaymentData(response.data);
-        // Automatically submit the payment form upon successful initiation
         submitPaymentForm(response.data);
       },
       onError: (error) => {
-        console.log('heyy')
-        console.log({...error})
         setIsLoading(false);
         setPaymentError(error?.response?.data?.non_field_errors?.join(", ") || error?.message || t("reservationWidget.errors.paymentInitiationFailed"));
       }
@@ -680,7 +741,6 @@ const WidgetPage = () => {
     }
     document.body.appendChild(form);
     form.submit();
-    // No need to set isLoading to false here, as the page will redirect
   };
 
   const toggleDarkMode = () => {
@@ -688,39 +748,35 @@ const WidgetPage = () => {
     localStorage.setItem("darkMode", document.documentElement.classList.contains("dark") ? "true" : "false");
   };
 
-  const handleDescriptionToggle = useDebouncedCallback(() => setShowFullDescription(prev => !prev), 300);
-
-  const calculateTotalAmount = () => {
-    if (widgetInfo?.enable_paymant && widgetInfo?.deposite_amount_for_guest) {
-      return (Number(widgetInfo.deposite_amount_for_guest) * data.guests).toFixed(2) + " " + (widgetInfo?.currency || "MAD");
-    }
-    return "0.00";
-  };
-
-  const isPaymentRequired = (guestCount: number) => {
-    if (!widgetInfo?.enable_paymant) return false;
-    const minGuestsForPayment = widgetInfo?.min_number_of_guests_required_deposite || 1;
-    return guestCount >= minGuestsForPayment;
-  };
+  const formattedTotalAmount = useMemo(() => {
+    return `${totalAmount.toFixed(2)} ${widgetInfo?.currency || "MAD"}`;
+  }, [totalAmount, widgetInfo?.currency]);
 
   const handleNewReservation = () => {
     localStorage.removeItem(FORM_DATA_KEY);
     localStorage.removeItem(RESERVATION_DATA_KEY);
+    setData({ reserveDate: "", time: "", guests: 0 });
+    setUserInformation({ firstname: "", lastname: "", email: "", phone: "", preferences: "", allergies: "", occasion: "" });
+    setChosenTitle(undefined);
+    setCheckedConditions(false);
+    setCheckedDressCode(false);
+    setAreaSelected(undefined);
+    changeStep(1);
     navigate('/make/reservation');
   };
 
   const renderStep = () => {
     switch (step) {
-      case 1: return <ReservationPickerStep data={data} onShowProcess={() => setShowProcess(true)} onNextStep={() => changeStep(2)} widgetInfo={widgetInfo} />;
+      case 1: return <ReservationPickerStep data={data} onShowProcess={() => setShowProcess(true)} onNextStep={() => changeStep(2)} widgetInfo={widgetInfo} isCheckingPayment={isCheckingPayment} />;
       case 2: return <UserInfoFormStep userInformation={userInformation} formErrors={formErrors} chosenTitle={chosenTitle} checkedConditions={checkedConditions} checkedDressCode={checkedDressCode} widgetInfo={widgetInfo} occasions={occasions} areas={areas} areaSelected={areaSelected} onUserInformationChange={setUserInformation} onChosenTitleChange={setChosenTitle} onCheckedConditionsChange={setCheckedConditions} onCheckedDressCodeChange={setCheckedDressCode} onAreaSelectedChange={setAreaSelected} onSubmit={handleSubmit} onBack={() => changeStep(1)} onDressCodePopupOpen={() => setDressCodePopupOpen(true)} />;
-      case 3: return <ConfirmationStep data={data} userInformation={userInformation} chosenTitle={chosenTitle} occasions={occasions} areas={areas} areaSelected={areaSelected} onConfirm={handleConfirmation} onBack={() => changeStep(2)} isLoading={isLoading} isPaymentRequired={isPaymentRequired(data.guests)} totalAmount={calculateTotalAmount()} paymentError={paymentError || serverError} />;
+      case 3: return <ConfirmationStep data={data} userInformation={userInformation} chosenTitle={chosenTitle} occasions={occasions} areas={areas} areaSelected={areaSelected} onConfirm={handleConfirmation} onBack={() => changeStep(2)} isLoading={isLoading} isPaymentRequired={isPaymentNeeded} totalAmount={totalAmount} currency={widgetInfo?.currency} paymentError={paymentError || serverError} />;
       case 5: return <SuccessStep widgetInfo={widgetInfo} onReset={() => handleNewReservation()} />;
       case 6: return <UnavailableStep widgetInfo={widgetInfo} />;
       default: return null;
     }
   };
 
-  if (isInitialLoading) {
+  if (isWidgetLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-white dark:bg-bgdarktheme2">
         <LoaderCircle className="animate-spin text-[#88AB61]" size={48} />
@@ -728,13 +784,30 @@ const WidgetPage = () => {
     );
   }
 
+  if (widgetError) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-white dark:bg-bgdarktheme2 p-4 text-center">
+        <div className="p-6 bg-softredtheme dark:bg-softredtheme rounded-xl text-center border border-redtheme/30 dark:border-redtheme/50 shadow-sm max-w-md">
+          <AlertOctagon className="h-12 w-12 mx-auto mb-4 text-redtheme" />
+          <h2 className="text-xl font-semibold mb-2 text-redtheme">
+            {t("common.errors.restaurantNotFoundTitle")}
+          </h2>
+          <p className="text-sm text-redtheme">
+            {t("common.errors.restaurantNotFoundMessage")}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`overflow-y-auto min-h-screen max-h-screen bg-white dark:bg-bgdarktheme2 text-black dark:text-white ${preferredLanguage === "ar" ? "rtl" : ""}`}>
+      <AlertDisplay alerts={widgetInfo?.events || []} mode={alertDisplayMode} widgetLogoUrl={widgetInfo?.image} />
       <WidgetHeader widgetInfo={widgetInfo} onThemeToggle={toggleDarkMode} />
       <div className="relative pt-[370px]">
         <div className="w-full max-w-[800px] mx-auto px-0">
           <div className="bg-white dark:bg-darkthemeitems rounded-t-3xl shadow-2xl overflow-hidden">
-            {isPaymentRequired(data.guests) && (
+            {isPaymentNeeded && step < 3 && (
               <div className="bg-softbluetheme mx-4 mt-4 rounded-xl flex justify-between text-bluetheme p-2">
                 <div className="flex gap-2 justify-start items-center" role="alert">
                   <BadgeInfo className="inline-block mx-2" />
@@ -744,14 +817,14 @@ const WidgetPage = () => {
                   </div>
                 </div>
                 <div className="flex-1 font-[900] p-2 rounded-lg flex items-center justify-center w-fit h-fit text-bluetheme">
-                  {calculateTotalAmount()}
+                  {formattedTotalAmount}
                 </div>
               </div>
             )}
             <div className={`p-6 transition-all duration-300 ease-in-out ${isAnimating ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
               {renderStep()}
             </div>
-            <SharedWidgetFooter widgetInfo={widgetInfo} isPaymentRequired={isPaymentRequired(data.guests)} showDescription={step === 1} />
+            <SharedWidgetFooter widgetInfo={widgetInfo} isPaymentRequired={isPaymentNeeded} showDescription={step === 1} />
           </div>
         </div>
       </div>

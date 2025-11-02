@@ -6,14 +6,18 @@ interface PortalProps {
 }
 
 const Portal = ({ children }: PortalProps) => {
-  const [mounted, setMounted] = useState(false);
+  const [container, setContainer] = useState<Element | null>(null);
 
   useEffect(() => {
-    setMounted(true);
-    return () => setMounted(false);
+    const portalRoot = document.getElementById('main-root-layout');
+    setContainer(portalRoot);
+
+    return () => {
+      setContainer(null);
+    };
   }, []);
 
-  return mounted ? createPortal(children, document.body) : null;
+  return container ? createPortal(children, container) : null;
 };
 
 export default Portal;
