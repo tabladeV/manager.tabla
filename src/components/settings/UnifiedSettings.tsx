@@ -115,14 +115,14 @@ const UnifiedSettings = () => {
           title: t('settingsPage.menuItems.tags'),
           icon: Tag,
           component: Tags,
-          permission: { resource: 'tags', action: 'view' }
+          permission: { resource: 'tag', action: 'view' }
         },
         {
           id: 'areas',
           title: t('settingsPage.menuItems.areas'),
           icon: LayoutPanelLeft,
           component: Areas,
-          permission: { resource: 'areas', action: 'view' }
+          permission: { resource: 'area', action: 'view' }
         },
         {
           id: 'occasions',
