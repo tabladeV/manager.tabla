@@ -2,12 +2,13 @@ import { Refine, Authenticated, CanAccess } from "@refinedev/core";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 import createDataProvider from "./providers/dataProvider";
-import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Outlet, Route, Routes } from "react-router-dom";
 import routerBindings, {
   UnsavedChangesNotifier,
   DocumentTitleHandler,
 } from "@refinedev/react-router-v6";
 import "./index.css";
+import "react-quill/dist/quill.snow.css";
 import RootLayout from "./_root/RootLayout";
 import Plugins from "./_plugin/Plugins";
 import { Home } from "./_root/pages";
@@ -57,6 +58,11 @@ import NotificationsProviderV2 from "./providers/NotificationsProviderV2";
 import Areas from "./components/settings/Areas";
 import ErrorBoundary from "./components/ErrorBoundary";
 
+import PaymentSuccessPage from "./_plugin/pages/PaymentSuccessPage";
+import PaymentFailurePage from "./_plugin/pages/PaymentFailurePage";
+import SettingsPage from "./_root/pages/SettingsPage";
+import PaymentLinkPage from "./_plugin/pages/PaymentLinkPage";
+
 const API_HOST = import.meta.env.VITE_API_URL || "https://api.dev.tabla.ma";
 
 function App() {
@@ -80,7 +86,6 @@ function App() {
     if (isLoggedIn && refreshToken && authProvider.refresh) {
       authProvider
         .refresh()
-        .then(() => {})
         .catch((error) => {
           console.error("Token refresh on app load failed", error);
         });
@@ -366,7 +371,13 @@ function App() {
                               >
                                 <UnifiedSettings />
                               </CanAccess>
-                            } />
+                            }>
+                              {/* <Route index element={<Navigate to="general" replace />} /> */}
+                              <Route path="messaging-templates/edit/:id" element={<SettingsPage />} />
+                              <Route path="messaging-templates/new" element={<SettingsPage />} />
+                              <Route path="messaging-templates" element={<SettingsPage />} />
+                              <Route path=":section" element={<SettingsPage />} />
+                            </Route>
 
                           </Route>
                           <Route path="*" element={<ErrorPage />} />
@@ -378,6 +389,9 @@ function App() {
                   ) : (
                     <Routes>
                       <Route element={<Plugins />}>
+                        <Route path="/payment/success" element={<PaymentSuccessPage />} />
+                        <Route path="/payment/failure" element={<PaymentFailurePage />} />
+                        <Route path="/payment/link/:id" element={<PaymentLinkPage />} />
                         <Route path="/make/reservation" element={<WidgetPage />} />
                         <Route path="/make/review/:token" element={<ReviewPage />} />
                         <Route path="/make/modification/:token" element={<ModifyPage />} />
@@ -385,7 +399,7 @@ function App() {
                         {/* Terms and Conditions - not restricted */}
                         <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
                       </Route>
-
+                      <Route path="*" element={<Navigate to="/make/reservation" replace />} />
                     </Routes>
 
                   )

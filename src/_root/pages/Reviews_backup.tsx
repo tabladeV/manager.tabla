@@ -480,6 +480,7 @@ const Reviews = () => {
           setPage={(page: number) => {
             setPage(page)
           }}
+          page={page}
           size={size}
           count={count}
         />

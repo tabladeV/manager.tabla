@@ -14,6 +14,7 @@ import useExportConfig from "../../components/common/config/exportConfig"
 import { httpClient } from "../../services/httpClient"
 import { saveAs } from "file-saver"
 import { useAsyncTaskManager } from "../../hooks/useAsyncTaskManager"
+import { DevOnly } from "../../components/DevOnly"
 
 interface Review {
   id: BaseKey
@@ -347,9 +348,11 @@ const Reviews = () => {
       )}
       <div className="flex justify-between items-center mb-2">
         <h1>{t("reviews.title")}</h1>
+        <DevOnly>
         <button onClick={() => setShowExportModal(true)} className={`dark:text-whitetheme btn-primary`}>
           {t("reviews.buttons.export")}
         </button>
+        </DevOnly>
       </div>
       <div className="flex lt-sm:flex-col lt-sm:gap-2 justify-between">
         <div className="">
@@ -492,6 +495,7 @@ const Reviews = () => {
           setPage={(page: number) => {
             setPage(page)
           }}
+          page={page}
           size={size}
           count={count}
         />

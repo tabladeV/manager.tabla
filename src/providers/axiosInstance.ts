@@ -1,6 +1,7 @@
 import axios from "axios";
 import { getSubdomain } from "../utils/getSubdomain";
 import { Capacitor } from '@capacitor/core';
+import { handleUnauthorizedResponse } from "./authProvider";
 
 /**
  * Formats Django API errors into a readable message
@@ -28,19 +29,50 @@ const formatDjangoErrorMessage = (error: { response: { data: any; status: any; s
     messages.push(djangoError.detail);
   }
 
-  // Add field-specific errors
-  Object.entries(djangoError).forEach(([key, value]) => {
-    if (key !== 'non_field_errors' && key !== 'detail') {
-      // Convert field name to readable format
-      const readableField = key
-        .split('_')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
+  const errorData = { ...djangoError };
 
-      const fieldErrors = Array.isArray(value) ? value : [value];
-      messages.push(`${readableField}: ${fieldErrors.join(', ')}`);
+  // Handle 'message': only process if it's a string or array of strings
+  if (errorData.message) {
+    if (typeof errorData.message === 'string') {
+      messages.push(errorData.message);
+      delete errorData.message;
+    } else if (Array.isArray(errorData.message) && errorData.message.every((item: any) => typeof item === 'string')) {
+      messages.push(...errorData.message);
+      delete errorData.message;
     }
-  });
+    // If 'message' is an object (like a field error dict), it'll be caught in Step 3
+  }
+  
+  // Handle 'error_code': only process if it's a string or array of strings
+  if (errorData.error_code) {
+    let errorCodes: string[] = [];
+    
+    if (typeof errorData.error_code === 'string') {
+      errorCodes = [errorData.error_code];
+    } else if (Array.isArray(errorData.error_code) && errorData.error_code.every((item: any) => typeof item === 'string')) {
+      errorCodes = errorData.error_code;
+    }
+    
+    if (errorCodes.length > 0) {
+        messages.push(`Error Code(s): ${errorCodes.join(', ')}`);
+        delete errorData.error_code;
+    }
+  }
+
+  // Add field-specific errors
+  // comment for now
+  // Object.entries(djangoError).forEach(([key, value]) => {
+  //   if (key !== 'non_field_errors' && key !== 'detail') {
+  //     // Convert field name to readable format
+  //     const readableField = key
+  //       .split('_')
+  //       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+  //       .join(' ');
+
+  //     const fieldErrors = Array.isArray(value) ? value : [value];
+  //     messages.push(`${readableField}: ${fieldErrors.join(', ')}`);
+  //   }
+  // });
 
   // If no specific errors were found, use a generic message
   if (messages.length === 0) {
@@ -86,6 +118,13 @@ axiosInstance.interceptors.request.use(
     if (restaurantId) {
       config.headers["X-Restaurant-ID"] = Number(restaurantId);
     }
+    
+    // Add this block to set Authorization header
+    const token = localStorage.getItem("access");
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+    }
+    
     return config;
   },
   (error) => Promise.reject(error)
@@ -94,24 +133,25 @@ axiosInstance.interceptors.request.use(
 // Response interceptor to handle unauthorized responses and format errors
 axiosInstance.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     const status = error.response?.status;
 
     // Handle authentication errors
-    if (status === 401 || status === 411 || status === 403) {
-      localStorage.removeItem("isLogedIn");
-      localStorage.removeItem("restaurant_id");
-      localStorage.removeItem("refresh");
-      localStorage.removeItem("permissions");
-      localStorage.removeItem("is_manager");
-      const subdomain = getSubdomain();
-      const isManager = subdomain === "manager";
-      if (isManager) {
-        window.location.href = "/sign-in";
+    if (status === 401 || status === 403 || status === 411) {
+      try {
+        // Try to refresh token
+        const refreshed = await handleUnauthorizedResponse(status);
+        if (refreshed) {
+          // Token refreshed, retry the original request with new token
+          const originalRequest = error.config;
+          // Make sure to use the new access token
+          originalRequest.headers["Authorization"] = `Bearer ${localStorage.getItem("access")}`;
+          return axios(originalRequest);
+        }
+      } catch (refreshError) {
+        // Refresh failed, will redirect to login
+        return Promise.reject(error);
       }
-      // Return a cleaner error for auth issues
-      const authError = new Error('Authentication required');
-      return Promise.reject(authError);
     }
 
     // Add formatted error message

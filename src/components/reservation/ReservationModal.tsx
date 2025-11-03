@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ReservationProcess from './ReservationProcess';
-import { ArrowLeft, User, X } from 'lucide-react';
-import { BaseKey, BaseRecord, useCreate, useList } from '@refinedev/core';
+import { ArrowLeft, User, X, Mail, Copy, LoaderCircle, DollarSign} from 'lucide-react';
+import { BaseKey, BaseRecord, useCreate, useList, useNotification} from '@refinedev/core';
 import BaseBtn from '../common/BaseBtn';
 import { Occasion, OccasionsType } from '../settings/Occasions';
 import BaseSelect from '../common/BaseSelect';
 import WidgetReservationProcess from './WidgetReservationProcess';
+import { useRestaurantConfig } from '../../hooks/useRestaurantConfig';
 
 interface Reservation extends BaseRecord {
   id?: BaseKey;
@@ -49,10 +50,32 @@ interface dataTypes {
   guests: number;
 }
 
-
 const ReservationModal = (props: ReservationModalProps) => {
   const darkMode = localStorage.getItem('darkMode') === 'true';
   const restaurantId = localStorage.getItem('restaurant_id');
+
+  const { open } = useNotification();
+  
+  // Use our custom hook to get restaurant configuration
+  const { 
+    widgetConfig, 
+    getPaymentLink, 
+    checkPayment,
+    paymentCheckResult,
+    isCheckingPayment,
+    isLoading: isLoadingConfig 
+  } = useRestaurantConfig();
+  
+  // Extract payment configuration
+  const isPaymentEnabled = widgetConfig.enable_payment;
+  
+  // States for payment link actions
+  const [isCreatingReservation, setIsCreatingReservation] = useState(false);
+  const [isSendingPaymentLink, setIsSendingPaymentLink] = useState(false);
+  const [isCopyingPaymentLink, setIsCopyingPaymentLink] = useState(false);
+  
+  const [paymentRequired, setPaymentRequired] = useState(false);
+  const [paymentAmount, setPaymentAmount] = useState<number | null>(null);
 
   const [searchKeyword, setSearchKeyword] = useState('');
 
@@ -176,6 +199,44 @@ const ReservationModal = (props: ReservationModalProps) => {
   const newTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   const { t } = useTranslation();
+
+
+const sources = [
+                  { value: 'MARKETPLACE', label: t('overview.charts.reservationsSource.legend.MarketPlace') },
+                { value: 'WIDGET', label: t('overview.charts.reservationsSource.legend.Widget') },
+                { value: 'WEBSITE', label: t('overview.charts.reservationsSource.legend.ThirdParty') },
+                { value: 'WALK_IN', label: t('overview.charts.reservationsSource.legend.WalkIn') },
+                { value: 'BACK_OFFICE', label: t('overview.charts.reservationsSource.legend.BackOffice') },
+]
+
+  useEffect(() => {
+    const canCheckPayment = isPaymentEnabled && data.reserveDate && data.time && data.guests > 0;
+
+    if (!canCheckPayment) {
+        setPaymentRequired(false);
+        setPaymentAmount(null);
+        return;
+    }
+
+    if (widgetConfig.payment_mode === 'always') {
+        if (data.guests >= widgetConfig.min_guests_for_payment) {
+            setPaymentRequired(true);
+            setPaymentAmount(data.guests * widgetConfig.deposit_amount_per_guest);
+        } else {
+            setPaymentRequired(false);
+            setPaymentAmount(null);
+        }
+    } else if (widgetConfig.payment_mode === 'rules') {
+        checkPayment(data.reserveDate, data.time, data.guests);
+    }
+  }, [data, widgetConfig, isPaymentEnabled, checkPayment]);
+
+  useEffect(() => {
+    if (widgetConfig.payment_mode === 'rules' && paymentCheckResult) {
+        setPaymentRequired(paymentCheckResult.is_payment_enabled);
+        setPaymentAmount(paymentCheckResult.is_payment_enabled ? paymentCheckResult.amount : null);
+    }
+  }, [paymentCheckResult, widgetConfig.payment_mode]);
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -390,8 +451,292 @@ const ReservationModal = (props: ReservationModalProps) => {
     });
   };
 
+  // Function to check if we can send payment link (requires email)
+  const canSendPaymentLink = () => {
+    return paymentRequired && newCustomerData.email && newCustomerData.email.includes('@');
+  };
+  
+  // Function to send payment link
+  const sendPaymentLink = async (seqId: string | number) => {
+    setIsSendingPaymentLink(true);
+    try {
+      await mutate({
+        resource: `api/v1/bo/reservations/${seqId}/send_payment_link/`,
+        values: {},
+      }, {
+        onSuccess: () => {
+          open?.({
+            type: "success",
+            message: t("notifications.paymentLink.sent"),
+            description: t("notifications.paymentLink.sentDescription"),
+          });
+          props.onClick();
+          props.onSubmit({});
+        },
+        onError: (error) => {
+          open?.({
+            type: "error",
+            message: t("notifications.paymentLink.sendError"),
+            description: error?.message || t("notifications.paymentLink.sendErrorDescription"),
+          });
+        }
+      });
+    } catch (error) {
+      console.error("Error sending payment link:", error);
+    } finally {
+      setIsSendingPaymentLink(false);
+    }
+  };
+  
+  // Function to copy payment link to clipboard
+  const copyPaymentLink = async (seqId: string | number) => {
+    setIsCopyingPaymentLink(true);
+    try {
+      // Generate the payment link using our helper function
+      const paymentLink = getPaymentLink(seqId);
+      
+      // Copy to clipboard
+      await navigator.clipboard.writeText(paymentLink);
+      
+      open?.({
+        type: "success",
+        message: t("notifications.paymentLink.copied"),
+        description: t("notifications.paymentLink.copiedDescription"),
+      });
+      
+      props.onClick();
+      props.onSubmit({});
+    } catch (error) {
+      console.error("Error copying payment link:", error);
+      open?.({
+        type: "error",
+        message: t("notifications.paymentLink.copyError"),
+        description: t("notifications.paymentLink.copyErrorDescription"),
+      });
+    } finally {
+      setIsCopyingPaymentLink(false);
+    }
+  };
+  
+  // Function to create reservation and send payment link
+  const createAndSendPaymentLink = () => {
+    setIsCreatingReservation(true);
+    
+    // First create the reservation
+    newCustomerReservation({
+      values: {
+        occasion: selectedOccasion,
+        status: 'PENDING',
+        source: newCustomerData.source,
+        commenter: '',
+        internal_note: newCustomerData.note,
+        number_of_guests: data.guests ? data.guests.toString() : '',
+        date: data.reserveDate || '',
+        time: data.time || '',
+        restaurant: restaurantId,
+        customer: {
+          first_name: newCustomerData.first_name,
+          last_name: newCustomerData.last_name,
+          title: newCustomerData.title,
+          email: newCustomerData.email,
+          phone: newCustomerData.phone,
+        },
+      }
+    }, {
+      onSuccess: (response) => {
+        // Extract seq_id from response
+        const seqId = response.data?.id;
+        if (seqId) {
+          sendPaymentLink(seqId);
+        } else {
+          open?.({
+            type: "error",
+            message: t("notifications.paymentLink.error"),
+            description: t("notifications.paymentLink.missingSeqId"),
+          });
+          setIsCreatingReservation(false);
+        }
+      },
+      onError: (error) => {
+        open?.({
+          type: "error",
+          message: t("notifications.reservation.createError"),
+          description: error?.message || t("notifications.reservation.createErrorDescription"),
+        });
+        setIsCreatingReservation(false);
+      }
+    });
+  };
+  
+  // Function to create reservation and copy payment link
+  const createAndCopyPaymentLink = () => {
+    setIsCreatingReservation(true);
+    
+    // First create the reservation
+    newCustomerReservation({
+      values: {
+        occasion: selectedOccasion,
+        status: 'PENDING',
+        source: newCustomerData.source,
+        commenter: '',
+        internal_note: newCustomerData.note,
+        number_of_guests: data.guests ? data.guests.toString() : '',
+        date: data.reserveDate || '',
+        time: data.time || '',
+        restaurant: restaurantId,
+        customer: {
+          first_name: newCustomerData.first_name,
+          last_name: newCustomerData.last_name,
+          title: newCustomerData.title,
+          email: newCustomerData.email,
+          phone: newCustomerData.phone,
+        },
+      }
+    }, {
+      onSuccess: (response) => {
+        // Extract seq_id from response
+        const seqId = response.data?.id;
+        if (seqId) {
+          copyPaymentLink(seqId);
+        } else {
+          open?.({
+            type: "error",
+            message: t("notifications.paymentLink.error"),
+            description: t("notifications.paymentLink.missingSeqId"),
+          });
+          setIsCreatingReservation(false);
+        }
+      },
+      onError: (error) => {
+        open?.({
+          type: "error",
+          message: t("notifications.reservation.createError"),
+          description: error?.message || t("notifications.reservation.createErrorDescription"),
+        });
+        setIsCreatingReservation(false);
+      }
+    });
+  };
+
+  // Function to create reservation with existing customer and send payment link
+const createAndSendPaymentLinkForExistingCustomer = () => {
+  // event.preventDefault();
+  setIsCreatingReservation(true);
+  
+  mutate({
+    values: {
+      occasion: selectedOccasion,
+      status: 'PENDING',
+      source: formData.source,
+      tables: [],
+      commenter: '',
+      internal_note: formData.comment,
+      number_of_guests: data.guests ? data.guests.toString() : '',
+      date: data.reserveDate,
+      time: `${data.time}:00`,
+      restaurant: restaurantId,
+      customer: selectedClient?.id,
+    },
+  }, {
+    onSuccess: (response) => {
+      // Extract seq_id from response
+      const seqId = response.data?.id;
+      if (seqId) {
+        sendPaymentLink(seqId);
+      } else {
+        open?.({
+          type: "error",
+          message: t("notifications.paymentLink.error"),
+          description: t("notifications.paymentLink.missingSeqId"),
+        });
+        setIsCreatingReservation(false);
+      }
+    },
+    onError: (error) => {
+      open?.({
+        type: "error",
+        message: t("notifications.reservation.createError"),
+        description: error?.message || t("notifications.reservation.createErrorDescription"),
+      });
+      setIsCreatingReservation(false);
+    }
+  });
+};
+
+// Function to create reservation with existing customer and copy payment link
+const createAndCopyPaymentLinkForExistingCustomer = () => {
+  // event.preventDefault();
+  setIsCreatingReservation(true);
+  
+  mutate({
+    values: {
+      occasion: selectedOccasion,
+      status: 'PENDING',
+      source: formData.source,
+      tables: [],
+      commenter: '',
+      internal_note: formData.comment,
+      number_of_guests: data.guests ? data.guests.toString() : '',
+      date: data.reserveDate,
+      time: `${data.time}:00`,
+      restaurant: restaurantId,
+      customer: selectedClient?.id,
+    },
+  }, {
+    onSuccess: (response) => {
+      // Extract seq_id from response
+      const seqId = response.data?.id;
+      if (seqId) {
+        copyPaymentLink(seqId);
+      } else {
+        open?.({
+          type: "error",
+          message: t("notifications.paymentLink.error"),
+          description: t("notifications.paymentLink.missingSeqId"),
+        });
+        setIsCreatingReservation(false);
+      }
+    },
+    onError: (error) => {
+      open?.({
+        type: "error",
+        message: t("notifications.reservation.createError"),
+        description: error?.message || t("notifications.reservation.createErrorDescription"),
+      });
+      setIsCreatingReservation(false);
+    }
+  });
+};
+
+// Function to check if we can send payment link for existing customer (requires email)
+const canSendPaymentLinkForExistingCustomer = () => {
+  return paymentRequired && formData.email && formData.email.includes('@');
+};
+
   const [disabledButton, setDisabledButton] = useState(false);
   const [disabledButton2, setDisabledButton2] = useState(false);
+
+  const renderPaymentInfo = () => {
+    if (isCheckingPayment) {
+        return (
+            <div className="flex gap-1 my-1 text-sm items-center w-fit px-2 py-1 rounded">
+                <LoaderCircle size={14} className="animate-spin" />
+                <span>{t('reservationWidget.payment.checking')}</span>
+            </div>
+        );
+    }
+
+    if (paymentRequired && paymentAmount !== null) {
+        return (
+            <div className="flex gap-1 my-1 text-sm bg-softyellowtheme items-center text-yellowtheme w-fit px-2 py-1 rounded">
+                <DollarSign size={14} className={`dark:text-yellowtheme text-yellowtheme`} />
+                <span>{t('reservationWidget.payment.amountToPay')}{paymentAmount > 0 && `: ${paymentAmount} ${widgetConfig.currency}`}</span>
+            </div>
+        );
+    }
+
+    return null;
+  };
 
   return (
     <div>
@@ -534,9 +879,11 @@ const ReservationModal = (props: ReservationModalProps) => {
                     searchable={true}
                     loading={loadingOccasions}
                   />
+                  <label htmlFor='source'>{t('export.reservationSource')}</label>
                   <select name='source' className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' onChange={(e) => setNewCustomerData({ ...newCustomerData, source: e.target.value })} required>
-                    <option value='BACK_OFFICE'>Back Office</option>
-                    <option value='WALK_IN'>Walk In</option>
+                    {[sources[3], sources[4]].map((source) => (
+                      <option key={source.value} value={source.value}>{source.label}</option>
+                    ))}
                   </select>
                   <div
                     onClick={() => setShowProcess(true)}
@@ -546,7 +893,33 @@ const ReservationModal = (props: ReservationModalProps) => {
                     {data.time === '' ? <div>Time</div> : <span>{data.time}</span>}
                     {data.guests === 0 ? <div>Guests</div> : <span>{data.guests}</span>}
                   </div>
+                  {renderPaymentInfo()}
                   <button onClick={handleNewReservationNewCustomer} className='w-full py-2 bg-greentheme text-white rounded-lg hover:opacity-90 transition-opacity mt-3' disabled={disabledButton}>{t('reservations.buttons.addReservation')}</button>
+                  {isPaymentEnabled && (
+            <div className="flex gap-2 mt-2 justify-center flex-wrap">
+              <BaseBtn
+                variant="secondary"
+                onClick={createAndSendPaymentLink}
+                loading={isSendingPaymentLink}
+                disabled={!canSendPaymentLink() || isCreatingReservation || disabledButton || isCheckingPayment}
+                className="w-1/2"
+              >
+                <Mail size={16} />
+                {t('reservations.buttons.createAndSendPaymentLink')}
+              </BaseBtn>
+              
+              <BaseBtn
+                variant="secondary"
+                onClick={createAndCopyPaymentLink}
+                loading={isCopyingPaymentLink}
+                disabled={!paymentRequired || isCreatingReservation || disabledButton || isCheckingPayment}
+                className="w-1/2"
+              >
+                <Copy size={16} />
+                {t('reservations.buttons.createAndCopyPaymentLink')}
+              </BaseBtn>
+            </div>
+          )}
                 </div>
               </div>
             )
@@ -650,10 +1023,8 @@ const ReservationModal = (props: ReservationModalProps) => {
 
             />
             <BaseSelect
-              options={[
-                { label: 'Back Office', value: 'BACK_OFFICE' },
-                { label: 'Walk In', value: 'WALK_IN' },
-              ]}
+              placeholder={t('export.reservationSource')}
+              options={[sources[3], sources[4]]}
               value={formData.source}
               onChange={(value) => setFormData((prev) => ({ ...prev, source: value as string }))}
               variant={darkMode ? "filled" : "outlined"}
@@ -669,9 +1040,37 @@ const ReservationModal = (props: ReservationModalProps) => {
             {data.time === '' ? <div>Time</div> : <span>{data.time}</span>}
             {data.guests === 0 ? <div>Guests</div> : <span>{data.guests}</span>}
           </div>
-          <BaseBtn type="submit" loading={loadingCreatReservation}>
-            {t('grid.buttons.addReservation')}
-          </BaseBtn>
+          {renderPaymentInfo()}
+          <div className="flex flex-col gap-2">
+  <BaseBtn type="submit" loading={loadingCreatReservation}>
+    {t('grid.buttons.addReservation')}
+  </BaseBtn>
+  
+  {/* Only show payment link buttons if payment is enabled */}
+  {isPaymentEnabled && (
+    <div className="flex gap-2 mt-2 justify-center flex-wrap">
+      <BaseBtn
+        variant="secondary"
+        onClick={createAndSendPaymentLinkForExistingCustomer}
+        loading={isSendingPaymentLink}
+        disabled={!canSendPaymentLinkForExistingCustomer() || isCreatingReservation || isCheckingPayment}
+      >
+        <Mail size={16} />
+        {t('reservations.buttons.createAndSendPaymentLink')}
+      </BaseBtn>
+      
+      <BaseBtn
+        variant="secondary"
+        onClick={createAndCopyPaymentLinkForExistingCustomer}
+        loading={isCopyingPaymentLink}
+        disabled={!paymentRequired || isCreatingReservation || isCheckingPayment}
+      >
+        <Copy size={16} />
+        {t('reservations.buttons.createAndCopyPaymentLink')}
+      </BaseBtn>
+    </div>
+  )}
+</div>
         </form>
       )}
     </div>

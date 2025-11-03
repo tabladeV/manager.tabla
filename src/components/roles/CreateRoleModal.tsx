@@ -6,6 +6,7 @@ import { CanAccess, useCreate, type BaseKey } from "@refinedev/core"
 import { ArrowDown, ArrowUp, Undo, X } from "lucide-react"
 import SearchBar from "../header/SearchBar"
 import { useTranslation } from "react-i18next"
+import Portal from "../common/Portal"
 
 interface PermissionType {
   id: number
@@ -100,6 +101,7 @@ const CreateRoleModal = ({ availablePermissions = [], onClose }: CreateRoleModal
   }
 
   return (
+    <Portal>
     <div className="flex flex-col overflow-y-auto h-full bg-white dark:bg-bgdarktheme border-l dark:border-zinc-800 sidepopup z-[360] lt-sm:bottom-0 lt-sm:w-full rounded-[10px] shadow-lg shadow-[#00000008]">
       <div className="p-2 border-b flex justify-between items-center dark:border-zinc-800">
         <h1 className="text-xl font-semibold">{t("roles.createRole", "Create Role")}</h1>
@@ -193,6 +195,7 @@ const CreateRoleModal = ({ availablePermissions = [], onClose }: CreateRoleModal
         </div>
       </div>
     </div>
+    </Portal>
   )
 }
 

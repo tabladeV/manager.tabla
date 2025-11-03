@@ -1,4 +1,5 @@
 import React, { useState, ChangeEvent, FocusEvent } from 'react';
+import { useDarkContext } from "../../context/DarkContext";
 
 type ValidationRule = (value: string) => string | null;
 
@@ -15,6 +16,9 @@ interface BaseInputProps {
   rounded?: string;
   className?: string;
   rules?: ValidationRule[];
+  dense?: boolean;
+  disabled?: boolean;
+  readonly?: boolean;
 }
 
 const BaseInput: React.FC<BaseInputProps> = ({
@@ -30,9 +34,13 @@ const BaseInput: React.FC<BaseInputProps> = ({
   rounded = 'md', // Default rounded corners
   className,
   rules = [],
+  dense = false,
+  disabled = false,
+  readonly = false,
 }) => {
   const [touched, setTouched] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
+  const { darkMode } = useDarkContext();
 
   const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
     setTouched(true);
@@ -56,22 +64,39 @@ const BaseInput: React.FC<BaseInputProps> = ({
     setErrors(validationErrors);
   };
 
-  const baseClasses = `
-    w-full px-3 py-2
-    ${variant === 'outlined' ? 'border' : 'border-b'}
-    ${rounded ? `rounded-${rounded}` : ''}
-    focus:outline-none
-    transition-colors duration-300
-  `;
+  const getVariantClasses = () => {
+    const padding = dense ? 'py-1 px-2' : 'py-2 px-3';
+    const base = `w-full ${padding} focus:outline-none transition-colors duration-300`;
+    const roundedClass = rounded ? `rounded-${rounded}` : '';
 
-  const colorClasses = errors.length > 0
-    ? 'border-red-500 focus:border-red-500'
-    : `border-gray-300 focus:border-${color}-500`;
+    let variantClasses = '';
+    if (variant === 'outlined') {
+      variantClasses = `border ${darkMode ? 'bg-darkthemeitems border-[#88AB6130] text-textdarktheme' : 'bg-white border-gray-300 text-black'}`;
+    } else { // filled
+      variantClasses = `border-b ${darkMode ? 'bg-darkthemeitems border-b-gray-600 text-textdarktheme' : 'bg-gray-100 border-b-gray-400 text-black'}`;
+    }
+
+    return `${base} ${roundedClass} ${variantClasses}`;
+  };
+
+  const getFocusClasses = () => {
+    if (errors.length > 0) {
+      return 'border-red-500 focus:border-red-500';
+    }
+    return darkMode
+      ? `focus:border-greentheme`
+      : `focus:border-${color}-500`;
+  };
+
+  const baseClasses = getVariantClasses();
+  const colorClasses = getFocusClasses();
+  const disabledClasses = disabled ? 'opacity-50 cursor-not-allowed' : '';
+  const readonlyClasses = readonly ? 'bg-gray-100 dark:bg-darkthemeitems' : '';
 
   return (
-    <div className={`mb-4 ${className}`}>
+    <div className={`${className}`}>
       {label && (
-        <label className="block text-gray-700 mb-1" htmlFor={name}>
+        <label className={`block mb-1 ${darkMode ? 'text-textdarktheme' : 'text-gray-700'}`} htmlFor={name}>
           {label}
         </label>
       )}
@@ -83,10 +108,13 @@ const BaseInput: React.FC<BaseInputProps> = ({
         placeholder={placeholder}
         onChange={handleChange}
         onBlur={handleBlur}
-        className={`${baseClasses} ${colorClasses}`}
+        className={`${baseClasses} ${colorClasses} ${disabledClasses} ${readonlyClasses}`}
+        disabled={disabled}
+        readOnly={readonly}
+        aria-readonly={readonly}
       />
       {hint && errors.length === 0 && (
-        <p className="text-sm text-gray-500 mt-1">{hint}</p>
+        <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{hint}</p>
       )}
       {errors.length > 0 && (
         <ul className="text-sm text-red-500 mt-1">

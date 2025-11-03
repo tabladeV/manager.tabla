@@ -98,11 +98,11 @@ const RestaurantSelection: React.FC<{ showLogo?: boolean }> = ({ showLogo = true
 
   // Skeleton Loading Component
   const SkeletonCard = () => (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm animate-pulse">
-      <div className="h-48 bg-gray-200 dark:bg-gray-700" />
+    <div className="bg-white dark:bg-darkthemeitems rounded-2xl overflow-hidden shadow-sm animate-pulse">
+      <div className="h-48 bg-softgreentheme dark:bg-bgdarktheme2" />
       <div className="p-6">
-        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-md mb-3 w-3/4" />
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded-md w-full" />
+        <div className="h-6 bg-softgreentheme dark:bg-bgdarktheme2 rounded-md mb-3 w-3/4" />
+        <div className="h-4 bg-softgreentheme dark:bg-bgdarktheme2 rounded-md w-full" />
       </div>
     </div>
   );
@@ -110,8 +110,8 @@ const RestaurantSelection: React.FC<{ showLogo?: boolean }> = ({ showLogo = true
   // Empty State Component
   const EmptyState = () => (
     <div className="flex flex-col items-center justify-center py-16 px-4">
-      <Store className="w-24 h-24 text-gray-300 dark:text-gray-600 mb-6" />
-      <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
+      <Store className="w-24 h-24 text-softgreentheme dark:text-darkthemeitems mb-6" />
+      <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2">
         {t('restaurantSelection.noRestaurants') || "No restaurants available"}
       </h3>
       <p className="text-gray-500 dark:text-gray-400 text-center max-w-md">
@@ -121,10 +121,10 @@ const RestaurantSelection: React.FC<{ showLogo?: boolean }> = ({ showLogo = true
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+    <div className="min-h-screen bg-white dark:bg-bgdarktheme transition-colors duration-200">
       {/* Header */}
       {showLogo && (
-        <div className={`sticky top-0 z-30 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 ${isIOS ? 'pt-[var(--ios-notch-height)]' : ''}`}>
+        <div className={`sticky top-0 z-30 bg-white dark:bg-bgdarktheme2 border-b border-gray-200 dark:border-gray-700 ${isIOS ? 'pt-[var(--ios-notch-height)]' : ''}`}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16 sm:h-20">
               <Logo className="horizontal h-8 sm:h-10" nolink />
@@ -147,7 +147,7 @@ const RestaurantSelection: React.FC<{ showLogo?: boolean }> = ({ showLogo = true
       )}
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 overflow-auto max-h-[100vh]">
         {/* Title Section */}
         <div className="text-center mb-8 sm:mb-12">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-3">
@@ -179,7 +179,7 @@ const RestaurantSelection: React.FC<{ showLogo?: boolean }> = ({ showLogo = true
                   onClick={() => handleSelectRestaurant(restaurant.id)}
                   disabled={isSelected}
                   className={`
-                    relative group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden
+                    relative group bg-white dark:bg-darkthemeitems rounded-2xl overflow-hidden
                     shadow-sm hover:shadow-xl transition-all duration-300 text-left
                     ${isActive ? 'ring-2 ring-greentheme' : ''}
                     ${isSelected ? 'opacity-75 cursor-wait' : 'hover:-translate-y-1'}

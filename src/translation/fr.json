@@ -146,7 +146,11 @@
     },
     "buttons": {
       "addReservation": "Ajouter une Réservation",
-      "export": "Exporter"
+      "export": "Exporter",
+      "createAndSendPaymentLink": "Ajouter et envoyer un lien de paiement",
+      "createAndCopyPaymentLink": "Ajouter et copier un lien de paiement",
+      "sendPaymentLink": "Envoyer un lien de paiement",
+      "copyPaymentLink": "Copier le lien de paiement"
     },
     "tableHeaders": {
       "id": "ID",
@@ -164,7 +168,8 @@
       "sendReview": "Envoyer un Avis",
       "reviewed": "Avis envoyé",
       "details": "Détails de la Réservation",
-      "detailsShort": "Date/Heure/Invités"
+      "detailsShort": "Date/Heure/Invités",
+      "paid": "Payé"
     },
     "statusLabels": {
       "pending": "En attente",
@@ -292,9 +297,9 @@
     }
   },
   "calendar": {
-    "pageTitle": "Grille de Calendrier - Tabla | Goûtez le Meilleur du Maroc",
-    "title": "Grille de Calendrier",
-    "viewAgenda": "Voir la Grille",
+    "pageTitle": "Calendrier - Tabla | Goûtez le Meilleur du Maroc",
+    "title": "Calendrier",
+    "viewAgenda": "Voir le Calendrier",
     "navigation": {
       "previousMonth": "Mois précédent",
       "nextMonth": "Mois suivant"
@@ -338,7 +343,7 @@
       "or": "ou",
       "more": "plus"
     },
-    "titles":{
+    "titles": {
       "mr": "Monsieur",
       "mrs": "Madame",
       "ms": "Mademoiselle"
@@ -435,7 +440,8 @@
       "food": "Note Nourriture",
       "service": "Note Service",
       "total": "Note Totale",
-      "environment": "Note Environnement"
+      "environment": "Note Environnement",
+      "noComment": "Aucun commentaire fourni"
     }
   },
   "messages": {
@@ -532,7 +538,21 @@
       "widget": "Widget de Réservation",
       "roles": "Rôles",
       "permissions": "Permissions",
-      "services": "Services"
+      "services": "Services",
+      "messagingTemplates": "Modèles de Messagerie",
+      "alerts": "Alertes d'Événements/Offres"
+    },
+    "messagingTemplates": {
+      "description": "Gérez vos modèles de messagerie pour les notifications par email et SMS envoyées aux clients.",
+      "newTemplate": "Nouveau Modèle",
+      "editTemplate": "Modifier le Modèle",
+      "templateName": "Nom du Modèle",
+      "actions": "Actions",
+      "content": "Contenu",
+      "dynamicVariables": "Variables Dynamiques",
+      "assetManager": "Gestionnaire de ressources",
+      "loadingAssets": "Chargement des ressources...",
+      "errorFetchingAssets": "Erreur lors de la récupération des ressources."
     },
     "general": {
       "basicInformationForm": {
@@ -619,9 +639,10 @@
       },
       "payment": {
         "title": "Paiement",
-        "enableWhenGuestOver": "Activer quand l'invité dépasse",
-        "disable": "Désactiver",
-        "enable": "Activer"
+        "enable": "Activer le Paiement",
+        "minGuestsForPayment": "Nombre minimum d'invités pour exiger un paiement",
+        "depositAmountPerGuest": "Montant de l'acompte par invité",
+        "disabledNote": "Le paiement est actuellement désactivé - aucun paiement ne sera requis pour les réservations"
       },
       "buttons": {
         "preview": "Aperçu",
@@ -914,6 +935,63 @@
       }
     }
   },
+  "paymentSettings": {
+    "title": "Paramètres de Paiement",
+    "editRule": "Modifier la Règle",
+    "addRule": "Ajouter une Règle",
+    "ruleName": "Nom de la Règle",
+    "ruleNameRequired": "Le nom de la règle est requis",
+    "ruleNamePlaceholder": "ex: Dîner du Weekend",
+    "startDate": "Date de Début",
+    "endDate": "Date de Fin",
+    "allDay": "Toute la Journée",
+    "fromTime": "De",
+    "toTime": "À",
+    "advanced": "Avancé (Récurrence)",
+    "alwaysRequire": "Toujours exiger un paiement",
+    "useRules": "Utiliser des règles",
+    "alwaysDescription": "Lorsque le paiement est toujours requis, un acompte sera demandé pour toutes les réservations remplissant les critères ci-dessous.",
+    "status": "Statut",
+    "actions": "Actions",
+    "errors": {
+      "startDateAfterEnd": "La date de début ne peut pas être après la date de fin",
+      "endDateBeforeStart": "La date de fin ne peut pas être avant la date de début"
+    },
+    "description": {
+      "deposit": "Acompte de {{amount}} DH pour {{count}} personnes ou plus.",
+      "allDay": "Toute la journée.",
+      "fromToTime": "De {{from}} à {{to}}.",
+      "onDate": "Le {{date}}.",
+      "fromToDate": "Du {{from}} au {{to}}."
+    }
+  },
+  "rrule": {
+    "repeatEvery": "Répéter chaque",
+    "repeatOn": "Répéter le",
+    "ends": "Se termine",
+    "never": "Jamais",
+    "on": "le",
+    "after": "Après",
+    "occurrences": "occurrence(s)",
+    "daily": "Quotidiennement",
+    "weekly": "Hebdomadairement",
+    "monthly": "Mensuellement",
+    "yearly": "Annuellement",
+    "everyX": "Chaque {{count}} {{unit}}",
+    "everyXPlural": "Chaque {{count}} {{unit}}",
+    "freq_DAILY_singular": "jour",
+    "freq_DAILY_plural": "jours",
+    "freq_WEEKLY_singular": "semaine",
+    "freq_WEEKLY_plural": "semaines",
+    "freq_MONTHLY_singular": "mois",
+    "freq_MONTHLY_plural": "mois",
+    "freq_YEARLY_singular": "an",
+    "freq_YEARLY_plural": "ans",
+    "untilDate": "jusqu'au {{date}}",
+    "afterXOccurrences": "après {{count}} occurrence",
+    "afterXOccurrencesPlural": "après {{count}} occurrences",
+    "startingFrom": "à partir du {{date}}"
+  },
   "marketplaceSettings": {
     "title": "Paramètres du Marketplace",
     "chooseSettingPrompt": "Choisissez un paramètre du marketplace à modifier",
@@ -950,6 +1028,26 @@
     "onlineBookingBlockage": {
       "title": "Restrictions de Réservation",
       "description": "Configurez les restrictions de réservation et les dates d'indisponibilité pour les réservations du marketplace. Contrôlez la disponibilité pour les réservations en ligne."
+    }
+  },
+  "alerts": {
+    "title": "Alertes Événements/Offres",
+    "addNew": "Ajouter une Nouvelle Alerte",
+    "editTitle": "Modifier l'Alerte",
+    "addTitle": "Ajouter une Nouvelle Alerte",
+    "image": "Image",
+    "uploadImage": "Téléverser une Image",
+    "titleLabel": "Titre",
+    "titlePlaceholder": "Saisir le titre de l'alerte",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Saisir la description de l'alerte...",
+    "active": "Active",
+    "table": {
+      "image": "Image",
+      "title": "Titre",
+      "status": "Statut",
+      "actions": "Actions",
+      "period": "Période"
     }
   },
   "unifiedSettings": {
@@ -1364,7 +1462,17 @@
       "time": "Heure",
       "guests": "Invités",
       "bookNow": "Réserver Maintenant",
-      "previewMenu": "Aperçu de notre menu"
+      "previewMenu": "Aperçu de notre menu",
+      "name": "Nom Complet",
+      "email": "Adresse Email",
+      "phone": "Numéro de Téléphone",
+      "restaurant": "Nom du Restaurant",
+      "status": "Statut",
+      "source": "Source de Réservation",
+      "allergies": "Allergies",
+      "preferences": "Préférences Spéciales",
+      "occasion": "Occasion",
+      "commenter": "Commentaires"
     },
     "form": {
       "yourInformation": "Vos Informations",
@@ -1398,7 +1506,70 @@
       "lastNameRequired": "Le nom de famille est requis",
       "emailRequired": "L'email est requis",
       "emailInvalid": "L'email est invalide",
-      "phoneRequired": "Le numéro de téléphone est requis"
+      "phoneRequired": "Le numéro de téléphone est requis",
+      "firstNameTooShort": "Le prénom doit contenir au moins 2 caractères",
+      "firstNameTooLong": "Le prénom doit contenir moins de 50 caractères",
+      "firstNameInvalid": "Le prénom ne peut contenir que des lettres, espaces, tirets et apostrophes",
+      "lastNameTooShort": "Le nom de famille doit contenir au moins 2 caractères",
+      "lastNameTooLong": "Le nom de famille doit contenir moins de 50 caractères",
+      "lastNameInvalid": "Le nom de famille ne peut contenir que des lettres, espaces, tirets et apostrophes",
+      "emailTooLong": "L'email doit contenir moins de 100 caractères",
+      "phoneInvalid": "Le numéro de téléphone ne peut contenir que des chiffres, espaces, +, -, (, ) et doit contenir au moins 8 chiffres",
+      "nameHint": "Seules les lettres, espaces, tirets et apostrophes sont autorisés (2-50 caractères)",
+      "phoneHint": "Format: +212 6XX XX XX XX (minimum 8 chiffres)"
+    },
+    "payment": {
+      "title": "Paiement Requis",
+      "reservationSummary": "Résumé de la Réservation",
+      "paymentRequired": "Paiement Requis",
+      "paymentDescription": "Un paiement est requis pour sécuriser votre réservation. Veuillez entrer vos informations de carte de crédit ci-dessous.",
+      "reservationFee": "Frais de Réservation",
+      "feeDescription": "Ces frais seront déduits de votre facture finale.",
+      "creditCardInfo": "Informations de Carte de Crédit",
+      "cardholderName": "Nom du Porteur",
+      "cardholderNamePlaceholder": "Entrez le nom tel qu'il apparaît sur la carte",
+      "cardNumber": "Numéro de Carte",
+      "expiryDate": "Date d'Expiration",
+      "cvv": "CVV",
+      "securePayment": "Vos informations de paiement sont sécurisées et cryptées.",
+      "proceedToConfirmation": "Procéder à la Confirmation",
+      "cardNumberRequired": "Le numéro de carte est requis",
+      "cardNumberInvalid": "Veuillez entrer un numéro de carte valide",
+      "expiryRequired": "La date d'expiration est requise",
+      "expiryInvalid": "Veuillez entrer une date d'expiration valide (MM/AA)",
+      "cvvRequired": "Le CVV est requis",
+      "cvvInvalid": "Veuillez entrer un CVV valide",
+      "cardholderRequired": "Le nom du porteur est requis",
+      "billingAddress": "Adresse de Facturation",
+      "firstName": "Prénom",
+      "firstNamePlaceholder": "Entrez votre prénom",
+      "firstNameRequired": "Le prénom est requis",
+      "lastName": "Nom de Famille",
+      "lastNamePlaceholder": "Entrez votre nom de famille",
+      "lastNameRequired": "Le nom de famille est requis",
+      "address": "Adresse",
+      "addressPlaceholder": "Entrez votre adresse",
+      "addressRequired": "L'adresse est requise",
+      "city": "Ville",
+      "cityPlaceholder": "Entrez votre ville",
+      "zipCode": "Code Postal",
+      "zipCodePlaceholder": "Entrez votre code postal",
+      "country": "Pays",
+      "countryPlaceholder": "Entrez votre pays",
+      "countryRequired": "Le pays est requis",
+      "billingInfoRequired": "Veuillez compléter les informations d'adresse de facturation",
+      "errorTitle": "Erreur de Paiement",
+      "errorMessage": "Votre réservation a été créée mais le paiement n'a pas pu être traité. Veuillez contacter le restaurant.",
+      "reservationCreated": "Réservation Créée avec Succès !",
+      "amountToPay": "Montant à Payer",
+      "reservationNumber": "Numéro de Réservation",
+      "preparingPayment": "Préparation du paiement...",
+      "paymentNotice": "Votre réservation a été créée. Vous ne pouvez pas modifier les détails après cette étape. Veuillez procéder au paiement.",
+      "cancelPayment": "Ignorer le Paiement",
+      "proceedToPayment": "Procéder au Paiement",
+      "paymentNoticeTitle": "Un paiement anticipé est requis",
+      "paymentNoticeDescription": "Un paiement anticipé est requis pour cette réservation.",
+      "checking": "Vérification de l'état du paiement..."
     },
     "confirmation": {
       "title": "Confirmez Vos Informations",
@@ -1428,10 +1599,19 @@
       "description": "Les réservations en ligne sont actuellement indisponibles. Veuillez contacter le restaurant directement."
     },
     "errors": {
-      "serverError": "Quelque chose s'est mal passé. Veuillez réessayer ou contacter le restaurant directement."
+      "serverError": "Quelque chose s'est mal passé. Veuillez réessayer ou contacter le restaurant directement.",
+      "paymentInitiationFailed": "L'initiation du paiement a échoué",
+      "paymentDetailsError": "Impossible de traiter les détails du paiement. Veuillez réessayer."
     },
     "footer": {
-      "copyright": "© {{year}} Tabla. Tous droits réservés."
+      "copyright": "© {{year}} Tabla. Tous droits réservés.",
+      "poweredBy": "Propulsé par"
+    },
+    "contact": {
+      "followUs": "Contact & Suivez-nous",
+      "phone": "Appeler",
+      "email": "Email",
+      "whatsapp": "WhatsApp"
     }
   },
   "modifyReservation": {
@@ -1515,7 +1695,45 @@
       "message": "Votre avis a été soumis avec succès. Nous apprécions vos commentaires et les utiliserons pour améliorer notre service."
     }
   },
-  "calendarPopup":{
+  "paymentSuccess": {
+    "title": "Paiement Réussi !",
+    "description": "Votre paiement a été traité avec succès et votre réservation a été confirmée.",
+    "reservationDetails": "Détails de la réservation",
+    "paidAmount": "Montant payé :",
+    "newReservation": "Faire une autre réservation",
+    "loading": "Chargement des détails de la réservation...",
+    "error": "Impossible de charger les détails de la réservation. Veuillez vérifier l'URL ou contacter le support."
+  },
+  "paymentFailure": {
+    "title": "Échec du Paiement !",
+    "description": "Nous sommes désolés, mais votre paiement n'a pas pu être traité. Veuillez réessayer ou commencer une nouvelle réservation.",
+    "failedAmount": "Montant échoué :",
+    "tryAgain": "Réessayer",
+    "newReservation": "Faire une Nouvelle Réservation",
+    "error": {
+      "parsingData": "Erreur lors de l'analyse des données en cache :",
+      "paymentDetails": "Impossible de traiter les détails du paiement. Veuillez réessayer.",
+      "initiationFailed": "L'initiation du paiement a échoué. Veuillez réessayer.",
+      "detailsNotFound": "Détails de la réservation non trouvés. Veuillez commencer une nouvelle réservation."
+    }
+  },
+  "paymentLink": {
+    "page": {
+      "title": "Finaliser le paiement | Tabla"
+    },
+    "processing": "Traitement de votre demande de paiement...",
+    "errors": {
+      "title": "Erreur de paiement",
+      "restaurantNotFound": "Les informations du restaurant n'ont pas pu être chargées. Veuillez réessayer plus tard.",
+      "missingReservationId": "L'identifiant de réservation est manquant. Veuillez vérifier votre lien.",
+      "paymentDetailsError": "Les détails du paiement sont incomplets. Veuillez contacter le restaurant.",
+      "paymentInitiationFailed": "Échec de l'initiation du paiement. Veuillez réessayer plus tard.",
+      "paymentDisabled": "Le paiement en ligne n'est pas activé pour ce restaurant. Veuillez contacter directement le restaurant.",
+      "reservationNotFound": "La réservation n'a pas été trouvée. Elle a peut-être été annulée ou déjà traitée."
+    },
+    "makeReservation": "Faire une réservation"
+  },
+  "calendarPopup": {
     "months": {
       "january": "Janvier",
       "february": "Février",
@@ -1539,15 +1757,15 @@
       "friday": "Ven",
       "saturday": "Sam"
     },
-    "labels":{
+    "labels": {
       "selectedRange": "Plage de Dates Sélectionnée"
     },
-    "buttons":{
+    "buttons": {
       "confirm": "Confirmer",
       "cancel": "Annuler"
     }
   },
-  "reservationProcess":{
+  "reservationProcess": {
     "date": "Date",
     "time": "Heure",
     "guests": "Invités",
@@ -1562,23 +1780,101 @@
     "for": "pour",
     "yourReservationIsSetFor": "Votre réservation est fixée pour",
     "common": {
-        "cancel": "Annuler",
-        "add": "Ajouter",
-        "update": "Mettre à jour",
-        "delete": "Supprimer",
-        "active": "Actif",
-        "inactive": "Inactif",
-        "optional": "Optionnel",
-        "days": {
-            "sunday": "Dimanche",
-            "monday": "Lundi",
-            "tuesday": "Mardi",
-            "wednesday": "Mercredi",
-            "thursday": "Jeudi",
-            "friday": "Vendredi",
-            "saturday": "Samedi"
-        }
+      "cancel": "Annuler",
+      "add": "Ajouter",
+      "update": "Mettre à jour",
+      "delete": "Supprimer",
+      "active": "Actif",
+      "inactive": "Inactif",
+      "optional": "Optionnel",
+      "days": {
+        "sunday": "Dimanche",
+        "monday": "Lundi",
+        "tuesday": "Mardi",
+        "wednesday": "Mercredi",
+        "thursday": "Jeudi",
+        "friday": "Vendredi",
+        "saturday": "Samedi"
+      }
     }
-}
-
+  },
+  "notifications": {
+    "paymentLink": {
+      "sent": "Lien de paiement envoyé",
+      "sentDescription": "Le lien de paiement a été envoyé par e-mail",
+      "sendError": "Échec de l'envoi du lien de paiement",
+      "sendErrorDescription": "Une erreur s'est produite lors de l'envoi du lien de paiement",
+      "copied": "Lien de paiement copié",
+      "copiedDescription": "Le lien de paiement a été copié dans le presse-papiers",
+      "copyError": "Échec de la copie du lien de paiement",
+      "copyErrorDescription": "Une erreur s'est produite lors de la copie du lien de paiement",
+      "error": "Erreur de lien de paiement",
+      "missingSeqId": "Impossible d'obtenir l'identifiant de réservation"
+    },
+    "reservation": {
+      "createError": "Échec de création de la réservation",
+      "createErrorDescription": "Une erreur s'est produite lors de la création de la réservation"
+    }
+  },
+  "common": {
+    "cancel": "Annuler",
+    "add": "Ajouter",
+    "update": "Mettre à jour",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "Enable": "Activer",
+    "disable": "Désactiver",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "optional": "Facultatif",
+    "upload": "Téléverser",
+    "uploading": "Téléversement en cours...",
+    "select": "Sélectionner",
+    "selectFile": "Sélectionner un fichier",
+    "selectImage": "Sélectionner une image",
+    "change": "Modifier",
+    "hour": "Heure",
+    "minute": "Minute",
+    "second": "Seconde",
+    "hours": "Heures",
+    "minutes": "Minutes",
+    "seconds": "Secondes",
+    "confirm": "Confirmer",
+    "selectTime": "Sélectionner l'heure",
+    "dismiss": "Ignorer",
+    "close": "Fermer",
+    "dismissAll": "Ignorer Tout",
+    "closeAll": "Fermer Tout",
+    "loading": "Chargement...",
+    "from": "De",
+    "to": "À",
+    "days": {
+      "sunday": "Dimanche",
+      "monday": "Lundi",
+      "tuesday": "Mardi",
+      "wednesday": "Mercredi",
+      "thursday": "Jeudi",
+      "friday": "Vendredi",
+      "saturday": "Samedi"
+    },
+    "validation": {
+      "requiredField": "Ce champ est obligatoire",
+      "invalidDate": "Veuillez entrer une date valide",
+      "invalidTime": "Veuillez entrer une heure valide",
+      "invalidNumber": "Veuillez entrer un nombre valide",
+      "minValue": "La valeur doit être au moins {{min}}",
+      "maxValue": "La valeur doit être au plus {{max}}",
+      "minLength": "Doit contenir au moins {{min}} caractères",
+      "maxLength": "Doit contenir au plus {{max}} caractères",
+      "invalidEmail": "Veuillez entrer une adresse e-mail valide",
+      "invalidPhone": "Veuillez entrer un numéro de téléphone valide",
+      "invalidURL": "Veuillez entrer une URL valide"
+    },
+    "errors": {
+      "restaurantNotFoundTitle": "Restaurant non trouvé",
+      "restaurantNotFoundMessage": "Les informations sur le restaurant n'ont pas pu être chargées. Veuillez vérifier l'URL ou contacter le support.",
+      "anErrorOccurred": "Une erreur s'est produite",
+      "tryAgain": "Veuillez réessayer plus tard."
+    }
+  }
 }
