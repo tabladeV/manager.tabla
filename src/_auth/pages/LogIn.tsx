@@ -20,8 +20,8 @@ const LogIn: React.FC = () => {
   , []);
   
   const navigate = useNavigate();
-  const [email, setEmail] = useState<string>("tester@test.com");
-  const [password, setPassword] = useState<string>("123456@@@");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const { setUserData } = useDateContext();
   const [eyeOn, setEyeOn] = useState(false);
   const pswrdRef = useRef<HTMLInputElement>(null);
