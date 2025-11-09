@@ -1,7 +1,7 @@
 import React from 'react'
-import { Outlet } from 'react-router-dom'
 import GoogleAnalytics from '../components/common/GoogleAnalytics'
-
+import GoogleTagManager from '../components/common/GoogleTagManager';
+import { Outlet } from 'react-router-dom'
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
@@ -92,7 +92,8 @@ const Plugins = () => {
   return (
     <div>
       <FacebookPixel />
-      <GoogleAnalytics/>
+      <GoogleAnalytics />
+      <GoogleTagManager />
       <Outlet />
     </div>
   )
