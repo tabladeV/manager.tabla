@@ -103,6 +103,7 @@
     "build:cap": "tsc && CAPACITOR_BUILD=true refine build",
     "start": "refine start",
     "refine": "refine",
+    "type-check": "tsc --noEmit",
     "cap:sync": "cap sync",
     "cap:android": "cap open android",
     "cap:ios": "cap open ios"
