@@ -1,13 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-// Extend Window interface to include dataLayer and GTM
-declare global {
-  interface Window {
-    dataLayer: any[];
-  }
-}
-
 // GTM configuration mapping from the TSV file
 const GTM_CONFIG: Record<string, string> = {
   'buddhabar.tabla.ma': 'GTM-WCDRMFG7',
@@ -41,10 +34,10 @@ const GoogleTagManager = () => {
     }
 
     // Initialize dataLayer
-    window.dataLayer = window.dataLayer || [];
+    (window as any).dataLayer = (window as any).dataLayer || [];
     
     // GTM initialization function
-    (function(w: Window, d: Document, s: string, l: string, i: string) {
+    (function(w: any, d: Document, s: string, l: string, i: string) {
       w[l] = w[l] || [];
       w[l].push({
         'gtm.start': new Date().getTime(),
@@ -79,9 +72,9 @@ const GoogleTagManager = () => {
 
   // Push page view events on route changes
   useEffect(() => {
-    if (!isAllowedDomain || !window.dataLayer) return;
+    if (!isAllowedDomain || !(window as any).dataLayer) return;
 
-    window.dataLayer.push({
+    (window as any).dataLayer.push({
       event: 'page_view',
       page_path: location.pathname + location.search,
       page_location: window.location.href
