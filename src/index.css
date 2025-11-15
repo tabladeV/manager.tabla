@@ -559,21 +559,3 @@ html{
   background: #1e293b;
   color: #f8fafc;
 }
-/* data-placeholder */
-.dark .ql-editor.ql-blank::before {
-  color: #f8fafc !important;
-}
-
-
-/* Hide number input arrows (spinners) */
-/* For Chrome, Safari, Edge, Opera */
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* For Firefox */
-input[type=number] {
-  -moz-appearance: textfield;
-}

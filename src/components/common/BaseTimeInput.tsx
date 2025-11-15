@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Clock, ChevronDown, X, Loader2 } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 
 interface TimeInputProps {
   label?: string;
@@ -17,19 +16,8 @@ interface TimeInputProps {
   value?: string | null;
   onChange?: (value: string | null) => void;
   min?: string | null; // Add min time constraint
-  max?: string | null; // Add max time constraint,
-  inputClassName?: string;
+  max?: string | null; // Add max time constraint
 }
-
-const normalizeTimeFormat = (timeValue: string | null): string => {
-  if (!timeValue) return '';
-  
-  // Handle HH:MM:SS format by removing seconds
-  if (timeValue.split(':').length === 3) {
-    return timeValue.split(':').slice(0, 2).join(':');
-  }
-  return timeValue;
-};
 
 const BaseTimeInput: React.FC<TimeInputProps> = ({
   label,
@@ -44,17 +32,13 @@ const BaseTimeInput: React.FC<TimeInputProps> = ({
   clearable = true,
   useCurrentTime = false,
   value,
-  inputClassName = "",
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   onChange = () => {},
   min = null,
   max = null,
 }) => {
-  // Normalize value to HH:MM format
-  const normalizedValue = value ? normalizeTimeFormat(value) : value;
-  
   // State
-  const [inputValue, setInputValue] = useState<string>(normalizedValue || "");
+  const [inputValue, setInputValue] = useState<string>(value || "");
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const [activeSection, setActiveSection] = useState<'hours' | 'minutes'>('hours');
@@ -64,8 +48,6 @@ const BaseTimeInput: React.FC<TimeInputProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const hoursRef = useRef<HTMLDivElement>(null);
   const minutesRef = useRef<HTMLDivElement>(null);
-
-  const {t} = useTranslation();
   
   // Initialize with current time if requested and no value provided
   useEffect(() => {
@@ -75,9 +57,7 @@ const BaseTimeInput: React.FC<TimeInputProps> = ({
       setInputValue(timeString);
       onChange(timeString);
     } else if (value) {
-      // Ensure we normalize any HH:MM:SS format to HH:MM
-      const normalizedTime = normalizeTimeFormat(value);
-      setInputValue(normalizedTime);
+      setInputValue(value);
     }
   }, [useCurrentTime, value, onChange]);
   
@@ -416,7 +396,7 @@ const BaseTimeInput: React.FC<TimeInputProps> = ({
         {/* Mobile header */}
         {isMobile && (
           <div className="flex items-center justify-between px-2 py-1 border-b border-[#88AB6130]">
-            <h2 className="text-lg font-medium text-black dark:text-textdarktheme">{t('common.selectTime')}</h2>
+            <h2 className="text-lg font-medium text-black dark:text-textdarktheme">Select Time</h2>
             <button 
               onClick={() => setIsOpen(false)}
               className="p-1 rounded-full hover:bg-softgreytheme dark:hover:bg-bgdarktheme2"
@@ -437,7 +417,7 @@ const BaseTimeInput: React.FC<TimeInputProps> = ({
             onClick={() => setActiveSection('hours')}
           >
             <div className="text-center p-2 text-sm text-subblack dark:text-textdarktheme sticky top-0 bg-white dark:bg-darkthemeitems border-b border-[#88AB6130]">
-              {t('common.hour')}
+              Hours
             </div>
             <div className="py-2">
               {hours.map(hour => {
@@ -470,7 +450,7 @@ const BaseTimeInput: React.FC<TimeInputProps> = ({
             onClick={() => setActiveSection('minutes')}
           >
             <div className="text-center p-2 text-sm text-subblack dark:text-textdarktheme sticky top-0 bg-white dark:bg-darkthemeitems border-b border-[#88AB6130]">
-              {t('common.minute')}
+              Minutes
             </div>
             <div className="py-2">
               {minutes.map(minute => {
@@ -502,7 +482,7 @@ const BaseTimeInput: React.FC<TimeInputProps> = ({
               onClick={handleConfirm}
               className="w-full py-2 px-4 bg-greentheme text-white rounded-md hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-softgreentheme"
             >
-              {t('common.confirm')}
+              Confirm
             </button>
           </div>
         )}
@@ -553,7 +533,6 @@ const BaseTimeInput: React.FC<TimeInputProps> = ({
           ${dense ? 'py-1' : 'py-2'}
           px-3 rounded-[10px] relative transition duration-200 text-black dark:text-textdarktheme
           ${loading || disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
-          ${inputClassName}
         `}
         onClick={handleSelectClick}
       >

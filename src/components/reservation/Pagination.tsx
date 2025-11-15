@@ -7,12 +7,15 @@ interface PaginationProps {
   count: number;
   size: number;
   setPage: (page: number) => void;
-  page: number;
 }
 
 const Pagination = (props: PaginationProps) => {
-  const { count, size, setPage, page } = props;
-  const pages = Math.ceil(count / size);
+  const pages = Math.ceil(props.count / props.size);
+  const [currentPage, setCurrentPage] = useState(1);
+  
+  useEffect(() => {
+    props.setPage(currentPage);
+  }, [currentPage, props]);
 
   // Create options for the select dropdown
   const pageOptions = Array.from({length: pages}, (_, i) => ({
@@ -20,26 +23,22 @@ const Pagination = (props: PaginationProps) => {
     label: `Page ${i + 1}`
   }));
 
-  if (pages <= 1) {
-    return null; // Don't render pagination if there's only one page or less
-  }
-
   return (
     <div>
         <div className="flex justify-center items-center gap-4">
-            <button className="btn-secondary" onClick={() => page > 1 ? setPage(page - 1): null} disabled={page <= 1}>
+            <button className="btn-secondary" onClick={() => currentPage >1 ? setCurrentPage(currentPage - 1): null}>
               <ArrowLeft size={20}/>
             </button>
             
             {pages <= 5 ? (
               // Display buttons for each page when pages <= 5
-              Array.from({length: pages}, (_, i) => i + 1).map((p) => (
+              Array.from({length: pages}, (_, i) => i + 1).map((page) => (
                 <button 
-                  key={p} 
-                  className={`${page === p ? 'btn-primary' : 'btn-secondary'}`} 
-                  onClick={() => setPage(p)}
+                  key={page} 
+                  className={`${currentPage === page ? 'btn-primary' : 'btn-secondary'}`} 
+                  onClick={() => setCurrentPage(page)}
                 >
-                  {p}
+                  {page}
                 </button>
               ))
             ) : (
@@ -47,8 +46,8 @@ const Pagination = (props: PaginationProps) => {
               <div className="w-full flex justify-end my-1">
                 <div className='w-[150px]'>
                   <select
-                    value={page.toString()}
-                    onChange={(e) => setPage(Number(e.target.value))}
+                    value={currentPage.toString()}
+                    onChange={(e) => setCurrentPage(Number(e.target.value))}
                     className={`w-full p-2 rounded-md border border-[#dddddd] dark:border-[#444444] bg-white dark:bg-darkthemeitems focus:outline-none focus:ring-2 focus:ring-[#88AB61]`}
                   >
                     {pageOptions.map(option => (
@@ -61,7 +60,7 @@ const Pagination = (props: PaginationProps) => {
               </div>
             )}
             
-            <button className="btn-secondary" onClick={() => page < pages ? setPage(page + 1): null} disabled={page >= pages}>
+            <button className="btn-secondary" onClick={() => currentPage < pages ? setCurrentPage(currentPage + 1): null}>
               <ArrowRight size={20}/>
             </button>
         </div>

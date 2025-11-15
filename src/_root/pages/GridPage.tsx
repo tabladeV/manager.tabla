@@ -252,7 +252,7 @@ const GridPage = () => {
         }}/>
       }
       <div className="flex mb-4 justify-between items-center">
-        <h1 className="">{t('calendar.title')}</h1>
+        <h1 className="">{t('grid.title')}</h1>
         <Link to="/agenda/calendar" className="flex items-center gap-2  text-greentheme hover:text-greentheme dark:hover:text-greentheme transition-colors">{t('grid.buttons.navigate')}  <ChevronRight  size={18}/></Link>
       </div>
       <div

@@ -6,7 +6,6 @@ import { useState, useCallback, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { useDarkContext } from "../../context/DarkContext"
 import ActionPopup from "../popup/ActionPopup"
-import Portal from "../common/Portal"
 
 // Interfaces
 export interface Area {
@@ -51,7 +50,6 @@ function AreaModal({
   if (!isOpen) return null
 
   return (
-    <Portal>
     <div>
       <div className="overlay" onClick={onClose}></div>
       <div
@@ -110,7 +108,6 @@ function AreaModal({
         )}
       </div>
     </div>
-    </Portal>
   )
 }
 

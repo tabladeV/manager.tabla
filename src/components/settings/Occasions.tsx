@@ -4,7 +4,6 @@ import { useState, useCallback, useEffect, useContext } from "react"
 import { useTranslation } from 'react-i18next';
 import { useDarkContext } from "../../context/DarkContext"
 import ActionPopup from "../popup/ActionPopup"
-import Portal from "../common/Portal";
 
 // Interfaces
 export interface Occasion {
@@ -52,7 +51,6 @@ function OccasionModal({
   
   
   return (
-    <Portal>
     <div>
       <div className="overlay" onClick={onClose}></div>
       <div className={`sidepopup lt-sm:popup lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:rounded-b-none lt-sm:w-full h-full ${isDarkMode ? 'bg-bgdarktheme' : 'bg-white'}`}>
@@ -132,7 +130,6 @@ function OccasionModal({
         )}
       </div>
     </div>
-    </Portal>
   );
 }
 

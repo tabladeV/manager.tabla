@@ -172,7 +172,7 @@ const General = () => {
 
   const categoryChangeToEdit = (index: number, value: string) => {
     return (
-      <input autoComplete="off"
+      <input
         type="text"
         className={`inputs  dark:bg-darkthemeitems bg-white `}
         value={value}
@@ -254,15 +254,17 @@ const General = () => {
         <h2 className="text-center mb-3">{t('settingsPage.general.basicInformationForm.title')}</h2>
         <div className="flex flex-col gap-3">
           <div className="flex flex-row gap-3">
-            <input autoComplete="off"
+            <input
               type="text"
+              id="name"
               placeholder={t('settingsPage.general.basicInformationForm.labels.restaurantName')}
               className={`inputs  dark:bg-darkthemeitems bg-white `}
               value={formData.name}
               readOnly aria-readonly
             />
-            <input autoComplete="off"
+            <input
               type="text"
+              id="email"
               placeholder={t('settingsPage.general.basicInformationForm.labels.email')}
               className={`inputs  dark:bg-darkthemeitems bg-white `}
               value={formData.email}
@@ -271,6 +273,7 @@ const General = () => {
           </div>
           <div className="flex flex-row gap-3">
             <select
+              id="country"
               className={`inputs w-1/2  dark:bg-darkthemeitems bg-white `}
               value={formData.country}
               aria-readonly
@@ -282,6 +285,7 @@ const General = () => {
               ))}
             </select>
             <select
+              id="city"
               className={`inputs w-1/2  dark:bg-darkthemeitems bg-white `}
               value={formData.city}
               aria-readonly
@@ -294,8 +298,9 @@ const General = () => {
             </select>
           </div>
           <div className="flex gap-3">
-            <input autoComplete="off" 
+            <input 
               type="text"
+              id="address"
               placeholder={t('settingsPage.general.basicInformationForm.labels.address')}
               className={`inputs  dark:bg-darkthemeitems bg-white `}
               value={restaurant?.address}
@@ -304,6 +309,7 @@ const General = () => {
           </div>
           <div className="flex gap-3">
             <textarea
+              id="description"
               placeholder={t('settingsPage.general.basicInformationForm.labels.description')}
               className={`inputs  dark:bg-darkthemeitems bg-white `}
               value={formData.description}
@@ -311,15 +317,17 @@ const General = () => {
             ></textarea>
           </div>
           <div className="flex flex-row gap-3">
-            <input autoComplete="off"
+            <input
               type="text"
+              id="phone"
               placeholder={t('settingsPage.general.basicInformationForm.labels.phone')}
               className={`inputs  dark:bg-darkthemeitems bg-white `}
               value={formData.phone}
               readOnly aria-readonly
             />
-            <input autoComplete="off"
+            <input
               type="text"
+              id="website"
               placeholder={t('settingsPage.general.basicInformationForm.labels.website')}
               className={`inputs  dark:bg-darkthemeitems bg-white `}
               value={formData.website}
@@ -328,8 +336,9 @@ const General = () => {
           </div>
           <div className="flex flex-col gap-2 mt-2">
             <p>{t('settingsPage.general.basicInformationForm.labels.subdomain')}</p>
-            <input autoComplete="off"
+            <input
               type="text"
+              id="subdomain"
               placeholder={t('settingsPage.general.basicInformationForm.labels.subdomain')}
               className={`inputs  dark:bg-darkthemeitems bg-white `}
               value={subdomain}
@@ -351,8 +360,9 @@ const General = () => {
         <div className="flex flex-col gap-2 mb-4">
           <p>{t('settingsPage.general.basicInformationForm.labels.subdomain')}</p>
           <div className="flex gap-3 lt-lg:flex-col items-center">
-            <input autoComplete="off"
+            <input
               type="text"
+              id="subdomain"
               placeholder={t('settingsPage.general.basicInformationForm.labels.subdomain')}
               className={`inputs dark:bg-darkthemeitems bg-white `}
               value={subdomain}
@@ -369,20 +379,22 @@ const General = () => {
             </BaseBtn>
           </div>
         </div>
-        <form className="flex flex-col gap-3" onSubmit={handleSubmit} autoComplete="off">
+        <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
           <p className="">
             {t('settingsPage.general.basicInformationForm.labels.restaurantInformations')}
           </p>
           <div className="flex flex-row gap-3">
-            <input autoComplete="off"
+            <input
               type="text"
+              id="name"
               placeholder={t('settingsPage.general.basicInformationForm.labels.restaurantName')}
               className={`inputs dark:bg-darkthemeitems bg-white `}
               value={formData.name}
               onChange={handleInputChange}
             />
-            <input autoComplete="off"
+            <input
               type="text"
+              id="email"
               placeholder={t('settingsPage.general.basicInformationForm.labels.email')}
               className={`inputs dark:bg-darkthemeitems bg-white `}
               value={formData.email}
@@ -391,6 +403,7 @@ const General = () => {
           </div>
           <div className="flex flex-row gap-3">
             <select
+              id="country"
               className={`inputs w-1/2 dark:bg-darkthemeitems bg-white `}
               value={formData.country}
               onChange={handleSelectChange}
@@ -402,6 +415,7 @@ const General = () => {
               ))}
             </select>
             <select
+              id="city"
               className={`inputs w-1/2 dark:bg-darkthemeitems bg-white `}
               value={formData.city}
               onChange={handleSelectChange}
@@ -414,14 +428,16 @@ const General = () => {
             </select>
           </div>
           <div className="flex gap-3">
-            <input autoComplete="off" 
+            <input 
               type="text"
+              id="address"
               placeholder={t('settingsPage.general.basicInformationForm.labels.address')}
               className={`inputs  dark:bg-darkthemeitems bg-white `}
               value={formData.address}
               onChange={handleInputChange}
             />
             <select
+              id="preferred_language"
               className={`inputs w-1/2 dark:bg-darkthemeitems bg-white `}
               value={formData.preferred_language}
               onChange={handleSelectChange}
@@ -434,6 +450,7 @@ const General = () => {
           </div>
           <div className="flex gap-3">
             <textarea
+              id="description"
               placeholder={t('settingsPage.general.basicInformationForm.labels.description')}
               className={`inputs  dark:bg-darkthemeitems bg-white `}
               value={formData.description}
@@ -441,15 +458,17 @@ const General = () => {
             ></textarea>
           </div>
           <div className="flex flex-row gap-3">
-            <input autoComplete="off"
+            <input
               type="text"
+              id="phone"
               placeholder={t('settingsPage.general.basicInformationForm.labels.phone')}
               className={`inputs  dark:bg-darkthemeitems bg-white `}
               value={formData.phone}
               onChange={handleInputChange}
             />
-            <input autoComplete="off"
+            <input
               type="text"
+              id="website"
               placeholder={t('settingsPage.general.basicInformationForm.labels.website')}
               className={`inputs  dark:bg-darkthemeitems bg-white `}
               value={formData.website}

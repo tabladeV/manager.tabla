@@ -83,7 +83,7 @@ const createDataProvider = (apiUrl: string): DataProvider => ({
 
   update: async ({ resource, id, variables }) => {
     const url = `${apiUrl}/${resource}/${id}`;
-    const response = await httpClient.patch(url, variables);
+    const response = await httpClient.put(url, variables);
 
     return {
       data: response.data,

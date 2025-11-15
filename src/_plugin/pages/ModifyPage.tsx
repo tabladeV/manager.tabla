@@ -26,7 +26,26 @@ import arabic from "../../assets/arabic.jpg"
 import english from "../../assets/english.png"
 import french from "../../assets/french.png"
 import { useDateContext } from "../../context/DateContext"
-import QuillPreview from "../../components/common/QuillPreview"
+
+interface QuillPreviewProps {
+  content: string
+  className?: string
+}
+
+export function QuillPreview({ content, className = "" }: QuillPreviewProps) {
+  // Import Quill styles on the client side for proper rendering
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      import("quill/dist/quill.core.css")
+    }
+  }, [])
+
+  return (
+    <div className={`quill-preview ${className}`}>
+      <div className="prose max-w-none overflow-auto" dangerouslySetInnerHTML={{ __html: content }} />
+    </div>
+  )
+}
 
 // Language Selector Component
 const LanguageSelector = () => {
@@ -191,6 +210,19 @@ const Modify = () => {
     console.log("areaSelected", areaSelected)
   }, [areaSelected])
 
+  const {
+    data: areasList,
+    isLoading: areasListLoading,
+    error: areasEroor,
+  } = useList({
+    resource: `api/v1/bo/areas/`,
+    queryOptions: {
+      onSuccess: (data) => {
+        setAreas(data.data as Area[])
+      },
+    },
+  })
+
   const modifyReservation = () => {
     console.log("updateInfo", updateInfo?.occasion)
     mutate({
@@ -354,7 +386,6 @@ const Modify = () => {
     if (widgetData) {
       setWidgetInfo(widgetData.data)
       setRestaurantID(widgetData.data.restaurant)
-      setAreas(widgetData.data.areas)
       console.log("widgetInfo", widgetData.data)
     }
   }, [widgetData])

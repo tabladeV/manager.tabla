@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useDarkContext } from '../../context/DarkContext';
 
 interface CancelReasonType {
   id: number;
@@ -37,7 +36,6 @@ const ActionPopup: React.FC<ConfirmPopupProps> = ({
   const [isAnimating, setIsAnimating] = useState(false);
   const [reasonId, setReasonId] = useState<number | null>(null);
   const [otherReasonText, setOtherReasonText] = useState<string>("");
-  const { darkMode: isDarkMode } = useDarkContext();
 
   // Add escape key listener
   useEffect(() => {
@@ -169,6 +167,9 @@ const ActionPopup: React.FC<ConfirmPopupProps> = ({
     if (reasonId === 0 && otherReasonText.trim() === "") return true;
     return false;
   };
+
+  // Check if dark mode is enabled
+  const isDarkMode = localStorage.getItem("darkMode") === "true";
 
   // Create portal to render at body level
   return createPortal(

@@ -5,8 +5,6 @@ import i18next from 'i18next';
 import { BaseKey, BaseRecord, CanAccess, useCreate, useList, useUpdate } from '@refinedev/core';
 import { id } from 'date-fns/locale';
 import { set } from 'date-fns';
-import Portal from '../common/Portal';
-import BaseTimeInput from '../common/BaseTimeInput';
 
 interface SlotData {
   name: string;
@@ -201,7 +199,6 @@ const Availability = () => {
   return (
     <div className={`rounded-lg p-4 md:p-6 w-full dark:bg-bgdarktheme bg-white`}>
       {manageWeekly && (
-        <Portal>
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setManageWeekly(false)}></div>
           <div className={`relative rounded-lg p-4 md:p-6 w-full max-w-2xl mx-4 dark:bg-bgdarktheme bg-white`}>
@@ -224,21 +221,22 @@ const Availability = () => {
                 </div>
                 <div className="flex items-center gap-2 w-full md:w-auto">
                   <div className="flex flex-col flex-1">
-                    <BaseTimeInput
-                      label={t('settingsPage.availability.from')}
+                    <label className="text-sm">{t('settingsPage.availability.from')}</label>
+                    <input
+                      type="time"
                       value={slot.start_shift}
-                      onChange={(value) => updateWeeklySlot(index, 'start_shift', value || '')}
-                      inputClassName='!p-[10px]'
+                      onChange={(e) => updateWeeklySlot(index, 'start_shift', e.target.value)}
+                      className={`inputs w-full dark:bg-darkthemeitems bg-white`}
                     />
                   </div>
                   <span className="self-end mb-2">-</span>
                   <div className="flex flex-col flex-1">
-                    <BaseTimeInput
-                      label={t('settingsPage.availability.to')}
+                    <label className="text-sm">{t('settingsPage.availability.to')}</label>
+                    <input
+                      type="time"
                       value={slot.end_shift}
-                      onChange={(value) => updateWeeklySlot(index, 'end_shift', value || '')}
-                      inputClassName='!p-[10px]'
-                      
+                      onChange={(e) => updateWeeklySlot(index, 'end_shift', e.target.value)}
+                      className={`inputs w-full dark:bg-darkthemeitems bg-white`}
                     />
                   </div>
                 </div>
@@ -277,7 +275,6 @@ const Availability = () => {
             </button>
           </div>
         </div>
-        </Portal>
       )}
 
       <div className="flex flex-col md:flex-row md:justify-between mb-4 gap-4 items-start md:items-center">
@@ -346,7 +343,7 @@ const Availability = () => {
                         action='change'
                         fallback={
                           <div className="flex flex-col">
-                            <label className="text-xs sm:hidden">{t('settingsPage.availability.type')}</label>
+                            <label className="text-xs sm:hidden">Type</label>
                             <input
                               type="text"
                               value={slot.name}
@@ -358,7 +355,7 @@ const Availability = () => {
                         }
                       >
                         <div className="flex flex-col">
-                          <label className="text-xs sm:hidden">{t('settingsPage.availability.type')}</label>
+                          <label className="text-xs sm:hidden">Type</label>
                           <input
                             type="text"
                             value={slot.name}
@@ -373,19 +370,24 @@ const Availability = () => {
                         action='change'
                         fallback={
                           <div className="flex flex-col">
-                            <BaseTimeInput
+                            <label className="text-xs sm:hidden">From</label>
+                            <input
+                              type="time"
                               value={slot.start_shift}
                               disabled={true}
-                              inputClassName='!p-[10px]'
+                              readOnly={true}
+                              className={`inputs w-full dark:bg-darkthemeitems bg-white`}
                             />
                           </div>
                         }
                       >
                         <div className="flex flex-col">
-                          <BaseTimeInput
+                          <label className="text-xs sm:hidden">From</label>
+                          <input
+                            type="time"
                             value={slot.start_shift}
-                            onChange={(value) => updateSlot(dayIndex, slotIndex, 'start_shift', value || '')}
-                            inputClassName='!p-[10px]'
+                            onChange={(e) => updateSlot(dayIndex, slotIndex, 'start_shift', e.target.value)}
+                            className={`inputs w-full dark:bg-darkthemeitems bg-white`}
                           />
                         </div>
                       </CanAccess>
@@ -399,19 +401,24 @@ const Availability = () => {
                         action='change'
                         fallback={
                           <div className="flex flex-col">
-                            <BaseTimeInput
+                            <label className="text-xs sm:hidden">To</label>
+                            <input
+                              type="time"
                               value={slot.end_shift}
                               disabled={true}
-                              inputClassName='!p-[10px]'
+                              readOnly={true}
+                              className={`inputs w-full dark:bg-darkthemeitems bg-white`}
                             />
                           </div>
                         }
                       >
                         <div className="flex flex-col">
-                          <BaseTimeInput
+                          <label className="text-xs sm:hidden">To</label>
+                          <input
+                            type="time"
                             value={slot.end_shift}
-                            onChange={(value) => updateSlot(dayIndex, slotIndex, 'end_shift', value || '')}
-                            inputClassName='!p-[10px]'
+                            onChange={(e) => updateSlot(dayIndex, slotIndex, 'end_shift', e.target.value)}
+                            className={`inputs w-full dark:bg-darkthemeitems bg-white`}
                           />
                         </div>
                       </CanAccess>

@@ -73,9 +73,9 @@ const Filter = (props:FilterProps) => {
                 <div className='overlay bg-transparent' onClick={()=>{setShowFilter(false)}}/>
                 <div className={`absolute w-[11em] flex flex-col p-2 rounded-md ml-[-5.8em] justify-between items-start mt-[2.6em] z-[230]  ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`}>
                     {/* <div onClick={rangeOfDays} className='items-center w-full cursor-pointer hover:opacity-70 p-1 flex gap-2 justify-start'>Select date range</div> */}
-                    <div onClick={last7Days} className='items-center w-full cursor-pointer hover:opacity-70 p-1 flex gap-2 justify-start'>{t('export.lastWeek')}</div>
-                    <div onClick={lastMonth} className='items-center w-full cursor-pointer hover:opacity-70 p-1 flex gap-2 justify-start'>{t('export.lastMonth')}</div>
-                    <div onClick={lastYear} className='items-center w-full cursor-pointer hover:opacity-70 p-1 flex gap-2 justify-start'>{t('export.lastYear')}</div>
+                    <div onClick={last7Days} className='items-center w-full cursor-pointer hover:opacity-70 p-1 flex gap-2 justify-start'>Last week</div>
+                    <div onClick={lastMonth} className='items-center w-full cursor-pointer hover:opacity-70 p-1 flex gap-2 justify-start'>Last month</div>
+                    <div onClick={lastYear} className='items-center w-full cursor-pointer hover:opacity-70 p-1 flex gap-2 justify-start'>Last year</div>
                 </div>
             </div>
         }

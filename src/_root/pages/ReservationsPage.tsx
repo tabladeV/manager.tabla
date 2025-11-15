@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
@@ -17,9 +17,7 @@ import {
   Trash,
   Trash2,
   Tags,
-  LayoutPanelLeft,
-  CreditCard,
-  DollarSign
+  LayoutPanelLeft
 } from 'lucide-react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import SearchBar from "../../components/header/SearchBar";
@@ -39,7 +37,7 @@ import ActionPopup from "../../components/popup/ActionPopup";
 import { useDateContext } from '../../context/DateContext';
 import DraggableItemSkeleton from '../../components/places/DraggableItemSkeleton';
 import DraggableItem from '../../components/places/DraggableItem';
-import ReservationCard from '../../components/places/ReservationCard';
+import ResevrationCard from '../../components/places/ResevrationCard';
 import { Tag } from 'react-konva';
 import { getTextColor } from '../../utils/helpers';
 import { useAsyncTaskManager } from '../../hooks/useAsyncTaskManager';
@@ -741,8 +739,6 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
               }
             </div>
 
-            
-
             {/* Comment if available */}
             {reservation.commenter && (
               <div className="flex items-start gap-1 mt-1 text-sm text-gray-500">
@@ -756,18 +752,9 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
                 <span>{reservation.area.name}</span>
               </div>
             }
-            
-            {reservation.is_payed && (
-              <div className="flex gap-1 my-1 text-sm bg-softyellowtheme items-center text-yellowtheme w-fit px-2 py-1 rounded">
-                <DollarSign size={14} className={` ${isDarkMode ? 'text-yellowtheme' : 'text-yellowtheme'}`} />
-                <span>{t('reservations.tableHeaders.paid')}{reservation.amount && `: ${reservation.amount} DH`} </span>
-              </div>
-            )}
-
             <div className="text-sm text-gray-500">
               {` # ${reservation.seq_id}`}
             </div>
-
           </div>
         );
 
@@ -1172,8 +1159,6 @@ const ReservationsPage: React.FC = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const [reservationToDelete, setReservationToDelete] = useState<BaseKey>('');
 
-  
-  
   // Reservation progress data
   const [reservationProgressData, setReservationProgressData] = useState<DataTypes>({
     reserveDate: selectedClient?.date || '',
@@ -1189,7 +1174,7 @@ const ReservationsPage: React.FC = () => {
   const { chosenDay } = useDateContext();
 
   const [filterDate, setFilterDate] = useState<boolean>(true);
-  
+
   // Data fetching
   const { data, isRefetching: isLoading, isLoading: isFirstLoad, error, refetch: refetchReservations } = useList({
     resource: "api/v1/bo/reservations/",
@@ -1197,22 +1182,10 @@ const ReservationsPage: React.FC = () => {
       { field: "page", operator: "eq", value: page },
       { field: "page_size", operator: "eq", value: 20 },
       { field: "status", operator: "eq", value: focusedFilter },
+      { field: "date_", operator: "gte", value: selectedDateRange.start ? format(selectedDateRange.start, 'yyyy-MM-dd') : filterDate ? format(chosenDay, 'yyyy-MM-dd') : '' },
+      { field: "date_", operator: "lte", value: selectedDateRange.end ? format(selectedDateRange.end, 'yyyy-MM-dd') : filterDate ? format(chosenDay, 'yyyy-MM-dd') : '' },
       { field: "search", operator: "eq", value: searchKeyWord },
-      { field: "ordering", operator: "eq", value: "-id" },
-      {
-        field: "date__gte",
-        operator: "eq",
-        value: selectedDateRange.start
-          ? format(selectedDateRange.start, 'yyyy-MM-dd')
-          : (filterDate ? format(chosenDay, 'yyyy-MM-dd') : '')
-      },
-      {
-        field: "date__lte",
-        operator: "eq",
-        value: selectedDateRange.end
-          ? format(selectedDateRange.end, 'yyyy-MM-dd')
-          : (filterDate ? format(chosenDay, 'yyyy-MM-dd') : '')
-      },
+      { field: "ordering", operator: "eq", value: "-id" }
     ],
     queryOptions: {
       onSuccess: (data) => {
@@ -1474,16 +1447,10 @@ const ReservationsPage: React.FC = () => {
       r.id === idStatusModification ? { ...r, loading: true } : r
     ));
 
-    const targetReservation = reservations.find(r => r.id === idStatusModification);
-    const date = targetReservation ? targetReservation.date : '';
-    const time = targetReservation ? targetReservation.time : '';
-
     upDateReservation({
       id: `${idStatusModification}/`,
       values: {
-        status: pendingStatus,
-        date,
-        time
+        status: pendingStatus
       }
     }, {
       onSuccess() {
@@ -1782,7 +1749,7 @@ const ReservationsPage: React.FC = () => {
         {(isLoading || isFirstLoad) ?
           <DraggableItemSkeleton count={3} isDarkMode={darkMode} />
           : (filteredReservations.map(item => (
-            <ReservationCard
+            <ResevrationCard
               itemData={{
                 ...item,
                 number_of_guests: parseInt(item.number_of_guests, 10),
@@ -1801,7 +1768,7 @@ const ReservationsPage: React.FC = () => {
           )))}
         {((reservationAPIInfo?.count || 0) > 1 && filteredReservations?.length > 10) && (<>
           <div className='bottom mx-auto w-full'>
-            <Pagination setPage={(p: number) => setPage(p)} size={20} count={reservationAPIInfo?.count || 0} page={page} />
+            <Pagination setPage={(p: number) => setPage(p)} size={20} count={reservationAPIInfo?.count || 0} />
           </div>
         </>)}
       </div>
@@ -1823,7 +1790,7 @@ const ReservationsPage: React.FC = () => {
           setShowColumnCustomization={setShowColumnCustomization}
           highlightOccasions={highlightOccasions}
         />
-        <Pagination setPage={(page) => { setPage(page) }} size={20} count={count} page={page} />
+        <Pagination setPage={(page) => { setPage(page) }} size={20} count={count} />
       </div>
 
       {/* Date Selection Modal */}

@@ -271,11 +271,11 @@ export const useExportConfig = () => {
             input: 'select',
             options: [
                 { value: '', label: t('export.all', 'All Sources') },
-                { value: 'MARKETPLACE', label: t('overview.charts.reservationsSource.legend.MarketPlace') },
-                { value: 'WIDGET', label: t('overview.charts.reservationsSource.legend.Widget') },
-                { value: 'WEBSITE', label: t('overview.charts.reservationsSource.legend.ThirdParty') },
-                { value: 'WALK_IN', label: t('overview.charts.reservationsSource.legend.WalkIn') },
-                { value: 'BACK_OFFICE', label: t('overview.charts.reservationsSource.legend.BackOffice') },
+                { value: 'MARKETPLACE', label: 'Marketplace' },
+                { value: 'WIDGET', label: 'Widget' },
+                { value: 'WEBSITE', label: 'Website' },
+                { value: 'BACK_OFFICE', label: 'Back Office' },
+                { value: 'WALK_IN', label: 'Walk-In' }
             ],
             defaultValue: ''
         },

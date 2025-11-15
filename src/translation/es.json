@@ -146,11 +146,7 @@
     },
     "buttons": {
       "addReservation": "Agregar Reserva",
-      "export": "Exportar",
-      "createAndSendPaymentLink": "Añadir y enviar enlace de pago",
-      "createAndCopyPaymentLink": "Añadir y copiar enlace de pago",
-      "sendPaymentLink": "Enviar enlace de pago",
-      "copyPaymentLink": "Copiar enlace de pago"
+      "export": "Exportar"
     },
     "tableHeaders": {
       "id": "ID",
@@ -168,8 +164,7 @@
       "sendReview": "Enviar Reseña",
       "reviewed": "Reseña enviada",
       "details": "Detalles de la Reserva",
-      "detailsShort": "Fecha/Hora/Huéspedes",
-      "paid": "Pagado"
+      "detailsShort": "Fecha/Hora/Huéspedes"
     },
     "statusLabels": {
       "pending": "Pendiente",
@@ -297,35 +292,37 @@
     }
   },
   "calendar": {
-    "pageTitle": "Calendario - Tabla | Prueba lo Mejor de Marruecos",
-    "title": "Calendario",
-    "viewAgenda": "Ver Calendario",
-    "navigation": {
-      "previousMonth": "Mes anterior",
-      "nextMonth": "Mes siguiente"
+      "pageTitle": "Cuadrícula de Calendario - Tabla | Prueba lo Mejor de Marruecos",
+      "title": "Cuadrícula de Calendario",
+      "viewAgenda": "Ver Cuadrícula",
+      "navigation": {
+        "previousMonth": "Mes anterior",
+        "nextMonth": "Mes siguiente"
+      },
+      "weekDays": {
+        "sun": "Dom",
+        "mon": "Lun",
+        "tue": "Mar",
+        "wed": "Mié",
+        "thu": "Jue",
+        "fri": "Vie",
+        "sat": "Sáb"
+      },
+      "status": {
+        "open": "Abierto",
+        "closed": "Cerrado"
+      },
+      "reservations": {
+        "count": "{{count}} Reserva",
+        "count_plural": "{{count}} Reservas"
+      },
+      "guests": {
+        "count": "{{count}} Persona",
+        "count_plural": "{{count}} Personas"
+      }
     },
-    "weekDays": {
-      "sun": "Dom",
-      "mon": "Lun",
-      "tue": "Mar",
-      "wed": "Mié",
-      "thu": "Jue",
-      "fri": "Vie",
-      "sat": "Sáb"
-    },
-    "status": {
-      "open": "Abierto",
-      "closed": "Cerrado"
-    },
-    "reservations": {
-      "count": "{{count}} Reserva",
-      "count_plural": "{{count}} Reservas"
-    },
-    "guests": {
-      "count": "{{count}} Persona",
-      "count_plural": "{{count}} Personas"
-    }
-  },
+
+
   "clients": {
     "title": "Clientes",
     "searchPlaceholder": "Buscar...",
@@ -440,8 +437,7 @@
       "food": "Calificación de Comida",
       "service": "Calificación de Servicio",
       "total": "Calificación Total",
-      "environment": "Calificación de Ambiente",
-      "noComment": "No se proporcionó ningún comentario"
+      "environment": "Calificación de Ambiente"
     }
   },
   "messages": {
@@ -538,21 +534,7 @@
       "widget": "Widget de Reserva",
       "roles": "Roles",
       "permissions": "Permisos",
-      "services": "Servicios",
-      "messagingTemplates": "Plantillas de Mensajería",
-      "alerts": "Alertas de Eventos/Ofertas"
-    },
-    "messagingTemplates": {
-      "description": "Crear y gestionar plantillas para mensajes automatizados.",
-      "newTemplate": "Nueva Plantilla",
-      "editTemplate": "Editar Plantilla",
-      "templateName": "Nombre de la Plantilla",
-      "actions": "Acciones",
-      "content": "Contenido",
-      "dynamicVariables": "Variables Dinámicas",
-      "assetManager": "Gestor de Recursos",
-      "loadingAssets": "Cargando recursos...",
-      "errorFetchingAssets": "Error al cargar los recursos."
+      "services": "Servicios"
     },
     "general": {
       "basicInformationForm": {
@@ -639,10 +621,9 @@
       },
       "payment": {
         "title": "Pago",
-        "enable": "Habilitar Pago",
-        "minGuestsForPayment": "Número mínimo de huéspedes para requerir pago",
-        "depositAmountPerGuest": "Cantidad de depósito por huésped",
-        "disabledNote": "El pago está actualmente deshabilitado - no se requerirá pago para las reservas"
+        "enableWhenGuestOver": "Habilitar cuando el huésped supere",
+        "disable": "Deshabilitar",
+        "enable": "Habilitar"
       },
       "buttons": {
         "preview": "Vista Previa",
@@ -935,63 +916,6 @@
       }
     }
   },
-  "paymentSettings": {
-    "title": "Ajustes de Pago",
-    "editRule": "Editar Regla",
-    "addRule": "Añadir Regla",
-    "ruleName": "Nombre de la Regla",
-    "ruleNameRequired": "El nombre de la regla es obligatorio",
-    "ruleNamePlaceholder": "ej: Cena de Fin de Semana",
-    "startDate": "Fecha de Inicio",
-    "endDate": "Fecha de Fin",
-    "allDay": "Todo el Día",
-    "fromTime": "Desde la Hora",
-    "toTime": "Hasta la Hora",
-    "advanced": "Avanzado (Recurrencia)",
-    "alwaysRequire": "Siempre requerir pago",
-    "useRules": "Usar reglas",
-    "alwaysDescription": "Cuando el pago es siempre requerido, se solicitará un depósito para todas las reservas que cumplan los criterios siguientes.",
-    "status": "Estado",
-    "actions": "Acciones",
-    "errors": {
-      "startDateAfterEnd": "La fecha de inicio no puede ser posterior a la fecha de fin",
-      "endDateBeforeStart": "La fecha de fin no puede ser anterior a la fecha de inicio"
-    },
-    "description": {
-      "deposit": "Depósito de {{amount}} DH para {{count}} o más comensales.",
-      "allDay": "Todo el día.",
-      "fromToTime": "De {{from}} a {{to}}.",
-      "onDate": "El {{date}}.",
-      "fromToDate": "Del {{from}} al {{to}}."
-    }
-  },
-  "rrule": {
-    "repeatEvery": "Repetir cada",
-    "repeatOn": "Repetir en",
-    "ends": "Termina",
-    "never": "Nunca",
-    "on": "el",
-    "after": "Después de",
-    "occurrences": "ocurrencia(s)",
-    "daily": "Diariamente",
-    "weekly": "Semanalmente",
-    "monthly": "Mensualmente",
-    "yearly": "Anualmente",
-    "everyX": "Cada {{count}} {{unit}}",
-    "everyXPlural": "Cada {{count}} {{unit}}",
-    "freq_DAILY_singular": "día",
-    "freq_DAILY_plural": "días",
-    "freq_WEEKLY_singular": "semana",
-    "freq_WEEKLY_plural": "semanas",
-    "freq_MONTHLY_singular": "mes",
-    "freq_MONTHLY_plural": "meses",
-    "freq_YEARLY_singular": "año",
-    "freq_YEARLY_plural": "años",
-    "untilDate": "hasta {{date}}",
-    "afterXOccurrences": "después de {{count}} ocurrencia",
-    "afterXOccurrencesPlural": "después de {{count}} ocurrencias",
-    "startingFrom": "a partir de {{date}}"
-  },
   "marketplaceSettings": {
     "title": "Configuración del Marketplace",
     "chooseSettingPrompt": "Elige una configuración del marketplace para modificar",
@@ -1028,26 +952,6 @@
     "onlineBookingBlockage": {
       "title": "Restricciones de Reservas",
       "description": "Configura restricciones de reservas y fechas de no disponibilidad para reservas del marketplace. Controla la disponibilidad para reservas online."
-    }
-  },
-  "alerts": {
-    "title": "Alertas de Eventos/Ofertas",
-    "addNew": "Añadir Nueva Alerta",
-    "editTitle": "Editar Alerta",
-    "addTitle": "Añadir Nueva Alerta",
-    "image": "Imagen",
-    "uploadImage": "Subir Imagen",
-    "titleLabel": "Título",
-    "titlePlaceholder": "Introduzca el título de la alerta",
-    "descriptionLabel": "Descripción",
-    "descriptionPlaceholder": "Introduzca la descripción de la alerta...",
-    "active": "Activa",
-    "table": {
-      "image": "Imagen",
-      "title": "Título",
-      "status": "Estado",
-      "actions": "Acciones",
-      "period": "Período"
     }
   },
   "unifiedSettings": {
@@ -1445,175 +1349,93 @@
   },
   "reservationWidget": {
     "page": {
-      "title": "Tabla | Prueba lo mejor de Marruecos"
+        "title": "Tabla | Prueba lo mejor de Marruecos"
+      },
+      "common": {
+        "restaurant": "Restaurante",
+        "toggleDarkMode": "Alternar modo oscuro",
+        "back": "Atrás",
+        "continue": "Continuar",
+        "close": "Cerrar",
+        "readMore": "leer más",
+        "showLess": "mostrar menos"
+      },
+      "reservation": {
+        "makeReservation": "Hacer una Reserva",
+        "date": "Fecha",
+        "time": "Hora",
+        "guests": "Invitados",
+        "bookNow": "Reservar Ahora",
+        "previewMenu": "Ver nuestro menú"
+      },
+      "form": {
+        "yourInformation": "Su Información",
+        "title": "Título",
+        "mr": "Sr.",
+        "mrs": "Sra.",
+        "ms": "Srta.",
+        "firstName": "Nombre",
+        "lastName": "Apellido",
+        "email": "Correo Electrónico",
+        "phone": "Teléfono",
+        "allergies": "Alergias",
+        "preferences": "Preferencias",
+        "occasion": "Ocasión",
+        "areas": "Áreas",
+        "dressCode": "Código de Vestimenta",
+        "firstNamePlaceholder": "Ingrese su nombre",
+        "lastNamePlaceholder": "Ingrese su apellido",
+        "emailPlaceholder": "Ingrese su dirección de correo",
+        "phonePlaceholder": "Ingrese su número de teléfono",
+        "allergiesPlaceholder": "Por favor liste cualquier alergia",
+        "preferencesPlaceholder": "Cualquier solicitud especial o preferencia",
+        "occasionPlaceholder": "Seleccione una ocasión (opcional)",
+        "agreeToTerms": "Acepto",
+        "termsAndConditions": "los términos y condiciones",
+        "agreeToDressCode": "Acepto el código de vestimenta",
+        "noDressCode": "Sin código de vestimenta específico"
+      },
+      "validation": {
+        "firstNameRequired": "El nombre es requerido",
+        "lastNameRequired": "El apellido es requerido",
+        "emailRequired": "El correo electrónico es requerido",
+        "emailInvalid": "El correo electrónico es inválido",
+        "phoneRequired": "El número de teléfono es requerido"
+      },
+      "confirmation": {
+        "title": "Confirme Su Información",
+        "name": "Nombre",
+        "email": "Correo Electrónico",
+        "phone": "Teléfono",
+        "dateTime": "Fecha y Hora",
+        "guests": "Invitados",
+        "occasion": "Ocasión",
+        "allergies": "Alergias",
+        "preferences": "Preferencias",
+        "at": "a las",
+        "person": "persona",
+        "people": "personas",
+        "editDetails": "Editar Detalles",
+        "processing": "Procesando...",
+        "confirm": "Confirmar"
+      },
+      "success": {
+        "confirmed": "¡Reserva Confirmada!",
+        "completed": "¡Reserva Completada!",
+        "message": "Su reserva ha sido realizada exitosamente. Recibirá un correo de confirmación en breve.",
+        "makeAnother": "Hacer Otra Reserva"
+      },
+      "unavailable": {
+        "title": "Reservas No Disponibles",
+        "description": "Las reservas en línea no están disponibles actualmente. Por favor contacte al restaurante directamente."
+      },
+      "errors": {
+        "serverError": "Algo salió mal. Por favor intente de nuevo o contacte al restaurante directamente."
+      },
+      "footer": {
+        "copyright": "© {{year}} Tabla. Todos los derechos reservados."
+      }
     },
-    "common": {
-      "restaurant": "Restaurante",
-      "toggleDarkMode": "Alternar modo oscuro",
-      "back": "Atrás",
-      "continue": "Continuar",
-      "close": "Cerrar",
-      "readMore": "leer más",
-      "showLess": "mostrar menos"
-    },
-    "reservation": {
-      "makeReservation": "Hacer una Reserva",
-      "date": "Fecha",
-      "time": "Hora",
-      "guests": "Invitados",
-      "bookNow": "Reservar Ahora",
-      "previewMenu": "Ver nuestro menú",
-      "name": "Nombre Completo",
-      "email": "Dirección de Correo",
-      "phone": "Número de Teléfono",
-      "restaurant": "Nombre del Restaurante",
-      "status": "Estado",
-      "source": "Fuente de Reserva",
-      "allergies": "Alergias",
-      "preferences": "Preferencias Especiales",
-      "occasion": "Ocasión",
-      "commenter": "Comentarios"
-    },
-    "form": {
-      "yourInformation": "Su Información",
-      "title": "Título",
-      "mr": "Sr.",
-      "mrs": "Sra.",
-      "ms": "Srta.",
-      "firstName": "Nombre",
-      "lastName": "Apellido",
-      "email": "Correo Electrónico",
-      "phone": "Teléfono",
-      "allergies": "Alergias",
-      "preferences": "Preferencias",
-      "occasion": "Ocasión",
-      "areas": "Áreas",
-      "dressCode": "Código de Vestimenta",
-      "firstNamePlaceholder": "Ingrese su nombre",
-      "lastNamePlaceholder": "Ingrese su apellido",
-      "emailPlaceholder": "Ingrese su dirección de correo",
-      "phonePlaceholder": "Ingrese su número de teléfono",
-      "allergiesPlaceholder": "Por favor liste cualquier alergia",
-      "preferencesPlaceholder": "Cualquier solicitud especial o preferencia",
-      "occasionPlaceholder": "Seleccione una ocasión (opcional)",
-      "agreeToTerms": "Acepto",
-      "termsAndConditions": "los términos y condiciones",
-      "agreeToDressCode": "Acepto el código de vestimenta",
-      "noDressCode": "Sin código de vestimenta específico"
-    },
-    "validation": {
-      "firstNameRequired": "El nombre es requerido",
-      "lastNameRequired": "El apellido es requerido",
-      "emailRequired": "El correo electrónico es requerido",
-      "emailInvalid": "El correo electrónico es inválido",
-      "phoneRequired": "El número de teléfono es requerido",
-      "firstNameTooShort": "El nombre debe tener al menos 2 caracteres",
-      "firstNameTooLong": "El nombre debe tener menos de 50 caracteres",
-      "firstNameInvalid": "El nombre solo puede contener letras, espacios, guiones y apostrofes",
-      "lastNameTooShort": "El apellido debe tener al menos 2 caracteres",
-      "lastNameTooLong": "El apellido debe tener menos de 50 caracteres",
-      "lastNameInvalid": "El apellido solo puede contener letras, espacios, guiones y apostrofes",
-      "emailTooLong": "El correo electrónico debe tener menos de 100 caracteres",
-      "phoneInvalid": "El número de teléfono solo puede contener números, espacios, +, -, (, ) y debe tener al menos 8 dígitos",
-      "nameHint": "Solo se permiten letras, espacios, guiones y apostrofes (2-50 caracteres)",
-      "phoneHint": "Formato: +212 6XX XX XX XX (mínimo 8 dígitos)"
-    },
-    "payment": {
-      "title": "Pago Requerido",
-      "reservationSummary": "Resumen de la Reserva",
-      "paymentRequired": "Pago Requerido",
-      "paymentDescription": "Se requiere un pago para asegurar su reserva. Por favor ingrese la información de su tarjeta de crédito a continuación.",
-      "reservationFee": "Tarifa de Reserva",
-      "feeDescription": "Esta tarifa será deducida de su factura final.",
-      "creditCardInfo": "Información de Tarjeta de Crédito",
-      "cardholderName": "Nombre del Titular",
-      "cardholderNamePlaceholder": "Ingrese el nombre como aparece en la tarjeta",
-      "cardNumber": "Número de Tarjeta",
-      "expiryDate": "Fecha de Vencimiento",
-      "cvv": "CVV",
-      "securePayment": "Su información de pago es segura y encriptada.",
-      "proceedToConfirmation": "Proceder a la Confirmación",
-      "cardNumberRequired": "El número de tarjeta es requerido",
-      "cardNumberInvalid": "Por favor ingrese un número de tarjeta válido",
-      "expiryRequired": "La fecha de vencimiento es requerida",
-      "expiryInvalid": "Por favor ingrese una fecha de vencimiento válida (MM/AA)",
-      "cvvRequired": "El CVV es requerido",
-      "cvvInvalid": "Por favor ingrese un CVV válido",
-      "cardholderRequired": "El nombre del titular es requerido",
-      "billingAddress": "Dirección de Facturación",
-      "firstName": "Nombre",
-      "firstNamePlaceholder": "Ingrese su nombre",
-      "firstNameRequired": "El nombre es requerido",
-      "lastName": "Apellido",
-      "lastNamePlaceholder": "Ingrese su apellido",
-      "lastNameRequired": "El apellido es requerido",
-      "address": "Dirección",
-      "addressPlaceholder": "Ingrese su dirección",
-      "addressRequired": "La dirección es requerida",
-      "city": "Ciudad",
-      "cityPlaceholder": "Ingrese su ciudad",
-      "zipCode": "Código Postal",
-      "zipCodePlaceholder": "Ingrese su código postal",
-      "country": "País",
-      "countryPlaceholder": "Ingrese su país",
-      "countryRequired": "El país es requerido",
-      "billingInfoRequired": "Por favor complete la información de dirección de facturación",
-      "errorTitle": "Error de Pago",
-      "errorMessage": "Su reserva fue creada pero el pago no pudo ser procesado. Por favor contacte al restaurante.",
-      "reservationCreated": "¡Reserva Creada Exitosamente!",
-      "amountToPay": "Cantidad a Pagar",
-      "reservationNumber": "Número de Reservación",
-      "preparingPayment": "Preparando pago...",
-      "paymentNotice": "Su reserva ha sido creada. No puede modificar los detalles después de este paso. Por favor proceda a completar el pago.",
-      "cancelPayment": "Omitir Pago",
-      "proceedToPayment": "Proceder al Pago",
-      "paymentNoticeTitle": "Se requiere un pago por adelantado",
-      "paymentNoticeDescription": "Se requiere un pago por adelantado para esta reserva.",
-      "checking": "Verificando el estado del pago..."
-    },
-    "confirmation": {
-      "title": "Confirme Su Información",
-      "name": "Nombre",
-      "email": "Correo Electrónico",
-      "phone": "Teléfono",
-      "dateTime": "Fecha y Hora",
-      "guests": "Invitados",
-      "occasion": "Ocasión",
-      "allergies": "Alergias",
-      "preferences": "Preferencias",
-      "at": "a las",
-      "person": "persona",
-      "people": "personas",
-      "editDetails": "Editar Detalles",
-      "processing": "Procesando...",
-      "confirm": "Confirmar"
-    },
-    "success": {
-      "confirmed": "¡Reserva Confirmada!",
-      "completed": "¡Reserva Completada!",
-      "message": "Su reserva ha sido realizada exitosamente. Recibirá un correo de confirmación en breve.",
-      "makeAnother": "Hacer Otra Reserva"
-    },
-    "unavailable": {
-      "title": "Reservas No Disponibles",
-      "description": "Las reservas en línea no están disponibles actualmente. Por favor contacte al restaurante directamente."
-    },
-    "errors": {
-      "serverError": "Algo salió mal. Por favor intente de nuevo o contacte al restaurante directamente.",
-      "paymentInitiationFailed": "Falló la iniciación del pago",
-      "paymentDetailsError": "No se pudieron procesar los detalles del pago. Por favor, inténtelo de nuevo."
-    },
-    "footer": {
-      "copyright": "© {{year}} Tabla. Todos los derechos reservados.",
-      "poweredBy": "Desarrollado por"
-    },
-    "contact": {
-      "followUs": "Contacto y Síguenos",
-      "phone": "Llamar",
-      "email": "Email",
-      "whatsapp": "WhatsApp"
-    }
-  },
   "modifyReservation": {
     "page": {
       "titlePreview": "Tabla | Prueba lo mejor de Marruecos",
@@ -1695,45 +1517,7 @@
       "message": "Tu reseña ha sido enviada exitosamente. Apreciamos tus comentarios y los usaremos para mejorar nuestro servicio."
     }
   },
-  "paymentSuccess": {
-    "title": "¡Pago Exitoso!",
-    "description": "Su pago ha sido procesado exitosamente y su reserva ha sido confirmada.",
-    "reservationDetails": "Detalles de la Reserva",
-    "paidAmount": "Monto Pagado:",
-    "newReservation": "Hacer otra reserva",
-    "loading": "Cargando detalles de la reserva...",
-    "error": "No se pueden cargar los detalles de la reserva. Por favor, verifique la URL o contacte al soporte."
-  },
-  "paymentFailure": {
-    "title": "¡Pago Fallido!",
-    "description": "Lo sentimos, pero su pago no pudo ser procesado. Por favor, inténtelo de nuevo o inicie una nueva reserva.",
-    "failedAmount": "Monto Fallido:",
-    "tryAgain": "Intentar de Nuevo",
-    "newReservation": "Hacer una Nueva Reserva",
-    "error": {
-      "parsingData": "Error al analizar los datos en caché:",
-      "paymentDetails": "No se pudieron procesar los detalles del pago. Por favor, inténtelo de nuevo.",
-      "initiationFailed": "Falló la iniciación del pago. Por favor, inténtelo de nuevo.",
-      "detailsNotFound": "No se encontraron los detalles de la reserva. Por favor, inicie una nueva reserva."
-    }
-  },
-  "paymentLink": {
-    "page": {
-      "title": "Completar pago | Tabla"
-    },
-    "processing": "Procesando su solicitud de pago...",
-    "errors": {
-      "title": "Error de pago",
-      "restaurantNotFound": "No se pudo cargar la información del restaurante. Por favor, inténtelo de nuevo más tarde.",
-      "missingReservationId": "Falta el ID de reserva. Por favor, verifique su enlace.",
-      "paymentDetailsError": "Los detalles del pago están incompletos. Por favor, contacte al restaurante.",
-      "paymentInitiationFailed": "No se pudo iniciar el pago. Por favor, inténtelo de nuevo más tarde.",
-      "paymentDisabled": "El pago en línea no está habilitado para este restaurante. Por favor, contacte directamente al restaurante.",
-      "reservationNotFound": "No se encontró la reserva. Es posible que haya sido cancelada o ya procesada."
-    },
-    "makeReservation": "Hacer una reserva"
-  },
-  "calendarPopup": {
+  "calendarPopup":{
     "months": {
       "january": "Enero",
       "february": "Febrero",
@@ -1757,15 +1541,15 @@
       "friday": "Vie",
       "saturday": "Sáb"
     },
-    "labels": {
+    "labels":{
       "selectedRange": "Rango seleccionado"
     },
-    "buttons": {
+    "buttons":{
       "confirm": "Confirmar",
       "cancel": "Cancelar"
     }
   },
-  "reservationProcess": {
+  "reservationProcess":{
     "date": "Fecha",
     "time": "Hora",
     "guests": "Invitados",
@@ -1780,101 +1564,22 @@
     "for": "para",
     "yourReservationIsSetFor": "Su reserva está programada para",
     "common": {
-      "cancel": "Cancelar",
-      "add": "Agregar",
-      "update": "Actualizar",
-      "delete": "Eliminar",
-      "active": "Activo",
-      "inactive": "Inactivo",
-      "optional": "Opcional",
-      "days": {
-        "sunday": "Domingo",
-        "monday": "Lunes",
-        "tuesday": "Martes",
-        "wednesday": "Miércoles",
-        "thursday": "Jueves",
-        "friday": "Viernes",
-        "saturday": "Sábado"
-      }
+        "cancel": "Cancelar",
+        "add": "Agregar",
+        "update": "Actualizar",
+        "delete": "Eliminar",
+        "active": "Activo",
+        "inactive": "Inactivo",
+        "optional": "Opcional",
+        "days": {
+            "sunday": "Domingo",
+            "monday": "Lunes",
+            "tuesday": "Martes",
+            "wednesday": "Miércoles",
+            "thursday": "Jueves",
+            "friday": "Viernes",
+            "saturday": "Sábado"
+        }
     }
-  },
-  "notifications": {
-    "paymentLink": {
-      "sent": "Enlace de pago enviado",
-      "sentDescription": "El enlace de pago ha sido enviado por correo electrónico",
-      "sendError": "No se pudo enviar el enlace de pago",
-      "sendErrorDescription": "Hubo un error al enviar el enlace de pago",
-      "copied": "Enlace de pago copiado",
-      "copiedDescription": "El enlace de pago ha sido copiado al portapapeles",
-      "copyError": "No se pudo copiar el enlace de pago",
-      "copyErrorDescription": "Hubo un error al copiar el enlace de pago",
-      "error": "Error en el enlace de pago",
-      "missingSeqId": "No se pudo obtener el ID de reserva"
-    },
-    "reservation": {
-      "createError": "No se pudo crear la reserva",
-      "createErrorDescription": "Hubo un error al crear la reserva"
-    }
-  },
-  "common": {
-    "cancel": "Cancelar",
-    "add": "Añadir",
-    "update": "Actualizar",
-    "save": "Guardar",
-    "delete": "Eliminar",
-    "Enable": "Activar",
-    "disable": "Desactivar",
-    "active": "Activo",
-    "inactive": "Inactivo",
-    "optional": "Opcional",
-    "upload": "Subir",
-    "uploading": "Subiendo...",
-    "select": "Seleccionar",
-    "selectFile": "Seleccionar archivo",
-    "selectImage": "Seleccionar imagen",
-    "change": "Cambiar",
-    "hour": "Hora",
-    "minute": "Minuto",
-    "second": "Segundo",
-    "hours": "Horas",
-    "minutes": "Minutos",
-    "seconds": "Segundos",
-    "confirm": "Confirmar",
-    "selectTime": "Seleccionar hora",
-    "dismiss": "Descartar",
-    "close": "Cerrar",
-    "dismissAll": "Descartar Todo",
-    "closeAll": "Cerrar Todo",
-    "loading": "Cargando...",
-    "from": "Desde",
-    "to": "Hasta",
-    "days": {
-      "sunday": "Domingo",
-      "monday": "Lunes",
-      "tuesday": "Martes",
-      "wednesday": "Miércoles",
-      "thursday": "Jueves",
-      "friday": "Viernes",
-      "saturday": "Sábado"
-    },
-    "validation": {
-      "requiredField": "Este campo es obligatorio",
-      "invalidDate": "Por favor, introduzca una fecha válida",
-      "invalidTime": "Por favor, introduzca una hora válida",
-      "invalidNumber": "Por favor, introduzca un número válido",
-      "minValue": "El valor debe ser al menos {{min}}",
-      "maxValue": "El valor debe ser como máximo {{max}}",
-      "minLength": "Debe tener al menos {{min}} caracteres",
-      "maxLength": "Debe tener como máximo {{max}} caracteres",
-      "invalidEmail": "Por favor, introduzca una dirección de correo electrónico válida",
-      "invalidPhone": "Por favor, introduzca un número de teléfono válido",
-      "invalidURL": "Por favor, introduzca una URL válida"
-    },
-    "errors": {
-      "restaurantNotFoundTitle": "Restaurante no encontrado",
-      "restaurantNotFoundMessage": "No se pudieron cargar las información del restaurante. Por favor, verifique la URL o contacte al soporte.",
-      "anErrorOccurred": "Se produjo un error",
-      "tryAgain": "Por favor, inténtelo de nuevo más tarde."
-    }
-  }
+}
 }

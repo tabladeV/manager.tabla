@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import { addHours, format, parse } from 'date-fns';
 import { useDateContext } from '../../context/DateContext';
 import { useDarkContext } from '../../context/DarkContext';
-import { BaseKey, BaseRecord, CanAccess, useCan, useList, useUpdate, CrudFilters } from '@refinedev/core';
+import { BaseKey, BaseRecord, CanAccess, useCan, useList, useUpdate } from '@refinedev/core';
 import DraggableItem from '../../components/places/DraggableItem';
 import DropTarget from '../../components/places/DropTarget';
 import SearchBar from '../../components/header/SearchBar';
@@ -129,10 +129,7 @@ const PlacePage: React.FC = () => {
   const [time, setTime] = useState<string | null>(currentHour);
   const [timeTo, setTimeTo] = useState<string | null>(null);
   const { chosenDay } = useDateContext();
-  const [tablesFilters, setTablesFilters] = useState<CrudFilters>([]);
-  const [reservationsFilters, setReservationsFilters] = useState<CrudFilters>([]);
-  const [page, setPage] = useState(1);
-  
+
   // Data fetching with useList
   const { data, isLoading, error } = useList({
     resource: "api/v1/bo/floors/",
@@ -141,38 +138,33 @@ const PlacePage: React.FC = () => {
     }
   });
 
-  
-  useEffect(() => {
-    const dateFilter = format(chosenDay, 'yyyy-MM-dd');
-    const newTablesFilters: CrudFilters = [
-      { field: "reservations__date", operator: "eq", value: dateFilter },
-      { field: "reservations__time_", operator: "gte", value: time || '00:00' },
-      { field: "reservations__time_", operator: "lte", value: timeTo ? timeTo : '23:59' },
-    ];
-
-    const newReservationsFilters: CrudFilters = [
-      { field: "page", operator: "eq", value: page },
-      { field: "date", operator: "eq", value: dateFilter },
-      { field: "time_", operator: "gte", value: time || '00:00' },
-      { field: "time_", operator: "lte", value: timeTo ? timeTo : '23:59' },
-    ];
-
-    setTablesFilters(newTablesFilters);
-    setReservationsFilters(newReservationsFilters);
-
-  }, [chosenDay, time, timeTo, page]);
-
   const { data: tablesData, isFetching: isLoadingTables, error: errorTables, refetch: refreshTables } = useList({
     resource: "api/v1/bo/tables/tables_reservations/",
-    filters: tablesFilters,
+    filters: [
+      { field: "reservations__date", operator: "eq", value: format(chosenDay, 'yyyy-MM-dd') },
+      { field: "reservations__time_", operator: "gte", value: time || '00:00' },
+      { field: "reservations__time_", operator: "lte", value: timeTo ? timeTo : '23:59' },
+    ],
     queryOptions: {
       keepPreviousData: false,
     }
   });
 
+  // We've removed the availableTablesData fetching since it's now handled inside the EditReservationModal
+
+  useEffect(()=>{
+    console.log(isLoadingTables)
+  },[isLoadingTables])
+
+  const [page, setPage] = useState(1);
   const { data: reservationsData, isLoading: isLoadingReservations, error: errorReservations, refetch: refetchReservations } = useList({
     resource: "api/v1/bo/reservations/",
-    filters: reservationsFilters,
+    filters: [
+      { field: "page", operator: "eq", value: page },
+      { field: "date", operator: "null", value: format(chosenDay, 'yyyy-MM-dd') },
+      { field: "time_", operator: "gte", value: time || '00:00' },
+      { field: "time_", operator: "lte", value: timeTo ? timeTo : '23:59' },
+    ],
     queryOptions: {
       keepPreviousData: false,
     }
@@ -806,9 +798,9 @@ const PlacePage: React.FC = () => {
                   />
                 )))}
             </div>
-            {((reservationAPIInfo?.count || 0) > 1 && filteredReservations?.length) && (<>
+            {((reservationAPIInfo?.count || 0) > 1 && filteredReservations?.length > 100) && (<>
               <div className='bottom mx-auto'>
-                <Pagination page={page} setPage={(p: number) => setPage(p)} size={20} count={reservationAPIInfo?.count || 0} />
+                <Pagination setPage={(p: number) => setPage(p)} size={20} count={reservationAPIInfo?.count || 0} />
               </div>
             </>)}
           </div>

@@ -6,7 +6,6 @@ import { useEnvironment } from '../../hooks/useEnvironment';
 declare global {
   interface Window {
     dataLayer: any[];
-    gtag: (...args: any[]) => void;
   }
 }
 
@@ -24,38 +23,32 @@ const GoogleAnalytics = () => {
     const scriptId = 'google-analytics-script';
     if (document.getElementById(scriptId)) return;
 
-    // 1. Initialize dataLayer array
-    window.dataLayer = window.dataLayer || [];
-    
-    // 2. Define the gtag function
-    function gtag(...args: any[]) {
-      window.dataLayer.push(arguments);
-    }
-    window.gtag = gtag;
-    
-    // 3. Add the external GA script
     const script = document.createElement('script');
     script.id = scriptId;
     script.async = true;
     script.src = `https://www.googletagmanager.com/gtag/js?id=${trackingId}`;
     document.head.appendChild(script);
 
-    // 4. Configure GA
+    window.dataLayer = window.dataLayer || [];
+    function gtag(...args: any[]) {
+      window.dataLayer.push(args);
+    }
+    
+    // Make gtag globally available
+    (window as any).gtag = gtag;
+
     gtag('js', new Date());
     gtag('config', trackingId);
-    
-    console.log('Google Analytics initialized with ID:', trackingId);
 
   }, [isLoaded, isDevelopment]);
 
   useEffect(() => {
-    if (!isLoaded || !window.gtag) return;
+    if (!isLoaded || !(window as any).gtag) return;
     
     const trackingId = isDevelopment ? DEV_GA_TRACKING_ID : GA_TRACKING_ID;
-    window.gtag('config', trackingId, {
+    (window as any).gtag('config', trackingId, {
       page_path: location.pathname + location.search,
     });
-    console.log('Page view tracked:', location.pathname + location.search);
   }, [location, isLoaded, isDevelopment]);
 
   return null;

@@ -1,7 +1,6 @@
 import { CapacitorHttp, HttpResponse } from '@capacitor/core';
 import { Capacitor } from '@capacitor/core';
 import axiosInstance from '../providers/axiosInstance';
-import { handleUnauthorizedResponse } from "../providers/authProvider";
 
 /**
  * HTTP Response interface that standardizes responses across platforms
@@ -208,16 +207,6 @@ export class UnifiedHttpClient {
         axiosConfig.headers = config.headers;
       }
 
-      // Important: For FormData, make sure correct content-type is NOT set
-      // Let browser set it automatically with the boundary
-      if (isFormData) {
-        axiosConfig.headers = {
-          ...axiosConfig.headers,
-          'Content-Type': 'multipart/form-data'
-        };
-      }
-
-
       switch (config.method) {
         case 'GET':
           response = await axiosInstance.get(config.url, axiosConfig);
@@ -265,12 +254,6 @@ export class UnifiedHttpClient {
     // Don't set Content-Type for FormData - let the browser/platform set it with boundary
     if (!isFormData && !customHeaders?.['Content-Type']) {
       headers['Content-Type'] = 'application/json';
-    }
-
-    // Add Authorization header from access token
-    const token = localStorage.getItem("access");
-    if (token) {
-      headers["Authorization"] = `Bearer ${token}`;
     }
 
     // Add restaurant ID header if available (convert to number for Django compatibility)
@@ -342,14 +325,19 @@ export class UnifiedHttpClient {
   /**
    * Handles authentication errors (401, 403, 411) by clearing auth data and redirecting
    */
-  private static async handleAuthenticationError(error: any): Promise<boolean> {
+  private static handleAuthenticationError(error: any): void {
     const status = error.response?.status;
-
-    // If status indicates auth problem, try refreshing token
+    
+    // Handle authentication errors like axiosInstance interceptor
     if (status === 401 || status === 411 || status === 403) {
-      return handleUnauthorizedResponse(status);
+      localStorage.removeItem("isLogedIn");
+      localStorage.removeItem("restaurant_id");
+      localStorage.removeItem("refresh");
+      localStorage.removeItem("permissions");
+      localStorage.removeItem("is_manager");
+
+      window.location.href = "/sign-in";
     }
-    return false;
   }
 
   /**

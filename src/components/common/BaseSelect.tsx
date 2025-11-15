@@ -7,8 +7,6 @@ interface SelectOption {
   disabled?: boolean;
 }
 
-type ValidationRule = (value: string | number | (string | number)[] | null) => string | null;
-
 interface SelectProps {
   label?: string;
   placeholder?: string;
@@ -16,7 +14,6 @@ interface SelectProps {
   multiple?: boolean;
   clearable?: boolean;
   disabled?: boolean;
-  readonly?: boolean;
   chips?: boolean;
   searchable?: boolean;
   variant?: 'outlined' | 'filled' | 'plain';
@@ -27,8 +24,6 @@ interface SelectProps {
   loading?: boolean;
   value?: string | number | (string | number)[] | null;
   onChange?: (value: string | number | (string | number)[] | null) => void;
-  rules?: ValidationRule[];
-  name?: string;
 }
 
 const BaseSelect: React.FC<SelectProps> = ({
@@ -38,11 +33,10 @@ const BaseSelect: React.FC<SelectProps> = ({
   multiple = false,
   clearable = true,
   disabled = false,
-  readonly = false,
   chips = false,
   searchable = false,
   variant = "outlined",
-  error: propError = false,
+  error = false,
   hint = "",
   persistentHint = false,
   dense = false,
@@ -50,8 +44,6 @@ const BaseSelect: React.FC<SelectProps> = ({
   value,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   onChange = () => {},
-  rules = [],
-  name,
 }) => {
   const [selectedValues, setSelectedValues] = useState<(string | number)[]>(
     multiple 
@@ -60,48 +52,31 @@ const BaseSelect: React.FC<SelectProps> = ({
   );
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [touched, setTouched] = useState(false);
-  const [errors, setErrors] = useState<string[]>([]);
   const selectRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const error = propError || errors.length > 0;
 
   // Update internal state when external value changes
   useEffect(() => {
     if (value !== undefined) {
-      const newSelectedValues = multiple 
+      setSelectedValues(
+        multiple 
           ? Array.isArray(value) ? value : [] 
-          : value !== null ? [value as string | number] : [];
-      setSelectedValues(newSelectedValues);
-      if (touched) {
-        validate(multiple ? newSelectedValues : newSelectedValues[0] ?? null);
-      }
+          : value !== null ? [value as string | number] : []
+      );
     }
-  }, [value, multiple, touched]);
+  }, [value, multiple]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
         setIsOpen(false);
-        if (!touched) {
-          setTouched(true);
-          validate(multiple ? selectedValues : selectedValues[0] ?? null);
-        }
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [touched, selectedValues, multiple]);
-
-  const validate = (currentValue: string | number | (string | number)[] | null) => {
-    const validationErrors = rules
-      .map((rule) => rule(currentValue))
-      .filter((errorMessage): errorMessage is string => errorMessage !== null);
-    setErrors(validationErrors);
-  };
+  }, []);
 
   // Handle display value
   const displayValue = (): string => {
@@ -122,46 +97,28 @@ const BaseSelect: React.FC<SelectProps> = ({
   };
 
   // Handle option selection
-  const handleSelect = (selectedValue: string | number): void => {
+  const handleSelect = (value: string | number): void => {
     let newValues: (string | number)[];
     
     if (multiple) {
-      newValues = selectedValues.includes(selectedValue)
-        ? selectedValues.filter(v => v !== selectedValue)
-        : [...selectedValues, selectedValue];
+      newValues = selectedValues.includes(value)
+        ? selectedValues.filter(v => v !== value)
+        : [...selectedValues, value];
     } else {
-      newValues = [selectedValue];
+      newValues = [value];
       setIsOpen(false);
-      if (!touched) setTouched(true);
     }
     
-    const newOnChangeValue = multiple ? newValues : newValues[0];
     setSelectedValues(newValues);
-    onChange(newOnChangeValue);
-    if (touched || !multiple) {
-      validate(newOnChangeValue);
-    }
+    onChange(multiple ? newValues : newValues[0]);
   };
 
   // Clear selection
   const handleClear = (e: React.MouseEvent): void => {
     e.stopPropagation();
-    const newOnChangeValue = multiple ? [] : null;
     setSelectedValues([]);
-    onChange(newOnChangeValue);
-    if (touched) {
-      validate(newOnChangeValue);
-    }
+    onChange(multiple ? [] : null);
   };
-
-  const handleOpen = () => {
-    if (disabled || readonly || loading) return;
-    setIsOpen(!isOpen);
-    if (isOpen && !touched) { // on close
-        setTouched(true);
-        validate(multiple ? selectedValues : selectedValues[0] ?? null);
-    }
-  }
 
   // Handle search filtering
   const filteredOptions = searchable && searchTerm
@@ -197,27 +154,23 @@ const BaseSelect: React.FC<SelectProps> = ({
       {/* Label */}
       {label && (
         <label 
-          htmlFor={name}
           className={`block text-sm font-medium mb-1 ${error ? 'text-redtheme' : 'text-balck dark:text-textdarktheme'}`}
         >
           {label}
         </label>
       )}
       
-      {/* Select Field */}
+      {/* Select Field - using inputs class from your CSS */}
       <div
-        id={name}
         className={`
           ${getVariantClasses()}
           ${error ? 'border-redtheme' : 'hover:border-greentheme'}
           ${isOpen ? 'ring-2 ring-softgreentheme border-greentheme' : ''}
           ${dense ? 'py-1' : 'py-2'}
-          px-3 rounded-[10px] relative transition duration-200 text-black dark:text-textdarktheme
-          ${loading || disabled || readonly ? 'cursor-not-allowed' : 'cursor-pointer'}
-          ${readonly ? 'bg-gray-100 dark:bg-darkthemeitems' : ''}
+          px-3 rounded-[10px] cursor-pointer relative transition duration-200 text-black dark:text-textdarktheme
+          ${loading || disabled ? 'cursor-not-allowed' : 'cursor-pointer'}
         `}
-        onClick={handleOpen}
-        aria-readonly={readonly}
+        onClick={() => !disabled && !loading && setIsOpen(!isOpen)}
       >
         <div className="flex items-center justify-between">
           {/* Selected Chips */}
@@ -236,7 +189,6 @@ const BaseSelect: React.FC<SelectProps> = ({
                       className="cursor-pointer" 
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (readonly) return;
                         handleSelect(value);
                       }}
                     />
@@ -252,7 +204,6 @@ const BaseSelect: React.FC<SelectProps> = ({
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onClick={(e) => e.stopPropagation()}
                   placeholder={selectedValues.length === 0 ? placeholder : ""}
-                  readOnly={readonly}
                 />
               )}
             </div>
@@ -267,7 +218,6 @@ const BaseSelect: React.FC<SelectProps> = ({
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onClick={(e) => e.stopPropagation()}
                   placeholder={placeholder}
-                  readOnly={readonly}
                 />
               ) : (
                 <div className="truncate">{displayValue()}</div>
@@ -284,7 +234,7 @@ const BaseSelect: React.FC<SelectProps> = ({
               />
             ) : (
               <>
-                {clearable && selectedValues.length > 0 && !readonly && (
+                {clearable && selectedValues.length > 0 && (
                   <X 
                     size={16} 
                     className="text-subblack dark:text-textdarktheme hover:text-blacktheme dark:hover:text-white mr-1" 
@@ -302,17 +252,10 @@ const BaseSelect: React.FC<SelectProps> = ({
       </div>
       
       {/* Hint Text */}
-      {(hint && !error && (persistentHint || touched)) && (
-        <div className={`text-xs mt-1 text-subblack dark:text-textdarktheme`}>
+      {(hint && (persistentHint || error)) && (
+        <div className={`text-xs mt-1 ${error ? 'text-redtheme' : 'text-subblack dark:text-textdarktheme'}`}>
           {hint}
         </div>
-      )}
-      {errors.length > 0 && (
-        <ul className="text-xs text-redtheme mt-1">
-          {errors.map((err, index) => (
-            <li key={index}>{err}</li>
-          ))}
-        </ul>
       )}
       
       {/* Dropdown */}

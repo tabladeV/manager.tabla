@@ -6,8 +6,6 @@ import { useState } from "react"
 import { useUpdate, type BaseKey } from "@refinedev/core"
 import { ArrowDown, ArrowUp, Undo, X } from "lucide-react"
 import SearchBar from "../header/SearchBar"
-import Portal from "../common/Portal"
-import { useTranslation } from "react-i18next"
 
 interface PermissionType {
   id: number
@@ -28,9 +26,6 @@ interface RoleModalProps {
 }
 
 const RoleModal = ({ role, availablePermissions = [], onClose }: RoleModalProps) => {
-
-  const {t} = useTranslation();
-
   const [allPermissions, setAllPermissions] = useState<PermissionType[]>(
     [
       ...(role?.permissions || []),
@@ -108,7 +103,6 @@ const RoleModal = ({ role, availablePermissions = [], onClose }: RoleModalProps)
     setAllPermissions(allPermissions.map((permission) => ({ ...permission, value: false })))
   }
   return (
-    <Portal>
     <div className="flex flex-col overflow-y-auto h-full bg-white dark:bg-bgdarktheme border-l dark:border-zinc-800  sidepopup z-[360]  lt-sm:bottom-0 lt-sm:w-full rounded-[10px] shadow-lg shadow-[#00000008]">
       <div className="p-2 border-b flex justify-between items-center dark:border-zinc-800">
         <h1 className="text-xl font-semibold">
@@ -180,15 +174,14 @@ const RoleModal = ({ role, availablePermissions = [], onClose }: RoleModalProps)
             onClick={onClose}
             className="btn  dark:text-white dark:hover:border-softwhitetheme transition-colors"
           >
-            {t("common.cancel")}
+            Cancel
           </button>
           <button type="button" className="btn-primary transition-colors" onClick={handleSaveChanges}>
-            {t("common.save")}
+            Save Changes
           </button>
         </div>
       </div>
     </div>
-    </Portal>
   )
 }
 

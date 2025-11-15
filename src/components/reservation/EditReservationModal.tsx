@@ -1,13 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from 'react-i18next';
-import { BaseKey, CanAccess, useList, useNotification, useCreate } from "@refinedev/core";
+import { BaseKey, CanAccess, useList } from "@refinedev/core";
 import BaseSelect from "../common/BaseSelect";
 import { ReservationSource, ReservationStatus } from "../common/types/Reservation";
 import { TableType as OriginalTableType } from "../../_root/pages/PlacesPage";
 import ActionPopup from "../popup/ActionPopup";
-import { Clock, User2, Users2, Calendar, XCircle, Mail, Copy, DollarSign, LoaderCircle } from "lucide-react";
-import BaseBtn from "../common/BaseBtn";
-import { useRestaurantConfig } from "../../hooks/useRestaurantConfig";
+import { Clock, User2, Users2, Calendar, XCircle } from "lucide-react";
 
 interface TableType extends OriginalTableType {
   id: number;
@@ -58,36 +56,6 @@ const EditReservationModal = ({
   const [occasions, setOccasions] = useState<Occasion[]>([])
   const [occasionsAPIInfo, setOccasionsAPIInfo] = useState<OccasionsType>()
 
-  const sources = [
-                  { value: 'MARKETPLACE', label: t('overview.charts.reservationsSource.legend.MarketPlace') },
-                { value: 'WIDGET', label: t('overview.charts.reservationsSource.legend.Widget') },
-                { value: 'WEBSITE', label: t('overview.charts.reservationsSource.legend.ThirdParty') },
-                { value: 'WALK_IN', label: t('overview.charts.reservationsSource.legend.WalkIn') },
-                { value: 'BACK_OFFICE', label: t('overview.charts.reservationsSource.legend.BackOffice') },
-]
-
-const { open } = useNotification();
-  
-  // Get restaurant configuration using our custom hook
-  const { 
-    widgetConfig, 
-    getPaymentLink, 
-    checkPayment,
-    paymentCheckResult,
-    isCheckingPayment,
-    isLoading: isLoadingConfig 
-  } = useRestaurantConfig();
-  
-  // Extract payment configuration
-  const isPaymentEnabled = widgetConfig.enable_payment;
-  
-  // State for payment link actions
-  const [isSendingPaymentLink, setIsSendingPaymentLink] = useState(false);
-  const [isCopyingPaymentLink, setIsCopyingPaymentLink] = useState(false);
-  const [paymentRequired, setPaymentRequired] = useState(false);
-  const [paymentAmount, setPaymentAmount] = useState<number | null>(null);
-  
-
   const { isLoading: loadingOccasions, error: occasionsError } = useList({
     resource: 'api/v1/bo/occasions/', // Placeholder API endpoint
     queryOptions: {
@@ -134,36 +102,9 @@ const { open } = useNotification();
     setSelectedClient(reservation);
     setSelectedOccasion(reservation?.occasion?.id as number);
     setSelectedTables(reservation?.tables?.map(t=>t.id) as number[])
-  },[reservation])
-
-  useEffect(() => {
-    const canCheckPayment = isPaymentEnabled && reservationProgressData.reserveDate && reservationProgressData.time && reservationProgressData.guests > 0;
-
-    if (!canCheckPayment) {
-        setPaymentRequired(false);
-        setPaymentAmount(null);
-        return;
-    }
-
-    if (widgetConfig.payment_mode === 'always') {
-        if (reservationProgressData.guests >= widgetConfig.min_guests_for_payment) {
-            setPaymentRequired(true);
-            setPaymentAmount(reservationProgressData.guests * widgetConfig.deposit_amount_per_guest);
-        } else {
-            setPaymentRequired(false);
-            setPaymentAmount(null);
-        }
-    } else if (widgetConfig.payment_mode === 'rules') {
-        checkPayment(reservationProgressData.reserveDate, reservationProgressData.time, reservationProgressData.guests);
-    }
-  }, [reservationProgressData, widgetConfig, isPaymentEnabled, checkPayment]);
-
-  useEffect(() => {
-    if (widgetConfig.payment_mode === 'rules' && paymentCheckResult) {
-        setPaymentRequired(paymentCheckResult.is_payment_enabled);
-        setPaymentAmount(paymentCheckResult.is_payment_enabled ? paymentCheckResult.amount : null);
-    }
-  }, [paymentCheckResult, widgetConfig.payment_mode]);
+  },[])
+  
+  if (!showModal || !selectedClient) return null;
 
   const handleSave = () => {
     setShowConfirmPopup(true);
@@ -171,9 +112,7 @@ const { open } = useNotification();
 
 
   const confirmUpdate = () => {
-    if (selectedClient) {
-      upDateHandler(selectedClient);
-    }
+    upDateHandler(selectedClient);
     setShowConfirmPopup(false);
     setShowModal(false);
   };
@@ -194,113 +133,6 @@ const { open } = useNotification();
         return t('reservations.statusLabels.cancelled');
     }
   }
-
-  // Add the API hook for sending payment link
-  const { mutate: sendPaymentLinkMutate } = useCreate({
-    errorNotification(error) {
-      return {
-        type: 'error',
-        message: error?.message || t('notifications.paymentLink.sendErrorDescription'),
-      };
-    },
-  });
-  
-  // Function to check if we can send payment link (requires email and payment is required)
-  const canSendPaymentLink = () => {
-    return paymentRequired && selectedClient?.email && selectedClient.email.includes('@');
-  };
-  
-  // Function to send payment link
-  const handleSendPaymentLink = async () => {
-    if (!selectedClient?.id) {
-      open?.({
-        type: "error",
-        message: t("notifications.paymentLink.error"),
-        description: t("notifications.paymentLink.missingSeqId"),
-      });
-      return;
-    }
-    
-    setIsSendingPaymentLink(true);
-    try {
-      sendPaymentLinkMutate({
-        resource: `api/v1/bo/reservations/${selectedClient.id}/send_payment_link/`,
-        values: {},
-        successNotification: ()=> ({
-          type: "success",
-          message: t("notifications.paymentLink.sent")
-        }),
-        errorNotification: (error)=> ({
-          type: "error",
-          message: t("notifications.paymentLink.sendError")
-        })
-      });
-    } catch (error) {
-      console.error("Error sending payment link:", error);
-    } finally {
-      setIsSendingPaymentLink(false);
-    }
-  };
-  
-  // Function to copy payment link
-  const handleCopyPaymentLink = async () => {
-    if (!selectedClient?.id) {
-      open?.({
-        type: "error",
-        message: t("notifications.paymentLink.error"),
-        description: t("notifications.paymentLink.missingSeqId"),
-      });
-      return;
-    }
-    
-    setIsCopyingPaymentLink(true);
-    try {
-      // Generate the payment link using our helper function
-      const paymentLink = getPaymentLink(selectedClient.id as string);
-      
-      // Copy to clipboard
-      await navigator.clipboard.writeText(paymentLink);
-      
-      open?.({
-        type: "success",
-        message: t("notifications.paymentLink.copied"),
-        description: t("notifications.paymentLink.copiedDescription"),
-      });
-    } catch (error) {
-      console.error("Error copying payment link:", error);
-      open?.({
-        type: "error",
-        message: t("notifications.paymentLink.copyError"),
-        description: t("notifications.paymentLink.copyErrorDescription"),
-      });
-    } finally {
-      setIsCopyingPaymentLink(false);
-    }
-  };
-
-  const renderPaymentInfo = () => {
-    if (isCheckingPayment) {
-        return (
-            <div className="flex gap-1 my-1 text-sm items-center w-fit px-2 py-1 rounded">
-                <LoaderCircle size={14} className="animate-spin" />
-                <span>{t('reservationWidget.payment.checking')}</span>
-            </div>
-        );
-    }
-
-    if (paymentRequired && paymentAmount !== null) {
-        return (
-            <div className="flex gap-1 my-1 text-sm bg-softyellowtheme items-center text-yellowtheme w-fit px-2 py-1 rounded">
-                <DollarSign size={14} className={`dark:text-yellowtheme text-yellowtheme`} />
-                <span>{t('reservationWidget.payment.amountToPay')}{paymentAmount > 0 && `: ${paymentAmount} ${widgetConfig.currency}`}</span>
-            </div>
-        );
-    }
-
-    return null;
-  };
-
-  if (!showModal || !selectedClient) return null;
 
   return (
     <div>
@@ -499,7 +331,13 @@ const { open } = useNotification();
             <div>
               <BaseSelect
                 label={t('reservations.edit.informations.madeBy')}
-                options={sources}
+                options={[
+                  { label: 'Market Place', value: 'MARKETPLACE' },
+                  { label: 'Widget', value: 'WIDGET' },
+                  { label: 'Website', value: 'WEBSITE' },
+                  { label: 'Back Office', value: 'BACK_OFFICE' },
+                  { label: 'Walk In', value: 'WALK_IN' }
+                ]}
                 value={selectedClient.source}
                 onChange={(value) => setSelectedClient({ ...selectedClient, source: value as ReservationSource })}
                 variant={isDarkMode ? "filled" : "outlined"}
@@ -546,11 +384,9 @@ const { open } = useNotification();
                 }))}
                 value={selectedOccasion}
                 onChange={(value) => {
-                  console.log('change occais', value);
                   setSelectedOccasion(value as number);
-                  const selectedOccasionObj = occasions.find(occasion => occasion.id === value) || null;
-                  setSelectedClient({ ...selectedClient, occasion: (selectedOccasionObj as any) })
-                  console.log('selectedOccasionObj', selectedOccasionObj)
+                  const selectedOccasionObj = occasions.find(occasion => occasion.id === value) || undefined;
+                  setSelectedClient({ ...selectedClient, occasion: selectedOccasionObj })
                 }}
                 variant="filled"
                 clearable={true}
@@ -597,33 +433,6 @@ const { open } = useNotification();
               {(reservationProgressData.time === '') ? <div>Time </div> : <span>{reservationProgressData.time}</span>}
               {(reservationProgressData.guests === 0) ? <div>Guests </div> : <span>{reservationProgressData.guests}</span>}
             </div>
-            
-            {renderPaymentInfo()}
-
-            {/* Add payment link buttons */}
-      {isPaymentEnabled && (
-        <div className="flex gap-2 mt-4 mb-2 justify-center flex-wrap">
-          <BaseBtn
-            variant="secondary"
-            onClick={handleSendPaymentLink}
-            loading={isSendingPaymentLink}
-            disabled={!canSendPaymentLink() || isCheckingPayment}
-          >
-            <Mail size={16} />
-            {t('reservations.buttons.sendPaymentLink')}
-          </BaseBtn>
-          
-          <BaseBtn
-            variant="secondary"
-            onClick={handleCopyPaymentLink}
-            loading={isCopyingPaymentLink}
-            disabled={!paymentRequired || isCheckingPayment}
-          >
-            <Copy size={16} />
-            {t('reservations.buttons.copyPaymentLink')}
-          </BaseBtn>
-        </div>
-      )}
 
             <div className="h-10 sm:hidden"></div>
             <div className="flex justify-center lt-sm:fixed lt-sm:bottom-0 lt-sm: lt-sm:p-3 lt-sm:w-full space-x-2">

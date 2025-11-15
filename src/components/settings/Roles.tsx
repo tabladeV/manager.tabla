@@ -424,7 +424,7 @@ const Roles = () => {
                             ))
                         )}
                         {savedRoles.length > 0 && 
-                            <Pagination setPage={(page:number)=>{setPage(page)}} page={page} size={size} count={count} />
+                            <Pagination setPage={(page:number)=>{setPage(page)}} size={size} count={count} />
 
                         }
                     </div>

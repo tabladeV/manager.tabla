@@ -7,17 +7,12 @@ export const theme = {
   extend: {
     animation: {
       progress: 'progress 1s infinite linear',
-      fadeIn: 'fadeIn 0.3s ease-in-out',
     },
     keyframes: {
       progress: {
         '0%': { transform: ' translateX(0) scaleX(0)' },
         '40%': { transform: 'translateX(0) scaleX(0.4)' },
         '100%': { transform: 'translateX(100%) scaleX(0.5)' },
-      },
-      fadeIn: {
-        '0%': { opacity: '0', transform: 'translateY(10px)' },
-        '100%': { opacity: '1', transform: 'translateY(0)' },
       },
     },
     transformOrigin: {

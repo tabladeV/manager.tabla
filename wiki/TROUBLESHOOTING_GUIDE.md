@@ -383,7 +383,7 @@ if (process.env.NODE_ENV === 'development') {
 #### Diagnosis
 ```typescript
 // Check token status
-const token = localStorage.getItem('access');
+const token = localStorage.getItem('token');
 const refreshToken = localStorage.getItem('refresh');
 const isLoggedIn = localStorage.getItem('isLogedIn');
 
