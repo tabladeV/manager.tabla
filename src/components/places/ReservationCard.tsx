@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { BaseKey, CanAccess, useCreate, useUpdate } from '@refinedev/core';
-import { CalendarCheck, DollarSign, EllipsisVertical, Mail, Phone, SquarePen, Users } from 'lucide-react';
+import { CalendarCheck, DollarSign, EllipsisVertical, FileText, Mail, Phone, SquarePen, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import DraggableItemSkeleton from './DraggableItemSkeleton';
 import { ReservationStatus } from '../common/types/Reservation';
@@ -34,6 +34,7 @@ interface ReservationCardProps {
         loading: boolean;
         is_payed?: boolean;
         amount?: string;
+        attachment?: string;
     };
     handleStatus: (status: string) => void;
     showStatusModification: (id: BaseKey) => void;
@@ -191,6 +192,19 @@ const ReservationCard = (props: ReservationCardProps) => {
                                         <div className="flex gap-1 my-1 text-sm bg-softyellowtheme items-center text-yellowtheme w-fit px-2 py-1 rounded">
                                             <DollarSign size={14} className={`dark:text-yellowtheme text-yellowtheme`} />
                                             <span>{t('reservations.tableHeaders.paid')}{itemData.amount && `: ${itemData.amount} DH`}</span>
+                                        </div>
+                                    )}
+                                    {/* Attachment button */}
+                                    {itemData.attachment && (
+                                        <div className="mt-2">
+                                            <button
+                                                onClick={() => window.open(itemData.attachment, '_blank')}
+                                                className="flex items-center gap-1 text-sm px-2 py-1 rounded bg-gray-100 shadow-sm text-red-400 hover:opacity-80 transition-opacity"
+                                                title="Open attached PDF"
+                                            >
+                                                <FileText size={14} />
+                                                <span>{t('common.attachmentFile')}</span>
+                                            </button>
                                         </div>
                                     )}
                                 </div>
