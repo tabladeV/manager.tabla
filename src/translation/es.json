@@ -1604,7 +1604,7 @@
       "paymentDetailsError": "No se pudieron procesar los detalles del pago. Por favor, inténtelo de nuevo."
     },
     "footer": {
-      "copyright": "© {{year}} Tabla. Todos los derechos reservados.",
+      "copyright": "© {{year}} Scale valley. Todos los derechos reservados.",
       "poweredBy": "Desarrollado por"
     },
     "contact": {

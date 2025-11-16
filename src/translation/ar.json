@@ -1603,7 +1603,7 @@
             "paymentDetailsError": "تعذر معالجة تفاصيل الدفع. يرجى المحاولة مرة أخرى."
         },
         "footer": {
-            "copyright": "© {{year}} طابلا. جميع الحقوق محفوظة.",
+            "copyright": "© {{year}} Scale valley. جميع الحقوق محفوظة.",
             "poweredBy": "مدعوم من"
         },
         "contact": {

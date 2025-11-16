@@ -344,7 +344,7 @@ export default function TermsAndConditions() {
 
           {/* Footer */}
           <div className="mt-8 text-center text-subblack dark:text-textdarktheme text-sm">
-            <p>© {new Date().getFullYear()} Tabla. Tous droits réservés.</p>
+            <p>© {new Date().getFullYear()} Scale Valley. Tous droits réservés.</p>
           </div>
         </div>
       </main>
