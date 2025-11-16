@@ -11,6 +11,7 @@ import { useIOSNotchHeight } from "../../hooks/useStatusBarHeight";
 
 import image from "../../assets/login-image2.png";
 import circle from "../../assets/circle.png";
+import { AUTH_STATE_EVENT, dispatchAppEvent } from "../../utils/appEvents";
 
 const LogIn: React.FC = () => {
   
@@ -49,6 +50,7 @@ const LogIn: React.FC = () => {
         // Store user data in context
         setUserData(data.data.user);
         localStorage.setItem("isLogedIn", "true");
+        dispatchAppEvent(AUTH_STATE_EVENT);
         navigate("/select-restaurant");
       }
     },

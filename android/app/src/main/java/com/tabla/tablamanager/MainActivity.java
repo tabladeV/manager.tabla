@@ -2,6 +2,7 @@ package com.tabla.tablamanager;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -10,19 +11,19 @@ import android.os.Bundle;
 import com.getcapacitor.BridgeActivity;
 
 public class MainActivity extends BridgeActivity {
-    private static final String NOTIFICATION_CHANNEL_ID = "tabla_notifications";
-    private static final String NOTIFICATION_CHANNEL_NAME = "Tabla Notifications";
-    private static final String NOTIFICATION_CHANNEL_DESCRIPTION = "Notifications for Tabla restaurant bookings";
+    public static final String NOTIFICATION_CHANNEL_ID = "tabla_notifications";
+    public static final String NOTIFICATION_CHANNEL_NAME = "Tabla Notifications";
+    public static final String NOTIFICATION_CHANNEL_DESCRIPTION = "Notifications for Tabla restaurant bookings";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        createNotificationChannel();
+        ensureNotificationChannel(this);
     }
 
-    private void createNotificationChannel() {
+    public static void ensureNotificationChannel(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
 
             // Create the notification channel with high importance for sound and vibration
             NotificationChannel channel = new NotificationChannel(

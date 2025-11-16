@@ -2,19 +2,45 @@ import { NotificationManager, NotificationPayload } from './types';
 import { PushNotifications, Token, PushNotificationSchema, ActionPerformed } from '@capacitor/push-notifications';
 import { httpClient } from '../httpClient';
 import { Capacitor } from '@capacitor/core';
+import { AUTH_STATE_EVENT, RESTAURANT_STATE_EVENT } from '../../utils/appEvents';
 
 export class CapacitorNotificationManager implements NotificationManager {
   private messageListeners: Array<(payload: NotificationPayload) => void> = [];
   private initialized = false;
+  private pendingToken: string | null = null;
+  private lastRegisteredToken: string | null = null;
+  private lastRegisteredRestaurant: string | null = null;
+
+  constructor() {
+    if (typeof window !== 'undefined') {
+      const retryRegistration = () => {
+        if (this.pendingToken) {
+          console.log('[CapacitorNotificationManager] pendingToken:retry', JSON.stringify({
+            timestamp: new Date().toISOString(),
+            tokenPreview: `${this.pendingToken.substring(0, 12)}...`
+          }));
+          this.registerTokenWithBackend(this.pendingToken);
+        }
+      };
+      window.addEventListener(AUTH_STATE_EVENT, retryRegistration);
+      window.addEventListener(RESTAURANT_STATE_EVENT, retryRegistration);
+    }
+  }
 
   async initialize(): Promise<void> {
     if (this.initialized) return;
 
     try {
       const platform = Capacitor.getPlatform();
+      // Local notifications removed – rely on FCM/OS handling
 
       // Add listeners for push notification events
       await PushNotifications.addListener('registration', (token: Token) => {
+        console.log('[CapacitorNotificationManager] registration:event', JSON.stringify({
+          timestamp: new Date().toISOString(),
+          platform,
+          tokenPreview: token.value ? `${token.value.substring(0, 12)}...` : null,
+        }));
         // Use setTimeout to avoid blocking the initialization
         setTimeout(() => this.registerTokenWithBackend(token.value), 100);
       });
@@ -37,7 +63,12 @@ export class CapacitorNotificationManager implements NotificationManager {
       // Handle foreground notifications
       await PushNotifications.addListener('pushNotificationReceived', (notification: PushNotificationSchema) => {
         try {
-          console.log(`[CapacitorNotificationManager] ${platform}: Received notification:`, notification);
+          console.log(`[CapacitorNotificationManager] ${platform}:pushNotificationReceived`, JSON.stringify({
+            timestamp: new Date().toISOString(),
+            hasData: !!notification.data,
+            title: notification.title,
+            reservationId: notification.data?.reservation_id || null
+          }));
 
           const payload: NotificationPayload = {
             notification: {
@@ -79,7 +110,6 @@ export class CapacitorNotificationManager implements NotificationManager {
             }
           }
 
-          // Notify all listeners safely
           this.messageListeners.forEach(listener => {
             try {
               listener(payload);
@@ -120,12 +150,20 @@ export class CapacitorNotificationManager implements NotificationManager {
       console.log(`[CapacitorNotificationManager] ${platform}: Requesting notification permissions`);
 
       const permStatus = await PushNotifications.checkPermissions();
-      console.log(`[CapacitorNotificationManager] ${platform}: Current permission status:`, permStatus);
+      console.log('[CapacitorNotificationManager] permission:status', JSON.stringify({
+        timestamp: new Date().toISOString(),
+        platform,
+        status: permStatus.receive
+      }));
 
       if (permStatus.receive === 'prompt') {
         console.log(`[CapacitorNotificationManager] ${platform}: Prompting user for permissions`);
         const result = await PushNotifications.requestPermissions();
-        console.log(`[CapacitorNotificationManager] ${platform}: Permission result:`, result);
+        console.log('[CapacitorNotificationManager] permission:promptResult', JSON.stringify({
+          timestamp: new Date().toISOString(),
+          platform,
+          status: result.receive
+        }));
 
         // iOS-specific: Check if permission was denied
         if (platform === 'ios' && result.receive === 'denied') {
@@ -155,8 +193,18 @@ export class CapacitorNotificationManager implements NotificationManager {
     try {
       const platform = Capacitor.getPlatform();
       const permStatus = await PushNotifications.checkPermissions();
+      console.log('[CapacitorNotificationManager] getToken:permissionStatus', JSON.stringify({
+        timestamp: new Date().toISOString(),
+        platform,
+        status: permStatus.receive
+      }));
       
       if (permStatus.receive !== 'granted') {
+        console.warn('[CapacitorNotificationManager] getToken:permissionNotGranted', JSON.stringify({
+          timestamp: new Date().toISOString(),
+          platform,
+          status: permStatus.receive
+        }));
         return null;
       }
 
@@ -166,6 +214,10 @@ export class CapacitorNotificationManager implements NotificationManager {
         // Check if we're on a simulator (this will fail on simulator)
         try {
           await PushNotifications.register();
+          console.log('[CapacitorNotificationManager] pushRegister:init', JSON.stringify({
+            timestamp: new Date().toISOString(),
+            platform
+          }));
         } catch (registerError: any) {
           if (registerError.message?.includes('simulator')) {
           } else {
@@ -176,6 +228,10 @@ export class CapacitorNotificationManager implements NotificationManager {
       } else {
         // Android registration
         await PushNotifications.register();
+        console.log('[CapacitorNotificationManager] pushRegister:init', JSON.stringify({
+          timestamp: new Date().toISOString(),
+          platform
+        }));
       }
       
       // Token will be received in the 'registration' listener
@@ -210,18 +266,35 @@ export class CapacitorNotificationManager implements NotificationManager {
   }
 
   private async registerTokenWithBackend(token: string): Promise<void> {
+    let restaurantId: string | null = null;
     try {
       const platform = Capacitor.getPlatform();
-      console.log(`[CapacitorNotificationManager] ${platform}: Registering token with backend`);
+      console.log(`[CapacitorNotificationManager] ${platform}: Registering token with backend`, JSON.stringify({
+        timestamp: new Date().toISOString()
+      }));
 
       // Check if user is logged in and has restaurant ID
       const isLoggedIn = localStorage.getItem('isLogedIn') === 'true';
-      const restaurantId = localStorage.getItem('restaurant_id');
+      restaurantId = localStorage.getItem('restaurant_id');
 
-      console.log(`[CapacitorNotificationManager] ${platform}: Auth check - isLoggedIn: ${isLoggedIn}, restaurantId: ${restaurantId}`);
+      console.log(`[CapacitorNotificationManager] ${platform}: Auth check`, JSON.stringify({
+        timestamp: new Date().toISOString(),
+        isLoggedIn,
+        restaurantId
+      }));
 
       if (!isLoggedIn || !restaurantId) {
-        console.warn(`[CapacitorNotificationManager] ${platform}: Cannot register token - user not authenticated or no restaurant ID`);
+        this.pendingToken = token;
+        console.warn(`[CapacitorNotificationManager] ${platform}: registerTokenWithBackend:aborted`, JSON.stringify({
+          timestamp: new Date().toISOString(),
+          reason: !isLoggedIn ? 'NOT_LOGGED_IN' : 'MISSING_RESTAURANT_ID'
+        }));
+        return;
+      }
+
+      if (this.lastRegisteredToken === token && this.lastRegisteredRestaurant === restaurantId) {
+        console.log(`[CapacitorNotificationManager] ${platform}: Token already registered for current restaurant, skipping duplicate call`);
+        this.pendingToken = null;
         return;
       }
 
@@ -235,10 +308,24 @@ export class CapacitorNotificationManager implements NotificationManager {
         device_type: deviceType
       });
 
-      console.log(`[CapacitorNotificationManager] ${platform}: Token registration successful:`, response.status);
+      console.log(`[CapacitorNotificationManager] ${platform}: Token registration successful`, JSON.stringify({
+        timestamp: new Date().toISOString(),
+        status: response.status
+      }));
+      this.pendingToken = null;
+      this.lastRegisteredToken = token;
+      this.lastRegisteredRestaurant = restaurantId;
     } catch (error: any) {
       const platform = Capacitor.getPlatform();
-      console.error(`[CapacitorNotificationManager] ${platform}: Failed to register token:`, error);
+      console.error(`[CapacitorNotificationManager] ${platform}: Failed to register token:`, this.formatError(error));
+
+      if (error.response?.status === 400 && error.response?.data?.token?.[0]?.includes('already exists')) {
+        console.warn('[CapacitorNotificationManager] Token already exists on backend; marking as registered');
+        this.lastRegisteredToken = token;
+        this.lastRegisteredRestaurant = restaurantId || null;
+        this.pendingToken = null;
+        return;
+      }
 
       // Log more details for platform-specific issues
       if (platform === 'ios') {
@@ -259,5 +346,19 @@ export class CapacitorNotificationManager implements NotificationManager {
 
       // Don't throw the error - just log it and continue
     }
+  }
+
+  private formatError(error: any) {
+    if (error?.response) {
+      return {
+        message: error.message,
+        status: error.response.status,
+        data: error.response.data
+      };
+    }
+    if (error?.message) {
+      return { message: error.message };
+    }
+    return { error: String(error) };
   }
 }
