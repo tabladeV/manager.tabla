@@ -1,4 +1,4 @@
-package com.tabla.tablabomobile;
+package com.tabla.tablamanager;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;

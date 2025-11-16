@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "com.tabla.tablabomobile"
+    namespace "com.tabla.tablamanager"
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.tabla.tablabomobile"
+        applicationId "com.tabla.tablamanager"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
