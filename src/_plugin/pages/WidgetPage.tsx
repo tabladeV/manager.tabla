@@ -528,7 +528,7 @@ const WidgetPage = () => {
   const isAttachmentFeatureEnabled = useMemo(() => {
     if (typeof window === 'undefined') return false;
     const hostname = window.location.hostname;
-    const enabledDomains = ["the5th.tabla.ma", "azar.tabla.ma"];
+    const enabledDomains = ["the5th.tabla.ma", "azar.tabla.ma", "italiana.tabla.ma"];
     const isDev = process.env.NODE_ENV === 'development' || hostname.includes('localhost') || hostname.includes('.dev.tabla.ma');
     return enabledDomains.includes(hostname) || isDev;
   }, []);
