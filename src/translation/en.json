@@ -1503,9 +1503,16 @@
             "agreeToTerms": "I agree to",
             "termsAndConditions": "the terms and conditions",
             "agreeToDressCode": "I agree to the dress code",
-            "noDressCode": "No specific dress code"
+            "noDressCode": "No specific dress code",
+            "attachment": "Attachment (Optional)",
+            "removeFile": "Remove file",
+            "clickToUpload": "Click to upload",
+            "orDragAndDrop": "or drag and drop",
+            "attachmentHint": "Max 10MB. Allowed types: PDF"
         },
         "validation": {
+            "attachmentInvalidType": "Invalid file type. Please upload a PDF file.",
+            "attachmentTooLarge": "File is too large. Maximum size is 10MB.",
             "firstNameRequired": "First name is required",
             "lastNameRequired": "Last name is required",
             "emailRequired": "Email is required",
@@ -1820,6 +1827,8 @@
         }
     },
     "common": {
+        "attachment": "Attachment",
+        "attachmentFile": "Attached file",
         "cancel": "Cancel",
         "add": "Add",
         "update": "Update",

@@ -310,13 +310,13 @@ const UserInfoFormStep = memo(({
                     <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
                       <span className="font-semibold">{t("reservationWidget.form.clickToUpload")}</span> {t("reservationWidget.form.orDragAndDrop")}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{t("reservationWidget.form.attachmentHint", "Max 10MB. Allowed types: PDF, DOC, DOCX.")}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{t("reservationWidget.form.attachmentHint", "Max 10MB. Allowed types: PDF")}</p>
                   </div>
                   <input
                     id="attachment"
                     ref={attachmentInputRef}
                     type="file"
-                    accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    accept=".pdf,application/pdf"
                     onChange={onAttachmentChange}
                     className="hidden"
                   />
@@ -574,7 +574,7 @@ const WidgetPage = () => {
 
   useEffect(() => {
     if (widgetInfo) {
-      setRestaurantID(widgetInfo.restaurant);
+      setRestaurantID(widgetInfo.restaurant?.id);
       setAreas(widgetInfo.areas || []);
 
       const isStep1DataMissing = !data.reserveDate || !data.time || !data.guests;
@@ -888,9 +888,9 @@ const WidgetPage = () => {
   const handleAttachmentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      const allowedTypes = ['application/pdf'];
       if (!allowedTypes.includes(file.type)) {
-        setAttachmentError(t("reservationWidget.validation.attachmentInvalidType", "Invalid file type. Please upload a PDF or DOC file."));
+        setAttachmentError(t("reservationWidget.validation.attachmentInvalidType", "Invalid file type. Please upload a PDF file."));
         setAttachment(null);
         if (attachmentInputRef.current) attachmentInputRef.current.value = '';
         return;
