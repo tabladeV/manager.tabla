@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document covers the complete setup and configuration required for iOS platform support in the Tabla Back Office app, including push notifications, network handling, and platform-specific configurations.
+This document covers the complete setup and configuration required for iOS platform support in the Tabla Manager app, including push notifications, network handling, and platform-specific configurations.
 
 ## iOS-Specific Issues and Solutions
 
@@ -114,7 +114,7 @@ await httpClient.post('api/v1/device-tokens/', {
 ```typescript
 const config: CapacitorConfig = {
   appId: 'com.tabla.tablabomobile',
-  appName: 'Tabla Back Office',
+  appName: 'Tabla Manager',
   webDir: 'dist',
   server: {
     androidScheme: 'https',

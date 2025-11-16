@@ -28,9 +28,9 @@ export default defineConfig(({ mode }) => {
       registerType:'prompt',
       manifest: {
         id: '1:511226021492:web:cd57bf0b58f828368fb321',
-        name: 'Tabla Back Office',
+        name: 'Tabla Manager',
         short_name: 'Tabla BO',
-        description: 'Tabla Back Office For Online Restaurant Booking System',
+        description: 'Tabla Manager For Online Restaurant Booking System',
         start_url: '.',
         scope: '/',
         display: 'standalone',

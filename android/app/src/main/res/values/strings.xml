@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Tabla Back Office</string>
-    <string name="title_activity_main">Tabla Back Office</string>
+    <string name="app_name">Tabla Manager</string>
+    <string name="title_activity_main">Tabla Manager</string>
     <string name="package_name">com.tabla.tablabomobile</string>
     <string name="custom_url_scheme">com.tabla.tablabomobile</string>
 </resources>
