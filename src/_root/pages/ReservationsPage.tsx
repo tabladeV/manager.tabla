@@ -19,7 +19,8 @@ import {
   Tags,
   LayoutPanelLeft,
   CreditCard,
-  DollarSign
+  DollarSign,
+  FileText
 } from 'lucide-react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import SearchBar from "../../components/header/SearchBar";
@@ -82,6 +83,7 @@ export interface Reservation extends BaseRecord {
   loading?: boolean;
   seq_id?: string;
   selected?: boolean;
+  attachment?: string; 
 }
 
 interface DataTypes {
@@ -767,6 +769,20 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
             <div className="text-sm text-gray-500">
               {` # ${reservation.seq_id}`}
             </div>
+
+            {/* Attachment button */}
+            {reservation.attachment && (
+              <div className="mt-2">
+                <button
+                  onClick={() => window.open(reservation.attachment, '_blank')}
+                  className="flex items-center gap-1 text-sm px-2 py-1 rounded bg-gray-100 shadow-sm text-red-400 hover:opacity-80 transition-opacity"
+                  title="Open attached PDF"
+                >
+                  <FileText size={14} />
+                  <span>{t('common.attachmentFile')}</span>
+                </button>
+              </div>
+            )}
 
           </div>
         );

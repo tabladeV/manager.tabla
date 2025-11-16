@@ -1499,9 +1499,16 @@
             "agreeToTerms": "أوافق على",
             "termsAndConditions": "الشروط والأحكام",
             "agreeToDressCode": "أوافق على قواعد اللباس",
-            "noDressCode": "لا توجد قواعد لباس محددة"
+            "noDressCode": "لا توجد قواعد لباس محددة",
+            "attachment": "المرفق (اختياري)",
+            "removeFile": "إزالة الملف",
+            "clickToUpload": "انقر للتحميل",
+            "orDragAndDrop": "أو اسحب وأفلت",
+            "attachmentHint": "الحد الأقصى 10MB. الأنواع المسموحة: PDF"
         },
         "validation": {
+            "attachmentInvalidType": "نوع ملف غير صحيح. يرجى تحميل ملف PDF.",
+            "attachmentTooLarge": "الملف كبير جداً. الحد الأقصى للحجم هو 10MB.",
             "firstNameRequired": "الاسم الأول مطلوب",
             "lastNameRequired": "اسم العائلة مطلوب",
             "emailRequired": "البريد الإلكتروني مطلوب",
@@ -1603,7 +1610,7 @@
             "paymentDetailsError": "تعذر معالجة تفاصيل الدفع. يرجى المحاولة مرة أخرى."
         },
         "footer": {
-            "copyright": "© {{year}} طابلا. جميع الحقوق محفوظة.",
+            "copyright": "© {{year}} Scale valley. جميع الحقوق محفوظة.",
             "poweredBy": "مدعوم من"
         },
         "contact": {
@@ -1847,6 +1854,8 @@
         }
     },
     "common": {
+        "attachment": "المرفق",
+        "attachmentFile": "ملف مرفق",
         "cancel": "إلغاء",
         "add": "إضافة",
         "update": "تحديث",
