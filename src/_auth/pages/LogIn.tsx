@@ -11,6 +11,7 @@ import { useIOSNotchHeight } from "../../hooks/useStatusBarHeight";
 
 import image from "../../assets/login-image2.png";
 import circle from "../../assets/circle.png";
+import { AUTH_STATE_EVENT, dispatchAppEvent } from "../../utils/appEvents";
 
 const LogIn: React.FC = () => {
   
@@ -20,8 +21,8 @@ const LogIn: React.FC = () => {
   , []);
   
   const navigate = useNavigate();
-  const [email, setEmail] = useState<string>("tester@test.com");
-  const [password, setPassword] = useState<string>("123456@@@");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const { setUserData } = useDateContext();
   const [eyeOn, setEyeOn] = useState(false);
   const pswrdRef = useRef<HTMLInputElement>(null);
@@ -49,6 +50,7 @@ const LogIn: React.FC = () => {
         // Store user data in context
         setUserData(data.data.user);
         localStorage.setItem("isLogedIn", "true");
+        dispatchAppEvent(AUTH_STATE_EVENT);
         navigate("/select-restaurant");
       }
     },

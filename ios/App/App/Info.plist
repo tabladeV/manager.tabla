@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Tabla Back Office</string>
+	<string>Tabla Manager</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -32,6 +32,13 @@
 		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
+			<key>api.dev.tabla</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+			</dict>
 			<key>api.dev.tabla.ma</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
@@ -51,6 +58,8 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSUserNotificationAlertStyle</key>
+	<string>alert</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>
@@ -78,5 +87,16 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>UNUserNotificationCenter</key>
+	<dict>
+		<key>UNAuthorizationOptionAlert</key>
+		<true/>
+		<key>UNAuthorizationOptionBadge</key>
+		<true/>
+		<key>UNAuthorizationOptionSound</key>
+		<true/>
+	</dict>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 </dict>
 </plist>

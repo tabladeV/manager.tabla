@@ -1,5 +1,6 @@
 import { AuthProvider } from "@refinedev/core";
 import { httpClient } from "../services/httpClient";
+import { AUTH_STATE_EVENT, RESTAURANT_STATE_EVENT, dispatchAppEvent } from "../utils/appEvents";
 
 /**
  * Extended AuthProvider with custom refresh method
@@ -43,6 +44,8 @@ const clearAuthData = () => {
     localStorage.removeItem("restaurant_id");
     localStorage.removeItem("permissions");
     localStorage.removeItem("is_manager");
+    dispatchAppEvent(AUTH_STATE_EVENT);
+    dispatchAppEvent(RESTAURANT_STATE_EVENT);
     
     if (refreshInterval) {
         clearInterval(refreshInterval);
@@ -87,6 +90,7 @@ const authProvider: ExtendedAuthProvider = {
                 if (data.user?.is_manager) {
                     localStorage.setItem("is_manager", "true");
                 }
+                dispatchAppEvent(AUTH_STATE_EVENT);
 
                 // Start the refresh timer after a successful login
                 startRefreshTimer(authProvider);

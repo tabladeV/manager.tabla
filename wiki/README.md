@@ -1,8 +1,8 @@
-# Tabla Back Office - Documentation Wiki
+# Tabla Manager - Documentation Wiki
 
 ## Overview
 
-This documentation covers the comprehensive HTTP client migration and iOS platform integration completed for the Tabla Back Office application. The changes ensure cross-platform compatibility and resolve critical iOS networking and push notification issues.
+This documentation covers the comprehensive HTTP client migration and iOS platform integration completed for the Tabla Manager application. The changes ensure cross-platform compatibility and resolve critical iOS networking and push notification issues.
 
 ## 📚 Documentation Index
 
