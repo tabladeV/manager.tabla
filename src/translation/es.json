@@ -1499,9 +1499,16 @@
       "agreeToTerms": "Acepto",
       "termsAndConditions": "los términos y condiciones",
       "agreeToDressCode": "Acepto el código de vestimenta",
-      "noDressCode": "Sin código de vestimenta específico"
+      "noDressCode": "Sin código de vestimenta específico",
+      "attachment": "Adjunto (Opcional)",
+      "removeFile": "Eliminar archivo",
+      "clickToUpload": "Haz clic para cargar",
+      "orDragAndDrop": "o arrastra y suelta",
+      "attachmentHint": "Máx 10MB. Tipos permitidos: PDF"
     },
     "validation": {
+      "attachmentInvalidType": "Tipo de archivo inválido. Por favor, suba un archivo PDF.",
+      "attachmentTooLarge": "El archivo es demasiado grande. El tamaño máximo es 10MB.",
       "firstNameRequired": "El nombre es requerido",
       "lastNameRequired": "El apellido es requerido",
       "emailRequired": "El correo electrónico es requerido",
@@ -1604,7 +1611,7 @@
       "paymentDetailsError": "No se pudieron procesar los detalles del pago. Por favor, inténtelo de nuevo."
     },
     "footer": {
-      "copyright": "© {{year}} Tabla. Todos los derechos reservados.",
+      "copyright": "© {{year}} Scale valley. Todos los derechos reservados.",
       "poweredBy": "Desarrollado por"
     },
     "contact": {
@@ -1817,6 +1824,8 @@
     }
   },
   "common": {
+    "attachment": "Adjunto",
+    "attachmentFile": "Archivo Adjunto",
     "cancel": "Cancelar",
     "add": "Añadir",
     "update": "Actualizar",

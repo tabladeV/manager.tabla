@@ -1499,9 +1499,16 @@
       "agreeToTerms": "J'accepte",
       "termsAndConditions": "les termes et conditions",
       "agreeToDressCode": "J'accepte le code vestimentaire",
-      "noDressCode": "Aucun code vestimentaire spécifique"
+      "noDressCode": "Aucun code vestimentaire spécifique",
+      "attachment": "Pièce jointe (Facultatif)",
+      "removeFile": "Supprimer le fichier",
+      "clickToUpload": "Cliquez pour télécharger",
+      "orDragAndDrop": "ou glissez-déposez",
+      "attachmentHint": "Max 10MB. Types autorisés : PDF"
     },
     "validation": {
+      "attachmentInvalidType": "Type de fichier invalide. Veuillez télécharger un fichier PDF.",
+      "attachmentTooLarge": "Le fichier est trop volumineux. La taille maximale est 10MB.",
       "firstNameRequired": "Le prénom est requis",
       "lastNameRequired": "Le nom de famille est requis",
       "emailRequired": "L'email est requis",
@@ -1604,7 +1611,7 @@
       "paymentDetailsError": "Impossible de traiter les détails du paiement. Veuillez réessayer."
     },
     "footer": {
-      "copyright": "© {{year}} Tabla. Tous droits réservés.",
+      "copyright": "© {{year}} Scale valley. Tous droits réservés.",
       "poweredBy": "Propulsé par"
     },
     "contact": {
@@ -1817,6 +1824,8 @@
     }
   },
   "common": {
+    "attachment": "Pièce jointe",
+    "attachmentFile": "Fichier joint",
     "cancel": "Annuler",
     "add": "Ajouter",
     "update": "Mettre à jour",

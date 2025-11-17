@@ -1,10 +1,10 @@
 "use client"
 import type React from "react"
-import { useCallback, useEffect, useState, memo, useMemo } from "react"
+import { useCallback, useEffect, useState, memo, useMemo, useRef } from "react"
 import { Link, useLocation, useParams, useSearchParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import Logo from "../../components/header/Logo"
-import { LoaderCircle, ScreenShareIcon, ChevronDown, Facebook, Instagram, Twitter, Phone, Mail, MessageCircle, BadgeInfo, Globe, X, AlertOctagon, Bell, Layers } from "lucide-react"
+import { LoaderCircle, ScreenShareIcon, ChevronDown, Facebook, Instagram, Twitter, Phone, Mail, MessageCircle, BadgeInfo, Globe, X, AlertOctagon, Bell, Layers, Upload, File as FileIcon, Trash2 } from "lucide-react"
 import { SunIcon, MoonIcon, CheckIcon } from "../../components/icons"
 import { type BaseKey, type BaseRecord, useCreate, useList, useCustom } from "@refinedev/core"
 import { format, compareAsc, parse } from "date-fns"
@@ -142,16 +142,46 @@ const UserInfoFormStep = memo(({
   occasions,
   areas,
   areaSelected,
+  attachment,
+  attachmentError,
+  isAttachmentFeatureEnabled,
   onUserInformationChange,
   onChosenTitleChange,
   onCheckedConditionsChange,
   onCheckedDressCodeChange,
   onAreaSelectedChange,
+  onAttachmentChange,
+  onRemoveAttachment,
   onSubmit,
   onBack,
   onDressCodePopupOpen
 }: any) => {
   const { t } = useTranslation()
+  const [isDragging, setIsDragging] = useState(false);
+  const attachmentInputRef = useRef<HTMLInputElement>(null);
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+  const handleDragIn = (e: React.DragEvent) => {
+    handleDrag(e);
+    if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+      setIsDragging(true);
+    }
+  };
+  const handleDragOut = (e: React.DragEvent) => {
+    handleDrag(e);
+    setIsDragging(false);
+  };
+  const handleDrop = (e: React.DragEvent) => {
+    handleDrag(e);
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      onAttachmentChange({ target: { files: e.dataTransfer.files } });
+      e.dataTransfer.clearData();
+    }
+  };
 
   const handleNameInput = (value: string, field: 'firstname' | 'lastname') => {
     const sanitized = value.replace(/[^a-zA-Z\s]/g, '')
@@ -248,6 +278,55 @@ const UserInfoFormStep = memo(({
           </select>
         </div>
 
+        {isAttachmentFeatureEnabled && (
+          <div>
+            <label className="block text-sm font-medium text-[#555555] dark:text-[#cccccc] mb-1">{t("reservationWidget.form.attachment", "Attachment (Optional)")}</label>
+            {attachment ? (
+              <div className="p-3 bg-[#f0f7e6] dark:bg-darkthemeitems/50 border border-[#88AB61] rounded-lg flex items-center justify-between">
+                <div className="flex items-center gap-2 overflow-hidden">
+                  <FileIcon className="h-5 w-5 text-[#88AB61]" />
+                  <span className="text-sm text-gray-700 dark:text-gray-300 truncate">{attachment.name}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={onRemoveAttachment}
+                  className="p-1 text-red-500 hover:text-red-700 rounded-full"
+                  aria-label={t("reservationWidget.form.removeFile", "Remove file")}
+                >
+                  <Trash2 className="h-5 w-5" />
+                </button>
+              </div>
+            ) : (
+              <div
+                onDragEnter={handleDragIn}
+                onDragLeave={handleDragOut}
+                onDragOver={handleDrag}
+                onDrop={handleDrop}
+                className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${isDragging ? 'border-[#88AB61] bg-[#f0f7e6] dark:bg-darkthemeitems/50' : 'border-[#dddddd] dark:border-[#444444] hover:bg-[#f9f9f9] dark:hover:bg-darkthemeitems/50'}`}
+              >
+                <label htmlFor="attachment" className="w-full h-full flex flex-col items-center justify-center cursor-pointer">
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <Upload className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" />
+                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                      <span className="font-semibold">{t("reservationWidget.form.clickToUpload")}</span> {t("reservationWidget.form.orDragAndDrop")}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{t("reservationWidget.form.attachmentHint", "Max 10MB. Allowed types: PDF")}</p>
+                  </div>
+                  <input
+                    id="attachment"
+                    ref={attachmentInputRef}
+                    type="file"
+                    accept=".pdf,application/pdf"
+                    onChange={onAttachmentChange}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+            )}
+            {attachmentError && <p className="mt-1 text-sm text-red-500">{attachmentError}</p>}
+          </div>
+        )}
+
         {widgetInfo?.enbale_area_selection && (
           <div>
             <label htmlFor="floors" className="block text-sm font-medium text-[#555555] dark:text-[#cccccc] mb-1">{t("reservationWidget.form.areas")}</label>
@@ -283,7 +362,7 @@ const UserInfoFormStep = memo(({
   )
 })
 
-const ConfirmationStep = memo(({ data, userInformation, chosenTitle, occasions, areas, areaSelected, onConfirm, onBack, isLoading, isPaymentRequired, totalAmount, paymentError, currency }: any) => {
+const ConfirmationStep = memo(({ data, userInformation, chosenTitle, occasions, areas, areaSelected, attachment, onConfirm, onBack, isLoading, isPaymentRequired, totalAmount, paymentError, currency }: any) => {
   const { t } = useTranslation()
   const formattedTotalAmount = `${totalAmount.toFixed(2)} ${currency || 'MAD'}`;
 
@@ -304,13 +383,14 @@ const ConfirmationStep = memo(({ data, userInformation, chosenTitle, occasions, 
                 <div><span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.confirmation.guests")}: </span><span className="font-medium">{data.guests} {data.guests === 1 ? t("reservationWidget.confirmation.person") : t("reservationWidget.confirmation.people")}</span></div>
               </div>
             </div>
-            {(userInformation.occasion || areaSelected || userInformation.allergies || userInformation.preferences) && (
+            {(userInformation.occasion || areaSelected || userInformation.allergies || userInformation.preferences || attachment) && (
               <div className="border-t border-[#dddddd] dark:border-[#444444] pt-3">
                 <div className="space-y-2 text-sm">
                   {userInformation.occasion && userInformation.occasion !== "0" && (<div><span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.confirmation.occasion")}: </span><span>{occasions?.find((o: BaseRecord) => o.id === Number(userInformation.occasion))?.name}</span></div>)}
                   {areaSelected && (<div><span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.form.areas")}: </span><span>{areas.find((a: any) => a.id === areaSelected)?.name}</span></div>)}
                   {userInformation.allergies && (<div><span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.confirmation.allergies")}: </span><span className="text-xs bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 px-2 py-1 rounded">{userInformation.allergies}</span></div>)}
                   {userInformation.preferences && (<div><span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.confirmation.preferences")}: </span><span className="text-xs bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 px-2 py-1 rounded">{userInformation.preferences}</span></div>)}
+                  {attachment && (<div><span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.form.attachment", "Attachment")}: </span><span>{attachment.name}</span></div>)}
                 </div>
               </div>
             )}
@@ -428,6 +508,11 @@ const WidgetPage = () => {
     return saved ? JSON.parse(saved).areaSelected : undefined;
   });
 
+  // Attachment State
+  const [attachment, setAttachment] = useState<File | null>(null);
+  const [attachmentError, setAttachmentError] = useState<string | null>(null);
+  const attachmentInputRef = useRef<HTMLInputElement>(null);
+
   // Payment State
   const [paymentData, setPaymentData] = useState<any | null>(null)
   const [paymentError, setPaymentError] = useState<string | null>(null)
@@ -439,6 +524,14 @@ const WidgetPage = () => {
 
   // Browser Info
   const [browserInfo, setBrowserInfo] = useState({ userAgent: "", screenHeight: 0, screenWidth: 0, colorDepth: 0 })
+
+  const isAttachmentFeatureEnabled = useMemo(() => {
+    if (typeof window === 'undefined') return false;
+    const hostname = window.location.hostname;
+    const enabledDomains = ["the5th.tabla.ma", "azar.tabla.ma", "italiana.tabla.ma"];
+    const isDev = process.env.NODE_ENV === 'development' || hostname.includes('localhost') || hostname.includes('.dev.tabla.ma');
+    return enabledDomains.includes(hostname) || isDev;
+  }, []);
 
   const { refetch: checkPayment } = useCustom<any>({
     url: 'api/v1/bo/subdomains/public/customer/payment/check/',
@@ -481,7 +574,7 @@ const WidgetPage = () => {
 
   useEffect(() => {
     if (widgetInfo) {
-      setRestaurantID(widgetInfo.restaurant);
+      setRestaurantID(widgetInfo.restaurant?.id);
       setAreas(widgetInfo.areas || []);
 
       const isStep1DataMissing = !data.reserveDate || !data.time || !data.guests;
@@ -582,6 +675,8 @@ const WidgetPage = () => {
       setCheckedConditions(false);
       setCheckedDressCode(false);
       setAreaSelected(undefined);
+      setAttachment(null);
+      setAttachmentError(null);
       shouldAutoSelect = true;
     }
 
@@ -665,20 +760,43 @@ const WidgetPage = () => {
     setServerError("");
     setPaymentError(null);
 
+    const formData = new FormData();
+    const values = {
+      customer: { title: chosenTitle, email: userInformation.email, first_name: userInformation.firstname, last_name: userInformation.lastname, phone: userInformation.phone, preferred_language: preferredLanguage },
+      restaurant: restaurantID as number,
+      occasion: Number(userInformation.occasion) || null,
+      source: "WIDGET",
+      status: "PENDING",
+      allergies: userInformation.allergies,
+      preferences: userInformation.preferences,
+      area: areaSelected,
+      date: format(new Date(data.reserveDate), "yyyy-MM-dd"),
+      time: data.time + ":00",
+      number_of_guests: data.guests,
+    };
+
+    // Append JSON data and other fields. Complex objects are stringified.
+    Object.keys(values).forEach(key => {
+        const value = (values as any)[key];
+        if (typeof value === 'object' && value !== null) {
+            formData.append(key, JSON.stringify(value));
+        } else if (value !== null && value !== undefined) {
+            formData.append(key, String(value));
+        }
+    });
+
+    if (attachment) {
+      formData.append('attachment', attachment);
+    }
+
     createReservation({
       resource: `api/v1/bo/subdomains/public/cutomer/reservations/`,
-      values: {
-        customer: { title: chosenTitle, email: userInformation.email, first_name: userInformation.firstname, last_name: userInformation.lastname, phone: userInformation.phone, preferred_language: preferredLanguage },
-        restaurant: restaurantID as number,
-        occasion: Number(userInformation.occasion) || null,
-        source: "WIDGET",
-        status: "PENDING",
-        allergies: userInformation.allergies,
-        preferences: userInformation.preferences,
-        area: areaSelected,
-        date: format(new Date(data.reserveDate), "yyyy-MM-dd"),
-        time: data.time + ":00",
-        number_of_guests: data.guests,
+      values: formData,
+      meta: {
+        headers: {
+          // The browser will set the correct Content-Type with boundary for multipart/form-data
+          // So we don't set it manually here to avoid issues.
+        },
       },
     }, {
       onSuccess: (responseData) => {
@@ -761,15 +879,49 @@ const WidgetPage = () => {
     setCheckedConditions(false);
     setCheckedDressCode(false);
     setAreaSelected(undefined);
+    setAttachment(null);
+    setAttachmentError(null);
     changeStep(1);
     navigate('/make/reservation');
+  };
+
+  const handleAttachmentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const allowedTypes = ['application/pdf'];
+      if (!allowedTypes.includes(file.type)) {
+        setAttachmentError(t("reservationWidget.validation.attachmentInvalidType", "Invalid file type. Please upload a PDF file."));
+        setAttachment(null);
+        if (attachmentInputRef.current) attachmentInputRef.current.value = '';
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) { // 10MB
+        setAttachmentError(t("reservationWidget.validation.attachmentTooLarge", "File is too large. Maximum size is 10MB."));
+        setAttachment(null);
+        if (attachmentInputRef.current) attachmentInputRef.current.value = '';
+        return;
+      }
+      setAttachment(file);
+      setAttachmentError(null);
+    } else {
+      setAttachment(null);
+      setAttachmentError(null);
+    }
+  };
+
+  const handleRemoveAttachment = () => {
+    setAttachment(null);
+    setAttachmentError(null);
+    if (attachmentInputRef.current) {
+      attachmentInputRef.current.value = '';
+    }
   };
 
   const renderStep = () => {
     switch (step) {
       case 1: return <ReservationPickerStep data={data} onShowProcess={() => setShowProcess(true)} onNextStep={() => changeStep(2)} widgetInfo={widgetInfo} isCheckingPayment={isCheckingPayment} />;
-      case 2: return <UserInfoFormStep userInformation={userInformation} formErrors={formErrors} chosenTitle={chosenTitle} checkedConditions={checkedConditions} checkedDressCode={checkedDressCode} widgetInfo={widgetInfo} occasions={occasions} areas={areas} areaSelected={areaSelected} onUserInformationChange={setUserInformation} onChosenTitleChange={setChosenTitle} onCheckedConditionsChange={setCheckedConditions} onCheckedDressCodeChange={setCheckedDressCode} onAreaSelectedChange={setAreaSelected} onSubmit={handleSubmit} onBack={() => changeStep(1)} onDressCodePopupOpen={() => setDressCodePopupOpen(true)} />;
-      case 3: return <ConfirmationStep data={data} userInformation={userInformation} chosenTitle={chosenTitle} occasions={occasions} areas={areas} areaSelected={areaSelected} onConfirm={handleConfirmation} onBack={() => changeStep(2)} isLoading={isLoading} isPaymentRequired={isPaymentNeeded} totalAmount={totalAmount} currency={widgetInfo?.currency} paymentError={paymentError || serverError} />;
+      case 2: return <UserInfoFormStep userInformation={userInformation} formErrors={formErrors} chosenTitle={chosenTitle} checkedConditions={checkedConditions} checkedDressCode={checkedDressCode} widgetInfo={widgetInfo} occasions={occasions} areas={areas} areaSelected={areaSelected} attachment={attachment} attachmentError={attachmentError} isAttachmentFeatureEnabled={isAttachmentFeatureEnabled} onUserInformationChange={setUserInformation} onChosenTitleChange={setChosenTitle} onCheckedConditionsChange={setCheckedConditions} onCheckedDressCodeChange={setCheckedDressCode} onAreaSelectedChange={setAreaSelected} onAttachmentChange={handleAttachmentChange} onRemoveAttachment={handleRemoveAttachment} onSubmit={handleSubmit} onBack={() => changeStep(1)} onDressCodePopupOpen={() => setDressCodePopupOpen(true)} />;
+      case 3: return <ConfirmationStep data={data} userInformation={userInformation} chosenTitle={chosenTitle} occasions={occasions} areas={areas} areaSelected={areaSelected} attachment={attachment} onConfirm={handleConfirmation} onBack={() => changeStep(2)} isLoading={isLoading} isPaymentRequired={isPaymentNeeded} totalAmount={totalAmount} currency={widgetInfo?.currency} paymentError={paymentError || serverError} />;
       case 5: return <SuccessStep widgetInfo={widgetInfo} onReset={() => handleNewReservation()} />;
       case 6: return <UnavailableStep widgetInfo={widgetInfo} />;
       default: return null;
