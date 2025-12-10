@@ -185,6 +185,10 @@
       "headline": "Editar Reserva",
       "subtitle": "Edita tu reserva",
       "confirmationMessage": "¿Estás seguro de que quieres editar esta reserva?",
+      "confirmClose": {
+        "title": "¿Descartar cambios?",
+        "message": "Tienes cambios sin guardar. ¿Estás seguro de que quieres cerrar?"
+      },
       "informations": {
         "title": "Información",
         "name": "Nombre Completo",

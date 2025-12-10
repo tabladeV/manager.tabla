@@ -8,6 +8,7 @@ import { Occasion, OccasionsType } from '../settings/Occasions';
 import BaseSelect from '../common/BaseSelect';
 import WidgetReservationProcess from './WidgetReservationProcess';
 import { useRestaurantConfig } from '../../hooks/useRestaurantConfig';
+import ActionPopup from '../popup/ActionPopup';
 
 interface Reservation extends BaseRecord {
   id?: BaseKey;
@@ -738,9 +739,57 @@ const canSendPaymentLinkForExistingCustomer = () => {
     return null;
   };
 
+  const [showConfirmClose, setShowConfirmClose] = useState(false);
+
+  const hasUnsavedChanges = () => {
+    const hasReservationData = data.reserveDate !== '' || data.time !== '' || data.guests !== 0;
+
+    if (findClient) {
+      if (newClient) {
+        const hasNewClientData =
+          newCustomerData.first_name !== '' ||
+          newCustomerData.last_name !== '' ||
+          newCustomerData.email !== '' ||
+          newCustomerData.phone !== '' ||
+          newCustomerData.note !== '';
+        return hasReservationData || hasNewClientData;
+      } else {
+        return hasReservationData || searchKeyword !== '';
+      }
+    } else {
+      return true;
+    }
+  };
+
+  const handleClose = () => {
+    if (hasUnsavedChanges()) {
+      setShowConfirmClose(true);
+    } else {
+      props.onClick();
+    }
+  };
+
   return (
     <div>
-      <div className="overlay" onClick={props.onClick}></div>
+      <div className="overlay" onClick={handleClose}></div>
+      {showConfirmClose && (
+        <ActionPopup
+          action="confirm"
+          message={
+            <div>
+              <p>{t('reservations.edit.confirmClose.message', 'You have unsaved changes. Are you sure you want to close?')}</p>
+            </div>
+          }
+          actionFunction={() => {
+            setShowConfirmClose(false);
+            props.onClick();
+          }}
+          secondAction={() => setShowConfirmClose(false)}
+          secondActionText={t('common.cancel', 'Cancel')}
+          showPopup={showConfirmClose}
+          setShowPopup={setShowConfirmClose}
+        />
+      )}
       {showProcess && (
         <div className="fixed inset-0 bg-black/50 z-[300] flex items-center justify-center p-4">
           <div className="bg-white dark:bg-[#222222] rounded-lg max-w-2xl w-full max-h-[90vh] overflow-auto">
@@ -760,7 +809,7 @@ const canSendPaymentLinkForExistingCustomer = () => {
           <div className='flex justify-between items-center'>
             <h1 className="text-3xl font-[700]">{t('grid.buttons.addReservation')}</h1>
             <button
-              onClick={() => props.onClick?.()}
+              onClick={handleClose}
               className="text-gray-500 hover:text-gray-700"
             >
               <X size={20} />
@@ -951,7 +1000,7 @@ const canSendPaymentLinkForExistingCustomer = () => {
           <div className='flex justify-between items-center'>
             <h1 className="text-3xl font-[700]">{t('grid.buttons.addReservation')}</h1>
             <button
-              onClick={() => props.onClick?.()}
+              onClick={handleClose}
               className="text-gray-500 hover:text-gray-700"
             >
               <X size={20} />
