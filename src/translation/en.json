@@ -189,6 +189,10 @@
             "headline": "Edit Reservation",
             "subtitle": "Edit your reservation",
             "confirmationMessage": "Are you sure you want to edit this reservation?",
+            "confirmClose": {
+                "title": "Discard Changes?",
+                "message": "You have unsaved changes. Are you sure you want to close?"
+            },
             "informations": {
                 "title": "Informations",
                 "name": "Full Name",

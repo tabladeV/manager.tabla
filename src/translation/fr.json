@@ -185,6 +185,10 @@
       "headline": "Modifier la Réservation",
       "subtitle": "Modifiez votre réservation",
       "confirmationMessage": "Êtes-vous sûr de vouloir modifier cette réservation ?",
+      "confirmClose": {
+        "title": "Annuler les modifications ?",
+        "message": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir fermer ?"
+      },
       "informations": {
         "title": "Informations",
         "name": "Nom Complet",
