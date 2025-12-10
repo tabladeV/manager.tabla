@@ -1002,6 +1002,7 @@ const canSendPaymentLinkForExistingCustomer = () => {
             <h1 className="text-3xl font-[700]">{t('grid.buttons.addReservation')}</h1>
             <button
               onClick={handleClose}
+              type="button"
               className="text-gray-500 hover:text-gray-700"
             >
               <X size={20} />
