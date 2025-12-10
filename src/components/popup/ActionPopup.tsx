@@ -237,7 +237,7 @@ const ActionPopup: React.FC<ConfirmPopupProps> = ({
           
           <div className="flex gap-3 mt-4 w-full justify-center">
             <button 
-              className={`btn ${isDarkMode ? "text-white" : ""}`}
+              className={`btn-danger-outline ${isDarkMode ? "text-white" : ""}`}
               onClick={handleClose}
             >
               {secondActionText || 'Cancel'}
