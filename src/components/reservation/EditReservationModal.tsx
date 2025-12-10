@@ -53,6 +53,7 @@ const EditReservationModal = ({
   const [selectedClient, setSelectedClient] = useState<Reservation | null>(null);
   const [selectedOccasion, setSelectedOccasion] = useState<number | null>(null);
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+  const [showConfirmClose, setShowConfirmClose] = useState(false);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [occasions, setOccasions] = useState<Occasion[]>([])
@@ -300,11 +301,53 @@ const { open } = useNotification();
     return null;
   };
 
+  const hasUnsavedChanges = () => {
+    if (!reservation || !selectedClient) return false;
+
+    // Helper to safely get ID
+    const getOccasionId = (occ: any) => {
+        if (!occ) return null;
+        if (typeof occ === 'object') return occ.id;
+        return occ;
+    };
+
+    const initialOccasionId = getOccasionId(reservation.occasion);
+    const currentOccasionId = getOccasionId(selectedClient.occasion);
+
+    const initialTableIds = (reservation.tables || []).map(t => t.id).sort((a, b) => a - b).join(',');
+    const currentTableIds = (selectedTables || []).sort((a, b) => a - b).join(',');
+
+    // Check basic fields
+    if (selectedClient.source !== reservation.source) return true;
+    if ((selectedClient.internal_note || '') !== (reservation.internal_note || '')) return true;
+    if (selectedClient.status !== reservation.status) return true;
+    if (initialOccasionId != currentOccasionId) return true;
+    if (initialTableIds !== currentTableIds) return true;
+
+    // Check progress data (Date, Time, Guests)
+    const initialTime = reservation.time ? reservation.time.slice(0, 5) : '';
+    const currentTime = reservationProgressData.time ? reservationProgressData.time.slice(0, 5) : '';
+    
+    if (reservationProgressData.reserveDate !== reservation.date) return true;
+    if (currentTime !== initialTime) return true;
+    if (Number(reservationProgressData.guests) !== Number(reservation.number_of_guests)) return true;
+
+    return false;
+  };
+
+  const handleClose = () => {
+    if (hasUnsavedChanges()) {
+      setShowConfirmClose(true);
+    } else {
+      setShowModal(false);
+    }
+  };
+
   if (!showModal || !selectedClient) return null;
 
   return (
     <div>
-      <div className="overlay z-[100]" onClick={() => setShowModal(false)}></div>
+      <div className="overlay z-[100]" onClick={handleClose}></div>
       <div className={`sidepopup w-[40%] overflow-y-auto lt-sm:min-h-[70vh] lt-sm:max-h-[90vh] lt-sm:w-full lt-sm:bottom-0 lt-sm:overflow-y-auto h-full ${isDarkMode ? 'bg-bgdarktheme text-white' : 'bg-white'} `}>
         <CanAccess resource="reservation" action="change" fallback={
            // Read-only view for users without edit permissions
@@ -628,9 +671,7 @@ const { open } = useNotification();
             <div className="h-10 sm:hidden"></div>
             <div className="flex justify-center lt-sm:fixed lt-sm:bottom-0 lt-sm: lt-sm:p-3 lt-sm:w-full space-x-2">
               <button
-                onClick={() => {
-                  setShowModal(false)
-                }}
+                onClick={handleClose}
                 className="btn-secondary hover:bg-[#88AB6150] hover:text-greentheme transition-colors"
               >
                 {t('reservations.edit.buttons.cancel')}
@@ -713,6 +754,26 @@ const { open } = useNotification();
               setShowPopup={setShowConfirmPopup}
               secondActionText={t('reservations.edit.buttons.cancel')}
             />
+
+            {/* Close Confirmation Popup */}
+            {showConfirmClose && (
+              <ActionPopup
+                action="confirm"
+                message={
+                  <div>
+                    <p>{t('reservations.edit.confirmClose.message', 'You have unsaved changes. Are you sure you want to close?')}</p>
+                  </div>
+                }
+                actionFunction={() => {
+                  setShowConfirmClose(false);
+                  setShowModal(false);
+                }}
+                secondAction={() => setShowConfirmClose(false)}
+                secondActionText={t('common.cancel', 'Cancel')}
+                showPopup={showConfirmClose}
+                setShowPopup={setShowConfirmClose}
+              />
+            )}
           </div>
         </CanAccess>
       </div>
