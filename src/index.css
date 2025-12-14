@@ -52,7 +52,7 @@
     @apply bg-transparent border hover:border-subblack  transition duration-200 text-subblack dark:text-white dark:hover:border-softwhitetheme font-[500] py-2 px-4 rounded-[10px];
   }
   .popup{
-    @apply flex flex-col fixed  w-[30vw] z-[220] left-1/2 sm:top-1/2 p-[2em] -translate-x-1/2  sm:-translate-y-1/2  rounded-[20px] ;
+    @apply flex flex-col fixed  w-[30vw] z-[220] left-1/2 sm:top-1/2 p-[1em] -translate-x-1/2  sm:-translate-y-1/2  rounded-[20px] ;
   }
 
   .sidepopup{
@@ -347,9 +347,6 @@ html{
 
 
 @layer base{
-    body{
-        font-family: 'poppins', "cairo", sans-serif;
-    }
     h1{
         font-size: 2rem;
         font-weight: 700;
@@ -576,4 +573,16 @@ input[type=number]::-webkit-outer-spin-button {
 /* For Firefox */
 input[type=number] {
   -moz-appearance: textfield;
+}
+
+.glassmorphism {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark .glassmorphism {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }

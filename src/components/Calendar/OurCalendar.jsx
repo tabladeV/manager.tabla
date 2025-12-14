@@ -42,16 +42,20 @@ const OurCalendar = (props) => {
   const previousMonth = useDebouncedCallback(()=> {
     // if (loading) return;
     let firstDayNextMonth = add(firstDayCurrentMonth, { months: -1 });
-    setCurrentMonth(format(firstDayNextMonth, 'MMM-yyyy'));
     props.onMonthChange?.(format(firstDayNextMonth, 'yyyy-MM'));
-  }, 300);
+    setTimeout(()=> {
+      setCurrentMonth(format(firstDayNextMonth, 'MMM-yyyy'));
+    }, 300);
+  },50);
 
   const nextMonth = useDebouncedCallback(()=> {
     // if (loading) return;
     let firstDayNextMonth = add(firstDayCurrentMonth, { months: 1 });
-    setCurrentMonth(format(firstDayNextMonth, 'MMM-yyyy'));
     props.onMonthChange?.(format(firstDayNextMonth, 'yyyy-MM'));
-  }, 300);
+    setTimeout(()=> {
+      setCurrentMonth(format(firstDayNextMonth, 'MMM-yyyy'));
+    }, 300);
+  },50);
 
   function selectingDate(day) {
     if (loading) return;
@@ -66,51 +70,6 @@ const OurCalendar = (props) => {
     }
   }
 
-  // Skeleton loaders for calendar
-  const renderSkeleton = () => {
-    return (
-      <>
-        <div className='text-[20px] items-center mb-2 flex justify-between'>
-          <div className='font-bold w-28 h-7 bg-gray-200 dark:bg-darkthemeitems animate-pulse rounded'></div>
-          {/* <div className='flex'>
-            <div className='w-[35px] h-[35px] bg-gray-200 animate-pulse rounded-full mx-1'></div>
-            <div className='w-[35px] h-[35px] bg-gray-200 animate-pulse rounded-full mx-1'></div>
-          </div> */}
-          <div className='flex'>
-              <button 
-                onClick={previousMonth} 
-                className='hover:bg-[#3333330a] transition duration-500 w-[35px] h-[35px] flex justify-center items-center rounded-[100%]'
-                disabled={loading}
-              >
-                {'<'}
-              </button>
-              <button 
-                onClick={nextMonth} 
-                className='hover:bg-[#3333330a] transition duration-500 w-[35px] h-[35px] flex justify-center items-center rounded-[100%]'
-                disabled={loading}
-              >
-                {'>'}
-              </button>
-            </div>
-        </div>
-        <div className='mx-auto'>
-          <div className='grid mx-auto grid-cols-7'>
-            {Array(7).fill(0).map((_, index) => (
-              <div key={index} className='font-bold ml-3 w-[30px] h-[30px] bg-gray-200 dark:bg-darkthemeitems animate-pulse rounded-[6px] mb-2'></div>
-            ))}
-          </div>
-          <div className='mx-auto grid grid-cols-7 justify-around'>
-            {Array(35).fill(0).map((_, index) => (
-              <div key={index} className='py-1.5'>
-                <div className='mx-auto h-8 w-8 bg-gray-200 dark:bg-darkthemeitems animate-pulse rounded-full'></div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </>
-    );
-  };
-
   // Use either external selectedDate or internal selectedDay
   const actualSelectedDay = value || selectedDay;
 
@@ -118,72 +77,113 @@ const OurCalendar = (props) => {
   // Get localized month name from i18n
   const localizedMonth = t(`calendarPopup.months.${format(firstDayCurrentMonth, 'MMMM').toLowerCase()}`) || format(firstDayCurrentMonth, 'MMMM');
 
+  const getDayClasses = (day) => {
+    const isSelected = isSameDay(day, actualSelectedDay);
+    const isAvailable = isDayAvailable(day);
+    const isForbidden = props.forbidden && day < today;
+    const isDisabled = isForbidden || !isAvailable;
+
+    if (isDisabled) {
+        return 'text-gray-300 dark:text-gray-600 cursor-not-allowed opacity-50';
+    }
+
+    if (isSelected) {
+        return 'text-white bg-greentheme font-bold shadow-md';
+    }
+    
+    if (isToday(day)) {
+        return 'dark:text-white text-greentheme border border-greentheme font-bold';
+    }
+
+    if (!isSameMonth(day, firstDayCurrentMonth)) {
+        return 'text-gray-400 dark:text-gray-600';
+    }
+
+    return 'dark:text-gray-300 text-gray-900 hover:bg-gray-200 dark:hover:bg-darkthemeitems';
+  };
+
   return (
-    <div className='p-[1em] w-full h-full mx-auto'>
-      {loading ? (
-        renderSkeleton()
-      ) : (
-        <>
-          <div className='text-[20px] items-center mb-2 flex justify-between'>
-            <div className='font-bold'>
-              {localizedMonth} {format(firstDayCurrentMonth, 'yyyy')}
-            </div>
-            <div className='flex'>
-              <button 
-                onClick={previousMonth} 
-                className='hover:bg-[#3333330a] transition duration-500 w-[35px] h-[35px] flex justify-center items-center rounded-[100%]'
-                disabled={loading}
-              >
-                {'<'}
-              </button>
-              <button 
-                onClick={nextMonth} 
-                className='hover:bg-[#3333330a] transition duration-500 w-[35px] h-[35px] flex justify-center items-center rounded-[100%]'
-                disabled={loading}
-              >
-                {'>'}
-              </button>
-            </div>
+    <div className='ltr rounded-lg dark:bg-bgdarktheme bg-white min-h-[360px]'>
+      <style>{`
+        @keyframes calendarFadeIn {
+          from { opacity: 0; transform: translateY(4px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-calendar-fade {
+          animation: calendarFadeIn 0.3s ease-out forwards;
+        }
+      `}</style>
+      <div className='text-xl items-center mb-4 flex justify-between px-2 pt-2'>
+        {loading ? (
+          <div className='font-bold w-32 h-8 bg-gray-200 dark:bg-darkthemeitems animate-pulse rounded'></div>
+        ) : (
+          <div className='font-bold text-greentheme dark:text-white capitalize'>
+            {localizedMonth} {format(firstDayCurrentMonth, 'yyyy')}
           </div>
-          <div className='mx-auto'>
-            <div className='grid mx-auto grid-cols-7'>
-              {[ t('calendarPopup.days.sunday'), t('calendarPopup.days.monday'), t('calendarPopup.days.tuesday'), t('calendarPopup.days.wednesday'), t('calendarPopup.days.thursday'), t('calendarPopup.days.friday'), t('calendarPopup.days.saturday')].map((day, index) => (
-                <button key={index} className='font-bold ml-3 w-[30px] cursor-default rounded-[6px] h-[30px]'>{day}</button>
-              ))}
-            </div>
-            <div className='mx-auto grid grid-cols-7 justify-around'>
-              {days.map((day, dayIdx) => {
-                const isAvailable = isDayAvailable(day);
-                return (
-                  <div key={day.toString()} className={classNames(dayIdx === 0 && colStartClasses[getDay(day)], 'py-1.5')}>
-                    <button
-                      type="button"
-                      onClick={() => selectingDate(day)}
-                      disabled={(props.forbidden && day < today) || !isAvailable || loading}
-                      className={classNames(
-                        isSameDay(day, actualSelectedDay) && 'text-white',
-                        !isSameDay(day, actualSelectedDay) && isToday(day) && 'text-[#70ae29] font-bold',
-                        !isSameDay(day, actualSelectedDay) && !isToday(day) && isSameMonth(day, firstDayCurrentMonth) && localStorage.getItem('darkMode') === 'true' ? 'text-white' : 'text-gray-900',
-                        !isSameDay(day, actualSelectedDay) && !isToday(day) && !isSameMonth(day, firstDayCurrentMonth) && 'text-gray-400',
-                        isSameDay(day, actualSelectedDay) && isToday(day) && 'bg-greentheme font-bold',
-                        isSameDay(day, actualSelectedDay) && !isToday(day) && 'bg-gray-900',
-                        !isSameDay(day, actualSelectedDay) && isAvailable && 'hover:bg-softgreentheme',
-                        (isSameDay(day, actualSelectedDay) || isToday(day)) && 'font-semibold',
-                        !isAvailable && 'bg-gray-100 dark:bg-softredtheme cursor-not-allowed',
-                        'mx-auto flex h-8 w-8 items-center justify-center rounded-full'
-                      )}
-                    >
-                      <time dateTime={format(day, 'yyyy-MM-dd')} className={((props.forbidden && day < today) || !isAvailable ? 'opacity-20' : '')}>
-                        {format(day, 'd')}
-                      </time>
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
+        )}
+        
+        <div className='flex space-x-2'>
+          <button 
+            onClick={previousMonth} 
+            className='hover:bg-softgreentheme dark:hover:bg-darkthemeitems transition duration-200 w-8 h-8 flex justify-center items-center rounded-full'
+            disabled={loading}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5 text-greentheme dark:text-white">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button 
+            onClick={nextMonth} 
+            className='hover:bg-softgreentheme dark:hover:bg-darkthemeitems transition duration-200 w-8 h-8 flex justify-center items-center rounded-full'
+            disabled={loading}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5 text-greentheme dark:text-white">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div className='mx-auto pb-2'>
+        <div className='grid grid-cols-7 mb-2'>
+          {[ t('calendarPopup.days.sunday'), t('calendarPopup.days.monday'), t('calendarPopup.days.tuesday'), t('calendarPopup.days.wednesday'), t('calendarPopup.days.thursday'), t('calendarPopup.days.friday'), t('calendarPopup.days.saturday')].map((day, index) => (
+            <div key={index} className='font-bold text-center text-sm text-greentheme dark:text-white'>{day}</div>
+          ))}
+        </div>
+        
+        {loading ? (
+          <div className='grid grid-cols-7 gap-1 animate-calendar-fade'>
+            {Array(42).fill(0).map((_, index) => (
+              <div key={index} className='w-full h-9 flex items-center justify-center'>
+                <div className='h-8 w-8 bg-gray-200 dark:bg-darkthemeitems animate-pulse rounded-full'></div>
+              </div>
+            ))}
           </div>
-        </>
-      )}
+        ) : (
+          <div key={currentMonth} className='grid grid-cols-7 gap-1 animate-calendar-fade'>
+            {days.map((day, dayIdx) => {
+              const isAvailable = isDayAvailable(day);
+              const isForbidden = props.forbidden && day < today;
+              return (
+                <div key={day.toString()} className={classNames(dayIdx === 0 && colStartClasses[getDay(day)], 'relative')}>
+                  <button
+                    type="button"
+                    onClick={() => selectingDate(day)}
+                    disabled={isForbidden || !isAvailable || loading}
+                    className={classNames(
+                      getDayClasses(day),
+                      'w-full h-9 flex items-center justify-center rounded-full transition duration-200 text-sm'
+                    )}
+                  >
+                    <time dateTime={format(day, 'yyyy-MM-dd')}>
+                      {format(day, 'd')}
+                    </time>
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

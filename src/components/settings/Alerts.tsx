@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus, Trash, Pencil, X, Upload, Loader2 } from 'lucide-react';
 import BaseInput from '../common/BaseInput';
+import BaseTimeInput from '../common/BaseTimeInput';
 import InlineQuillEditor from '../common/InlineQuillEditor';
 import BaseBtn from '../common/BaseBtn';
 import Portal from '../common/Portal';
@@ -17,6 +18,11 @@ interface Alert {
   start_date: string;
   end_date: string;
   is_active: boolean;
+  // New fields for event specifics
+  event_start_date: string;
+  event_end_date: string;
+  event_start_time: string;
+  event_end_time: string;
 }
 
 // Default state for a new alert
@@ -27,6 +33,10 @@ const defaultAlertState: Omit<Alert, 'id'> = {
     start_date: '',
     end_date: '',
     is_active: true,
+    event_start_date: '',
+    event_end_date: '',
+    event_start_time: '',
+    event_end_time: '',
 };
 
 // Props for the modal component
@@ -160,9 +170,67 @@ const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose, onSave, alert,
                         disabled={isLoading}
                         rules={[(value) => !!value.trim() ? null : t('common.validation.requiredField')]}
                     />
-                    <div className="grid grid-cols-2 gap-4">
-                        <BaseInput label={t('paymentSettings.startDate')} type="date" value={currentAlert.start_date} onChange={(val) => setCurrentAlert({ ...currentAlert, start_date: val })} rules={[(value) => !!value ? null : t('common.validation.requiredField'), (value) => (currentAlert.end_date && value > currentAlert.end_date) ? t('paymentSettings.errors.startDateAfterEnd') : null,]} variant="outlined" disabled={isLoading} />
-                        <BaseInput label={t('paymentSettings.endDate')} type="date" value={currentAlert.end_date} onChange={(val) => setCurrentAlert({ ...currentAlert, end_date: val })} rules={[(value) => !!value ? null : t('common.validation.requiredField'), (value) => (currentAlert.start_date && value < currentAlert.start_date) ? t('paymentSettings.errors.endDateBeforeStart') : null,]} variant="outlined" disabled={isLoading} />
+
+                    {/* Display Settings Section */}
+                    <div className="p-4 rounded-lg bg-gray-50 dark:bg-darkthemeitems/30 border border-gray-100 dark:border-darkthemeitems">
+                        <h3 className="text-sm font-bold mb-3 text-gray-700 dark:text-gray-300 uppercase">{t('alerts.displaySettings', 'Popup Display Period')}</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                            <BaseInput 
+                                label={t('paymentSettings.startDate')} 
+                                type="date" 
+                                value={currentAlert.start_date} 
+                                onChange={(val) => setCurrentAlert({ ...currentAlert, start_date: val })} 
+                                rules={[(value) => !!value ? null : t('common.validation.requiredField'), (value) => (currentAlert.end_date && value > currentAlert.end_date) ? t('paymentSettings.errors.startDateAfterEnd') : null,]} 
+                                variant="outlined" 
+                                disabled={isLoading} 
+                            />
+                            <BaseInput 
+                                label={t('paymentSettings.endDate')} 
+                                type="date" 
+                                value={currentAlert.end_date} 
+                                onChange={(val) => setCurrentAlert({ ...currentAlert, end_date: val })} 
+                                rules={[(value) => !!value ? null : t('common.validation.requiredField'), (value) => (currentAlert.start_date && value < currentAlert.start_date) ? t('paymentSettings.errors.endDateBeforeStart') : null,]} 
+                                variant="outlined" 
+                                disabled={isLoading} 
+                            />
+                        </div>
+                    </div>
+
+                    {/* Event Details Section */}
+                    <div className="p-4 rounded-lg bg-gray-50 dark:bg-darkthemeitems/30 border border-gray-100 dark:border-darkthemeitems">
+                        <h3 className="text-sm font-bold mb-3 text-gray-700 dark:text-gray-300 uppercase">{t('alerts.eventDetails', 'Event Date & Time')}</h3>
+                        <div className="grid grid-cols-2 gap-4 mb-4">
+                            <BaseInput 
+                                label={t('alerts.eventStartDate', 'Event Start Date')} 
+                                type="date" 
+                                value={currentAlert.event_start_date} 
+                                onChange={(val) => setCurrentAlert({ ...currentAlert, event_start_date: val })} 
+                                variant="outlined" 
+                                disabled={isLoading} 
+                            />
+                            <BaseInput 
+                                label={t('alerts.eventEndDate', 'Event End Date')} 
+                                type="date" 
+                                value={currentAlert.event_end_date} 
+                                onChange={(val) => setCurrentAlert({ ...currentAlert, event_end_date: val })} 
+                                variant="outlined" 
+                                disabled={isLoading} 
+                            />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <BaseTimeInput 
+                                label={t('alerts.eventStartTime', 'Event Start Time')} 
+                                value={currentAlert.event_start_time} 
+                                onChange={(val) => setCurrentAlert({ ...currentAlert, event_start_time: val || '' })} 
+                                disabled={isLoading} 
+                            />
+                            <BaseTimeInput 
+                                label={t('alerts.eventEndTime', 'Event End Time')} 
+                                value={currentAlert.event_end_time} 
+                                onChange={(val) => setCurrentAlert({ ...currentAlert, event_end_time: val || '' })} 
+                                disabled={isLoading} 
+                            />
+                        </div>
                     </div>
 
                     <div>
@@ -251,10 +319,42 @@ export default function Alerts() {
         if (editingAlertId && singleAlertData?.data) {
             // Ensure the data we have matches the ID we want to edit
             if (singleAlertData.data.id == editingAlertId) {
+                const apiData = singleAlertData.data;
+                
+                // Helper to format date string to YYYY-MM-DD
+                const formatDate = (dateStr: string | undefined) => {
+                    if (!dateStr) return '';
+                    // Handle ISO format (2025-12-27T00:00:00+01:00)
+                    if (dateStr.includes('T')) {
+                        return dateStr.split('T')[0];
+                    }
+                    return dateStr;
+                };
+
+                // Helper to format time string to HH:MM
+                const formatTime = (timeStr: string | undefined) => {
+                    if (!timeStr) return '';
+                    // Handle HH:MM:SS format
+                    if (timeStr.length > 5) {
+                        return timeStr.substring(0, 5);
+                    }
+                    return timeStr;
+                };
+
+                const formattedAlert = {
+                    ...apiData,
+                    event_start_date: formatDate(apiData.event_start_date),
+                    event_end_date: formatDate(apiData.event_end_date),
+                    event_start_time: formatTime(apiData.event_start_time),
+                    event_end_time: formatTime(apiData.event_end_time),
+                    start_date: formatDate(apiData.start_date),
+                    end_date: formatDate(apiData.end_date),
+                };
+
                 try {
-                    setEditingAlert({ ...singleAlertData.data, description: JSON.parse(singleAlertData.data.description) } as Alert);
+                    setEditingAlert({ ...formattedAlert, description: JSON.parse(apiData.description) } as Alert);
                 } catch {
-                    setEditingAlert(singleAlertData.data);
+                    setEditingAlert(formattedAlert as Alert);
                 }
             }
         }
@@ -276,6 +376,12 @@ export default function Alerts() {
         formData.append('is_active', String(alert.is_active));
         formData.append('start_date', alert.start_date);
         formData.append('end_date', alert.end_date);
+        
+        // Append new fields
+        formData.append('event_start_date', alert.event_start_date || '');
+        formData.append('event_end_date', alert.event_end_date || '');
+        formData.append('event_start_time', alert.event_start_time || '');
+        formData.append('event_end_time', alert.event_end_time || '');
 
         if (alert.image instanceof File) {
             formData.append('image', alert.image);

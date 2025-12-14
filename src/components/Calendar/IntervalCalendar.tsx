@@ -102,6 +102,15 @@ const IntervalCalendar: React.FC<IntervalCalendarProps> = ({ onRangeSelect, onCl
 
   return (
     <div className='ltr rounded-lg dark:bg-bgdarktheme bg-white'>
+      <style>{`
+        @keyframes calendarFadeIn {
+          from { opacity: 0; transform: translateY(4px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-calendar-fade {
+          animation: calendarFadeIn 0.3s ease-out forwards;
+        }
+      `}</style>
       <div className='flex justify-end items-center mb-3'>
         <button 
           onClick={onClose}
@@ -129,13 +138,13 @@ const IntervalCalendar: React.FC<IntervalCalendarProps> = ({ onRangeSelect, onCl
           </button>
         </div>
       </div>
-      <div className='mx-auto'>
+      <div className='mx-auto min-h-[260px]'>
         <div className='grid grid-cols-7 mb-2'>
           {[t('calendarPopup.days.sunday'), t('calendarPopup.days.monday'), t('calendarPopup.days.tuesday'), t('calendarPopup.days.wednesday'), t('calendarPopup.days.thursday'), t('calendarPopup.days.friday'), t('calendarPopup.days.saturday')].map((day, index) => (
             <div key={index} className='font-bold text-center text-sm text-greentheme dark:text-white'>{day}</div>
           ))}
         </div>
-        <div className='grid grid-cols-7 gap-1'>
+        <div key={currentMonth} className='grid grid-cols-7 gap-1 animate-calendar-fade'>
           {days.map((day, dayIdx) => (
             <div key={day.toString()} className={classNames(dayIdx === 0 ? colStartClasses[getDay(day)] : '', 'relative')}>
               <button
