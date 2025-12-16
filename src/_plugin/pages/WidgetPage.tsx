@@ -7,7 +7,7 @@ import Logo from "../../components/header/Logo"
 import { LoaderCircle, ScreenShareIcon, ChevronDown, Facebook, Instagram, Twitter, Phone, Mail, MessageCircle, BadgeInfo, Globe, X, AlertOctagon, Bell, Layers, Upload, File as FileIcon, Trash2 } from "lucide-react"
 import { SunIcon, MoonIcon, CheckIcon } from "../../components/icons"
 import { type BaseKey, type BaseRecord, useCreate, useList, useCustom } from "@refinedev/core"
-import { format, compareAsc, parse } from "date-fns"
+import { format, compareAsc, parse, startOfDay } from "date-fns"
 import { PhoneInput } from 'react-international-phone'
 import WidgetReservationProcess from "../../components/reservation/WidgetReservationProcess"
 import { useDateContext } from "../../context/DateContext"
@@ -17,85 +17,66 @@ import { useNavigate } from "react-router-dom";
 import { SharedWidgetFooter } from "../../components/reservation/SharedWidgetFooter"
 import LanguageSelector from "./LanguageSelector"
 import { useWidgetData } from "../../hooks/useWidgetData"
-import AlertDisplay from "../../components/reservation/EventAlerts"
+import AlertDisplay, { Alert } from "../../components/reservation/EventAlerts"
+import QuillPreview from '../../components/common/QuillPreview';
 
-// #region Child Components
-
-interface QuillPreviewProps {
-  content: string
-  className?: string
-}
-
-const QuillPreview = memo(({ content, className = "" }: QuillPreviewProps) => {
-  const sanitizedContent = useMemo(()=> {
-    let htmlContent = null;
-    try {
-      // Attempt to parse if it's a JSON string from a rich text editor
-      const parsed = JSON.parse(content);
-      htmlContent = parsed;
-    } catch {
-      // If parsing fails, assume it's already a valid HTML string
-      htmlContent = content;
-    }
-    return htmlContent;
-  }, [content])
-
-  return (
-    <div className={`quill-preview ${className}`}>
-      <div className="prose prose-sm max-w-none dark:prose-invert" dangerouslySetInnerHTML={{ __html: sanitizedContent}} />
-    </div>
-  )
-})
+// --- Alert Configuration ---
+const alertDisplayMode: 'popup' | 'inline' | 'modal' | 'none' = 'inline'; // Change this to 'inline' or 'none'
 
 const WidgetHeader = memo(({ widgetInfo, onThemeToggle }: { widgetInfo: BaseRecord | undefined, onThemeToggle: () => void }) => {
   const { t } = useTranslation()
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 z-50 bg-transparent">
+      <div className="z-50 bg-transparent">
         <div className="w-full max-w-[800px] mx-auto px-4">
-          <div className="flex items-center justify-between py-4">
-            <button
-              onClick={onThemeToggle}
-              aria-label={t("reservationWidget.common.toggleDarkMode")}
-              className="p-2 rounded-lg bg-[#f5f5f5] dark:bg-[#333333] bg-opacity-80 hover:bg-[#f5f5f5] dark:hover:bg-[#444444]"
-            >
-              <SunIcon size={20} className="dark:hidden text-white drop-shadow-lg" />
-              <MoonIcon size={20} className="hidden dark:block text-white drop-shadow-lg" />
-            </button>
+          <div className="flex items-center justify-between pb-2">
+            <div className="w-1/3">
+              <button
+                onClick={onThemeToggle}
+                aria-label={t("reservationWidget.common.toggleDarkMode")}
+                className="p-2 rounded-lg bg-[#f5f5f5] dark:bg-[#333333] bg-opacity-80 hover:bg-[#f5f5f5] dark:hover:bg-[#444444]"
+              >
+                <SunIcon size={20} className="dark:hidden text-white drop-shadow-lg" />
+                <MoonIcon size={20} className="hidden dark:block text-white drop-shadow-lg" />
+              </button>
+            </div>
+            <div className="h-14 flex items-center justify-center w-1/3">
+              {widgetInfo?.image ? (
+                <img src={widgetInfo.image} alt={t("reservationWidget.common.restaurant")} className="h-14 w-auto object-contain" />
+              ) : (
+                <Logo className="h-14" nolink={true} />
+              )}
+            </div>
             <LanguageSelector />
           </div>
-        </div>
-      </div>
-      <div className="fixed w-full h-[80vh] min-h-[500px] overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat blur-[3px] scale-[1.1]"
-          style={{ backgroundImage: `url(${widgetInfo?.image_2 || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=2070&q=80'})` }}
-        />
-        <div className="absolute inset-0 bg-black bg-opacity-40" />
-        <div className="absolute inset-0 flex items-center justify-center z-10">
-          {widgetInfo?.image ? (
-            <img src={widgetInfo.image} alt={t("reservationWidget.common.restaurant")} className="h-20 w-auto object-contain mt-[-150px]" />
-          ) : (
-            <Logo className="h-16 mt-[-150px]" nolink={true} />
-          )}
         </div>
       </div>
     </>
   )
 })
 
-const ReservationPickerStep = memo(({ data, onShowProcess, onNextStep, widgetInfo, isCheckingPayment }: { data: any, onShowProcess: () => void, onNextStep: () => void, widgetInfo: BaseRecord | undefined, isCheckingPayment: boolean }) => {
+const ReservationPickerStep = memo(({ data, onShowProcess, onNextStep, handleEventBookNow, widgetInfo, isCheckingPayment }: { data: any, onShowProcess: () => void, onNextStep: () => void, handleEventBookNow: (event: any) => void, widgetInfo: BaseRecord | undefined, isCheckingPayment: boolean }) => {
   const { t } = useTranslation()
   const formatedDate = data.reserveDate ? format(new Date(data.reserveDate), "MMM-dd") : "----/--/--";
   const isDataComplete = data.reserveDate && data.time && data.guests > 0;
   const isButtonDisabled = !isDataComplete || isCheckingPayment;
 
+  const alerts = useMemo(() => {
+    return widgetInfo?.events || []
+  }, [widgetInfo]);
+
   return (
-    <>
+    <div>
       <div className="mb-6">
+          <AlertDisplay
+            alerts={alerts}
+            mode={alertDisplayMode} // popup || modal
+            widgetLogoUrl={widgetInfo?.image}
+            onBookNow={handleEventBookNow}
+          />
         <div
           onClick={onShowProcess}
-          className="grid grid-cols-3 gap-4 p-4 bg-[#f9f9f9] dark:bg-darkthemeitems rounded-lg cursor-pointer hover:bg-[#f0f0f0] dark:hover:bg-bgdarktheme2 transition-colors"
+          className="relative grid grid-cols-3 gap-4 overflow-hidden p-4 bg-[#f9f9f9] dark:bg-darkthemeitems rounded-lg cursor-pointer hover:bg-[#f0f0f0] dark:hover:bg-bgdarktheme2 transition-colors"
         >
           <div className="text-center">
             <span className="block text-sm font-[600] text-greentheme dark:text-greentheme">{t("reservationWidget.reservation.date")}</span>
@@ -109,6 +90,7 @@ const ReservationPickerStep = memo(({ data, onShowProcess, onNextStep, widgetInf
             <span className="block text-sm font-[600] text-greentheme dark:text-greentheme">{t("reservationWidget.reservation.guests")}</span>
             <span className="block text-sm font-medium mt-1">{data.guests || "--"}</span>
           </div>
+          <div className="hidden dark:block absolute inset-0 h-full w-full bg-black/20"></div>
         </div>
       </div>
       <button
@@ -128,7 +110,7 @@ const ReservationPickerStep = memo(({ data, onShowProcess, onNextStep, widgetInf
           <ScreenShareIcon size={18} />
         </button>
       )}
-    </>
+    </div>
   )
 })
 
@@ -283,7 +265,7 @@ const UserInfoFormStep = memo(({
             <label className="block text-sm font-medium text-[#555555] dark:text-[#cccccc] mb-1">{t("reservationWidget.form.attachment", "Attachment (Optional)")}</label>
             {attachment ? (
               <div className="p-3 bg-[#f0f7e6] dark:bg-darkthemeitems/50 border border-[#88AB61] rounded-lg flex items-center justify-between">
-                <div className="flex items-center gap-2 overflow-hidden">
+                <div className="flex items-center gap-2 ">
                   <FileIcon className="h-5 w-5 text-[#88AB61]" />
                   <span className="text-sm text-gray-700 dark:text-gray-300 truncate">{attachment.name}</span>
                 </div>
@@ -406,7 +388,7 @@ const ConfirmationStep = memo(({ data, userInformation, chosenTitle, occasions, 
         </div>
         {paymentError && (
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 p-3 rounded-md">
-            <p className="font-medium">{isPaymentRequired?t("reservationWidget.payment.errorTitle"):t('common.errors.anErrorOccurred')}</p><p className="text-sm mt-1">{paymentError}</p>
+            <p className="font-medium">{isPaymentRequired ? t("reservationWidget.payment.errorTitle") : t('common.errors.anErrorOccurred')}</p><p className="text-sm mt-1">{paymentError}</p>
           </div>
         )}
       </div>
@@ -450,9 +432,6 @@ const WidgetPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const step = parseInt(searchParams.get("step") || "1", 10);
 
-  // --- Alert Configuration ---
-  const alertDisplayMode: 'popup' | 'inline' | 'modal' | 'none' = 'popup'; // Change this to 'inline' or 'none'
-
   const { preferredLanguage } = useDateContext();
 
   const FORM_DATA_KEY = 'tabla_widget_form_data'
@@ -480,6 +459,14 @@ const WidgetPage = () => {
   const [serverError, setServerError] = useState<string>()
   const [showProcess, setShowProcess] = useState(false)
   const [dressCodePopupOpen, setDressCodePopupOpen] = useState(false)
+
+  // Event Filter State
+  const [eventFilter, setEventFilter] = useState<{
+    startDate?: string;
+    endDate?: string;
+    startTime?: string;
+    endTime?: string;
+  } | null>(null);
 
   // Form State
   const [data, setData] = useState(() => {
@@ -537,27 +524,43 @@ const WidgetPage = () => {
     url: 'api/v1/bo/subdomains/public/customer/payment/check/',
     method: 'get',
     config: {
-        query: {
-            date: data.reserveDate,
-            time: data.time,
-            number_of_guests: data.guests,
-        },
+      query: {
+        date: data.reserveDate,
+        time: data.time,
+        number_of_guests: data.guests,
+      },
     },
     queryOptions: {
-        enabled: false, // Manually trigger this
-        onSuccess: (response) => {
-            setIsPaymentNeeded(response.data.is_payment_enabled);
-            setTotalAmount(response.data.amount || 0);
-        },
-        onError: () => {
-            setIsPaymentNeeded(false); // Default to false on error
-            setTotalAmount(0);
-        },
-        onSettled: () => {
-            setIsCheckingPayment(false);
-        }
+      enabled: false, // Manually trigger this
+      onSuccess: (response) => {
+        setIsPaymentNeeded(response.data.is_payment_enabled);
+        setTotalAmount(response.data.amount || 0);
+      },
+      onError: () => {
+        setIsPaymentNeeded(false); // Default to false on error
+        setTotalAmount(0);
+      },
+      onSettled: () => {
+        setIsCheckingPayment(false);
+      }
     },
   });
+
+  // Handle "Book Now" from Alert
+  const handleEventBookNow = useCallback((alert: Alert) => {
+    setEventFilter({
+      startDate: alert.event_start_date,
+      endDate: alert.event_end_date,
+      startTime: alert.event_start_time,
+      endTime: alert.event_end_time
+    });
+    setShowProcess(true);
+  }, []);
+
+  const handleProcessClose = useCallback(() => {
+    setShowProcess(false);
+    setEventFilter(null); // Reset filter when closing
+  }, []);
 
   // Effects
   useEffect(() => { document.title = t("reservationWidget.page.title") }, [pathname, t])
@@ -601,33 +604,33 @@ const WidgetPage = () => {
 
     // --- Payment Check Logic ---
     if (!widgetInfo || !data.reserveDate || !data.time || !data.guests) {
-        setIsPaymentNeeded(false);
-        setTotalAmount(0);
-        return;
+      setIsPaymentNeeded(false);
+      setTotalAmount(0);
+      return;
     }
 
     if (!widgetInfo.enable_paymant) {
-        setIsPaymentNeeded(false);
-        setTotalAmount(0);
-        return;
+      setIsPaymentNeeded(false);
+      setTotalAmount(0);
+      return;
     }
 
     if (widgetInfo.payment_mode === 'always') {
-        const minGuests = widgetInfo.min_guests_for_payment || 1;
-        if (data.guests >= minGuests) {
-            setIsPaymentNeeded(true);
-            const amountPerGuest = widgetInfo.deposit_amount_par_guest || 0;
-            setTotalAmount(data.guests * parseFloat(amountPerGuest));
-        } else {
-            setIsPaymentNeeded(false);
-            setTotalAmount(0);
-        }
-    } else if (widgetInfo.payment_mode === 'rules') {
-        setIsCheckingPayment(true);
-        checkPayment();
-    } else {
+      const minGuests = widgetInfo.min_guests_for_payment || 1;
+      if (data.guests >= minGuests) {
+        setIsPaymentNeeded(true);
+        const amountPerGuest = widgetInfo.deposit_amount_par_guest || 0;
+        setTotalAmount(data.guests * parseFloat(amountPerGuest));
+      } else {
         setIsPaymentNeeded(false);
         setTotalAmount(0);
+      }
+    } else if (widgetInfo.payment_mode === 'rules') {
+      setIsCheckingPayment(true);
+      checkPayment();
+    } else {
+      setIsPaymentNeeded(false);
+      setTotalAmount(0);
     }
   }, [data, widgetInfo, checkPayment, userInformation, chosenTitle, checkedConditions, checkedDressCode, areaSelected]);
 
@@ -651,13 +654,25 @@ const WidgetPage = () => {
 
     if (savedDataString) {
       const savedData = JSON.parse(savedDataString).data;
-      if (savedData?.reserveDate && savedData?.time) {
-        shouldAutoSelect = false;
+
+      if (savedData?.reserveDate) {
         const now = new Date();
-        const reservationDateTime = parse(`${savedData.reserveDate} ${savedData.time}`, 'yyyy-MM-dd HH:mm', new Date());
-        
-        if (compareAsc(reservationDateTime, now) < 0) {
+        const reservationDate = new Date(savedData.reserveDate);
+
+        // Check if date is in the past (strictly before today)
+        if (compareAsc(startOfDay(reservationDate), startOfDay(now)) < 0) {
           isCacheInvalid = true;
+        } else if (savedData.time) {
+          shouldAutoSelect = false;
+
+          // If date is today, check if time is passed
+          if (compareAsc(startOfDay(reservationDate), startOfDay(now)) === 0) {
+            const reservationDateTime = parse(`${savedData.reserveDate} ${savedData.time}`, 'yyyy-MM-dd HH:mm', new Date());
+            if (compareAsc(reservationDateTime, now) < 0) {
+              isCacheInvalid = true;
+              shouldAutoSelect = true;
+            }
+          }
         }
       }
     }
@@ -668,7 +683,7 @@ const WidgetPage = () => {
       localStorage.clear();
       if (theme) localStorage.setItem("darkMode", theme);
       if (lang) localStorage.setItem("preferredLanguage", lang);
-      
+
       setData({ reserveDate: "", time: "", guests: 0 });
       setUserInformation({ firstname: "", lastname: "", email: "", phone: "", preferences: "", allergies: "", occasion: "" });
       setChosenTitle(undefined);
@@ -684,7 +699,7 @@ const WidgetPage = () => {
       const availability = availabilityData.data as { day: number; isAvailable: boolean }[];
       const today = new Date();
       const todayDay = today.getDate();
-      
+
       let dateToSelect: Date | null = null;
       const todayIsAvailable = availability.find(d => d.day === todayDay)?.isAvailable;
 
@@ -777,12 +792,12 @@ const WidgetPage = () => {
 
     // Append JSON data and other fields. Complex objects are stringified.
     Object.keys(values).forEach(key => {
-        const value = (values as any)[key];
-        if (typeof value === 'object' && value !== null) {
-            formData.append(key, JSON.stringify(value));
-        } else if (value !== null && value !== undefined) {
-            formData.append(key, String(value));
-        }
+      const value = (values as any)[key];
+      if (typeof value === 'object' && value !== null) {
+        formData.append(key, JSON.stringify(value));
+      } else if (value !== null && value !== undefined) {
+        formData.append(key, String(value));
+      }
     });
 
     if (attachment) {
@@ -804,7 +819,7 @@ const WidgetPage = () => {
         if (reservation?.id) {
           const numericId = Number(reservation.id);
           setReservationId(numericId);
-          
+
           localStorage.setItem(RESERVATION_DATA_KEY, JSON.stringify({ reservationId: numericId, timestamp: Date.now() }));
           if (isPaymentNeeded) {
             initiatePayment(numericId);
@@ -919,7 +934,7 @@ const WidgetPage = () => {
 
   const renderStep = () => {
     switch (step) {
-      case 1: return <ReservationPickerStep data={data} onShowProcess={() => setShowProcess(true)} onNextStep={() => changeStep(2)} widgetInfo={widgetInfo} isCheckingPayment={isCheckingPayment} />;
+      case 1: return <ReservationPickerStep data={data} onShowProcess={() => setShowProcess(true)} handleEventBookNow={handleEventBookNow} onNextStep={() => changeStep(2)} widgetInfo={widgetInfo} isCheckingPayment={isCheckingPayment} />;
       case 2: return <UserInfoFormStep userInformation={userInformation} formErrors={formErrors} chosenTitle={chosenTitle} checkedConditions={checkedConditions} checkedDressCode={checkedDressCode} widgetInfo={widgetInfo} occasions={occasions} areas={areas} areaSelected={areaSelected} attachment={attachment} attachmentError={attachmentError} isAttachmentFeatureEnabled={isAttachmentFeatureEnabled} onUserInformationChange={setUserInformation} onChosenTitleChange={setChosenTitle} onCheckedConditionsChange={setCheckedConditions} onCheckedDressCodeChange={setCheckedDressCode} onAreaSelectedChange={setAreaSelected} onAttachmentChange={handleAttachmentChange} onRemoveAttachment={handleRemoveAttachment} onSubmit={handleSubmit} onBack={() => changeStep(1)} onDressCodePopupOpen={() => setDressCodePopupOpen(true)} />;
       case 3: return <ConfirmationStep data={data} userInformation={userInformation} chosenTitle={chosenTitle} occasions={occasions} areas={areas} areaSelected={areaSelected} attachment={attachment} onConfirm={handleConfirmation} onBack={() => changeStep(2)} isLoading={isLoading} isPaymentRequired={isPaymentNeeded} totalAmount={totalAmount} currency={widgetInfo?.currency} paymentError={paymentError || serverError} />;
       case 5: return <SuccessStep widgetInfo={widgetInfo} onReset={() => handleNewReservation()} />;
@@ -953,54 +968,77 @@ const WidgetPage = () => {
   }
 
   return (
-    <div className={`overflow-y-auto min-h-screen max-h-screen bg-white dark:bg-bgdarktheme2 text-black dark:text-white ${preferredLanguage === "ar" ? "rtl" : ""}`}>
-      <AlertDisplay alerts={widgetInfo?.events || []} mode={alertDisplayMode} widgetLogoUrl={widgetInfo?.image} />
-      <WidgetHeader widgetInfo={widgetInfo} onThemeToggle={toggleDarkMode} />
-      <div className="relative pt-[370px]">
-        <div className="w-full max-w-[800px] mx-auto px-0">
-          <div className="bg-white dark:bg-darkthemeitems rounded-t-3xl shadow-2xl overflow-hidden">
-            {isPaymentNeeded && step < 3 && (
-              <div className="bg-softbluetheme mx-4 mt-4 rounded-xl flex justify-between text-bluetheme p-2">
-                <div className="flex gap-2 justify-start items-center" role="alert">
-                  <BadgeInfo className="inline-block mx-2" />
-                  <div>
-                    <p className="font-bold">{t("reservationWidget.payment.paymentNoticeTitle")}</p>
-                    <p className="text-sm">{t("reservationWidget.payment.paymentNoticeDescription")}</p>
+    <>
+      <div className="fixed w-full h-[100vh] min-h-[500px] ">
+        <div
+          className="lt-md:hidden absolute inset-0 bg-cover bg-center bg-no-repeat scale-[1.1] blur-[2px]"
+          style={{ backgroundImage: `url(${widgetInfo?.image_2 || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=2070&q=80'})` }}
+        />
+        <div className="absolute inset-0 bg-black bg-opacity-40" />
+      </div>
+      <div className={`overflow-y-auto min-h-screen max-h-screen bg-white dark:bg-bgdarktheme2 text-black dark:text-white ${preferredLanguage === "ar" ? "rtl" : ""}`}>
+        <div className="relative">
+          <div className="w-full max-w-[800px] mx-auto px-0 rounded-t-3xl min-h-[calc(100vh-200px)] bg-white dark:bg-bgdarktheme2 text-black dark:text-white flex flex-col">
+            <div className="bg-white dark:bg-darkthemeitems rounded-3xl min-h-[calc(100vh-200px)] shadow-2xl flex flex-col">
+              {isPaymentNeeded && step < 3 && (
+                <div className="bg-softbluetheme mx-4 mt-4 rounded-xl flex justify-between text-bluetheme p-2">
+                  <div className="flex gap-2 justify-start items-center" role="alert">
+                    <BadgeInfo className="inline-block mx-2" />
+                    <div>
+                      <p className="font-bold">{t("reservationWidget.payment.paymentNoticeTitle")}</p>
+                      <p className="text-sm">{t("reservationWidget.payment.paymentNoticeDescription")}</p>
+                    </div>
+                  </div>
+                  <div className="flex-1 font-[900] p-2 rounded-lg flex items-center justify-center w-fit h-fit text-bluetheme">
+                    {formattedTotalAmount}
                   </div>
                 </div>
-                <div className="flex-1 font-[900] p-2 rounded-lg flex items-center justify-center w-fit h-fit text-bluetheme">
-                  {formattedTotalAmount}
-                </div>
+              )}
+              <div className={`p-6 px-2 pt-2 transition-all duration-300 ease-in-out ${isAnimating ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
+                <WidgetHeader widgetInfo={widgetInfo} onThemeToggle={toggleDarkMode} />
+                {renderStep()}
               </div>
-            )}
-            <div className={`p-6 transition-all duration-300 ease-in-out ${isAnimating ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
-              {renderStep()}
+              {(widgetInfo?.content && step === 1) && (
+                <div className="w-full flex flex-col flex-grow-1">
+                <div className="px-2 pb-6">
+                    <div className="text-[#333333] dark:text-[#e1e1e1]">
+                        <QuillPreview content={widgetInfo.content} />
+                    </div>
+                </div>
+                </div>
+              )}
             </div>
-            <SharedWidgetFooter widgetInfo={widgetInfo} isPaymentRequired={isPaymentNeeded} showDescription={step === 1} />
+            <SharedWidgetFooter widgetInfo={widgetInfo} isPaymentRequired={isPaymentNeeded} showDescription={false} />
           </div>
         </div>
+
+        {showProcess && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <div className="bg-white dark:bg-darkthemeitems rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-auto">
+              <WidgetReservationProcess
+                onClick={handleProcessClose}
+                maxGuests={widgetInfo?.max_of_guests_par_reservation}
+                resData={data}
+                getDateTime={setData}
+                filter={eventFilter}
+              />
+            </div>
+          </div>
+        )}
+
+        {dressCodePopupOpen && (
+          <div onClick={() => setDressCodePopupOpen(false)} className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <div className="bg-white dark:bg-darkthemeitems rounded-2xl p-6 max-w-md w-full">
+              <h3 className="text-lg font-semibold mb-2">{t("reservationWidget.form.dressCode")}</h3>
+              <p className="mb-4">{widgetInfo?.dress_code}</p>
+              <div className="flex justify-end">
+                <button type="button" onClick={() => setDressCodePopupOpen(false)} className="py-2 px-4 bg-[#88AB61] text-white rounded-lg hover:bg-[#769c4f]">{t("reservationWidget.common.close")}</button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-
-      {showProcess && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-darkthemeitems rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-auto">
-            <WidgetReservationProcess onClick={() => setShowProcess(false)} maxGuests={widgetInfo?.max_of_guests_par_reservation} resData={data} getDateTime={setData} />
-          </div>
-        </div>
-      )}
-
-      {dressCodePopupOpen && (
-        <div onClick={() => setDressCodePopupOpen(false)} className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-darkthemeitems rounded-2xl p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold mb-2">{t("reservationWidget.form.dressCode")}</h3>
-            <p className="mb-4">{widgetInfo?.dress_code}</p>
-            <div className="flex justify-end">
-              <button type="button" onClick={() => setDressCodePopupOpen(false)} className="py-2 px-4 bg-[#88AB61] text-white rounded-lg hover:bg-[#769c4f]">{t("reservationWidget.common.close")}</button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+    </>
   )
 }
 

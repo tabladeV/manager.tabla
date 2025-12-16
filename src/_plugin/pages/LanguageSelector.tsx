@@ -32,7 +32,7 @@ const LanguageSelector = memo(() => {
     };
 
     return (
-        <div className="relative">
+        <div className="relative w-1/3 flex justify-end">
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="flex items-center gap-2 p-2 rounded-lg bg-[#f5f5f5] dark:bg-[#333333] bg-opacity-80 hover:bg-[#f5f5f5] dark:hover:bg-[#444444] transition-colors"

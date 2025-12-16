@@ -344,7 +344,13 @@ export class UnifiedHttpClient {
    */
   private static async handleAuthenticationError(error: any): Promise<boolean> {
     const status = error.response?.status;
+    const url = error.config?.url || error.response?.config?.url;
 
+    // Prevent infinite loop: if the error comes from the refresh endpoint, don't try to refresh
+    if (url && url.includes("auth/token/refresh/")) {
+        return false;
+    }
+    
     // If status indicates auth problem, try refreshing token
     if (status === 401 || status === 411 || status === 403) {
       return handleUnauthorizedResponse(status);

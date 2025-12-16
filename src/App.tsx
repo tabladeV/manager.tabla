@@ -64,6 +64,7 @@ import SettingsPage from "./_root/pages/SettingsPage";
 import PaymentLinkPage from "./_plugin/pages/PaymentLinkPage";
 
 const API_HOST = import.meta.env.VITE_API_URL || "https://api.dev.tabla.ma";
+// const API_HOST = "https://api.tabla.ma";
 
 function App() {
   useEffect(() => {

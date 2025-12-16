@@ -135,7 +135,13 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const status = error.response?.status;
-
+    const originalRequest = error.config;
+    
+    // Prevent infinite loop: if the error comes from the refresh endpoint, reject immediately
+    if (originalRequest?.url?.includes("auth/token/refresh/")) {
+      return Promise.reject(error);
+    }
+    
     // Handle authentication errors
     if (status === 401 || status === 403 || status === 411) {
       try {
