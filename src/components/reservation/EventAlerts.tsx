@@ -88,7 +88,7 @@ const EventDetailModal = ({ alert, onClose, onBookNow, widgetLogoUrl }: { alert:
           </div>
 
           {alert.description?.length > 2 && (<div className="overflow-y-auto max-h-[40vh] flex-1 text-[#333333] dark:text-[#e1e1e1]">
-            <QuillPreview content={alert.description} />
+            <QuillPreview content={alert.description} className="p-2" />
           </div>)}
 
           <div className="p-2 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-darkthemeitems/50 flex justify-end gap-3">
@@ -100,7 +100,7 @@ const EventDetailModal = ({ alert, onClose, onBookNow, widgetLogoUrl }: { alert:
             </button>
             <button
               onClick={() => { onBookNow(alert); onClose(); }}
-              className="px-4 py-2 text-sm font-bold text-white bg-[#88AB61] hover:bg-[#769c4f] rounded-lg shadow-md transition-colors flex items-center gap-2"
+              className="px-2 py-2 text-sm font-bold text-white bg-[#88AB61] hover:bg-[#769c4f] rounded-lg shadow-md transition-colors flex items-center gap-2"
             >
               <span>{t('reservationWidget.reservation.bookNow')}</span>
               <ArrowRight size={16} />
@@ -197,7 +197,7 @@ const CarouselCard = memo(({ alert, offset, absOffset, direction, active, onRead
 
             <button
               onClick={(e) => { e.stopPropagation(); onBookNow(); }}
-              className="text-xs font-bold text-white bg-[#88AB61] hover:bg-[#769c4f] px-4 py-2 rounded-full shadow-md transition-all flex items-center gap-1.5"
+              className="text-xs font-bold text-white bg-[#88AB61] hover:bg-[#769c4f] px-2 py-2 rounded-full shadow-md transition-all flex items-center gap-1.5"
             >
               {t('reservationWidget.reservation.bookNow')}
               <ArrowRight size={12} />
@@ -224,7 +224,7 @@ const AlertDisplay: React.FC<AlertDisplayProps> = ({ alerts, mode, widgetLogoUrl
     const filtered = alerts.filter(a => a.is_active);
     setActiveAlerts(filtered);
     // Center the active card initially if possible, or start at 0
-    setActive(alerts?.length ? Math.floor(alerts?.length / 2) : 0);
+    setActive(alerts?.length > 1 ? Math.floor(alerts?.length / 2) : 0);
   }, [alerts]);
 
   const handleNext = () => {
@@ -295,8 +295,8 @@ const AlertDisplay: React.FC<AlertDisplayProps> = ({ alerts, mode, widgetLogoUrl
           {isCollapsed ? <ChevronDown size={20} className="text-gray-400" /> : <ChevronUp size={20} className="text-gray-400" />}
         </button>
 
-        <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isCollapsed ? 'max-h-0 opacity-0' : 'max-h-[250px] opacity-100'}`}>
-          <div className="py-2 px-4">
+        <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isCollapsed ? 'max-h-0 opacity-0' : 'opacity-100'}`}>
+          <div className="py-2 px-2">
             {renderCarousel()}
           </div>
         </div>

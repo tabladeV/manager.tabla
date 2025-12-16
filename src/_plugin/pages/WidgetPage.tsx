@@ -20,6 +20,9 @@ import { useWidgetData } from "../../hooks/useWidgetData"
 import AlertDisplay, { Alert } from "../../components/reservation/EventAlerts"
 import QuillPreview from '../../components/common/QuillPreview';
 
+// --- Alert Configuration ---
+const alertDisplayMode: 'popup' | 'inline' | 'modal' | 'none' = 'inline'; // Change this to 'inline' or 'none'
+
 const WidgetHeader = memo(({ widgetInfo, onThemeToggle }: { widgetInfo: BaseRecord | undefined, onThemeToggle: () => void }) => {
   const { t } = useTranslation()
   return (
@@ -67,7 +70,7 @@ const ReservationPickerStep = memo(({ data, onShowProcess, onNextStep, handleEve
       <div className="mb-6">
           <AlertDisplay
             alerts={alerts}
-            mode={'modal'} // popup || modal
+            mode={alertDisplayMode} // popup || modal
             widgetLogoUrl={widgetInfo?.image}
             onBookNow={handleEventBookNow}
           />
@@ -428,9 +431,6 @@ const WidgetPage = () => {
   const { pathname } = useLocation()
   const [searchParams, setSearchParams] = useSearchParams();
   const step = parseInt(searchParams.get("step") || "1", 10);
-
-  // --- Alert Configuration ---
-  const alertDisplayMode: 'popup' | 'inline' | 'modal' | 'none' = 'inline'; // Change this to 'inline' or 'none'
 
   const { preferredLanguage } = useDateContext();
 
@@ -978,8 +978,8 @@ const WidgetPage = () => {
       </div>
       <div className={`overflow-y-auto min-h-screen max-h-screen bg-white dark:bg-bgdarktheme2 text-black dark:text-white ${preferredLanguage === "ar" ? "rtl" : ""}`}>
         <div className="relative">
-          <div className="w-full max-w-[800px] mx-auto px-0 rounded-3xl h-screen overflow-hidden">
-            <div className="bg-white dark:bg-darkthemeitems rounded-3xl h-screen overflow-y-auto shadow-2xl flex flex-col">
+          <div className="w-full max-w-[800px] mx-auto px-0 rounded-t-3xl min-h-[calc(100vh-200px)] bg-white dark:bg-bgdarktheme2 text-black dark:text-white flex flex-col">
+            <div className="bg-white dark:bg-darkthemeitems rounded-3xl min-h-[calc(100vh-200px)] shadow-2xl flex flex-col">
               {isPaymentNeeded && step < 3 && (
                 <div className="bg-softbluetheme mx-4 mt-4 rounded-xl flex justify-between text-bluetheme p-2">
                   <div className="flex gap-2 justify-start items-center" role="alert">
@@ -1007,8 +1007,8 @@ const WidgetPage = () => {
                 </div>
                 </div>
               )}
-              <SharedWidgetFooter widgetInfo={widgetInfo} isPaymentRequired={isPaymentNeeded} showDescription={false} />
             </div>
+            <SharedWidgetFooter widgetInfo={widgetInfo} isPaymentRequired={isPaymentNeeded} showDescription={false} />
           </div>
         </div>
 

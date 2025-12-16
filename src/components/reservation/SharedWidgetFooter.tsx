@@ -45,7 +45,7 @@ export const SharedWidgetFooter = memo(({ widgetInfo, isPaymentRequired, showDes
     };
 
     return (
-        <div className="w-full flex flex-col flex-grow-1">
+        <div className="w-full flex flex-col flex-grow-1 rounded-b-3xl bg-white dark:bg-bgdarktheme2 text-black dark:text-white">
             <div className="px-6 pb-6">
                 {(contactDetails.length > 0 || restaurant?.phone || restaurant?.email || restaurant?.website) && (
                     <div className="border-t border-[#dddddd] dark:border-[#444444] pt-4">
@@ -80,7 +80,7 @@ export const SharedWidgetFooter = memo(({ widgetInfo, isPaymentRequired, showDes
                             })}
 
                             {/* Fallback Legacy Fields (only if no dynamic contacts) */}
-                            {contactDetails.length === 0 && (
+                            {/* {contactDetails.length === 0 && (
                                 <>
                                     {restaurant?.phone && (
                                         <a href={`tel:${restaurant.phone}`} className="flex items-center gap-2 p-2.5 rounded-lg bg-[#f9f9f9] dark:bg-darkthemeitems hover:bg-[#88AB61]/10 dark:hover:bg-[#88AB61]/20 transition-colors group">
@@ -101,7 +101,7 @@ export const SharedWidgetFooter = memo(({ widgetInfo, isPaymentRequired, showDes
                                         </a>
                                     )}
                                 </>
-                            )}
+                            )} */}
                         </div>
                     </div>
                 )}

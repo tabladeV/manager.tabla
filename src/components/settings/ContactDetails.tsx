@@ -90,8 +90,8 @@ const ContactDetails = () => {
         
         if (editingId) {
             updateContact({
-                resource: 'api/v1/bo/contact-details/',
-                id: editingId,
+                resource: 'api/v1/bo/contact-details',
+                id: editingId+'/',
                 values: formData,
                 successNotification: {
                     message: t('settingsPage.general.contactDetails.notifications.updated', 'Contact updated successfully'),
