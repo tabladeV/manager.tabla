@@ -344,7 +344,7 @@ const UserInfoFormStep = memo(({
   )
 })
 
-const ConfirmationStep = memo(({ data, userInformation, chosenTitle, occasions, areas, areaSelected, attachment, onConfirm, onBack, isLoading, isPaymentRequired, totalAmount, paymentError, currency }: any) => {
+const ConfirmationStep = memo(({ data, userInformation, chosenTitle, occasions, areas, areaSelected, attachment, onConfirm, onBack, isLoading, isPaymentRequired, totalAmount, paymentError, currency, selectedEvent }: any) => {
   const { t } = useTranslation()
   const formattedTotalAmount = `${totalAmount.toFixed(2)} ${currency || 'MAD'}`;
 
@@ -355,7 +355,7 @@ const ConfirmationStep = memo(({ data, userInformation, chosenTitle, occasions, 
         <div className="bg-[#f9f9f9] dark:bg-darkthemeitems rounded-lg p-4">
           <div className="space-y-3">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-              <div><span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.confirmation.name")}: </span><span className="font-medium">{chosenTitle ? chosenTitle + ". " : ""}{userInformation.firstname} {userInformation.lastname}</span></div>
+              <div><span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.confirmation.name")}: </span><span className="font-medium capitalize">{chosenTitle ? chosenTitle + ". " : ""}{userInformation.firstname} {userInformation.lastname}</span></div>
               <div><span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.confirmation.email")}: </span><span>{userInformation.email}</span></div>
               <div><span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.confirmation.phone")}: </span><span>{userInformation.phone}</span></div>
             </div>
@@ -365,13 +365,14 @@ const ConfirmationStep = memo(({ data, userInformation, chosenTitle, occasions, 
                 <div><span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.confirmation.guests")}: </span><span className="font-medium">{data.guests} {data.guests === 1 ? t("reservationWidget.confirmation.person") : t("reservationWidget.confirmation.people")}</span></div>
               </div>
             </div>
-            {(userInformation.occasion || areaSelected || userInformation.allergies || userInformation.preferences || attachment) && (
+            {(userInformation.occasion || areaSelected || userInformation.allergies || userInformation.preferences || attachment || selectedEvent) && (
               <div className="border-t border-[#dddddd] dark:border-[#444444] pt-3">
                 <div className="space-y-2 text-sm">
+                  {selectedEvent && (<div><span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.confirmation.event", "Event")}: </span><span className="text-sm bg-[#88AB61]/20 dark:bg-[#88AB61]/20  px-2 py-1 rounded">{selectedEvent.title}</span></div>)}
                   {userInformation.occasion && userInformation.occasion !== "0" && (<div><span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.confirmation.occasion")}: </span><span>{occasions?.find((o: BaseRecord) => o.id === Number(userInformation.occasion))?.name}</span></div>)}
                   {areaSelected && (<div><span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.form.areas")}: </span><span>{areas.find((a: any) => a.id === areaSelected)?.name}</span></div>)}
-                  {userInformation.allergies && (<div><span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.confirmation.allergies")}: </span><span className="text-xs bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 px-2 py-1 rounded">{userInformation.allergies}</span></div>)}
-                  {userInformation.preferences && (<div><span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.confirmation.preferences")}: </span><span className="text-xs bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 px-2 py-1 rounded">{userInformation.preferences}</span></div>)}
+                  {userInformation.allergies && (<div><span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.confirmation.allergies")}: </span><span className="text-sm bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 px-2 py-1 rounded">{userInformation.allergies}</span></div>)}
+                  {userInformation.preferences && (<div><span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.confirmation.preferences")}: </span><span className="text-sm bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 px-2 py-1 rounded">{userInformation.preferences}</span></div>)}
                   {attachment && (<div><span className="font-medium text-[#555555] dark:text-[#cccccc]">{t("reservationWidget.form.attachment", "Attachment")}: </span><span>{attachment.name}</span></div>)}
                 </div>
               </div>
@@ -467,6 +468,11 @@ const WidgetPage = () => {
     startTime?: string;
     endTime?: string;
   } | null>(null);
+  const [selectedEventId, setSelectedEventId] = useState<BaseKey | null>(() => {
+    const saved = localStorage.getItem(FORM_DATA_KEY);
+    return saved ? JSON.parse(saved).selectedEventId : null;
+  });
+  const [tempEventId, setTempEventId] = useState<BaseKey | null>(null);
 
   // Form State
   const [data, setData] = useState(() => {
@@ -554,13 +560,27 @@ const WidgetPage = () => {
       startTime: alert.event_start_time,
       endTime: alert.event_end_time
     });
+    setTempEventId(alert.id);
     setShowProcess(true);
   }, []);
 
   const handleProcessClose = useCallback(() => {
     setShowProcess(false);
     setEventFilter(null); // Reset filter when closing
+    setTempEventId(null);
   }, []);
+
+  const handleOpenRegularPicker = useCallback(() => {
+    setSelectedEventId(null);
+    setTempEventId(null);
+    setEventFilter(null);
+    setShowProcess(true);
+  }, []);
+
+  const handleDateTimeSelect = useCallback((newData: any) => {
+    setData(newData);
+    setSelectedEventId(tempEventId);
+  }, [tempEventId]);
 
   // Effects
   useEffect(() => { document.title = t("reservationWidget.page.title") }, [pathname, t])
@@ -599,7 +619,7 @@ const WidgetPage = () => {
 
   // Combined effect for saving form data and checking payment
   useEffect(() => {
-    const formData = { data, userInformation, chosenTitle, checkedConditions, checkedDressCode, areaSelected };
+    const formData = { data, userInformation, chosenTitle, checkedConditions, checkedDressCode, areaSelected, selectedEventId };
     localStorage.setItem(FORM_DATA_KEY, JSON.stringify(formData));
 
     // --- Payment Check Logic ---
@@ -755,11 +775,11 @@ const WidgetPage = () => {
     }
   }, [userInformation, formErrors, validateForm]);
 
-  const changeStep = useCallback((newStep: number) => {
+  const changeStep = useCallback((newStep: number, replace = false) => {
     setIsAnimating(false);
     setPaymentError(null);
     setTimeout(() => {
-      setSearchParams({ step: newStep.toString() });
+      setSearchParams({ step: newStep.toString() }, { replace });
     }, 300);
   }, [setSearchParams]);
 
@@ -788,6 +808,8 @@ const WidgetPage = () => {
       date: format(new Date(data.reserveDate), "yyyy-MM-dd"),
       time: data.time + ":00",
       number_of_guests: data.guests,
+      event_id: selectedEventId,
+      event: selectedEventId,
     };
 
     // Append JSON data and other fields. Complex objects are stringified.
@@ -825,7 +847,7 @@ const WidgetPage = () => {
             initiatePayment(numericId);
           } else {
             setIsLoading(false);
-            changeStep(5);
+            changeStep(5, true);
           }
         } else {
           setIsLoading(false);
@@ -896,6 +918,7 @@ const WidgetPage = () => {
     setAreaSelected(undefined);
     setAttachment(null);
     setAttachmentError(null);
+    setSelectedEventId(null);
     changeStep(1);
     navigate('/make/reservation');
   };
@@ -933,10 +956,16 @@ const WidgetPage = () => {
   };
 
   const renderStep = () => {
+    const isStep1DataMissing = !data.reserveDate || !data.time || !data.guests;
+    const isStep2DataMissing = !userInformation.firstname || !userInformation.lastname || !userInformation.email || !userInformation.phone;
+
+    if (step > 1 && step < 5 && isStep1DataMissing) return null;
+    if (step > 2 && step < 5 && isStep2DataMissing) return null;
+
     switch (step) {
-      case 1: return <ReservationPickerStep data={data} onShowProcess={() => setShowProcess(true)} handleEventBookNow={handleEventBookNow} onNextStep={() => changeStep(2)} widgetInfo={widgetInfo} isCheckingPayment={isCheckingPayment} />;
+      case 1: return <ReservationPickerStep data={data} onShowProcess={handleOpenRegularPicker} handleEventBookNow={handleEventBookNow} onNextStep={() => changeStep(2)} widgetInfo={widgetInfo} isCheckingPayment={isCheckingPayment} />;
       case 2: return <UserInfoFormStep userInformation={userInformation} formErrors={formErrors} chosenTitle={chosenTitle} checkedConditions={checkedConditions} checkedDressCode={checkedDressCode} widgetInfo={widgetInfo} occasions={occasions} areas={areas} areaSelected={areaSelected} attachment={attachment} attachmentError={attachmentError} isAttachmentFeatureEnabled={isAttachmentFeatureEnabled} onUserInformationChange={setUserInformation} onChosenTitleChange={setChosenTitle} onCheckedConditionsChange={setCheckedConditions} onCheckedDressCodeChange={setCheckedDressCode} onAreaSelectedChange={setAreaSelected} onAttachmentChange={handleAttachmentChange} onRemoveAttachment={handleRemoveAttachment} onSubmit={handleSubmit} onBack={() => changeStep(1)} onDressCodePopupOpen={() => setDressCodePopupOpen(true)} />;
-      case 3: return <ConfirmationStep data={data} userInformation={userInformation} chosenTitle={chosenTitle} occasions={occasions} areas={areas} areaSelected={areaSelected} attachment={attachment} onConfirm={handleConfirmation} onBack={() => changeStep(2)} isLoading={isLoading} isPaymentRequired={isPaymentNeeded} totalAmount={totalAmount} currency={widgetInfo?.currency} paymentError={paymentError || serverError} />;
+      case 3: return <ConfirmationStep data={data} userInformation={userInformation} chosenTitle={chosenTitle} occasions={occasions} areas={areas} areaSelected={areaSelected} attachment={attachment} onConfirm={handleConfirmation} onBack={() => changeStep(2)} isLoading={isLoading} isPaymentRequired={isPaymentNeeded} totalAmount={totalAmount} currency={widgetInfo?.currency} paymentError={paymentError || serverError} selectedEvent={widgetInfo?.events?.find((e: any) => e.id === selectedEventId)} />;
       case 5: return <SuccessStep widgetInfo={widgetInfo} onReset={() => handleNewReservation()} />;
       case 6: return <UnavailableStep widgetInfo={widgetInfo} />;
       default: return null;
@@ -1019,7 +1048,7 @@ const WidgetPage = () => {
                 onClick={handleProcessClose}
                 maxGuests={widgetInfo?.max_of_guests_par_reservation}
                 resData={data}
-                getDateTime={setData}
+                getDateTime={handleDateTimeSelect}
                 filter={eventFilter}
               />
             </div>

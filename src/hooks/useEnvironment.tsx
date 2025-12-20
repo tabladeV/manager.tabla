@@ -1,5 +1,6 @@
 "use client"
 
+import { Capacitor } from "@capacitor/core"
 import { useState, useEffect } from "react"
 
 type Environment = "development" | "production" | "unknown"
@@ -63,7 +64,9 @@ export function useEnvironment(options: EnvironmentOptions = {}) {
         }
       })
 
-      setEnvironment(isDev ? "development" : "production")
+      const isNative = Capacitor.isNativePlatform();
+
+      setEnvironment(isDev && !isNative? "development" : "production")
     } catch (error) {
       console.error("Error detecting environment:", error)
       setEnvironment("unknown")

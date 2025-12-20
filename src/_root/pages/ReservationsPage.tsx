@@ -84,6 +84,7 @@ export interface Reservation extends BaseRecord {
   seq_id?: string;
   selected?: boolean;
   attachment?: string; 
+  event?: any;
 }
 
 interface DataTypes {
@@ -399,8 +400,9 @@ const useColumnConfiguration = () => {
     { id: 'internalNote', labelKey: 'reservations.edit.informations.internalNote', visible: true, order: 5 },
     { id: 'status', labelKey: 'reservations.tableHeaders.status', visible: true, order: 6 },
     { id: 'occasion', labelKey: 'reservations.occasion', visible: false, order: 7 },
-    { id: 'details', labelKey: 'reservations.tableHeaders.detailsShort', visible: false, order: 8 },
-    { id: 'review', labelKey: 'reservations.tableHeaders.review', visible: false, order: 9 }
+    { id: 'event', labelKey: 'reservations.event', visible: false, order: 8 },
+    { id: 'details', labelKey: 'reservations.tableHeaders.detailsShort', visible: false, order: 9 },
+    { id: 'review', labelKey: 'reservations.tableHeaders.review', visible: false, order: 10 }
   ];
 
   const loadColumnsFromStorage = (): ColumnConfig[] => {
@@ -889,6 +891,18 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
                 {reservation.occasion?.name}
               </>
             }
+          </div>
+        );
+
+      case 'event':
+        return (
+          <div className="flex justify-start items-center gap-1">
+            {reservation?.event && (
+              <>
+                <CalendarCheck size={16} className={isDarkMode ? 'text-gray-400' : 'text-gray-600'} />
+                {reservation.event?.title}
+              </>
+            )}
           </div>
         );
 
