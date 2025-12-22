@@ -580,6 +580,7 @@ const WidgetPage = () => {
   const handleDateTimeSelect = useCallback((newData: any) => {
     setData(newData);
     setSelectedEventId(tempEventId);
+    changeStep(2);
   }, [tempEventId]);
 
   // Effects

@@ -129,6 +129,7 @@
         "title": "Reservations",
         "searchPlaceholder": "Search...",
         "occasion": "Occasion",
+        "event": "Event",
         "deleteConfirm": {
             "message": "Are you sure you want to delete this reservation?"
         },
@@ -1861,6 +1862,8 @@
         "close": "Close",
         "dismissAll": "Dismiss All",
         "closeAll": "Close All",
+        "hide": "Hide",
+        "show": "Show",
         "loading": "Loading...",
         "from": "From",
         "to": "To",
