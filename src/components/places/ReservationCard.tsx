@@ -35,6 +35,7 @@ interface ReservationCardProps {
         is_payed?: boolean;
         amount?: string;
         attachment?: string;
+        event?: any;
     };
     handleStatus: (status: string) => void;
     showStatusModification: (id: BaseKey) => void;
@@ -188,6 +189,14 @@ const ReservationCard = (props: ReservationCardProps) => {
                                             </p>
                                         </div>
                                     }
+                                    {itemData.event && (
+                                        <div className="flex gap-1 items-center py-1 px-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                                            <CalendarCheck size={16} />
+                                            <p className='font-[600] text-[13px]'>
+                                                {itemData.event.title}
+                                            </p>
+                                        </div>
+                                    )}
                                     {itemData.is_payed && (
                                         <div className="flex gap-1 my-1 text-sm bg-softyellowtheme items-center text-yellowtheme w-fit px-2 py-1 rounded">
                                             <DollarSign size={14} className={`dark:text-yellowtheme text-yellowtheme`} />
