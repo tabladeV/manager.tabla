@@ -41,6 +41,7 @@ import cigarette from '../../../assets/cigarette.svg';
 import cigaretteOff2Src from '../../../assets/cigarette-off.svg';
 import doorSrc from '../../../assets/door.svg';
 import Rhombus from './Rhombus';
+import Portal from '../../common/Portal';
 
 const MAX_ZOOM = 2; // maximum scale allowed
 const MIN_ZOOM = 0.3; // minimum scale allowed
@@ -88,7 +89,7 @@ interface CanvasTypes {
 }
 
 const DesignCanvas = (props: CanvasTypes) => {
-  console.log({props});
+  console.log({ props });
   const { darkMode } = useDarkContext();
   // Separate state for tables and props
   const [tables, setTables] = useState<TableShape[]>([]);
@@ -115,7 +116,7 @@ const DesignCanvas = (props: CanvasTypes) => {
   const [containerHeight, setContainerHeight] = useState(0);
   const [action, setAction] = useState<"delete" | "cancel" | "update" | "create" | "confirm">('delete');
   const [showPopup, setShowPopup] = useState(false);
-  
+
 
   const { t } = useTranslation();
   const { open } = useNotification();
@@ -262,8 +263,8 @@ const DesignCanvas = (props: CanvasTypes) => {
             return [...prevTables, finalNewShape as TableShape];
           });
         } else {
-           setPropsShapes((prevProps) => {
-             // Notify parent only on add/delete with separate arrays
+          setPropsShapes((prevProps) => {
+            // Notify parent only on add/delete with separate arrays
             props.newTables(tables, [...prevProps, finalNewShape as PropShape]);
             setTimeout(() => transitionToShape(finalNewShape), 0);
             return [...prevProps, finalNewShape as PropShape];
@@ -294,7 +295,7 @@ const DesignCanvas = (props: CanvasTypes) => {
   // Memoize deselect callback
   const checkDeselect = useCallback((e: any) => {
     if (e.target === e.target.getStage() || e.target.getClassName() === 'Transformer') {
-        selectShape(null);
+      selectShape(null);
     }
   }, []);
 
@@ -532,8 +533,8 @@ const DesignCanvas = (props: CanvasTypes) => {
 
   // Update shapes when focusedRoofId changes (initial load/reset)
   useEffect(() => {
-    
-    console.log('Updated tables and propsShapes:', props.focusedRoofId,{ tables, propsShapes });
+
+    console.log('Updated tables and propsShapes:', props.focusedRoofId, { tables, propsShapes });
     if (props.focusedRoofId) {
       setTables(props.tables || []);
       setPropsShapes(props.assets || []);
@@ -551,11 +552,11 @@ const DesignCanvas = (props: CanvasTypes) => {
 
   useEffect(() => {
     // Compare tables and assets separately
-    const tablesEqual = JSON.stringify([...tables].sort((a, b) => (a.id as any) - (b.id as any))) === 
-                        JSON.stringify([...props.tables].sort((a, b) => (a.id as any) - (b.id as any)));
-    const assetsEqual = JSON.stringify([...propsShapes].sort((a, b) => (a.id as any) - (b.id as any))) === 
-                        JSON.stringify([...props.assets].sort((a, b) => (a.id as any) - (b.id as any)));
-    
+    const tablesEqual = JSON.stringify([...tables].sort((a, b) => (a.id as any) - (b.id as any))) ===
+      JSON.stringify([...props.tables].sort((a, b) => (a.id as any) - (b.id as any)));
+    const assetsEqual = JSON.stringify([...propsShapes].sort((a, b) => (a.id as any) - (b.id as any))) ===
+      JSON.stringify([...props.assets].sort((a, b) => (a.id as any) - (b.id as any)));
+
     setHasUnsavedChanges(!(tablesEqual && assetsEqual));
   }, [tables, propsShapes, props.tables, props.assets]);
 
@@ -709,7 +710,7 @@ const DesignCanvas = (props: CanvasTypes) => {
           return <Rhombus key={shape.id} {...commonProps} shapeProps={shape as TableShape} />;
         }
         if (Object.keys(ASSET_CONFIG).includes(shape.type as AssetType)) {
-          return <AssetShape key={shape.id} {...commonProps} shapeProps={{...shape,src: ASSET_CONFIG[shape.type as AssetType]?.src || 'ok why'}} />;
+          return <AssetShape key={shape.id} {...commonProps} shapeProps={{ ...shape, src: ASSET_CONFIG[shape.type as AssetType]?.src || 'ok why' }} />;
         }
         return null;
       });
@@ -806,24 +807,28 @@ const DesignCanvas = (props: CanvasTypes) => {
 
       {/* Edit Shape Popup */}
       {showEdit && (
-        <div>
-          <div
-            className="overlay opacity-15 z-[200] bg-white dark:bg-black"
-            onClick={() => setShowEdit(false)}
-          ></div>
-          {selectedId && <ChangingName id={selectedId as BaseKey} />}
-        </div>
+        <Portal>
+          <div>
+            <div
+              className="overlay glassmorphism opacity-15 z-[200] bg-white dark:bg-black"
+              onClick={() => setShowEdit(false)}
+            ></div>
+            {selectedId && <ChangingName id={selectedId as BaseKey} />}
+          </div>
+        </Portal>
       )}
 
       {/* Add Table Popup */}
       {showAdd && (
-        <div>
-          <div
-            className="overlay opacity-15 z-[200] bg-white dark:bg-black"
-            onClick={() => setShowAdd(null)}
-          ></div>
-          <AddTable />
-        </div>
+        <Portal>
+          <div>
+            <div
+              className="overlay glassmorphism opacity-15 z-[200] bg-white dark:bg-black"
+              onClick={() => setShowAdd(null)}
+            ></div>
+            <AddTable />
+          </div>
+        </Portal>
       )}
 
       {/* Main canvas container */}
@@ -845,11 +850,11 @@ const DesignCanvas = (props: CanvasTypes) => {
         </div>
         {/* Design Toolbar */}
         <DesignToolbar
-            items={DESIGN_TOOLBAR_ITEMS}
-            showEditDelete={!!selectedId}
-            onEdit={editShape}
-            onDelete={deleteShape}
-         />
+          items={DESIGN_TOOLBAR_ITEMS}
+          showEditDelete={!!selectedId}
+          onEdit={editShape}
+          onDelete={deleteShape}
+        />
 
         {/* Konva Stage */}
         <Stage
@@ -870,7 +875,7 @@ const DesignCanvas = (props: CanvasTypes) => {
           scaleX={stageScale}
           scaleY={stageScale}
           onDragEnd={(e) => {
-                if (e.target.name() === 'stage')
+            if (e.target.name() === 'stage')
               setStagePosition({ x: e.target.x(), y: e.target.y() });
           }}
         >

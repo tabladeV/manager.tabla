@@ -9,6 +9,7 @@ import Pagination from "../reservation/Pagination";
 import ActionPopup from "../popup/ActionPopup";
 import RoleModal from "../roles/RoleModal";
 import CreateRoleModal from "../roles/CreateRoleModal";
+import Portal from "../common/Portal";
 
 
 interface PermissionType {
@@ -261,17 +262,21 @@ const Roles = () => {
     return (
         <div className="rounded-[10px] p-3 w-full bg-white dark:bg-bgdarktheme">
             {showRoleModal && 
+            <Portal>
                 <div >
-                    <div className="overlay " onClick={()=>setShowRoleModal(false)}/>
+                    <div className="overlay glassmorphism" onClick={()=>setShowRoleModal(false)}/>
                     <RoleModal role={focusedRole} availablePermissions={availablePermissions}  onClose={()=>setShowRoleModal(false)}/>
                 </div>
+            </Portal>
             }
             {
                 showCreateRoleModal &&
+                <Portal>
                 <div>
-                    <div className="overlay " onClick={()=>setShowCreateRoleModal(false)}/>
+                    <div className="overlay glassmorphism" onClick={()=>setShowCreateRoleModal(false)}/>
                     <CreateRoleModal availablePermissions={availablePermissions} onClose={()=>setShowCreateRoleModal(false)}/>                
                 </div>
+                </Portal>
             }
             <ActionPopup
                 action={action}

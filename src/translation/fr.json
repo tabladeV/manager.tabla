@@ -4,7 +4,11 @@
     "buttons": {
       "notifications": "Notifications",
       "profile": "Profil",
+      "lightMode": "Mode Clair",
+      "darkMode": "Mode Sombre",
       "logout": "Déconnexion",
+      "enterFullscreen": "Plein Écran",
+      "exitFullscreen": "Quitter Plein Écran",
       "changeRestaurant": "Changer de Restaurant"
     },
     "date": {
@@ -915,6 +919,23 @@
         "dh": "DH"
       }
     },
+    "menus": {
+      "title": "Menus",
+      "subtitle": "Gérez les menus de votre restaurant",
+      "addMenu": "Ajouter un menu",
+      "addNew": "Ajouter un nouveau menu",
+      "alias": "Alias / Nom",
+      "namePlaceholder": "Entrez le nom du menu",
+      "pdfLabel": "Menu PDF",
+      "uploadLabel": "Cliquez pour télécharger le PDF",
+      "noMenus": "Aucun menu trouvé. Ajoutez votre premier menu !",
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer ce menu ?",
+      "noFile": "Aucun fichier disponible",
+      "preview": "Aperçu",
+      "delete": "Supprimer",
+      "status": "Statut",
+      "actions": "Actions"
+    },
     "photos": {
       "title": "Photos",
       "buttons": {
@@ -1790,6 +1811,12 @@
     "at": "à",
     "for": "pour",
     "yourReservationIsSetFor": "Votre réservation est fixée pour",
+    "noAvailableTimeSlots": "Aucun créneau horaire disponible pour cette date {{date}} et ce nombre d'invités {{guests}}",
+    "eventBookingMode": "Mode Réservation d'Événement",
+    "eventTimeRestricted": "Horaires d'événement restreints",
+    "confirmReservation": "Confirmer Votre Réservation",
+    "pleaseReviewDetails": "Veuillez vérifier les détails de votre réservation ci-dessous.",
+    "noAvailableTimeSlotsWithGuests": "Aucun créneau horaire disponible pour le {{date}} avec {{guests}} invités",
     "common": {
       "cancel": "Annuler",
       "add": "Ajouter",
@@ -1830,6 +1857,8 @@
   "common": {
     "attachment": "Pièce jointe",
     "attachmentFile": "Fichier joint",
+    "openAttachedFile": "Ouvrir le fichier joint",
+    "na": "N/A",
     "cancel": "Annuler",
     "add": "Ajouter",
     "update": "Mettre à jour",
@@ -1858,6 +1887,8 @@
     "close": "Fermer",
     "dismissAll": "Ignorer Tout",
     "closeAll": "Fermer Tout",
+    "hide": "Masquer",
+    "show": "Afficher",
     "loading": "Chargement...",
     "from": "De",
     "to": "À",
@@ -1889,5 +1920,9 @@
       "anErrorOccurred": "Une erreur s'est produite",
       "tryAgain": "Veuillez réessayer plus tard."
     }
+  },
+  "reservationForGrid": {
+    "onAt": "le {{date}} à {{time}}",
+    "onAtFor": "le {{date}} à {{time}} pour"
   }
 }

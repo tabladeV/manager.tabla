@@ -307,7 +307,7 @@ const DraggableItem = (props: DraggableItemProps) => {
             {itemData.status === 'SEATED' &&
               <>
                 <li className="transition-colors duration-300 ease-in-out py-1 px-2 text-greentheme hover:bg-greentheme hover:bg-opacity-20 rounded-md cursor-pointer" onClick={() => sendReview()}>
-                  {'Request review'}
+                  {t('reservations.buttons.requestReview')}
                 </li>
                 <li className="transition-colors duration-300 ease-in-out py-1 px-2 text-greentheme hover:bg-greentheme hover:bg-opacity-20 rounded-md cursor-pointer" onClick={() => statusHandler('APPROVED')}>
                   {t('reservations.statusLabels.confirmed')}

@@ -71,7 +71,7 @@ const PaymentRuleModal: React.FC<PaymentRuleModalProps> = ({ isOpen, onClose, on
 
     return (
         <Portal>
-            <div className="overlay" onClick={onClose}></div>
+            <div className="overlay glassmorphism" onClick={onClose}></div>
             <div className={`sidepopup lt-sm:popup lt-sm:h-auto lt-sm:bottom-0 lt-sm:rounded-b-none lt-sm:w-full h-full pa-0 dark:bg-bgdarktheme bg-white`}>
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-2xl font-bold">{rule ? t('paymentSettings.editRule') : t('paymentSettings.addRule')}</h1>

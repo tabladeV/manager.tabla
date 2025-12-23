@@ -4,6 +4,7 @@ import OurCalendar from '../Calendar/OurCalendar';
 import { useCustom, useList } from '@refinedev/core';
 import BaseBtn from '../common/BaseBtn';
 import { useTranslation } from 'react-i18next';
+import Portal from '../common/Portal';
 // Import the actual useCustom hook instead of using the mock implementation
 
 
@@ -156,6 +157,7 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
   const{t} = useTranslation()
 
   return (
+    <Portal>
     <div className="">
       <div className="overlay z-[309] glassmorphism" onClick={props.onClick}></div>
       <div className={`popup z-[360] lt-sm:h-[70vh] sm:w-[30em] lt-sm:bottom-0 lt-sm:w-full rounded-[10px] ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}>
@@ -192,7 +194,7 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
         {activeTab === 'date' && (
           <div className="content">
             <div className="text-[20px] text-left mx-[30px] mt-[1em] mb-[.5em] font-bold">
-              {selectedDate ? <>{format(selectedDate, 'dd MMMM yyyy')} <span className="font-semibold">{t('reservationProcess.hasBeenSelected')}</span></> : <span className="font-semibold">Select a date</span>}
+              {selectedDate ? <>{format(selectedDate, 'dd MMMM yyyy')} <span className="font-semibold">{t('reservationProcess.hasBeenSelected')}</span></> : <span className="font-semibold">{t('reservationProcess.selectDate')}</span>}
             </div>
             <OurCalendar
               forbidden={true}
@@ -235,7 +237,7 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
               !props.maxGuests &&
               <div>
                 <div className="flex rounded-lg">
-                  <input type="number" min={1} name='note' placeholder="Enter number of guests" value={numberGuests} onChange={(e) => setNumberGuests(e.target.value)}
+                  <input type="number" min={1} name='note' placeholder={t('reservationProcess.orEnterNumberOfGuests')} value={numberGuests} onChange={(e) => setNumberGuests(e.target.value)}
                     className='w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-s-lg bg-white dark:bg-darkthemeitems text-black dark:text-white'/>
                     <BaseBtn onClick={() => handleGuestClick(Number(numberGuests))} className="rounded-none rounded-e-lg" loading={timesLoading} disabled={timesLoading || !numberGuests || numberGuests < 1}>
                       {t('reservationProcess.confirm')}
@@ -261,7 +263,7 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
             {timesLoading ? (
               <TimeSkeletonLoader />
             ) : Object.keys(availableTimes).length === 0 ? (
-              <EmptyState message={`No available time slots for this date ${selectedDate ? format(selectedDate, 'dd MMMM yyyy') : ''} and number of guests ${selectedGuests || ''}`} />
+              <EmptyState message={t('reservationProcess.noAvailableTimeSlots', { date: selectedDate ? format(selectedDate, 'dd MMMM yyyy') : '', guests: selectedGuests || '' })} />
             ) : (
               <div className="flex flex-col min-h-[200px] overflow-y-auto max-h-[400px] p-[20px] rounded-[3px]">
                 {Object.entries(availableTimes).map(([category, times]) => (
@@ -309,6 +311,7 @@ const WidgetReservationProcess: React.FC<ReservationProcessProps> = (props) => {
         )}
       </div>
     </div>
+    </Portal>
   );
 };
 

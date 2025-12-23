@@ -14,6 +14,7 @@ import useExportConfig from "../../components/common/config/exportConfig"
 import axiosInstance from "../../providers/axiosInstance"
 import { saveAs } from "file-saver"
 import { useAsyncTaskManager } from "../../hooks/useAsyncTaskManager"
+import Portal from "../../components/common/Portal"
 
 interface Review {
   id: BaseKey
@@ -265,72 +266,74 @@ const Reviews = () => {
         />
       )}
       {selectedClient !== 0 && (
-        <div>
-          <div className="overlay" onClick={() => setSelectedClient(0)}></div>
-          <div
-            className={`sidepopup lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:overflow-y-auto h-full bg-white dark:bg-bgdarktheme`}
-          >
-            <h1 className="text-2xl font-[600] mb-4">
-              {t("reviews.view.title")} by{" "}
-              <span className="font-[800]">
-                {selectedReview?.customer?.first_name || 'Unknown'} {selectedReview?.customer?.last_name || 'User'}
-              </span>
-            </h1>
-            <div className="space-y-2">
-              <div>
-                <div className="font-[600] mb-[.4em]">{t("reviews.view.comment")}:</div>
-                {selectedReview && (
-                  <p className={`p-2 border-[2px] rounded-md border-black dark:border-darkthemeitems`}>
-                    {selectedReview.description || t("reviews.view.noComment")}
-                  </p>
-                )}
+        <Portal>
+          <div>
+            <div className="overlay glassmorphism" onClick={() => setSelectedClient(0)}></div>
+            <div
+              className={`sidepopup lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:overflow-y-auto h-full bg-white dark:bg-bgdarktheme`}
+            >
+              <h1 className="text-2xl font-[600] mb-4">
+                {t("reviews.view.title")} by{" "}
+                <span className="font-[800]">
+                  {selectedReview?.customer?.first_name || 'Unknown'} {selectedReview?.customer?.last_name || 'User'}
+                </span>
+              </h1>
+              <div className="space-y-2">
+                <div>
+                  <div className="font-[600] mb-[.4em]">{t("reviews.view.comment")}:</div>
+                  {selectedReview && (
+                    <p className={`p-2 border-[2px] rounded-md border-black dark:border-darkthemeitems`}>
+                      {selectedReview.description || t("reviews.view.noComment")}
+                    </p>
+                  )}
 
-                {selectedReview && (
-                  <>
-                    <div className="flex mt-4 gap-4">
-                      <div className="font-[600]">{t("reviews.view.food")}:</div>
-                      {stars(Number(selectedReview.food_rating) || 0)}
-                      <span>{`(${selectedReview.food_rating || 'N/A'})`}</span>
-                    </div>
-                    <div className="flex mt-4 gap-4">
-                      <div className="font-[600]">{t("reviews.view.service")}:</div>
-                      {stars(Number(selectedReview.service_rating) || 0)}
-                      <span>{`(${selectedReview.service_rating || 'N/A'})`}</span>
-                    </div>
-                    <div className="flex mt-4 gap-4">
-                      <div className="font-[600]">{t("reviews.view.environment")}:</div>
-                      {stars(Number(selectedReview.ambience_rating) || 0)}
-                      <span>{`(${selectedReview.ambience_rating || 'N/A'})`}</span>
-                    </div>
-                    <div className="flex mt-4 gap-4">
-                      <div className="font-[600]">{t("reviews.view.valueForMoney")}:</div>
-                      {stars(Number(selectedReview.value_for_money) || 0)}
-                      <span>{`(${selectedReview.value_for_money || 'N/A'})`}</span>
-                    </div>
+                  {selectedReview && (
+                    <>
+                      <div className="flex mt-4 gap-4">
+                        <div className="font-[600]">{t("reviews.view.food")}:</div>
+                        {stars(Number(selectedReview.food_rating) || 0)}
+                        <span>{`(${selectedReview.food_rating || 'N/A'})`}</span>
+                      </div>
+                      <div className="flex mt-4 gap-4">
+                        <div className="font-[600]">{t("reviews.view.service")}:</div>
+                        {stars(Number(selectedReview.service_rating) || 0)}
+                        <span>{`(${selectedReview.service_rating || 'N/A'})`}</span>
+                      </div>
+                      <div className="flex mt-4 gap-4">
+                        <div className="font-[600]">{t("reviews.view.environment")}:</div>
+                        {stars(Number(selectedReview.ambience_rating) || 0)}
+                        <span>{`(${selectedReview.ambience_rating || 'N/A'})`}</span>
+                      </div>
+                      <div className="flex mt-4 gap-4">
+                        <div className="font-[600]">{t("reviews.view.valueForMoney")}:</div>
+                        {stars(Number(selectedReview.value_for_money) || 0)}
+                        <span>{`(${selectedReview.value_for_money || 'N/A'})`}</span>
+                      </div>
 
-                    <div className="flex mt-4 gap-4">
-                      <div className="font-[600]">{t("reviews.view.total")}:</div>
-                      {stars(
-                        (Number(selectedReview.ambience_rating) +
-                          Number(selectedReview.service_rating) +
-                          Number(selectedReview.food_rating) +
-                          Number(selectedReview.value_for_money)) /
+                      <div className="flex mt-4 gap-4">
+                        <div className="font-[600]">{t("reviews.view.total")}:</div>
+                        {stars(
+                          (Number(selectedReview.ambience_rating) +
+                            Number(selectedReview.service_rating) +
+                            Number(selectedReview.food_rating) +
+                            Number(selectedReview.value_for_money)) /
                           4,
-                      )}
-                      <span>{`(${(
-                        (Number(selectedReview.ambience_rating) +
-                          Number(selectedReview.service_rating) +
-                          Number(selectedReview.food_rating) +
-                          Number(selectedReview.value_for_money)) /
+                        )}
+                        <span>{`(${(
+                          (Number(selectedReview.ambience_rating) +
+                            Number(selectedReview.service_rating) +
+                            Number(selectedReview.food_rating) +
+                            Number(selectedReview.value_for_money)) /
                           4
-                      ).toFixed(2)})`}</span>
-                    </div>
-                  </>
-                )}
+                        ).toFixed(2)})`}</span>
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </Portal>
       )}
       <div className="flex justify-between items-center mb-2">
         <h1>{t("reviews.title")}</h1>
@@ -391,89 +394,89 @@ const Reviews = () => {
           <tbody className={`bg-gray-50 text-gray-500 dark:bg-bgdarktheme2 dark:text-white`}>
             {isLoading
               ? Array.from({ length: size }).map((_, index) => (
-                  <tr key={index} className="animate-pulse">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className={`h-4 rounded w-3/4 bg-gray-300 dark:bg-darkthemeitems`}></div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className={`h-4 rounded w-3/4 bg-gray-300 dark:bg-darkthemeitems`}></div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className={`h-4 rounded w-full bg-gray-300 dark:bg-darkthemeitems`}></div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className={`h-4 rounded w-1/2 bg-gray-300 dark:bg-darkthemeitems`}></div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className={`h-4 rounded w-1/2 bg-gray-300 dark:bg-darkthemeitems`}></div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className={`h-4 rounded w-1/2 bg-gray-300 dark:bg-darkthemeitems`}></div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className={`h-4 rounded w-1/2 bg-gray-300 dark:bg-darkthemeitems`}></div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className={`h-4 rounded w-1/2 bg-gray-300 dark:bg-darkthemeitems`}></div>
-                    </td>
-                  </tr>
-                ))
+                <tr key={index} className="animate-pulse">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className={`h-4 rounded w-3/4 bg-gray-300 dark:bg-darkthemeitems`}></div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className={`h-4 rounded w-3/4 bg-gray-300 dark:bg-darkthemeitems`}></div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className={`h-4 rounded w-full bg-gray-300 dark:bg-darkthemeitems`}></div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className={`h-4 rounded w-1/2 bg-gray-300 dark:bg-darkthemeitems`}></div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className={`h-4 rounded w-1/2 bg-gray-300 dark:bg-darkthemeitems`}></div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className={`h-4 rounded w-1/2 bg-gray-300 dark:bg-darkthemeitems`}></div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className={`h-4 rounded w-1/2 bg-gray-300 dark:bg-darkthemeitems`}></div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className={`h-4 rounded w-1/2 bg-gray-300 dark:bg-darkthemeitems`}></div>
+                  </td>
+                </tr>
+              ))
               : (reviews || []).map((review) => (
-                  <tr key={review.id} className="hover:opacity-75">
-                    <td
-                      className="px-6 py-4 whitespace-nowrap cursor-pointer"
-                      onClick={() => setSelectedClient(review.id)}
-                    >
-                      {review.id||'N/A'}
-                    </td>
-                    <td
-                      className="px-6 py-4 whitespace-nowrap cursor-pointer"
-                      onClick={() => setSelectedClient(review.id)}
-                    >
-                      {review.customer?.first_name || 'Unknown'} {review.customer?.last_name || 'User'}
-                    </td>
-                    <td
-                      className="px-6 py-4 max-w-[20em] whitespace-nowrap cursor-pointer"
-                      onClick={() => setSelectedClient(review.id)}
-                    >
-                      {review.description && review.description.length > 50
-                        ? `${review.description.substring(0, 40)}...`
-                        : review.description || 'No comment'}
-                    </td>
-                    <td
-                      className="px-6 py-4 whitespace-nowrap cursor-pointer"
-                      onClick={() => setSelectedClient(review.id)}
-                    >
-                      {review.food_rating || 'No rating'}
-                    </td>
-                    <td
-                      className="px-6 py-4 whitespace-nowrap cursor-pointer"
-                      onClick={() => setSelectedClient(review.id)}
-                    >
-                      {review.service_rating || 'No rating'}
-                    </td>
-                    <td
-                      className="px-6 py-4 whitespace-nowrap cursor-pointer"
-                      onClick={() => setSelectedClient(review.id)}
-                    >
-                      {review.ambience_rating || 'No rating'}
-                    </td>
-                    <td
-                      className="px-6 py-4 whitespace-nowrap cursor-pointer"
-                      onClick={() => setSelectedClient(review.id)}
-                    >
-                      {review.value_for_money || 'No rating'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap" onClick={() => setSelectedClient(review.id)}>
-                      {avg(
-                        review.food_rating,
-                        review.service_rating,
-                        review.ambience_rating,
-                        review.value_for_money,
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                <tr key={review.id} className="hover:opacity-75">
+                  <td
+                    className="px-6 py-4 whitespace-nowrap cursor-pointer"
+                    onClick={() => setSelectedClient(review.id)}
+                  >
+                    {review.id || 'N/A'}
+                  </td>
+                  <td
+                    className="px-6 py-4 whitespace-nowrap cursor-pointer"
+                    onClick={() => setSelectedClient(review.id)}
+                  >
+                    {review.customer?.first_name || 'Unknown'} {review.customer?.last_name || 'User'}
+                  </td>
+                  <td
+                    className="px-6 py-4 max-w-[20em] whitespace-nowrap cursor-pointer"
+                    onClick={() => setSelectedClient(review.id)}
+                  >
+                    {review.description && review.description.length > 50
+                      ? `${review.description.substring(0, 40)}...`
+                      : review.description || 'No comment'}
+                  </td>
+                  <td
+                    className="px-6 py-4 whitespace-nowrap cursor-pointer"
+                    onClick={() => setSelectedClient(review.id)}
+                  >
+                    {review.food_rating || 'No rating'}
+                  </td>
+                  <td
+                    className="px-6 py-4 whitespace-nowrap cursor-pointer"
+                    onClick={() => setSelectedClient(review.id)}
+                  >
+                    {review.service_rating || 'No rating'}
+                  </td>
+                  <td
+                    className="px-6 py-4 whitespace-nowrap cursor-pointer"
+                    onClick={() => setSelectedClient(review.id)}
+                  >
+                    {review.ambience_rating || 'No rating'}
+                  </td>
+                  <td
+                    className="px-6 py-4 whitespace-nowrap cursor-pointer"
+                    onClick={() => setSelectedClient(review.id)}
+                  >
+                    {review.value_for_money || 'No rating'}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap" onClick={() => setSelectedClient(review.id)}>
+                    {avg(
+                      review.food_rating,
+                      review.service_rating,
+                      review.ambience_rating,
+                      review.value_for_money,
+                    )}
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
         <Pagination
@@ -486,12 +489,14 @@ const Reviews = () => {
         />
       </div>
       {focusedDate && (
-        <div>
-          <div className="overlay" onClick={() => setFocusedDate(false)}></div>
-          <div className={`popup lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 bg-white dark:bg-bgdarktheme`}>
-            <IntervalCalendar onRangeSelect={handleDateClick} onClose={() => setFocusedDate(false)} />
+        <Portal>
+          <div>
+            <div className="overlay glassmorphism" onClick={() => setFocusedDate(false)}></div>
+            <div className={`popup lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 bg-white dark:bg-bgdarktheme`}>
+              <IntervalCalendar onRangeSelect={handleDateClick} onClose={() => setFocusedDate(false)} />
+            </div>
           </div>
-        </div>
+        </Portal>
       )}
     </div>
   )

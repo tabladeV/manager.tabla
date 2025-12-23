@@ -325,7 +325,7 @@ export default function Users() {
         ? isModalOpen && (
           <Portal>
             <div>
-              <div className="overlay" onClick={closeModal}></div>
+              <div className="overlay glassmorphism" onClick={closeModal}></div>
               <div className="sidepopup lt-sm:popup lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:rounded-b-none lt-sm:w-full h-full dark:bg-bgdarktheme bg-white">
                 <h1 className="text-2xl font-bold mb-3">
                   {selectedUser?.id
@@ -385,7 +385,7 @@ export default function Users() {
         : isModalOpen && (
           <Portal>
             <div>
-              <div className="overlay" onClick={closeModal}></div>
+              <div className="overlay glassmorphism" onClick={closeModal}></div>
               <div className="sidepopup lt-sm:popup lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:rounded-b-none lt-sm:w-full h-full dark:bg-bgdarktheme bg-white">
                 <h1 className="text-2xl font-bold mb-3">
                   {selectedUser?.id

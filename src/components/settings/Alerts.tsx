@@ -117,7 +117,7 @@ const AlertModal: React.FC<AlertModalProps> = ({ isOpen, onClose, onSave, alert,
 
     return (
         <Portal>
-            <div className="overlay" onClick={onClose}></div>
+            <div className="overlay glassmorphism" onClick={onClose}></div>
             <div className={`sidepopup w-[60%] lt-sm:popup lt-sm:h-auto lt-sm:bottom-0 lt-sm:rounded-b-none lt-sm:w-full h-full pa-0 dark:bg-bgdarktheme bg-white`}>
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-2xl font-bold">{alert ? t('alerts.editTitle') : t('alerts.addTitle')}</h1>

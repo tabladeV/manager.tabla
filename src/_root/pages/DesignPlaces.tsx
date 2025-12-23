@@ -7,6 +7,7 @@ import { Plus } from 'lucide-react';
 import ActionPopup from '../../components/popup/ActionPopup';
 import { useDarkContext } from '../../context/DarkContext';
 import SlideGroup from '../../components/common/SlideGroup';
+import Portal from '../../components/common/Portal';
 
 
 export interface Table extends BaseRecord {
@@ -364,35 +365,37 @@ const DesignPlaces: React.FC = () => {
 
       }
       {showAddPlace && (
-        <div>
-          <div className="overlay" onClick={() => setShowAddPlace(false)}></div>
-          <form
-            className={`bg-white popup gap-5 dark:bg-bgdarktheme`}
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleAddFloor();
-            }}
-          >
-            <h1 className="text-3xl font-[700]">{t("editPlace.buttons.addPlace")}</h1>
-            <input
-              ref={inputPlaceRef}
-              autoFocus={true}
-              type="text"
-              placeholder={t('editPlace.placeholders.placeAlias')}
-              className={`bg-white text-black inputs-unique dark:bg-darkthemeitems dark:text-textdarktheme`}
-            />
-            <button
-              type="button"
-              onClick={(e) => {
+        <Portal>
+          <div>
+            <div className="overlay glassmorphism" onClick={() => setShowAddPlace(false)}></div>
+            <form
+              className={`bg-white popup gap-5 dark:bg-bgdarktheme`}
+              onSubmit={(e) => {
                 e.preventDefault();
                 handleAddFloor();
               }}
-              className="btn-primary w-full"
             >
-              {t('editPlace.buttons.save')}
-            </button>
-          </form>
-        </div>
+              <h1 className="text-3xl font-[700]">{t("editPlace.buttons.addPlace")}</h1>
+              <input
+                ref={inputPlaceRef}
+                autoFocus={true}
+                type="text"
+                placeholder={t('editPlace.placeholders.placeAlias')}
+                className={`bg-white text-black inputs-unique dark:bg-darkthemeitems dark:text-textdarktheme`}
+              />
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleAddFloor();
+                }}
+                className="btn-primary w-full"
+              >
+                {t('editPlace.buttons.save')}
+              </button>
+            </form>
+          </div>
+        </Portal>
       )}
       <div className='flex mb-2'>
         <div className="flex justify-start items-center gap-2 mb-2 w-[30%]">

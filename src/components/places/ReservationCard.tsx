@@ -269,7 +269,7 @@ const ReservationCard = (props: ReservationCardProps) => {
                             {t('reservations.statusLabels.pending')}
                         </li>}
                         {itemData.status === 'SEATED' && <li className="transition-colors duration-300 ease-in-out py-1 px-2 text-greentheme hover:bg-greentheme hover:bg-opacity-20 rounded-md cursor-pointer" onClick={() => sendReview()}>
-                            {'Request review'}
+                            {t('reservations.buttons.requestReview')}
                         </li>}
                         {itemData.status !== 'CANCELED' &&  <li className="transition-colors duration-300 ease-in-out py-1 px-2 text-redtheme hover:bg-redtheme hover:bg-opacity-20 rounded-md cursor-pointer" onClick={() => statusHandler('CANCELED')}>
                             {t('reservations.statusLabels.cancelled')}

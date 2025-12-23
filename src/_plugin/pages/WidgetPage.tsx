@@ -19,6 +19,7 @@ import LanguageSelector from "./LanguageSelector"
 import { useWidgetData } from "../../hooks/useWidgetData"
 import AlertDisplay, { Alert } from "../../components/reservation/EventAlerts"
 import QuillPreview from '../../components/common/QuillPreview';
+import MenuSelector from "../../components/MenuSelector"
 
 // --- Alert Configuration ---
 const alertDisplayMode: 'popup' | 'inline' | 'modal' | 'none' = 'inline'; // Change this to 'inline' or 'none'
@@ -65,6 +66,10 @@ const ReservationPickerStep = memo(({ data, onShowProcess, onNextStep, handleEve
     return widgetInfo?.events || []
   }, [widgetInfo]);
 
+  const menuFiles = useMemo(() => {
+    return widgetInfo?.menu_files_items?.filter((menu : any) => menu?.file && menu?.status === 'active') || []
+  }, [widgetInfo]);
+
   return (
     <div>
       <div className="mb-6">
@@ -101,14 +106,21 @@ const ReservationPickerStep = memo(({ data, onShowProcess, onNextStep, handleEve
         {isCheckingPayment && <LoaderCircle className="animate-spin mr-2" size={18} />}
         {isCheckingPayment ? t("reservationWidget.payment.checking") : t("reservationWidget.reservation.bookNow")}
       </button>
-      {widgetInfo?.menu_file && (
-        <button
-          onClick={() => window.open(widgetInfo.menu_file, "_blank")}
-          className="w-full mt-4 py-3 px-4 rounded-md font-medium border border-[#88AB61] text-[#88AB61] hover:bg-[#f0f7e6] dark:hover:bg-darkthemeitems transition-colors flex items-center justify-center gap-2"
-        >
-          <span>{t("reservationWidget.reservation.previewMenu")}</span>
-          <ScreenShareIcon size={18} />
-        </button>
+      {widgetInfo?.has_menu && (widgetInfo?.menu_file || menuFiles?.length) && (
+        <>
+          {menuFiles?.length > 1 ? 
+          <div className="w-full">
+            <h3 className="text-center pb-2 pt-3">{t("reservationWidget.reservation.previewMenu")}</h3>
+            <MenuSelector menus={menuFiles} />
+          </div>
+            : <button
+              onClick={() => window.open(menuFiles?.[0]?.file || widgetInfo.menu_file, "_blank")}
+              className="w-full mt-4 py-3 px-4 rounded-md font-medium border border-[#88AB61] text-[#88AB61] hover:bg-[#f0f7e6] dark:hover:bg-darkthemeitems transition-colors flex items-center justify-center gap-2"
+            >
+              <span>{t("reservationWidget.reservation.previewMenu")}</span>
+              <ScreenShareIcon size={18} />
+            </button>}
+        </>
       )}
     </div>
   )
