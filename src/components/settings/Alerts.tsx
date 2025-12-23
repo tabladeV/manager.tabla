@@ -8,6 +8,7 @@ import BaseBtn from '../common/BaseBtn';
 import Portal from '../common/Portal';
 import { useDarkContext } from '../../context/DarkContext';
 import { useList, useCreate, useUpdate, useDelete, BaseKey, HttpError, useOne } from '@refinedev/core';
+import ActionPopup from '../popup/ActionPopup';
 
 // The Alert type used throughout the component
 interface Alert {
@@ -286,6 +287,11 @@ export default function Alerts() {
     const { mutate: updateAlert, isLoading: isUpdateLoading } = useUpdate<Alert, HttpError, FormData>();
     const { mutate: deleteAlert } = useDelete();
 
+    const [showPopup, setShowPopup] = useState(false);
+    const [message, setMessage] = useState("");
+    const [action, setAction] = useState<"delete" | "update" | "create" | "confirm">("confirm");
+    const [alertToDelete, setAlertToDelete] = useState<BaseKey | undefined>(undefined);
+
     const alerts = useMemo(() => (alertsData?.data as any)?.results || [], [alertsData]);
 
     const handleAddAlert = () => {
@@ -361,12 +367,21 @@ export default function Alerts() {
     }, [singleAlertData, editingAlertId]); // Add editingAlertId to the dependency array
 
     const handleDeleteAlert = (id: BaseKey) => {
-        deleteAlert({
-            resource: "api/v1/bo/events",
-            id: `${id}/`,
-        }, {
-            onSuccess: () => refetch(),
-        });
+        setAlertToDelete(id);
+        setMessage(t('alerts.confirmations.deleteAlert'));
+        setAction("delete");
+        setShowPopup(true);
+    };
+
+    const confirmDeleteAlert = () => {
+        if (alertToDelete) {
+            deleteAlert({
+                resource: "api/v1/bo/events",
+                id: `${alertToDelete}/`,
+            }, {
+                onSuccess: () => refetch(),
+            });
+        }
     };
 
     const handleSaveAlert = (alert: Alert) => {
@@ -427,6 +442,13 @@ export default function Alerts() {
 
     return (
         <div className={`w-full rounded-[10px] p-4 ${isDarkMode ? "bg-bgdarktheme" : "bg-white"}`}>
+            <ActionPopup
+                action={action}
+                message={message}
+                actionFunction={confirmDeleteAlert}
+                showPopup={showPopup}
+                setShowPopup={setShowPopup}
+            />
             <div className="flex justify-between items-center mb-4">
                 <h1 className="text-2xl font-bold">{t('alerts.title')}</h1>
                 <BaseBtn onClick={handleAddAlert}><Plus size={16} /> {t('alerts.addNew')}</BaseBtn>

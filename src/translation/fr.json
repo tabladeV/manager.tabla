@@ -930,6 +930,9 @@
       "uploadLabel": "Cliquez pour télécharger le PDF",
       "noMenus": "Aucun menu trouvé. Ajoutez votre premier menu !",
       "deleteConfirm": "Êtes-vous sûr de vouloir supprimer ce menu ?",
+      "confirmations": {
+        "deleteMenu": "Êtes-vous sûr de vouloir supprimer ce menu ?"
+      },
       "noFile": "Aucun fichier disponible",
       "preview": "Aperçu",
       "delete": "Supprimer",
@@ -1067,6 +1070,9 @@
     "descriptionLabel": "Description",
     "descriptionPlaceholder": "Saisir la description de l'alerte...",
     "active": "Active",
+    "confirmations": {
+        "deleteAlert": "Êtes-vous sûr de vouloir supprimer cette alerte ?"
+    },
     "table": {
       "image": "Image",
       "title": "Titre",
