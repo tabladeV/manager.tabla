@@ -5,7 +5,8 @@ import BaseInput from '../common/BaseInput';
 import BaseBtn from '../common/BaseBtn';
 import Portal from '../common/Portal';
 import { useDarkContext } from '../../context/DarkContext';
-import { useList, useCreate, useUpdate, useDelete, HttpError } from '@refinedev/core';
+import { useList, useCreate, useUpdate, useDelete, HttpError, BaseKey } from '@refinedev/core';
+import ActionPopup from '../popup/ActionPopup';
 
 // Interface for Menu
 export interface Menu {
@@ -154,6 +155,11 @@ export default function MenusSettings() {
     const { mutate: deleteMenu } = useDelete();
     const { mutate: updateMenu } = useUpdate<Menu, HttpError, { status: string }>();
 
+    const [showPopup, setShowPopup] = useState(false);
+    const [message, setMessage] = useState("");
+    const [action, setAction] = useState<"delete" | "update" | "create" | "confirm">("confirm");
+    const [menuToDelete, setMenuToDelete] = useState<string | undefined>(undefined);
+
     const handleAddMenu = () => {
         setIsModalOpen(true);
     };
@@ -182,10 +188,17 @@ export default function MenusSettings() {
     };
 
     const handleDeleteMenu = (id: string) => {
-        if (window.confirm(t('settingsPage.menus.deleteConfirm'))) {
+        setMenuToDelete(id);
+        setMessage(t('settingsPage.menus.confirmations.deleteMenu'));
+        setAction("delete");
+        setShowPopup(true);
+    };
+
+    const confirmDeleteMenu = () => {
+        if (menuToDelete) {
             deleteMenu({
                 resource: "api/v1/bo/restaurants/current/widgets/menu-items",
-                id: id,
+                id: menuToDelete + '/',
             }, {
                 onSuccess: () => refetch(),
             });
@@ -213,6 +226,13 @@ export default function MenusSettings() {
 
     return (
         <div className={`w-full rounded-[10px] p-4 ${isDarkMode ? "bg-bgdarktheme" : "bg-white"}`}>
+            <ActionPopup
+                action={action}
+                message={message}
+                actionFunction={confirmDeleteMenu}
+                showPopup={showPopup}
+                setShowPopup={setShowPopup}
+            />
             <div className="flex justify-between items-center mb-6">
                 <div>
                     <h1 className="text-xl font-bold dark:text-white text-black">{t('settingsPage.menus.title')}</h1>

@@ -930,6 +930,9 @@
             "uploadLabel": "انقر لتحميل ملف PDF",
             "noMenus": "لم يتم العثور على قوائم. أضف قائمتك الأولى!",
             "deleteConfirm": "هل أنت متأكد من أنك تريد حذف هذه القائمة؟",
+            "confirmations": {
+                "deleteMenu": "هل أنت متأكد من أنك تريد حذف هذه القائمة؟"
+            },
             "noFile": "لا يوجد ملف متاح",
             "preview": "معاينة",
             "delete": "حذف",
@@ -1067,6 +1070,9 @@
         "descriptionLabel": "الوصف",
         "descriptionPlaceholder": "أدخل وصف التنبيه...",
         "active": "نشط",
+        "confirmations": {
+            "deleteAlert": "هل أنت متأكد من أنك تريد حذف هذا التنبيه؟"
+        },
         "table": {
             "image": "صورة",
             "title": "العنوان",

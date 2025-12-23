@@ -930,6 +930,9 @@
       "uploadLabel": "Haz clic para subir PDF",
       "noMenus": "No se encontraron menús. ¡Añade tu primer menú!",
       "deleteConfirm": "¿Estás seguro de que quieres eliminar este menú?",
+      "confirmations": {
+        "deleteMenu": "¿Estás seguro de que quieres eliminar este menú?"
+      },
       "noFile": "No hay archivo disponible",
       "preview": "Vista previa",
       "delete": "Eliminar",
@@ -1055,19 +1058,22 @@
       "description": "Configura restricciones de reservas y fechas de no disponibilidad para reservas del marketplace. Controla la disponibilidad para reservas online."
     }
   },
-  "alerts": {
-    "title": "Alertas de Eventos/Ofertas",
-    "addNew": "Añadir Nueva Alerta",
-    "editTitle": "Editar Alerta",
-    "addTitle": "Añadir Nueva Alerta",
-    "image": "Imagen",
-    "uploadImage": "Subir Imagen",
-    "titleLabel": "Título",
-    "titlePlaceholder": "Introduzca el título de la alerta",
-    "descriptionLabel": "Descripción",
-    "descriptionPlaceholder": "Introduzca la descripción de la alerta...",
-    "active": "Activa",
-    "table": {
+    "alerts": {
+        "title": "Alertas de Eventos/Ofertas",
+        "addNew": "Añadir Nueva Alerta",
+        "editTitle": "Editar Alerta",
+        "addTitle": "Añadir Nueva Alerta",
+        "image": "Imagen",
+        "uploadImage": "Subir Imagen",
+        "titleLabel": "Título",
+        "titlePlaceholder": "Introduzca el título de la alerta",
+        "descriptionLabel": "Descripción",
+        "descriptionPlaceholder": "Introduzca la descripción de la alerta...",
+        "active": "Activa",
+        "confirmations": {
+            "deleteAlert": "¿Estás seguro de que quieres eliminar esta alerta?"
+        },
+        "table": {
       "image": "Imagen",
       "title": "Título",
       "status": "Estado",
