@@ -12,6 +12,7 @@ import BaseBtn from "../common/BaseBtn"
 import ActionPopup from "../popup/ActionPopup"
 import IntervalCalendar from "../Calendar/IntervalCalendar"
 import BaseTimeInput from "../common/BaseTimeInput"
+import Portal from "../common/Portal"
 
 interface BlockReservationModalProps {
   onClose: () => void
@@ -263,369 +264,367 @@ const BlockReservationModal: React.FC<BlockReservationModalProps> = ({ onClose, 
     if (!focusedDate) return null
 
     return (
-      <div>
-        <div className="overlay" onClick={() => setFocusedDate(false)}></div>
-        <div className={`popup p-4 lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 dark:bg-bgdarktheme bg-white`}>
-          <IntervalCalendar onClose={() => setFocusedDate(false)} onRangeSelect={handleDateClick} />
+      <Portal>
+        <div>
+          <div className="overlay glassmorphism" onClick={() => setFocusedDate(false)}></div>
+          <div className={`popup p-4 lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 dark:bg-bgdarktheme bg-white`}>
+            <IntervalCalendar onClose={() => setFocusedDate(false)} onRangeSelect={handleDateClick} />
+          </div>
         </div>
-      </div>
+      </Portal>
     )
   }
 
   return (
-    <div>
-      {/* Overlay for clicking outside to close */}
-      <div className="overlay" onClick={onClose}></div>
-      <ActionPopup
-        action={"delete"}
-        secondAction={() => setShowConfirmPopup(false)}
-        secondActionText={t("blockReservation.actions.cancel", "Cancel")}
-        message={
-          showConfirmPopup && (
-            <>
-              <h6>
-                {t("blockReservation.confirmDelete.title", "Are you sure you want to Delete this blocking rule?")}
-              </h6>
-              <div
-                key={targetRule?.id}
-                className={`w-full p-2 rounded-md text-sm ${darkMode ? "bg-darkthemeitems" : "bg-gray-50"} flex justify-between items-center`}
-              >
-                <div className="flex-1">
-                  <div className="flex justify-between">
-                    <span className="font-medium">{targetRule?.start_date}</span>
-                    {targetRule?.end_date && targetRule?.end_date !== targetRule?.start_date && (
-                      <span className="font-medium">- {targetRule?.start_date}</span>
-                    )}
-                    <span
-                      className={`text-xs px-2 py-0.5 rounded-full ${
-                        targetRule?.block_online && targetRule?.block_backoffice
-                          ? "bg-red-100 text-red-800"
-                          : "bg-yellow-100 text-yellow-800"
-                      }`}
-                    >
-                      {getReservationChannel(targetRule)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">
-                      {targetRule?.start_time?.replace(":00", "")} - {targetRule?.end_time?.replace(":00", "")}
-                    </span>
-                  </div>
-                  <div className="text-xs text-gray-500 mt-1">
-                    {targetRule?.block_type === "FLOOR" && (
-                      <>
-                        {targetRule?.floors?.length > 0 && (
-                          <span>
-                            {t("blockReservation.details.floors", "Floors")}:{" "}
-                            {targetRule?.floors.map((el: { name: string }) => el.name).join(", ")}
-                          </span>
-                        )}
-                        <br />
-                        {targetRule?.tables?.length > 0 && (
-                          <span>
-                            {t("blockReservation.details.tables", "Tables")}:{" "}
-                            {targetRule?.tables.map((el: { name: string }) => el.name).join(", ")}
-                          </span>
-                        )}
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </>
-          )
-        }
-        actionFunction={() => handleDeleteBlock(targetRule?.id)}
-        showPopup={showConfirmPopup}
-        setShowPopup={setShowConfirmPopup}
-      />
-      <div
-        className={`sidepopup w-[45%] overflow-y-auto lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:overflow-y-auto h-full dark:bg-bgdarktheme dark:text-white bg-white`}
-      >
-        {/* Header */}
-        <div className="flex justify-between items-center border-gray-200">
-          <div className="flex items-center">
-            <Calendar className="mr-2" size={20} />
-            <h2 className="text-2xl font-[600]">{t("blockReservation.title", "Block reservations")}</h2>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
-            aria-label={t("blockReservation.actions.close", "Close")}
-          >
-            <X size={20} />
-          </button>
-        </div>
-
-        {/* Date selector */}
-        <div className="py-3 border-gray-200">
-          <div className="flex flex-wrap items-center justify-between">
-            {selectedDateRange?.start && (
-              <div className="flex items-center space-x-2 text-sm font-medium">
-                {selectedDateRange?.end && formatedStartDate() !== formatedEndDate() && (
-                  <span>{t("blockReservation.dateRange.from", "From")}</span>
-                )}
-                <Calendar size={16} />
-                <span>{formatedStartDate()}</span>
-              </div>
-            )}
-
-            {selectedDateRange?.end && formatedStartDate() !== formatedEndDate() && (
+    <Portal>
+      <div>
+        {/* Overlay for clicking outside to close */}
+        <div className="overlay glassmorphism" onClick={onClose}></div>
+        <ActionPopup
+          action={"delete"}
+          secondAction={() => setShowConfirmPopup(false)}
+          secondActionText={t("blockReservation.actions.cancel", "Cancel")}
+          message={
+            showConfirmPopup && (
               <>
-                <div className="flex items-center space-x-2 text-sm font-medium">
-                  <span>{t("blockReservation.dateRange.to", "To")}</span>
-                  <Calendar size={16} />
-                  <span>{formatedEndDate()}</span>
-                </div>
-              </>
-            )}
-          </div>
-          <button onClick={() => setFocusedDate(true)} className="btn-primary my-1 py-1">
-            {t("blockReservation.actions.changeDate", "Change date")}
-          </button>
-        </div>
-
-        {/* Block form */}
-        <div className="p-1">
-          <h3 className="text-sm font-semibold uppercase text-gray-500 mb-3">
-            {t("blockReservation.form.title", "BLOCK NEW RESERVATIONS")}
-          </h3>
-
-          {/* Time range */}
-          <div className="flex space-x-2 mb-3">
-            <button
-              type="button"
-              onClick={() => {
-                setPeriodType("TIME")
-              }}
-              className={`px-3 py-1.5 text-sm rounded-md ${
-                periodType === "TIME" ? "btn-primary text-white" : darkMode ? "bg-darkthemeitems" : "bg-gray-100"
-              }`}
-            >
-              {t("blockReservation.periodTypes.time", "Time")}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setPeriodType("DATE")
-              }}
-              className={`px-3 py-1.5 text-sm rounded-md ${
-                periodType === "DATE" ? "btn-primary text-white" : darkMode ? "bg-darkthemeitems" : "bg-gray-100"
-              }`}
-            >
-              {t("blockReservation.periodTypes.dateRange", "Date / Date Range")}
-            </button>
-          </div>
-
-          {periodType === "TIME" ? (
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <BaseTimeInput
-                  loading={isLoadingFloors}
-                  label={t("blockReservation.form.startBlockTime", "START BLOCK TIME")}
-                  value={startBlockTime}
-                  error={!startBlockTime}
-                  hint={t("blockReservation.form.requiredField", "This field is required")}
-                  onChange={(val) => {
-                    setStartBlockTime(val as string)
-                    setEndBlockTime(null)
-                  }}
-                />
-              </div>
-              <div>
-                <BaseTimeInput
-                  loading={isLoadingFloors}
-                  label={t("blockReservation.form.endBlockTime", "END BLOCK TIME")}
-                  value={endBlockTime}
-                  disabled={!startBlockTime}
-                  min={startBlockTime}
-                  onChange={(val) => setEndBlockTime(val as string)}
-                  error={!endBlockTime}
-                  hint={t("blockReservation.form.requiredField", "This field is required")}
-                />
-              </div>
-            </div>
-          ) : (
-            ""
-          )}
-
-          {/* Block type selection */}
-          <div className="mb-4">
-            <div className="flex space-x-2 mb-3">
-              <button
-                type="button"
-                onClick={() => setBlockType("ALL")}
-                className={`px-3 py-1.5 text-sm rounded-md ${
-                  blockType === "ALL" ? "btn-primary text-white" : darkMode ? "bg-darkthemeitems" : "bg-gray-100"
-                }`}
-              >
-                {t("blockReservation.blockTypes.all", "All")}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setBlockType("FLOOR")
-                  setSelectedFloor([])
-                }}
-                className={`px-3 py-1.5 text-sm rounded-md ${
-                  blockType === "FLOOR" ? "btn-primary text-white" : darkMode ? "bg-darkthemeitems" : "bg-gray-100"
-                }`}
-              >
-                {t("blockReservation.blockTypes.floor", "Floor")}
-              </button>
-            </div>
-            {blockType === "FLOOR" && (
-              <>
-                <div className="mb-3">
-                  <BaseSelect
-                    loading={isLoadingFloors}
-                    label={t("blockReservation.form.selectFloor", "SELECT FLOOR")}
-                    options={mappedFloors()}
-                    multiple
-                    searchable={true}
-                    value={selectedFloor}
-                    onChange={(val) => {
-                      setSelectedFloor(val as string[])
-                      setSelectedTable([])
-                    }}
-                    chips={true}
-                  />
-                </div>
-                <div className="mb-3">
-                  <BaseSelect
-                    loading={isLoadingFloors}
-                    label={t("blockReservation.form.selectTable", "SELECT TABLE")}
-                    options={filteredTables()}
-                    multiple
-                    searchable={true}
-                    value={selectedTable}
-                    onChange={(val) => setSelectedTable(val as string[])}
-                    chips={true}
-                  />
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* Block type checkboxes */}
-          <div className="flex space-x-4 mb-4">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={blockOnline}
-                onChange={() => setBlockOnline(!blockOnline)}
-                className="checkbox mr-2 form-checkbox h-4 w-4 text-green-600"
-              />
-              <span className="text-sm">{t("blockReservation.channels.online", "Online")}</span>
-            </label>
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={blockInHouse}
-                onChange={() => setBlockInHouse(!blockInHouse)}
-                className="checkbox mr-2 form-checkbox h-4 w-4 text-green-600"
-              />
-              <span className="text-sm">{t("blockReservation.channels.backOffice", "Back office")}</span>
-            </label>
-          </div>
-
-          {/* Action button */}
-          <BaseBtn
-            onClick={handleSubmit}
-            disabled={!isValid()}
-            className="w-full"
-            loading={isLoadingFloors || loadingCreate}
-          >
-            {t("blockReservation.actions.blockSelectedHours", "BLOCK SELECTED HOURS")}
-          </BaseBtn>
-        </div>
-
-        {/* Currently blocked section */}
-        <div className="border-t border-gray-200 mt-4">
-          <h3 className="text-sm font-semibold uppercase text-gray-500 mb-3">
-            {t("blockReservation.currentlyBlocked.title", "CURRENTLY BLOCKED RESERVATIONS")}
-          </h3>
-
-          {/* Blocked reservations list */}
-          {loadingReservationPauses ? (
-            <div className="text-sm text-center py-4">{t("blockReservation.loading", "Loading...")}</div>
-          ) : !blockedReservations?.results?.length ? (
-            <div className="text-sm text-gray-500 text-center py-4">
-              {t("blockReservation.currentlyBlocked.noBlocked", "No blocked reservations for this date")}
-            </div>
-          ) : (
-            <div className="space-y-2 max-h-80 overflow-y-auto bg-[#F6F6F6] dark:bg-bgdarktheme2 p-2">
-              {blockedReservations?.results.map((block: any) => (
+                <h6>
+                  {t("blockReservation.confirmDelete.title", "Are you sure you want to Delete this blocking rule?")}
+                </h6>
                 <div
-                  key={block.id}
-                  className={`p-2 rounded-md text-sm ${darkMode ? "bg-darkthemeitems" : "bg-gray-50"} flex justify-between items-center`}
+                  key={targetRule?.id}
+                  className={`w-full p-2 rounded-md text-sm ${darkMode ? "bg-darkthemeitems" : "bg-gray-50"} flex justify-between items-center`}
                 >
                   <div className="flex-1">
                     <div className="flex justify-between">
-                      <div>
-                        <span className="font-medium">{block.start_date}</span>
-                        {block.end_date && block.end_date !== block.start_date && (
-                          <span className="font-medium">
-                            <strong>{" " + t("blockReservation.dateRange.to", "To") + " "}</strong> {block.end_date}
-                          </span>
-                        )}
-                      </div>
+                      <span className="font-medium">{targetRule?.start_date}</span>
+                      {targetRule?.end_date && targetRule?.end_date !== targetRule?.start_date && (
+                        <span className="font-medium">- {targetRule?.start_date}</span>
+                      )}
                       <span
-                        className={`text-xs px-2 py-0.5 rounded-full ${
-                          block.block_online && block.block_backoffice
+                        className={`text-xs px-2 py-0.5 rounded-full ${targetRule?.block_online && targetRule?.block_backoffice
                             ? "bg-red-100 text-red-800"
                             : "bg-yellow-100 text-yellow-800"
-                        }`}
+                          }`}
                       >
-                        {getReservationChannel(block)}
+                        {getReservationChannel(targetRule)}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="font-medium">
-                        {block.start_time?.replace(":00", "")} - {block.end_time?.replace(":00", "")}
+                        {targetRule?.start_time?.replace(":00", "")} - {targetRule?.end_time?.replace(":00", "")}
                       </span>
                     </div>
                     <div className="text-xs text-gray-500 mt-1">
-                      {block.block_type === "FLOOR" && (
+                      {targetRule?.block_type === "FLOOR" && (
                         <>
-                          {block.floors?.length > 0 && (
+                          {targetRule?.floors?.length > 0 && (
                             <span>
                               {t("blockReservation.details.floors", "Floors")}:{" "}
-                              {block.floors.map((el: { name: string }) => el.name).join(", ")}
+                              {targetRule?.floors.map((el: { name: string }) => el.name).join(", ")}
                             </span>
                           )}
                           <br />
-                          {block.tables?.length > 0 && (
+                          {targetRule?.tables?.length > 0 && (
                             <span>
                               {t("blockReservation.details.tables", "Tables")}:{" "}
-                              {block.tables.map((el: { name: string }) => el.name).join(", ")}
+                              {targetRule?.tables.map((el: { name: string }) => el.name).join(", ")}
                             </span>
                           )}
                         </>
                       )}
                     </div>
                   </div>
-                  <button
-                    onClick={() => {
-                      setTargetRule(block)
-                      setShowConfirmPopup(true)
-                    }}
-                    disabled={loadingDelete}
-                    className="ml-2 p-1.5 text-gray-500 hover:text-red-600 rounded-full hover:bg-red-50"
-                    aria-label={t("blockReservation.actions.deleteBlock", "Delete block")}
-                  >
-                    <Trash2 size={16} />
-                  </button>
                 </div>
-              ))}
+              </>
+            )
+          }
+          actionFunction={() => handleDeleteBlock(targetRule?.id)}
+          showPopup={showConfirmPopup}
+          setShowPopup={setShowConfirmPopup}
+        />
+        <div
+          className={`sidepopup w-[45%] overflow-y-auto lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:overflow-y-auto h-full dark:bg-bgdarktheme dark:text-white bg-white`}
+        >
+          {/* Header */}
+          <div className="flex justify-between items-center border-gray-200">
+            <div className="flex items-center">
+              <Calendar className="mr-2" size={20} />
+              <h2 className="text-2xl font-[600]">{t("blockReservation.title", "Block reservations")}</h2>
             </div>
-          )}
-        </div>
-      </div>
+            <button
+              onClick={onClose}
+              className="text-gray-500 hover:text-gray-700"
+              aria-label={t("blockReservation.actions.close", "Close")}
+            >
+              <X size={20} />
+            </button>
+          </div>
 
-      {/* Date Selection Modal */}
-      <DateSelectionModal focusedDate={focusedDate} setFocusedDate={setFocusedDate} handleDateClick={handleDateClick} />
-    </div>
+          {/* Date selector */}
+          <div className="py-3 border-gray-200">
+            <div className="flex flex-wrap items-center justify-between">
+              {selectedDateRange?.start && (
+                <div className="flex items-center space-x-2 text-sm font-medium">
+                  {selectedDateRange?.end && formatedStartDate() !== formatedEndDate() && (
+                    <span>{t("blockReservation.dateRange.from", "From")}</span>
+                  )}
+                  <Calendar size={16} />
+                  <span>{formatedStartDate()}</span>
+                </div>
+              )}
+
+              {selectedDateRange?.end && formatedStartDate() !== formatedEndDate() && (
+                <>
+                  <div className="flex items-center space-x-2 text-sm font-medium">
+                    <span>{t("blockReservation.dateRange.to", "To")}</span>
+                    <Calendar size={16} />
+                    <span>{formatedEndDate()}</span>
+                  </div>
+                </>
+              )}
+            </div>
+            <button onClick={() => setFocusedDate(true)} className="btn-primary my-1 py-1">
+              {t("blockReservation.actions.changeDate", "Change date")}
+            </button>
+          </div>
+
+          {/* Block form */}
+          <div className="p-1">
+            <h3 className="text-sm font-semibold uppercase text-gray-500 mb-3">
+              {t("blockReservation.form.title", "BLOCK NEW RESERVATIONS")}
+            </h3>
+
+            {/* Time range */}
+            <div className="flex space-x-2 mb-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setPeriodType("TIME")
+                }}
+                className={`px-3 py-1.5 text-sm rounded-md ${periodType === "TIME" ? "btn-primary text-white" : darkMode ? "bg-darkthemeitems" : "bg-gray-100"
+                  }`}
+              >
+                {t("blockReservation.periodTypes.time", "Time")}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setPeriodType("DATE")
+                }}
+                className={`px-3 py-1.5 text-sm rounded-md ${periodType === "DATE" ? "btn-primary text-white" : darkMode ? "bg-darkthemeitems" : "bg-gray-100"
+                  }`}
+              >
+                {t("blockReservation.periodTypes.dateRange", "Date / Date Range")}
+              </button>
+            </div>
+
+            {periodType === "TIME" ? (
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <BaseTimeInput
+                    loading={isLoadingFloors}
+                    label={t("blockReservation.form.startBlockTime", "START BLOCK TIME")}
+                    value={startBlockTime}
+                    error={!startBlockTime}
+                    hint={t("blockReservation.form.requiredField", "This field is required")}
+                    onChange={(val) => {
+                      setStartBlockTime(val as string)
+                      setEndBlockTime(null)
+                    }}
+                  />
+                </div>
+                <div>
+                  <BaseTimeInput
+                    loading={isLoadingFloors}
+                    label={t("blockReservation.form.endBlockTime", "END BLOCK TIME")}
+                    value={endBlockTime}
+                    disabled={!startBlockTime}
+                    min={startBlockTime}
+                    onChange={(val) => setEndBlockTime(val as string)}
+                    error={!endBlockTime}
+                    hint={t("blockReservation.form.requiredField", "This field is required")}
+                  />
+                </div>
+              </div>
+            ) : (
+              ""
+            )}
+
+            {/* Block type selection */}
+            <div className="mb-4">
+              <div className="flex space-x-2 mb-3">
+                <button
+                  type="button"
+                  onClick={() => setBlockType("ALL")}
+                  className={`px-3 py-1.5 text-sm rounded-md ${blockType === "ALL" ? "btn-primary text-white" : darkMode ? "bg-darkthemeitems" : "bg-gray-100"
+                    }`}
+                >
+                  {t("blockReservation.blockTypes.all", "All")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setBlockType("FLOOR")
+                    setSelectedFloor([])
+                  }}
+                  className={`px-3 py-1.5 text-sm rounded-md ${blockType === "FLOOR" ? "btn-primary text-white" : darkMode ? "bg-darkthemeitems" : "bg-gray-100"
+                    }`}
+                >
+                  {t("blockReservation.blockTypes.floor", "Floor")}
+                </button>
+              </div>
+              {blockType === "FLOOR" && (
+                <>
+                  <div className="mb-3">
+                    <BaseSelect
+                      loading={isLoadingFloors}
+                      label={t("blockReservation.form.selectFloor", "SELECT FLOOR")}
+                      options={mappedFloors()}
+                      multiple
+                      searchable={true}
+                      value={selectedFloor}
+                      onChange={(val) => {
+                        setSelectedFloor(val as string[])
+                        setSelectedTable([])
+                      }}
+                      chips={true}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <BaseSelect
+                      loading={isLoadingFloors}
+                      label={t("blockReservation.form.selectTable", "SELECT TABLE")}
+                      options={filteredTables()}
+                      multiple
+                      searchable={true}
+                      value={selectedTable}
+                      onChange={(val) => setSelectedTable(val as string[])}
+                      chips={true}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Block type checkboxes */}
+            <div className="flex space-x-4 mb-4">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={blockOnline}
+                  onChange={() => setBlockOnline(!blockOnline)}
+                  className="checkbox mr-2 form-checkbox h-4 w-4 text-green-600"
+                />
+                <span className="text-sm">{t("blockReservation.channels.online", "Online")}</span>
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={blockInHouse}
+                  onChange={() => setBlockInHouse(!blockInHouse)}
+                  className="checkbox mr-2 form-checkbox h-4 w-4 text-green-600"
+                />
+                <span className="text-sm">{t("blockReservation.channels.backOffice", "Back office")}</span>
+              </label>
+            </div>
+
+            {/* Action button */}
+            <BaseBtn
+              onClick={handleSubmit}
+              disabled={!isValid()}
+              className="w-full"
+              loading={isLoadingFloors || loadingCreate}
+            >
+              {t("blockReservation.actions.blockSelectedHours", "BLOCK SELECTED HOURS")}
+            </BaseBtn>
+          </div>
+
+          {/* Currently blocked section */}
+          <div className="border-t border-gray-200 mt-4">
+            <h3 className="text-sm font-semibold uppercase text-gray-500 mb-3">
+              {t("blockReservation.currentlyBlocked.title", "CURRENTLY BLOCKED RESERVATIONS")}
+            </h3>
+
+            {/* Blocked reservations list */}
+            {loadingReservationPauses ? (
+              <div className="text-sm text-center py-4">{t("blockReservation.loading", "Loading...")}</div>
+            ) : !blockedReservations?.results?.length ? (
+              <div className="text-sm text-gray-500 text-center py-4">
+                {t("blockReservation.currentlyBlocked.noBlocked", "No blocked reservations for this date")}
+              </div>
+            ) : (
+              <div className="space-y-2 max-h-80 overflow-y-auto bg-[#F6F6F6] dark:bg-bgdarktheme2 p-2">
+                {blockedReservations?.results.map((block: any) => (
+                  <div
+                    key={block.id}
+                    className={`p-2 rounded-md text-sm ${darkMode ? "bg-darkthemeitems" : "bg-gray-50"} flex justify-between items-center`}
+                  >
+                    <div className="flex-1">
+                      <div className="flex justify-between">
+                        <div>
+                          <span className="font-medium">{block.start_date}</span>
+                          {block.end_date && block.end_date !== block.start_date && (
+                            <span className="font-medium">
+                              <strong>{" " + t("blockReservation.dateRange.to", "To") + " "}</strong> {block.end_date}
+                            </span>
+                          )}
+                        </div>
+                        <span
+                          className={`text-xs px-2 py-0.5 rounded-full ${block.block_online && block.block_backoffice
+                              ? "bg-red-100 text-red-800"
+                              : "bg-yellow-100 text-yellow-800"
+                            }`}
+                        >
+                          {getReservationChannel(block)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="font-medium">
+                          {block.start_time?.replace(":00", "")} - {block.end_time?.replace(":00", "")}
+                        </span>
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {block.block_type === "FLOOR" && (
+                          <>
+                            {block.floors?.length > 0 && (
+                              <span>
+                                {t("blockReservation.details.floors", "Floors")}:{" "}
+                                {block.floors.map((el: { name: string }) => el.name).join(", ")}
+                              </span>
+                            )}
+                            <br />
+                            {block.tables?.length > 0 && (
+                              <span>
+                                {t("blockReservation.details.tables", "Tables")}:{" "}
+                                {block.tables.map((el: { name: string }) => el.name).join(", ")}
+                              </span>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setTargetRule(block)
+                        setShowConfirmPopup(true)
+                      }}
+                      disabled={loadingDelete}
+                      className="ml-2 p-1.5 text-gray-500 hover:text-red-600 rounded-full hover:bg-red-50"
+                      aria-label={t("blockReservation.actions.deleteBlock", "Delete block")}
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Date Selection Modal */}
+        <DateSelectionModal focusedDate={focusedDate} setFocusedDate={setFocusedDate} handleDateClick={handleDateClick} />
+      </div>
+    </Portal>
   )
 }
 

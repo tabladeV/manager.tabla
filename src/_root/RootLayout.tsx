@@ -280,9 +280,9 @@ const RootLayout = () => {
           <DateSelection />
           <UserBar />
         </header>
-        <section className="flex justify-between h-[calc(100vh-80px)]">
+        <section className="rounded-tl-3xl flex justify-between h-[calc(100vh-80px)]">
           <div
-            className={`p-[1em] w-full h-full lt-sm:pb-[10em] overflow-x-hidden overflow-y-scroll bg-[#F6F6F6] dark:bg-bgdarktheme2 dark:text-textdarktheme`}
+            className={`rounded-tl-3xl p-[1em] w-full h-full lt-sm:pb-[10em] overflow-x-hidden overflow-y-scroll bg-[#F6F6F6] dark:bg-bgdarktheme2 dark:text-textdarktheme`}
             id="main-root-layout"
           >
             <Outlet />

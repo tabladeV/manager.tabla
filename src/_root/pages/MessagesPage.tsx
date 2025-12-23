@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import profilepic from '../../assets/profile.png';
 import { t } from "i18next";
 import { useDarkContext } from "../../context/DarkContext";
+import Portal from "../../components/common/Portal";
 
 // Types and Interfaces
 interface Message extends BaseRecord {
@@ -409,8 +410,9 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
     : "Customer";
 
   return (
+    <Portal>
     <div>
-      <div className="overlay" onClick={() => setShowModal(false)}></div>
+      <div className="overlay glassmorphism" onClick={() => setShowModal(false)}></div>
       <div className="sidepopup h-full lt-sm:w-full overflow-y-auto lt-sm:h-[70vh] lt-sm:bottom-0 bg-white dark:bg-bgdarktheme">
         <h2 className="text-2xl font-semibold mb-6 text-blacktheme dark:text-white">
           {t('messages.respond.title')} {' '} {customerName}
@@ -455,6 +457,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
         </form>
       </div>
     </div>
+    </Portal>
   );
 };
 

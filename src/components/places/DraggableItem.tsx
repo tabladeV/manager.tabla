@@ -34,6 +34,7 @@ interface DraggableItemProps {
     loading: boolean;
     is_payed?: boolean;
     amount?: string;
+    event?: any;
   };
   canChangeRes: boolean;
 }
@@ -215,6 +216,14 @@ const DraggableItem = (props: DraggableItemProps) => {
                       </p>
                     </div>
                   }
+                  {itemData.event && (
+                    <div className="flex gap-1 items-center py-1 px-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                      <CalendarCheck size={16} />
+                      <p className='font-[600] text-[13px]'>
+                        {itemData.event.title}
+                      </p>
+                    </div>
+                  )}
                   {(itemData.email || itemData.phone) && <div className="flex flex-col mt-1 gap-x-4 gap-y-1 text-sm lt-md:flex-col">
                     {itemData.email && <div className="flex items-center gap-1 text-gray-500">
                       <Mail size={14} className={'dark:text-gray-400 text-gray-500'} />
@@ -298,7 +307,7 @@ const DraggableItem = (props: DraggableItemProps) => {
             {itemData.status === 'SEATED' &&
               <>
                 <li className="transition-colors duration-300 ease-in-out py-1 px-2 text-greentheme hover:bg-greentheme hover:bg-opacity-20 rounded-md cursor-pointer" onClick={() => sendReview()}>
-                  {'Request review'}
+                  {t('reservations.buttons.requestReview')}
                 </li>
                 <li className="transition-colors duration-300 ease-in-out py-1 px-2 text-greentheme hover:bg-greentheme hover:bg-opacity-20 rounded-md cursor-pointer" onClick={() => statusHandler('APPROVED')}>
                   {t('reservations.statusLabels.confirmed')}

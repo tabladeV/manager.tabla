@@ -220,7 +220,7 @@ const TimeStep = memo(({ selectedTime, onTimeClick, availableTimes, loading, sel
         {loading ? (
           <TimeSkeletonLoader />
         ) : Object.keys(availableTimes).length === 0 ? (
-          <EmptyState message={`No available time slots for ${selectedDate ? format(selectedDate, 'dd MMM') : ''} with ${selectedGuests || 0} guests`} />
+          <EmptyState message={t('reservationProcess.noAvailableTimeSlotsWithGuests', { date: selectedDate ? format(selectedDate, 'dd MMM') : '', guests: selectedGuests || 0 })} />
         ) : (
           <div className="space-y-6">
             {Object.entries(availableTimes).map(([category, times]) => (

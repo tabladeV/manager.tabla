@@ -299,7 +299,7 @@ export default function WidgetConfig() {
   const isFormValid = () => {
     if (isWidgetActivated) {
       // Validate active widget fields
-      if (!title.trim()) {
+      if (!title?.trim()) {
         console.log("Validation failed: Title is empty");
         return false;
       }
@@ -307,7 +307,7 @@ export default function WidgetConfig() {
         console.log("Validation failed: Max guests must be positive");
         return false;
       }
-      if (enableDressCode && !dressCode.trim()) {
+      if (enableDressCode && !dressCode?.trim()) {
         console.log("Validation failed: Dress code is enabled but empty");
         return false;
       }
@@ -317,11 +317,11 @@ export default function WidgetConfig() {
       }
     } else {
       // Validate disabled widget fields
-      if (!disabledTitle.trim()) {
+      if (!disabledTitle?.trim()) {
         console.log("Validation failed: Disabled title is empty");
         return false;
       }
-      if (!disabledDescription.trim()) {
+      if (!disabledDescription?.trim()) {
         console.log("Validation failed: Disabled description is empty");
         return false;
       }

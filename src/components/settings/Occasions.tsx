@@ -54,7 +54,7 @@ function OccasionModal({
   return (
     <Portal>
     <div>
-      <div className="overlay" onClick={onClose}></div>
+      <div className="overlay glassmorphism" onClick={onClose}></div>
       <div className={`sidepopup lt-sm:popup lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:rounded-b-none lt-sm:w-full h-full ${isDarkMode ? 'bg-bgdarktheme' : 'bg-white'}`}>
         <h1 className="text-2xl font-bold mb-3">{isUpdating ? 'Modify' : 'Add'} Occasion</h1>
         {isUpdating ? (

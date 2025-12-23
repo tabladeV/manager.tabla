@@ -70,7 +70,7 @@ const Filter = (props:FilterProps) => {
         } */}
         {showFilter && 
             <div>
-                <div className='overlay bg-transparent' onClick={()=>{setShowFilter(false)}}/>
+                <div className='overlay glassmorphism bg-transparent' onClick={()=>{setShowFilter(false)}}/>
                 <div className={`absolute w-[11em] flex flex-col p-2 rounded-md ml-[-5.8em] justify-between items-start mt-[2.6em] z-[230]  ${localStorage.getItem('darkMode')==='true'?'bg-darkthemeitems':'bg-white'}`}>
                     {/* <div onClick={rangeOfDays} className='items-center w-full cursor-pointer hover:opacity-70 p-1 flex gap-2 justify-start'>Select date range</div> */}
                     <div onClick={last7Days} className='items-center w-full cursor-pointer hover:opacity-70 p-1 flex gap-2 justify-start'>{t('export.lastWeek')}</div>

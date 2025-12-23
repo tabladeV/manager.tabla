@@ -9,6 +9,7 @@ import BaseSelect from '../common/BaseSelect';
 import WidgetReservationProcess from './WidgetReservationProcess';
 import { useRestaurantConfig } from '../../hooks/useRestaurantConfig';
 import ActionPopup from '../popup/ActionPopup';
+import Portal from '../common/Portal';
 
 interface Reservation extends BaseRecord {
   id?: BaseKey;
@@ -770,8 +771,9 @@ const canSendPaymentLinkForExistingCustomer = () => {
   };
 
   return (
+    <Portal>
     <div>
-      <div className="overlay" onClick={handleClose}></div>
+      <div className="overlay glassmorphism" onClick={handleClose}></div>
       {showConfirmClose && (
         <ActionPopup
           action="confirm"
@@ -867,7 +869,7 @@ const canSendPaymentLinkForExistingCustomer = () => {
                         onChange={(e) => setNewCustomerData({ ...newCustomerData, title: e.target.value })}
                         className="radio mr-2"
                       />
-                      Mr
+                      {t('clients.titles.mr')}
                     </label>
                   <label className="flex items-center">
                       <input
@@ -878,7 +880,7 @@ const canSendPaymentLinkForExistingCustomer = () => {
                         onChange={(e) => setNewCustomerData({ ...newCustomerData, title: e.target.value })}
                         className="radio mr-2"
                       />
-                      Mrs
+                      {t('clients.titles.mrs')}
                     </label>
                   <label className="flex items-center">
                       <input
@@ -889,7 +891,7 @@ const canSendPaymentLinkForExistingCustomer = () => {
                         onChange={(e) => setNewCustomerData({ ...newCustomerData, title: e.target.value })}
                         className="radio mr-2"
                       />
-                      Ms
+                      {t('clients.titles.ms')}
                     </label>
                   </div>
                   <input type='text' name='first_name' placeholder={t('grid.placeHolders.firstname')} className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' onChange={(e) => setNewCustomerData({ ...newCustomerData, first_name: e.target.value })} required />
@@ -939,9 +941,9 @@ const canSendPaymentLinkForExistingCustomer = () => {
                     onClick={() => setShowProcess(true)}
                     className={`btn flex justify-around cursor-pointer ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'}`}
                   >
-                    {data.reserveDate === '' ? <div>Date</div> : <span>{data.reserveDate}</span>}
-                    {data.time === '' ? <div>Time</div> : <span>{data.time}</span>}
-                    {data.guests === 0 ? <div>Guests</div> : <span>{data.guests}</span>}
+                    {data.reserveDate === '' ? <div>{t('reservationProcess.date')}</div> : <span>{data.reserveDate}</span>}
+                    {data.time === '' ? <div>{t('reservationProcess.time')}</div> : <span>{data.time}</span>}
+                    {data.guests === 0 ? <div>{t('reservationProcess.guests')}</div> : <span>{data.guests}</span>}
                   </div>
                   {renderPaymentInfo()}
                   <button onClick={handleNewReservationNewCustomer} className='w-full py-2 bg-greentheme text-white rounded-lg hover:opacity-90 transition-opacity mt-3' disabled={disabledButton}>{t('reservations.buttons.addReservation')}</button>
@@ -1008,7 +1010,7 @@ const canSendPaymentLinkForExistingCustomer = () => {
               <X size={20} />
             </button>
           </div>
-          <p className="text-md  font-[500]">Tags</p>
+          <p className="text-md  font-[500]">{t('settingsPage.tags.title')}</p>
           <div className="flex flex-wrap gap-2 mb-3">
             {selectedClient?.tags?.map((tag:{name:string;id:number}) => (
               <span key={tag.id} className={`text-[12px] font-[500] px-2 py-1 rounded-md mt-2 w-fit bg-softgreentheme text-greentheme`}>
@@ -1087,9 +1089,9 @@ const canSendPaymentLinkForExistingCustomer = () => {
             className={`btn flex justify-around cursor-pointer ${localStorage.getItem('darkMode') === 'true' ? 'bg-darkthemeitems text-white' : 'bg-white'
               }`}
           >
-            {data.reserveDate === '' ? <div>Date</div> : <span>{data.reserveDate}</span>}
-            {data.time === '' ? <div>Time</div> : <span>{data.time}</span>}
-            {data.guests === 0 ? <div>Guests</div> : <span>{data.guests}</span>}
+            {data.reserveDate === '' ? <div>{t('reservationProcess.date')}</div> : <span>{data.reserveDate}</span>}
+            {data.time === '' ? <div>{t('reservationProcess.time')}</div> : <span>{data.time}</span>}
+            {data.guests === 0 ? <div>{t('reservationProcess.guests')}</div> : <span>{data.guests}</span>}
           </div>
           {renderPaymentInfo()}
           <div className="flex flex-col gap-2">
@@ -1125,6 +1127,7 @@ const canSendPaymentLinkForExistingCustomer = () => {
         </form>
       )}
     </div>
+    </Portal>
   );
 };
 

@@ -213,7 +213,7 @@ const ReservationForGrid = (props: ReservationType) => {
     const { t } = useTranslation();
     return (
         <div>
-            <div className='overlay z-[300]' onClick={props.onClick} />
+            <div className='overlay glassmorphism z-[300]' onClick={props.onClick} />
             <div className={`side-popup lt-sm:w-full lt-sm:h-[80vh] lt-sm:bottom-0 z-[400] h-full lg:w-[40%] w-[60%] p-5 fixed right-0 sm:top-0  ${darkMode ? 'bg-bgdarktheme text-white' : 'bg-white text-black'}`}>
                 {
                     choosingClient ?
@@ -245,7 +245,7 @@ const ReservationForGrid = (props: ReservationType) => {
                         (newClient ?
                             <div>
                                 <h1 className='text-2xl font-bold text-left mt-6'>{t('reservations.buttons.addReservation')} </h1>
-                                <span className='italic font-[400] text-sm '> on {props.timeAndDate?.date} at {props.timeAndDate?.time} </span>
+                                <span className='italic font-[400] text-sm '>{t('reservationForGrid.onAt', { date: props.timeAndDate?.date, time: props.timeAndDate?.time })}</span>
                                 <form className='mt-6 flex flex-col gap-4' onSubmit={handleNewReservationNewCustomer}>
                                     <input type='text' name='first_name' placeholder={t('grid.placeHolders.firstname')} className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' required />
                                     <input type='text' name='last_name' placeholder={t('grid.placeHolders.lastname')} className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' required />
@@ -270,8 +270,8 @@ const ReservationForGrid = (props: ReservationType) => {
                                         />
                                     </div>
                                     <select name="source" className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' required>
-                                        <option value="BACK_OFFICE">Back Office</option>
-                                        <option value="WALK_IN">Walk In</option>
+                                        <option value="BACK_OFFICE">{t('overview.charts.reservationsSource.legend.BackOffice')}</option>
+                                        <option value="WALK_IN">{t('overview.charts.reservationsSource.legend.WalkIn')}</option>
                                     </select>
                                     <button className='w-full py-2 bg-greentheme text-white rounded-lg hover:opacity-90 transition-opacity mt-3'>{t('reservations.buttons.addReservation')}</button>
                                 </form>
@@ -279,7 +279,7 @@ const ReservationForGrid = (props: ReservationType) => {
                             :
                             <div>
                                 <h1 className='text-2xl font-bold text-left mt-6'>{t('reservations.buttons.addReservation')} </h1>
-                                <span className='italic font-[400] text-sm '> on {props.timeAndDate?.date} at {props.timeAndDate?.time} for </span> <span className='font-[600] text-sm'>{chosenClient?.full_name}</span>
+                                <span className='italic font-[400] text-sm '>{t('reservationForGrid.onAtFor', { date: props.timeAndDate?.date, time: props.timeAndDate?.time })}</span> <span className='font-[600] text-sm'>{chosenClient?.full_name}</span>
                                 <form className='mt-6 flex flex-col gap-4' onSubmit={handleNewReservation}>
                                     <input type="number" name='guests' placeholder={t('grid.placeHolders.guests')} className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' required />
                                     <input type="text" name='note' placeholder={t('grid.placeHolders.internalNote')} className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' />
@@ -300,8 +300,8 @@ const ReservationForGrid = (props: ReservationType) => {
                                         />
                                     </div>
                                     <select name="source" className='inputs w-full p-3 border border-gray-300 dark:border-darkthemeitems rounded-lg bg-white dark:bg-darkthemeitems text-black dark:text-white' required>
-                                        <option value="BACK_OFFICE">Back Office</option>
-                                        <option value="WALK_IN">Walk In</option>
+                                        <option value="BACK_OFFICE">{t('overview.charts.reservationsSource.legend.BackOffice')}</option>
+                                        <option value="WALK_IN">{t('overview.charts.reservationsSource.legend.WalkIn')}</option>
                                     </select>
                                     <button className='w-full py-2 bg-greentheme text-white rounded-lg hover:opacity-90 transition-opacity mt-3'>{t('reservations.buttons.addReservation')}</button>
                                 </form>

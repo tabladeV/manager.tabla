@@ -20,6 +20,7 @@ import BaseBtn from '../../common/BaseBtn';
 import { useDarkContext } from '../../../context/DarkContext';
 import ActionPopup from '../../popup/ActionPopup';
 import { Table } from '../../../_root/pages/DesignPlaces';
+import Portal from '../../common/Portal';
 
 const MAX_ZOOM = 0.9; // maximum scale allowed
 const MIN_ZOOM = 0.4; // minimum scale allowed
@@ -59,7 +60,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
   useEffect(() => {
     if (props.focusedRoofId) {
       setShapes(props.tables);
-      
+
       // Auto focus when tables are loaded
       if (props.tables.length > 0) {
         // Use setTimeout to ensure the stage is ready
@@ -82,11 +83,11 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
     };
     updateWidth();
     updateHeight();
-    window.addEventListener('resize', ()=>{
+    window.addEventListener('resize', () => {
       updateWidth()
       updateHeight()
     });
-    return () => window.removeEventListener('resize', ()=>{
+    return () => window.removeEventListener('resize', () => {
       updateWidth()
       updateHeight()
     });
@@ -104,7 +105,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
     pagination: {
       mode: "off",
     },
-    queryOptions:{
+    queryOptions: {
       enabled: false,
     },
     filters: [
@@ -123,7 +124,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
 
 
   const [showPopup, setShowPopup] = useState(false);
-  const [action, setAction] = useState<'delete' | 'update' | 'create'| 'confirm'>('delete');
+  const [action, setAction] = useState<'delete' | 'update' | 'create' | 'confirm'>('delete');
 
   const deleteShape = useCallback(() => {
     // if (!confirm('Are you sure you want to delete this table?')) return;
@@ -145,18 +146,18 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
       );
       selectShape(null);
     }
-    
+
   }, [selectedId]);
 
   useEffect(() => {
     props.newTables(shapes);
   }
-  , [shapes]);
+    , [shapes]);
 
 
-  
+
   const { open } = useNotification();
-  
+
 
   // Extracted changing name component to memoize its internals
   const ChangingName = useCallback(
@@ -173,7 +174,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
               const newMax = (e.target as any).elements[1].value;
               const newMin = (e.target as any).elements[2].value;
               const blocked = (e.target as any).elements[3].checked;
-              if(newName !== shape.name){
+              if (newName !== shape.name) {
                 if (
                   !!shapes.find(
                     (s) => s.name === newName && s.id !== id
@@ -185,7 +186,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
                     message: "Warning, Table name already exists",
                   });
                   return;
-                } 
+                }
               }
               setShapes((prev) =>
                 prev.map((s) =>
@@ -215,7 +216,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
               defaultValue={shape.min}
               className="inputs-unique mt-2 bg-white dark:bg-darkthemeitems text-black dark:text-textdarktheme"
             />
-                        <label className="flex items-center my-1">
+            <label className="flex items-center my-1">
               <input
                 type="checkbox"
                 name="blocked"
@@ -248,18 +249,18 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
               const newMin = (e.target as any).elements[2].value;
               const blocked = (e.target as any).elements[3].checked;
 
-              if (!!shapes.find((s) => s.name === newName ) || await checkTableExists(newName)) {
+              if (!!shapes.find((s) => s.name === newName) || await checkTableExists(newName)) {
                 open?.({
                   type: "error",
                   message: "Table name already exists",
                 });
                 return;
               }
-              addShape(showAdd === 'RECTANGLE'?'RECTANGLE':'CIRCLE', newName, newMax, newMin, blocked);
+              addShape(showAdd === 'RECTANGLE' ? 'RECTANGLE' : 'CIRCLE', newName, newMax, newMin, blocked);
               setShowAdd(null);
             }}
           >
-            <h1>Add <span className='capitalize'>{showAdd === 'RECTANGLE'?'Rectangle':'circle'}</span> Table</h1>
+            <h1>Add <span className='capitalize'>{showAdd === 'RECTANGLE' ? 'Rectangle' : 'circle'}</span> Table</h1>
             <p>Table Name</p>
             <input
               type="text"
@@ -338,7 +339,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
   }, [pendingNavigationRoofId]);
   // if((!location.pathname.includes(props.focusedRoofId as string)) && props.tables !== shapes){
   //   confirm('You have unsaved changes, do you want to save them?') && saveLayout();
-    
+
   // }
 
 
@@ -520,7 +521,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
   }, [shapes, containerWidth]);
 
 
-  
+
   const transitionToShape = useCallback((shape: Table) => {
     const stage = stageRef.current;
     if (stage) {
@@ -577,7 +578,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
   const checkTableExists = useCallback(async (tableName: string) => {
     try {
       setLoading(true);
-      const { data } = await httpClient.get('api/v1/bo/tables/',{
+      const { data } = await httpClient.get('api/v1/bo/tables/', {
         params: {
           search: tableName
         }
@@ -593,29 +594,29 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
 
 
   const addShape = useCallback(
-    async (type: 'RECTANGLE' | 'CIRCLE', name = '', max=null, min=null, blocked=false) => {
+    async (type: 'RECTANGLE' | 'CIRCLE', name = '', max = null, min = null, blocked = false) => {
       setLoadingAddShape(true);
-      let counter= null;
+      let counter = null;
       let tableName = '';
-      let existsInShapes= null;
-      let tableExists= null;
-      if(!name) {
+      let existsInShapes = null;
+      let tableExists = null;
+      if (!name) {
         counter = shapes.length + 1;
         tableName = `Table ${counter}`;
-        existsInShapes = !!shapes.find(s => s.name === tableName as string );
+        existsInShapes = !!shapes.find(s => s.name === tableName as string);
         tableExists = await checkTableExists(tableName as string) || existsInShapes;
         while (tableExists && counter < 10) {
           counter++;
           tableName = `Table ${counter}`;
-          existsInShapes = !!shapes.find(s => s.name === tableName as string );
+          existsInShapes = !!shapes.find(s => s.name === tableName as string);
           tableExists = await checkTableExists(tableName as string) || existsInShapes;
         }
-  
-        if(tableExists){
+
+        if (tableExists) {
           setShowAdd(type);
           setLoadingAddShape(false);
           return;
-        } 
+        }
       }
 
       const OFFSET = 20; // Offset in pixels for new tables
@@ -655,32 +656,36 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
 
   return (
     <>
-      
-      <ActionPopup 
+
+      <ActionPopup
         action={action}
         showPopup={showPopup}
-        setShowPopup={(show)=>setShowPopup(show)}
+        setShowPopup={(show) => setShowPopup(show)}
         message='Are you sure you want to delete this table?'
         actionFunction={handleDelete}
       />
-      
+
       {showEdit && (
-        <div>
-          <div
-            className="overlay opacity-15 z-[200] bg-white dark:bg-black"
-            onClick={() => setShowEdit(false)}
-          ></div>
-          {selectedId && <ChangingName id={selectedId as number} />}
-        </div>
+        <Portal>
+          <div>
+            <div
+              className="overlay glassmorphism opacity-15 z-[200] bg-white dark:bg-black"
+              onClick={() => setShowEdit(false)}
+            ></div>
+            {selectedId && <ChangingName id={selectedId as number} />}
+          </div>
+        </Portal>
       )}
       {showAdd && (
-        <div>
-          <div
-            className="overlay opacity-15 z-[200] bg-white dark:bg-black"
-            onClick={() => setShowAdd(null)}
-          ></div>
-          <AddTable />
-        </div>
+        <Portal>
+          <div>
+            <div
+              className="overlay glassmorphism opacity-15 z-[200] bg-white dark:bg-black"
+              onClick={() => setShowAdd(null)}
+            ></div>
+            <AddTable />
+          </div>
+        </Portal>
       )}
       <div className="flex justify-between gap-5 my-4">
         <div
@@ -715,7 +720,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
                   disabled={loading || loadingAddShape}
                   loading={loadingAddShape}
                 >
-                  
+
                   {t('editPlace.buttons.rectangleTable')}
                 </BaseBtn>
                 <BaseBtn variant='outlined'
@@ -723,7 +728,7 @@ const DesignCanvas: React.FC<CanvasTypes> = (props) => {
                   disabled={loading || loadingAddShape}
                   loading={loadingAddShape}
                 >
-                  
+
                   {t('editPlace.buttons.circleTable')}
                 </BaseBtn>
               </>

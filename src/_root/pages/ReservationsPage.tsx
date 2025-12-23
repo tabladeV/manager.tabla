@@ -46,6 +46,7 @@ import { getTextColor } from '../../utils/helpers';
 import { useAsyncTaskManager } from '../../hooks/useAsyncTaskManager';
 import { httpClient } from '../../services/httpClient';
 import { saveAs } from 'file-saver';
+import Portal from '../../components/common/Portal';
 
 // Types and Interfaces
 export interface ReceivedTables {
@@ -83,7 +84,7 @@ export interface Reservation extends BaseRecord {
   loading?: boolean;
   seq_id?: string;
   selected?: boolean;
-  attachment?: string; 
+  attachment?: string;
   event?: any;
 }
 
@@ -330,58 +331,60 @@ const ColumnCustomizationModal: React.FC<ColumnCustomizationModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="overlay fixed inset-0 bg-black opacity-50" onClick={onClose}></div>
-      <div className={`relative w-full max-w-md p-6 rounded-lg shadow-lg ${isDarkMode ? 'bg-bgdarktheme text-white' : 'bg-white text-gray-800'}`}>
-        <h3 className="text-xl font-semibold mb-4">{'Customize columns'}</h3>
-        <div className="mb-4 border-b border-gray-200 dark:border-gray-700 pb-4">
-          <h4 className="font-semibold mb-2 text-lg">More Options</h4>
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="highlight-occasions"
-              checked={localHighlightOccasions}
-              onChange={(e) => setLocalHighlightOccasions(e.target.checked)}
-              className="checkbox mr-2"
-            />
-            <label htmlFor="highlight-occasions" className="cursor-pointer">
-              Highlight occasions
-            </label>
+    <Portal>
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="overlay glassmorphism fixed inset-0 bg-black" onClick={onClose}></div>
+        <div className={`relative w-full max-w-md p-6 rounded-lg shadow-lg ${isDarkMode ? 'bg-bgdarktheme text-white' : 'bg-white text-gray-800'}`}>
+          <h3 className="text-xl font-semibold mb-4">{'Customize columns'}</h3>
+          <div className="mb-4 border-b border-gray-200 dark:border-gray-700 pb-4">
+            <h4 className="font-semibold mb-2 text-lg">More Options</h4>
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="highlight-occasions"
+                checked={localHighlightOccasions}
+                onChange={(e) => setLocalHighlightOccasions(e.target.checked)}
+                className="checkbox mr-2"
+              />
+              <label htmlFor="highlight-occasions" className="cursor-pointer">
+                Highlight occasions
+              </label>
+            </div>
+          </div>
+          <div className="max-h-96 overflow-y-auto">
+            <DndProviderWithColumnPreview>
+              {localColumns
+                .sort((a, b) => a.order - b.order)
+                .map((column, index) => (
+                  <DraggableColumnItem
+                    key={column.id}
+                    column={column}
+                    index={index}
+                    moveColumn={moveColumn}
+                    toggleVisibility={toggleVisibility}
+                    isDarkMode={isDarkMode}
+                  />
+                ))}
+            </DndProviderWithColumnPreview>
+          </div>
+
+          <div className="flex justify-end gap-2 mt-4">
+            <button
+              onClick={onClose}
+              className={`btn-secondary`}
+            >
+              {t('reservations.edit.buttons.cancel')}
+            </button>
+            <button
+              onClick={handleSave}
+              className="btn-primary"
+            >
+              {t('reservations.edit.buttons.save')}
+            </button>
           </div>
         </div>
-        <div className="max-h-96 overflow-y-auto">
-          <DndProviderWithColumnPreview>
-            {localColumns
-              .sort((a, b) => a.order - b.order)
-              .map((column, index) => (
-                <DraggableColumnItem
-                  key={column.id}
-                  column={column}
-                  index={index}
-                  moveColumn={moveColumn}
-                  toggleVisibility={toggleVisibility}
-                  isDarkMode={isDarkMode}
-                />
-              ))}
-          </DndProviderWithColumnPreview>
-        </div>
-
-        <div className="flex justify-end gap-2 mt-4">
-          <button
-            onClick={onClose}
-            className={`btn-secondary`}
-          >
-            {t('reservations.edit.buttons.cancel')}
-          </button>
-          <button
-            onClick={handleSave}
-            className="btn-primary"
-          >
-            {t('reservations.edit.buttons.save')}
-          </button>
-        </div>
       </div>
-    </div>
+    </Portal>
   );
 };
 
@@ -543,31 +546,31 @@ const StatusModifier: React.FC<StatusModifierProps> = ({
   }
 
   return (
-    <div className="absolute">
-      <div className="overlay left-0 top-0 w-full h-full opacity-0" onClick={() => setShowStatus(false)}></div>
-      <ul className={`absolute z-[400] p-2 rounded-md shadow-md ${isDarkMode ? 'text-white bg-darkthemeitems' : 'bg-white text-subblack'}`}>
-        {reservation.status !== 'PENDING' &&
-          <li className={`py-1 px-2 text-bluetheme cursor-pointer`} onClick={() => statusHandler('PENDING')}>
-            {t('reservations.statusLabels.pending')}
-          </li>}
-        {reservation.status !== 'APPROVED' &&
-          <li className="py-1 px-2 text-greentheme cursor-pointer" onClick={() => statusHandler('APPROVED')}>
-            {t('reservations.statusLabels.confirmed')}
-          </li>}
-        {reservation.status !== 'CANCELED' &&
-          <li className="py-1 px-2 text-redtheme cursor-pointer" onClick={() => statusHandler('CANCELED')}>
-            {t('reservations.statusLabels.cancelled')}
-          </li>}
-        {reservation.status !== 'NO_SHOW' &&
-          <li className="py-1 px-2 text-blushtheme cursor-pointer" onClick={() => statusHandler('NO_SHOW')}>
-            {t('reservations.statusLabels.noShow')}
-          </li>}
-        {reservation.status !== 'SEATED' &&
-          <li className="py-1 px-2 text-orangetheme cursor-pointer" onClick={() => statusHandler('SEATED')}>
-            {t('reservations.statusLabels.seated')}
-          </li>}
-      </ul>
-    </div>
+      <div className="absolute">
+        <div className="overlay glassmorphism left-0 top-0 w-full h-full opacity-0" onClick={() => setShowStatus(false)}></div>
+        <ul className={`absolute z-[400] p-2 rounded-md shadow-md ${isDarkMode ? 'text-white bg-darkthemeitems' : 'bg-white text-subblack'}`}>
+          {reservation.status !== 'PENDING' &&
+            <li className={`py-1 px-2 text-bluetheme cursor-pointer`} onClick={() => statusHandler('PENDING')}>
+              {t('reservations.statusLabels.pending')}
+            </li>}
+          {reservation.status !== 'APPROVED' &&
+            <li className="py-1 px-2 text-greentheme cursor-pointer" onClick={() => statusHandler('APPROVED')}>
+              {t('reservations.statusLabels.confirmed')}
+            </li>}
+          {reservation.status !== 'CANCELED' &&
+            <li className="py-1 px-2 text-redtheme cursor-pointer" onClick={() => statusHandler('CANCELED')}>
+              {t('reservations.statusLabels.cancelled')}
+            </li>}
+          {reservation.status !== 'NO_SHOW' &&
+            <li className="py-1 px-2 text-blushtheme cursor-pointer" onClick={() => statusHandler('NO_SHOW')}>
+              {t('reservations.statusLabels.noShow')}
+            </li>}
+          {reservation.status !== 'SEATED' &&
+            <li className="py-1 px-2 text-orangetheme cursor-pointer" onClick={() => statusHandler('SEATED')}>
+              {t('reservations.statusLabels.seated')}
+            </li>}
+        </ul>
+      </div>
   )
 };
 
@@ -745,7 +748,7 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
               }
             </div>
 
-            
+
 
             {/* Comment if available */}
             {reservation.commenter && (
@@ -760,7 +763,7 @@ const ReservationRow: React.FC<ReservationRowProps> = ({
                 <span>{reservation.area.name}</span>
               </div>
             }
-            
+
             {reservation.is_payed && (
               <div className="flex gap-1 my-1 text-sm bg-softyellowtheme items-center text-yellowtheme w-fit px-2 py-1 rounded">
                 <DollarSign size={14} className={` ${isDarkMode ? 'text-yellowtheme' : 'text-yellowtheme'}`} />
@@ -1099,12 +1102,14 @@ const DateSelectionModal: React.FC<DateSelectionModalProps> = ({
   if (!focusedDate) return null;
 
   return (
-    <div>
-      <div className="overlay" onClick={() => setFocusedDate(false)}></div>
-      <div className={`popup sm:w-[50%] lg:w-[30%] xl:[25%] lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 ${isDarkMode ? 'bg-bgdarktheme' : 'bg-white'}`}>
-        <IntervalCalendar onRangeSelect={handleDateClick} onClose={() => setFocusedDate(false)} />
+    <Portal>
+      <div>
+        <div className="overlay glassmorphism" onClick={() => setFocusedDate(false)}></div>
+        <div className={`popup sm:w-[50%] lg:w-[30%] xl:[25%] lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 ${isDarkMode ? 'bg-bgdarktheme' : 'bg-white'}`}>
+          <IntervalCalendar onRangeSelect={handleDateClick} onClose={() => setFocusedDate(false)} />
+        </div>
       </div>
-    </div>
+    </Portal>
   );
 };
 
@@ -1202,8 +1207,8 @@ const ReservationsPage: React.FC = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const [reservationToDelete, setReservationToDelete] = useState<BaseKey>('');
 
-  
-  
+
+
   // Reservation progress data
   const [reservationProgressData, setReservationProgressData] = useState<DataTypes>({
     reserveDate: selectedClient?.date || '',
@@ -1219,7 +1224,7 @@ const ReservationsPage: React.FC = () => {
   const { chosenDay } = useDateContext();
 
   const [filterDate, setFilterDate] = useState<boolean>(true);
-  
+
   // Data fetching
   const { data, isRefetching: isLoading, isLoading: isFirstLoad, error, refetch: refetchReservations } = useList({
     resource: "api/v1/bo/reservations/",

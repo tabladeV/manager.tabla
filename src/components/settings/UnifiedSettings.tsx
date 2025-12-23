@@ -25,6 +25,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Mail,
+  FileText,
   type LucideIcon
 } from 'lucide-react'
 
@@ -50,6 +51,7 @@ import ExtraServices from '../marketplace/ExtraServices'
 import OnlineBookingBlockage from '../marketplace/OnlineBookingBlockage'
 import PaymentSettings from './PaymentSettings'
 import Alerts from '../../components/settings/Alerts';
+import MenusSettings from './MenusSettings';
 
 interface MenuItem {
   id: string
@@ -152,6 +154,7 @@ const UnifiedSettings = () => {
         { id: 'widget', title: t('settingsPage.menuItems.widget'), icon: PcCase, component: Widget, permission: { resource: 'widget', action: 'view' } },
         { id: 'reviewWidget', title: t('settingsPage.menuItems.reviewWidget'), icon: Star, component: ReviewWidget, permission: { resource: 'reviewwidget', action: 'view' } },
         { id: 'alerts', title: t('settingsPage.menuItems.alerts'), icon: Megaphone, component: Alerts, permission: { resource: 'widget', action: 'view' }},
+        { id: 'menus', title: t('settingsPage.menuItems.menus'), icon: FileText, component: MenusSettings, permission: { resource: 'widget', action: 'view' } },
         { id: 'messaging-templates', title: t('settingsPage.menuItems.messagingTemplates'), icon: Mail, component: MessagingTemplates, permission: { resource: 'widget', action: 'view' } },
         { id: 'messaging-templates/new', title: t('settingsPage.menuItems.messagingTemplatesNew'), icon: Plus, component: MessagingTemplatesForm, hideInMenu: true, permission: { resource: 'widget', action: 'view' } },
         { id: 'messaging-templates/edit', title: t('settingsPage.menuItems.messagingTemplatesEdit'), icon: Plus, component: MessagingTemplatesForm, hideInMenu: true, permission: { resource: 'widget', action: 'view' } },

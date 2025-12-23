@@ -3,15 +3,16 @@ import OurCalendar from "../Calendar/OurCalendar";
 import { addDays, format, startOfToday } from "date-fns";
 import { useDateContext } from "../../context/DateContext";
 import { useTranslation } from "react-i18next";
+import Portal from "../common/Portal";
 
 const DateSelection = () => {
 
-    const {t}= useTranslation();
+    const { t } = useTranslation();
     const { chosenDay, setChosenDay } = useDateContext(); // Get the global date from context
 
     const [isCalendar, setIsCalendar] = useState(false);
 
-    
+
     // Handle date selection from the calendar
     const handleDateClick = (day: Date) => {
         setChosenDay(day); // Update the context with the new selected date
@@ -35,19 +36,21 @@ const DateSelection = () => {
         <div className="">
             {/* Calendar Popup */}
             {isCalendar && (
-                <div>
-                    <div className="overlay" onClick={() => setIsCalendar(false)}></div>
-                    <div className={`popup  lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 ${localStorage.getItem('darkMode')==='true'?'bg-bgdarktheme':'bg-white'}`}>
-                        <OurCalendar onClick={handleDateClick} />
+                <Portal>
+                    <div>
+                        <div className="overlay glassmorphism" onClick={() => setIsCalendar(false)}></div>
+                        <div className={`popup  lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme' : 'bg-white'}`}>
+                            <OurCalendar onClick={handleDateClick} />
+                        </div>
                     </div>
-                </div>
+                </Portal>
             )}
 
             {/* Date Selection Controls */}
-            <div className={`  flex ml-[0vw] gap-4 lt-sm:m-0 lt-lg:gap-2 btn border-[#00000030] ${localStorage.getItem('darkMode')=== 'true'? 'bg-bgdarktheme2 text-textdarktheme':''}`}>
+            <div className={`  flex ml-[0vw] gap-4 lt-sm:m-0 lt-lg:gap-2 btn border-[#00000030] ${localStorage.getItem('darkMode') === 'true' ? 'bg-bgdarktheme2 text-textdarktheme' : ''}`}>
                 {/* Previous Day Button */}
                 <button
-                    className={`p-1 w-6 rounded-[10px]  hidden md:block ${localStorage.getItem('darkMode')=== 'true'? 'hover:bg-bgdarktheme':'hover:bg-softgreytheme'}`}
+                    className={`p-1 w-6 rounded-[10px]  hidden md:block ${localStorage.getItem('darkMode') === 'true' ? 'hover:bg-bgdarktheme' : 'hover:bg-softgreytheme'}`}
                     onClick={getPreviousDay}
                 >
                     {"<"}
@@ -56,14 +59,14 @@ const DateSelection = () => {
                 {/* Current Day / Calendar Button */}
                 <button
                     onClick={() => setIsCalendar(true)}
-                    className={`py-1 rounded-[10px] md:w-[10em] px-3 w-[7em] lt-sm:p-0  ${localStorage.getItem('darkMode')=== 'true'? 'hover:bg-bgdarktheme':'hover:bg-softgreytheme'}`}
+                    className={`py-1 rounded-[10px] md:w-[10em] px-3 w-[7em] lt-sm:p-0  ${localStorage.getItem('darkMode') === 'true' ? 'hover:bg-bgdarktheme' : 'hover:bg-softgreytheme'}`}
                 >
                     {displayDay === format(startOfToday(), "dd/MM/yyyy") ? t('header.date.today') : (displayDay === format(addDays(startOfToday(), 1), "dd/MM/yyyy") ? t('header.date.tomorrow') : (displayDay === format(addDays(startOfToday(), -1), "dd/MM/yyyy") ? t('header.date.yesterday') : displayDay))}
                 </button>
 
                 {/* Next Day Button */}
                 <button
-                    className={`p-1 w-6 rounded-[10px]  hidden md:block ${localStorage.getItem('darkMode')=== 'true'? 'hover:bg-bgdarktheme':'hover:bg-softgreytheme'}`}
+                    className={`p-1 w-6 rounded-[10px]  hidden md:block ${localStorage.getItem('darkMode') === 'true' ? 'hover:bg-bgdarktheme' : 'hover:bg-softgreytheme'}`}
                     onClick={getNextDay}
                 >
                     {">"}

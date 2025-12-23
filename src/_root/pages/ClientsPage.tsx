@@ -18,6 +18,7 @@ import { useAsyncTaskManager } from "../../hooks/useAsyncTaskManager"
 import { DevOnly } from "../../components/DevOnly"
 import InlineQuillEditor from "../../components/common/InlineQuillEditor"
 import BaseBtn from "../../components/common/BaseBtn"
+import Portal from "../../components/common/Portal"
 
 interface LoadingRowProps {
   isDarkMode: boolean
@@ -58,7 +59,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
   const [templateSearch, setTemplateSearch] = useState("");
   const [showTemplateList, setShowTemplateList] = useState(false);
 
-    useEffect(() => {
+  useEffect(() => {
     if (isOpen) {
       setSubject("");
       setContent("");
@@ -95,75 +96,77 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
   const filteredTemplates = templates.filter(t => t.name.toLowerCase().includes(templateSearch.toLowerCase()));
 
   return (
-    <div>
-      <div className="overlay" onClick={onClose}></div>
-      <div className={`sidepopup w-[70%] h-full lt-sm:w-full overflow-y-auto lt-sm:h-[70vh] lt-sm:bottom-0 bg-white dark:bg-bgdarktheme`}>
-        <h2 className="text-2xl font-bold mb-4">{t("clients.sendNotificationTitle")}</h2>
-        <div className="flex flex-col gap-4">
-          <div className="p-2 rounded-[10px] cursor-default">
-            <p className="text-greentheme font-[600] mb-2">Send to</p>
-            <div className="flex gap-2 flex-wrap">
-              {allClients && <p className={`text-sm btn dark:text-white`}>{t("clients.allClients")}</p>}
-              {selectedClients.slice(0, 4).map((client) => (
-                <div key={client.id} className={`flex items-center gap-2 dark:text-white`}>
-                  <p className={`text-sm btn dark:text-white`}>{client.full_name}</p>
+    <Portal>
+      <div>
+        <div className="overlay glassmorphism" onClick={onClose}></div>
+        <div className={`sidepopup w-[70%] h-full lt-sm:w-full overflow-y-auto lt-sm:h-[70vh] lt-sm:bottom-0 bg-white dark:bg-bgdarktheme`}>
+          <h2 className="text-2xl font-bold mb-4">{t("clients.sendNotificationTitle")}</h2>
+          <div className="flex flex-col gap-4">
+            <div className="p-2 rounded-[10px] cursor-default">
+              <p className="text-greentheme font-[600] mb-2">Send to</p>
+              <div className="flex gap-2 flex-wrap">
+                {allClients && <p className={`text-sm btn dark:text-white`}>{t("clients.allClients")}</p>}
+                {selectedClients.slice(0, 4).map((client) => (
+                  <div key={client.id} className={`flex items-center gap-2 dark:text-white`}>
+                    <p className={`text-sm btn dark:text-white`}>{client.full_name}</p>
+                  </div>
+                ))}
+                {selectedClients.length > 4 && (
+                  <p className={`text-sm btn dark:text-white`}>{t("clients.linkers.and")} {selectedClients.length - 4} {t("clients.linkers.more")}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search for a template"
+                className={`inputs-unique bg-white dark:bg-bgdarktheme2`}
+                onChange={(e) => {
+                  setShowTemplateList(true);
+                  setTemplateSearch(e.target.value);
+                }}
+                value={templateSearch}
+                onFocus={() => setShowTemplateList(true)}
+              />
+              {showTemplateList && (
+                <div className={`absolute z-10 w-full mt-1 flex max-h-[25vh] overflow-y-auto flex-col gap-2 p-4 rounded-[10px] bg-white dark:bg-bgdarktheme2 shadow-lg`}>
+                  {isLoading ? <div>Loading templates...</div> :
+                    filteredTemplates.length > 0 ? filteredTemplates.map((template) => (
+                      <div
+                        key={template.id}
+                        className={`flex flex-col btn cursor-pointer bg-white dark:text-white dark:bg-darkthemeitems`}
+                        onClick={() => handleSelectTemplate(template)}
+                      >
+                        <p>{template.name}</p>
+                      </div>
+                    )) : <div>No templates found.</div>
+                  }
                 </div>
-              ))}
-              {selectedClients.length > 4 && (
-                <p className={`text-sm btn dark:text-white`}>{t("clients.linkers.and")} {selectedClients.length - 4} {t("clients.linkers.more")}</p>
               )}
             </div>
-          </div>
 
-          <div className="relative">
             <input
               type="text"
-              placeholder="Search for a template"
+              placeholder="Subject"
               className={`inputs-unique bg-white dark:bg-bgdarktheme2`}
-              onChange={(e) => {
-                setShowTemplateList(true);
-                setTemplateSearch(e.target.value);
-              }}
-              value={templateSearch}
-              onFocus={() => setShowTemplateList(true)}
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
             />
-            {showTemplateList && (
-              <div className={`absolute z-10 w-full mt-1 flex max-h-[25vh] overflow-y-auto flex-col gap-2 p-4 rounded-[10px] bg-white dark:bg-bgdarktheme2 shadow-lg`}>
-                {isLoading ? <div>Loading templates...</div> :
-                  filteredTemplates.length > 0 ? filteredTemplates.map((template) => (
-                    <div
-                      key={template.id}
-                      className={`flex flex-col btn cursor-pointer bg-white dark:text-white dark:bg-darkthemeitems`}
-                      onClick={() => handleSelectTemplate(template)}
-                    >
-                      <p>{template.name}</p>
-                    </div>
-                  )) : <div>No templates found.</div>
-                }
-              </div>
-            )}
+
+            <InlineQuillEditor
+              value={content}
+              onChange={setContent}
+              placeholder="Write your template content here..."
+            />
+
+            <BaseBtn variant="primary" className="mt-4" onClick={handleSend} loading={isSending}>
+              Send
+            </BaseBtn>
           </div>
-
-          <input
-            type="text"
-            placeholder="Subject"
-            className={`inputs-unique bg-white dark:bg-bgdarktheme2`}
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-          />
-
-          <InlineQuillEditor
-            value={content}
-            onChange={setContent}
-            placeholder="Write your template content here..."
-          />
-
-          <BaseBtn variant="primary" className="mt-4" onClick={handleSend} loading={isSending}>
-            Send
-          </BaseBtn>
         </div>
       </div>
-    </div>
+    </Portal>
   );
 };
 
@@ -418,7 +421,7 @@ const ClientsPage = () => {
       customOptions: {
         includeTitleStats: !!includeTitleStats,
       },
-      pdf_engine: pdfEngine, 
+      pdf_engine: pdfEngine,
       customers: []
     };
 
@@ -487,15 +490,14 @@ const ClientsPage = () => {
         <h1>{t("clients.title")}</h1>
         <DevOnly>
           <button onClick={() => setShowExportModal(true)} className={`dark:text-whitetheme btn-primary`}>
-          {selectedClient?.length ? t('clients.buttons.exportSelected') : t('clients.buttons.exportAll')}
-        </button>
+            {selectedClient?.length ? t('clients.buttons.exportSelected') : t('clients.buttons.exportAll')}
+          </button>
         </DevOnly>
       </div>
       <div className="flex gap-2">
         <div
-          className={`bg-white dark:bg-bgdarktheme ${
-            pathname === "/clients" || pathname === "/clients/" ? "" : "lt-sm:hidden"
-          } sm:w-1/4 w-full h-[calc(100vh-160px)] flex flex-col gap-2 p-2 rounded-[10px]`}
+          className={`bg-white dark:bg-bgdarktheme ${pathname === "/clients" || pathname === "/clients/" ? "" : "lt-sm:hidden"
+            } sm:w-1/4 w-full h-[calc(100vh-160px)] flex flex-col gap-2 p-2 rounded-[10px]`}
         >
           <SearchBar SearchHandler={searchFilter} />
           {!(selectedClient.length === clients.length) ? (
@@ -503,7 +505,7 @@ const ClientsPage = () => {
               className={`btn-secondary hover:bg-softgreentheme hover:text-greentheme ${selectedClient === clients ? "hidden" : ""}`}
               onClick={selectAll}
             >
-              {t("clients.buttons.selectAll")} 
+              {t("clients.buttons.selectAll")}
             </button>
           ) : (
             <button

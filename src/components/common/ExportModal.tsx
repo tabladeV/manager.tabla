@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next"
 import type { Column, CustomField } from "./config/exportConfig"
 import BaseBtn from "./BaseBtn"
 import type { JSX } from "react/jsx-runtime" // Import JSX to fix the undeclared variable error
+import Portal from "./Portal"
 
 interface ExportModalProps {
   title?: string
@@ -243,152 +244,154 @@ const ExportModal = ({
   }
 
   return (
-    <div>
-      {/* Overlay for clicking outside to close */}
-      <div
-        className="overlay"
-        onClick={onClose}
-        aria-label={t("export.closeOverlay", "Click to close export modal")}
-      ></div>
-      <div
-        className={`sidepopup w-[45%] overflow-y-auto lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:overflow-y-auto h-full ${localStorage.getItem("darkMode") === "true" ? "bg-bgdarktheme text-white" : "bg-white"} pb-0`}
-      >
-        <h2 className="text-2xl font-[600] mb-4">{title || t("export.title", "Export Data")}</h2>
+    <Portal>
+      <div>
+        {/* Overlay for clicking outside to close */}
+        <div
+          className="overlay glassmorphism"
+          onClick={onClose}
+          aria-label={t("export.closeOverlay", "Click to close export modal")}
+        ></div>
+        <div
+          className={`sidepopup w-[45%] overflow-y-auto lt-sm:w-full lt-sm:h-[70vh] lt-sm:bottom-0 lt-sm:overflow-y-auto h-full ${localStorage.getItem("darkMode") === "true" ? "bg-bgdarktheme text-white" : "bg-white"} pb-0`}
+        >
+          <h2 className="text-2xl font-[600] mb-4">{title || t("export.title", "Export Data")}</h2>
 
-        <div className="space-y-4">
-          {/* Format Selection */}
-          <div>
-            <h3 className="text-lg font-medium mb-2">{t("export.selectFormat", "Select Format")}</h3>
-            <div className="flex space-x-4">
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  value="sheet"
-                  checked={exportFormat === "sheet"}
-                  onChange={() => setExportFormat("sheet")}
-                  className="radio mr-2"
-                />
-                {t("export.formatSheet", "Sheet (CSV)")}
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  value="pdf"
-                  checked={exportFormat === "pdf"}
-                  onChange={() => setExportFormat("pdf")}
-                  className="radio mr-2"
-                />
-                {t("export.formatPDF", "PDF")}
-              </label>
-            </div>
-          </div>
-
-          {/* PDF Engine Selection */}
-          {exportFormat === "pdf" && (
+          <div className="space-y-4">
+            {/* Format Selection */}
             <div>
-              <h3 className="text-lg font-medium mb-2">{t("export.pdfEngineTitle", "PDF Engine")}</h3>
+              <h3 className="text-lg font-medium mb-2">{t("export.selectFormat", "Select Format")}</h3>
               <div className="flex space-x-4">
                 <label className="flex items-center">
                   <input
                     type="radio"
-                    value="xhtml2pdf"
-                    checked={pdfEngine === "xhtml2pdf"}
-                    onChange={() => setPdfEngine("xhtml2pdf")}
+                    value="sheet"
+                    checked={exportFormat === "sheet"}
+                    onChange={() => setExportFormat("sheet")}
                     className="radio mr-2"
                   />
-                  {t("export.pdfEngineStandard", "Standard (Web View)")}
+                  {t("export.formatSheet", "Sheet (CSV)")}
                 </label>
                 <label className="flex items-center">
                   <input
                     type="radio"
-                    value="reportlab"
-                    checked={pdfEngine === "reportlab"}
-                    onChange={() => setPdfEngine("reportlab")}
+                    value="pdf"
+                    checked={exportFormat === "pdf"}
+                    onChange={() => setExportFormat("pdf")}
                     className="radio mr-2"
                   />
-                  {t("export.pdfEngineAdvanced", "Advanced (Complex Tables)")}
+                  {t("export.formatPDF", "PDF")}
                 </label>
               </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                {pdfEngine === "xhtml2pdf"
-                  ? t("export.pdfEngineStandardDesc", "Best for simple layouts and faster generation")
-                  : t("export.pdfEngineAdvancedDesc", "Better for complex tables and advanced formatting")}
-              </p>
             </div>
-          )}
 
-          {/* Column Selection */}
-          <div>
-            <h3 className="text-lg font-medium mb-2">{t("export.selectColumns", "Select Columns")}</h3>
-            <div className="mb-2">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={selectedColumns.length === columns.length}
-                  onChange={(e) => handleSelectAll(e.target.checked)}
-                  className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61] mr-2"
-                />
-                {t("export.selectAll", "Select All")}
-              </label>
-            </div>
-            <div className="grid grid-cols-1 gap-2 max-h-60 overflow-y-auto bg-[#F6F6F6] dark:bg-bgdarktheme2 p-1 px-2 rounded-lg">
-              {columns.map((column) => (
-                <label key={column.key} className="flex items-center">
+            {/* PDF Engine Selection */}
+            {exportFormat === "pdf" && (
+              <div>
+                <h3 className="text-lg font-medium mb-2">{t("export.pdfEngineTitle", "PDF Engine")}</h3>
+                <div className="flex space-x-4">
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      value="xhtml2pdf"
+                      checked={pdfEngine === "xhtml2pdf"}
+                      onChange={() => setPdfEngine("xhtml2pdf")}
+                      className="radio mr-2"
+                    />
+                    {t("export.pdfEngineStandard", "Standard (Web View)")}
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      value="reportlab"
+                      checked={pdfEngine === "reportlab"}
+                      onChange={() => setPdfEngine("reportlab")}
+                      className="radio mr-2"
+                    />
+                    {t("export.pdfEngineAdvanced", "Advanced (Complex Tables)")}
+                  </label>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  {pdfEngine === "xhtml2pdf"
+                    ? t("export.pdfEngineStandardDesc", "Best for simple layouts and faster generation")
+                    : t("export.pdfEngineAdvancedDesc", "Better for complex tables and advanced formatting")}
+                </p>
+              </div>
+            )}
+
+            {/* Column Selection */}
+            <div>
+              <h3 className="text-lg font-medium mb-2">{t("export.selectColumns", "Select Columns")}</h3>
+              <div className="mb-2">
+                <label className="flex items-center">
                   <input
                     type="checkbox"
-                    checked={selectedColumns.includes(column.key)}
-                    onChange={(e) => handleColumnChange(column.key, e.target.checked)}
+                    checked={selectedColumns.length === columns.length}
+                    onChange={(e) => handleSelectAll(e.target.checked)}
                     className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61] mr-2"
                   />
-                  {column.label}
+                  {t("export.selectAll", "Select All")}
                 </label>
-              ))}
+              </div>
+              <div className="grid grid-cols-1 gap-2 max-h-60 overflow-y-auto bg-[#F6F6F6] dark:bg-bgdarktheme2 p-1 px-2 rounded-lg">
+                {columns.map((column) => (
+                  <label key={column.key} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={selectedColumns.includes(column.key)}
+                      onChange={(e) => handleColumnChange(column.key, e.target.checked)}
+                      className="checkbox w-5 h-5 rounded border-gray-300 text-[#88AB61] focus:ring-[#88AB61] mr-2"
+                    />
+                    {column.label}
+                  </label>
+                ))}
+              </div>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                {t("export.columnsSelected", "{{count}} column selected", {
+                  count: selectedColumns.length,
+                  defaultValue_plural: "{{count}} columns selected",
+                })}
+              </p>
             </div>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              {t("export.columnsSelected", "{{count}} column selected", {
-                count: selectedColumns.length,
-                defaultValue_plural: "{{count}} columns selected",
-              })}
-            </p>
+
+            {/* Custom Fields Section */}
+            {customFields.length > 0 && (
+              <div>
+                <h3 className="text-lg font-medium mb-2">
+                  {customOptionsTitle || t("export.customOptions")}
+                </h3>
+                <div className="space-y-3">{customFields.map((field) => renderFieldWithChildren(field))}</div>
+              </div>
+            )}
           </div>
 
-          {/* Custom Fields Section */}
-          {customFields.length > 0 && (
-            <div>
-              <h3 className="text-lg font-medium mb-2">
-                {customOptionsTitle || t("export.customOptions")}
-              </h3>
-              <div className="space-y-3">{customFields.map((field) => renderFieldWithChildren(field))}</div>
-            </div>
-          )}
-        </div>
-
-        {/* Buttons */}
-        <div className="flex justify-center space-x-2 mt-6 bg-white dark:bg-bgdarktheme2 py-5 sticky bottom-0">
-          <BaseBtn
-            variant="primary"
-            loading={loading}
-            onClick={onClose}
-            className="btn-secondary hover:bg-[#88AB6150] hover:text-greentheme transition-colors"
-            aria-label={t("export.closeButtonAria", "Close export modal")}
-          >
-            {t("export.closeButton", "Close")}
-          </BaseBtn>
-          <BaseBtn
-            variant="primary"
-            loading={loading}
-            onClick={() =>
-              onExport(exportFormat, selectedColumns, customValues, exportFormat === "pdf" ? pdfEngine : undefined)
-            }
-            className="btn-primary"
-            disabled={selectedColumns.length === 0}
-            aria-label={t("export.exportButtonAria", "Export selected data")}
-          >
-            {loading ? t("export.exportingButton", "Exporting...") : t("export.exportButton", "Export")}
-          </BaseBtn>
+          {/* Buttons */}
+          <div className="flex justify-center space-x-2 mt-6 bg-white dark:bg-bgdarktheme2 py-5 sticky bottom-0">
+            <BaseBtn
+              variant="primary"
+              loading={loading}
+              onClick={onClose}
+              className="btn-secondary hover:bg-[#88AB6150] hover:text-greentheme transition-colors"
+              aria-label={t("export.closeButtonAria", "Close export modal")}
+            >
+              {t("export.closeButton", "Close")}
+            </BaseBtn>
+            <BaseBtn
+              variant="primary"
+              loading={loading}
+              onClick={() =>
+                onExport(exportFormat, selectedColumns, customValues, exportFormat === "pdf" ? pdfEngine : undefined)
+              }
+              className="btn-primary"
+              disabled={selectedColumns.length === 0}
+              aria-label={t("export.exportButtonAria", "Export selected data")}
+            >
+              {loading ? t("export.exportingButton", "Exporting...") : t("export.exportButton", "Export")}
+            </BaseBtn>
+          </div>
         </div>
       </div>
-    </div>
+    </Portal>
   )
 }
 
