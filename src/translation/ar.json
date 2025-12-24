@@ -4,6 +4,10 @@
         "buttons": {
             "notifications": "الإشعارات",
             "profile": "الملف الشخصي",
+            "lightMode": "الوضع الفاتح",
+            "darkMode": "الوضع الداكن",
+            "enterFullscreen": "ملء الشاشة",
+            "exitFullscreen": "خروج من ملء الشاشة",
             "logout": "تسجيل الخروج",
             "changeRestaurant": "تغيير المطعم"
         },
@@ -915,6 +919,26 @@
                 "dh": "درهم"
             }
         },
+        "menus": {
+            "title": "القوائم",
+            "subtitle": "إدارة قوائم مطعمك",
+            "addMenu": "إضافة قائمة",
+            "addNew": "إضافة قائمة جديدة",
+            "alias": "الاسم المستعار / الاسم",
+            "namePlaceholder": "أدخل اسم القائمة",
+            "pdfLabel": "ملف القائمة PDF",
+            "uploadLabel": "انقر لتحميل ملف PDF",
+            "noMenus": "لم يتم العثور على قوائم. أضف قائمتك الأولى!",
+            "deleteConfirm": "هل أنت متأكد من أنك تريد حذف هذه القائمة؟",
+            "confirmations": {
+                "deleteMenu": "هل أنت متأكد من أنك تريد حذف هذه القائمة؟"
+            },
+            "noFile": "لا يوجد ملف متاح",
+            "preview": "معاينة",
+            "delete": "حذف",
+            "status": "الحالة",
+            "actions": "الإجراءات"
+        },
         "photos": {
             "title": "الصور",
             "buttons": {
@@ -1046,6 +1070,9 @@
         "descriptionLabel": "الوصف",
         "descriptionPlaceholder": "أدخل وصف التنبيه...",
         "active": "نشط",
+        "confirmations": {
+            "deleteAlert": "هل أنت متأكد من أنك تريد حذف هذا التنبيه؟"
+        },
         "table": {
             "image": "صورة",
             "title": "العنوان",
@@ -1774,6 +1801,10 @@
             "message": "تم إرسال تقييمك بنجاح. نحن نقدر ملاحظاتك وسنستخدمها لتحسين خدمتنا."
         }
     },
+    "reservationForGrid": {
+        "onAt": "في {{date}} الساعة {{time}}",
+        "onAtFor": "في {{date}} الساعة {{time}} لـ {{guests}}"
+    },
     "calendarPopup": {
         "months": {
             "january": "يناير",
@@ -1820,6 +1851,12 @@
         "at": "في",
         "for": "لـ",
         "yourReservationIsSetFor": "تم تحديد حجزك لـ",
+        "noAvailableTimeSlots": "لا توجد فترات زمنية متاحة للتاريخ المحدد.",
+        "eventBookingMode": "وضع حجز الفعاليات",
+        "eventTimeRestricted": "هذا وقت فعالية. الحجوزات مقيدة بأوقات محددة.",
+        "confirmReservation": "تأكيد الحجز",
+        "pleaseReviewDetails": "يرجى مراجعة تفاصيل حجزك قبل التأكيد.",
+        "noAvailableTimeSlotsWithGuests": "لا توجد فترات زمنية متاحة لعدد الضيوف المحدد.",
         "common": {
             "cancel": "إلغاء",
             "add": "إضافة",
@@ -1859,6 +1896,8 @@
     },
     "common": {
         "attachment": "المرفق",
+        "openAttachedFile": "فتح الملف المرفق",
+        "na": "غير متاح",
         "attachmentFile": "ملف مرفق",
         "cancel": "إلغاء",
         "add": "إضافة",
@@ -1888,6 +1927,8 @@
         "close": "إغلاق",
         "dismissAll": "رفض الكل",
         "closeAll": "إغلاق الكل",
+        "hide": "إخفاء",
+        "show": "إظهار",
         "loading": "جارٍ التحميل...",
         "from": "من",
         "to": "إلى",
