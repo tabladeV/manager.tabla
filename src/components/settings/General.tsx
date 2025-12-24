@@ -438,28 +438,6 @@ const General = () => {
               readOnly aria-readonly
             />
           </div>
-          {restaurant?.contact_details && restaurant.contact_details.length > 0 && (
-            <div className="flex flex-col gap-2 mt-4 border-t border-gray-200 dark:border-gray-700 pt-4">
-               <p className="font-medium">{t('settingsPage.general.contactDetails.title', 'Extra Contact & Socials')}</p>
-               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                 {restaurant.contact_details.map((detail, idx) => {
-                   const selectedType = CONTACT_TYPES.find(t => t.value === detail.type);
-                   const Icon = selectedType ? selectedType.icon : LinkIcon;
-                   return (
-                     <div key={idx} className="flex items-center gap-2 p-2 rounded border border-gray-200 dark:border-gray-700">
-                        <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-full shrink-0">
-                          <Icon size={16} className="text-gray-600 dark:text-gray-300" />
-                        </div>
-                        <div className="flex flex-col overflow-hidden">
-                          <span className="font-medium text-sm truncate">{detail.name}</span>
-                          <span className="text-xs text-gray-500 truncate">{detail.link}</span>
-                        </div>
-                     </div>
-                   );
-                 })}
-               </div>
-            </div>
-          )}
         </div>
       </div>
   );
@@ -581,7 +559,7 @@ const General = () => {
             />
           </div>
           
-          <ContactDetailsList />
+          {/* <ContactDetailsList /> */}
 
           <div className="flex w-full justify-center gap-4">
             <button

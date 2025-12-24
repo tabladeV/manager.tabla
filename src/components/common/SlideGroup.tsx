@@ -13,6 +13,7 @@ interface SlideGroupProps {
   children: ReactNode;
   showArrows?: boolean;
   activeSelection?: boolean;
+  align?: 'start' | 'center' | 'end';
 }
 
 // The SlideGroupItem component that wraps each item
@@ -35,7 +36,8 @@ const SlideGroupItem: React.FC<SlideGroupItemProps> = ({
 const SlideGroup: React.FC<SlideGroupProps> = ({ 
   children, 
   showArrows = true, 
-  activeSelection = false 
+  activeSelection = false,
+  align = 'start',
 }) => {
   const [showLeftArrow, setShowLeftArrow] = useState<boolean>(false);
   const [showRightArrow, setShowRightArrow] = useState<boolean>(false);
@@ -144,18 +146,18 @@ const SlideGroup: React.FC<SlideGroupProps> = ({
       {/* Left navigation arrow */}
       {showArrows && showLeftArrow && (
         <div 
-          className="absolute left-0 top-0 z-10 h-full flex items-center"
+          className="absolute left-[-5px] top-0 z-10 h-full flex items-center"
           onClick={() => scroll('left')}
         >
-          <div className="bg-gray-200 shadow-md rounded-md p-1 cursor-pointer">
-            <ChevronLeft size={24} className="text-gray-700" />
+          <div className="btn-primary shadow-md rounded-md p-1 cursor-pointer">
+            <ChevronLeft size={24}/>
           </div>
         </div>
       )}
       
       {/* Scrollable container */}
       <div 
-        className={`flex overflow-x-auto scrollbar-hide scroll-smooth`}
+        className={`flex overflow-x-auto scrollbar-hide scroll-smooth ${(align === 'center' && showArrows && !showLeftArrow && !showRightArrow) ? 'justify-center' : ''} ${align === 'end' ? 'justify-end' : ''}`}
         ref={scrollRef}
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
@@ -165,11 +167,11 @@ const SlideGroup: React.FC<SlideGroupProps> = ({
       {/* Right navigation arrow */}
       {showArrows && showRightArrow && (
         <div 
-          className="absolute right-0 top-0 z-10 h-full flex items-center"
+          className="absolute right-[-5px] top-0 z-10 h-full flex items-center"
           onClick={() => scroll('right')}
         >
-          <div className="bg-gray-200 shadow-md rounded-md p-1 cursor-pointer">
-            <ChevronRight size={24} className="text-gray-700" />
+          <div className="btn-primary shadow-md rounded-md p-1 cursor-pointer">
+            <ChevronRight size={24}/>
           </div>
         </div>
       )}
