@@ -18,6 +18,7 @@ import { SharedWidgetFooter } from "../../components/reservation/SharedWidgetFoo
 import LanguageSelector from "./LanguageSelector"
 import { useWidgetData } from "../../hooks/useWidgetData"
 import AlertDisplay from "../../components/reservation/EventAlerts"
+import MenuSelector from "../../components/MenuSelector"
 
 // #region Child Components
 
@@ -89,6 +90,10 @@ const ReservationPickerStep = memo(({ data, onShowProcess, onNextStep, widgetInf
   const formatedDate = data.reserveDate ? format(new Date(data.reserveDate), "MMM-dd") : "----/--/--";
   const isDataComplete = data.reserveDate && data.time && data.guests > 0;
   const isButtonDisabled = !isDataComplete || isCheckingPayment;
+  
+  const menuFiles = useMemo(() => {
+    return widgetInfo?.menu_files_items?.filter((menu : any) => menu?.file && menu?.status === 'active') || []
+  }, [widgetInfo]);
 
   return (
     <>
@@ -119,14 +124,21 @@ const ReservationPickerStep = memo(({ data, onShowProcess, onNextStep, widgetInf
         {isCheckingPayment && <LoaderCircle className="animate-spin mr-2" size={18} />}
         {isCheckingPayment ? t("reservationWidget.payment.checking") : t("reservationWidget.reservation.bookNow")}
       </button>
-      {widgetInfo?.menu_file && (
-        <button
-          onClick={() => window.open(widgetInfo.menu_file, "_blank")}
-          className="w-full mt-4 py-3 px-4 rounded-md font-medium border border-[#88AB61] text-[#88AB61] hover:bg-[#f0f7e6] dark:hover:bg-darkthemeitems transition-colors flex items-center justify-center gap-2"
-        >
-          <span>{t("reservationWidget.reservation.previewMenu")}</span>
-          <ScreenShareIcon size={18} />
-        </button>
+      {widgetInfo?.has_menu && (widgetInfo?.menu_file || menuFiles?.length) && (
+        <>
+          {menuFiles?.length > 1 ? 
+          <div className="w-full">
+            <h3 className="text-center pb-2 pt-3">{t("reservationWidget.reservation.previewMenu")}</h3>
+            <MenuSelector menus={menuFiles} />
+          </div>
+            : <button
+              onClick={() => window.open(menuFiles?.[0]?.file || widgetInfo.menu_file, "_blank")}
+              className="w-full mt-4 py-3 px-4 rounded-md font-medium border border-[#88AB61] text-[#88AB61] hover:bg-[#f0f7e6] dark:hover:bg-darkthemeitems transition-colors flex items-center justify-center gap-2"
+            >
+              <span>{t("reservationWidget.reservation.previewMenu")}</span>
+              <ScreenShareIcon size={18} />
+            </button>}
+        </>
       )}
     </>
   )
@@ -984,7 +996,7 @@ const WidgetPage = () => {
       {showProcess && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-darkthemeitems rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-auto">
-            <WidgetReservationProcess onClick={() => setShowProcess(false)} maxGuests={widgetInfo?.max_of_guests_par_reservation} resData={data} getDateTime={setData} />
+            <WidgetReservationProcess onClick={() => setShowProcess(false)} maxGuests={widgetInfo?.max_of_guests_par_reservation} resData={data} getDateTime={(e)=>{setData(e);changeStep(2);}} />
           </div>
         </div>
       )}
