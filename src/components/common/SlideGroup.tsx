@@ -157,7 +157,7 @@ const SlideGroup: React.FC<SlideGroupProps> = ({
       
       {/* Scrollable container */}
       <div 
-        className={`flex overflow-x-auto scrollbar-hide scroll-smooth ${align === 'center' ? 'justify-center' : ''} ${align === 'end' ? 'justify-end' : ''}`}
+        className={`flex overflow-x-auto scrollbar-hide scroll-smooth ${(align === 'center' && showArrows && !showLeftArrow && !showRightArrow) ? 'justify-center' : ''} ${align === 'end' ? 'justify-end' : ''}`}
         ref={scrollRef}
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
