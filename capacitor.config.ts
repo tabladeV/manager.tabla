@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.tabla.tablamanager',
-  appName: 'Tabla Back Office',
+  appName: 'Tabla Manager',
   webDir: 'dist',
   server: {
     androidScheme: 'https',

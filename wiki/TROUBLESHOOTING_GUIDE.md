@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide provides solutions to common issues encountered in the Tabla Back Office application, with special focus on cross-platform compatibility and iOS-specific problems.
+This guide provides solutions to common issues encountered in the Tabla Manager application, with special focus on cross-platform compatibility and iOS-specific problems.
 
 ## Network and HTTP Issues
 

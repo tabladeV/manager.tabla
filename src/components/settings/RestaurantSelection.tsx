@@ -9,6 +9,7 @@ import { useDateContext } from "../../context/DateContext";
 import { useTranslation } from "react-i18next";
 import { Capacitor } from "@capacitor/core";
 import { useIOSNotchHeight } from "../../hooks/useStatusBarHeight";
+import { dispatchAppEvent, RESTAURANT_STATE_EVENT } from "../../utils/appEvents";
 
 interface RestaurantType {
     id: BaseKey;
@@ -57,6 +58,7 @@ const RestaurantSelection: React.FC<{ showLogo?: boolean }> = ({ showLogo = true
 
     // Store the selected restaurant ID
     localStorage.setItem("restaurant_id", restaurantId.toString());
+    dispatchAppEvent(RESTAURANT_STATE_EVENT);
 
     // Find the selected restaurant from the list
     const selectedRestaurant = restaurants.find(restaurant => restaurant.id === restaurantId);
@@ -81,6 +83,7 @@ const RestaurantSelection: React.FC<{ showLogo?: boolean }> = ({ showLogo = true
       }
     } catch (e) {
       localStorage.removeItem("restaurant_id");
+      dispatchAppEvent(RESTAURANT_STATE_EVENT);
       setSelectedId(null);
     }
   };

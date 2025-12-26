@@ -1,7 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Tabla Back Office</string>
-    <string name="title_activity_main">Tabla Back Office</string>
-    <string name="package_name">com.tabla.tablabomobile</string>
-    <string name="custom_url_scheme">com.tabla.tablabomobile</string>
+    <string name="app_name">Tabla Manager</string>
+    <string name="title_activity_main">Tabla Manager</string>
+    <string name="package_name">tablamanager</string>
+    <string name="custom_url_scheme">tablamanager</string>
+    <string name="default_notification_message">You have a new notification.</string>
+    <string name="default_reservation_notification">Reservation %1$s updated.</string>
+    <string name="reservation_number_title">Reservation #%1$s</string>
+    <string name="notification_party_size">%1$s guests</string>
 </resources>

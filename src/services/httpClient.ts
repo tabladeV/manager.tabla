@@ -245,7 +245,7 @@ export class UnifiedHttpClient {
         headers: this.normalizeHeaders(response.headers || {})
       };
     } catch (error) {
-      console.error('[HttpClient] Axios error:', error);
+      console.error('[HttpClient] Axios error:', JSON.stringify(UnifiedHttpClient.serializeError(error)));
       // Preserve axios error structure for backward compatibility
       this.handleAuthenticationError(error);
       throw error; // Axios errors are already well-formatted
@@ -374,6 +374,24 @@ export class UnifiedHttpClient {
     } else {
       // Unknown error
       return new Error('An unknown error occurred');
+    }
+  }
+
+  private static serializeError(error: any) {
+    try {
+      if (error?.response) {
+        return {
+          message: error.message,
+          status: error.response.status,
+          data: error.response.data
+        };
+      }
+      if (error?.message) {
+        return { message: error.message };
+      }
+      return { error: String(error) };
+    } catch {
+      return { error: 'Unknown error' };
     }
   }
 }
